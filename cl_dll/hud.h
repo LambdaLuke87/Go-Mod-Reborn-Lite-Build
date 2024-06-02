@@ -30,6 +30,8 @@
 #include "cl_dll.h"
 #include "ammo.h"
 
+#include "hud_sprite.h"
+
 #define DHN_DRAWZERO 1
 #define DHN_2DIGITS 2
 #define DHN_3DIGITS 4
@@ -128,6 +130,11 @@ public:
 	void UserCmd_Close();
 	void UserCmd_NextWeapon();
 	void UserCmd_PrevWeapon();
+
+	WEAPON* GetWeapon()
+	{
+		return m_pWeapon;
+	}
 
 private:
 	float m_fFade;
@@ -640,6 +647,8 @@ public:
 	int m_iRes;
 	cvar_t* m_pCvarStealMouse;
 	cvar_t* m_pCvarDraw;
+	
+	cvar_t* m_pCvarCrosshair;
 
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b);
@@ -718,6 +727,8 @@ public:
 	CHud() : m_iSpriteCount(0), m_pHudList(NULL) {}
 	~CHud(); // destructor, frees allocated memory
 
+	static HudSpriteRenderer& Renderer();
+
 	// user messages
 	bool MsgFunc_Damage(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf);
@@ -742,7 +753,12 @@ public:
 
 	void AddHudElem(CHudBase* p);
 
+	bool m_iHardwareMode;
+
 	float GetSensitivity();
+
+	HudSpriteRenderer hudRenderer;
+	bool hasHudScaleInEngine;
 
 	bool isNightVisionOn() { return mNightVisionState; }
 

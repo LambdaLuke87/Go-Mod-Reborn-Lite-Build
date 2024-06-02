@@ -26,6 +26,7 @@
 #include "parsemsg.h"
 #include <string.h>
 
+#include "hud_sprite.h"
 
 DECLARE_MESSAGE(m_Health, Health)
 DECLARE_MESSAGE(m_Health, Damage)
@@ -214,7 +215,7 @@ bool CHudHealth::Draw(float flTime)
 		HealthWidth = gHUD.GetSpriteRect(gHUD.m_HUD_number_0).right - gHUD.GetSpriteRect(gHUD.m_HUD_number_0).left;
 		int CrossWidth = gHUD.GetSpriteRect(m_HUD_cross).right - gHUD.GetSpriteRect(m_HUD_cross).left;
 
-		y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
+		y = CHud::Renderer().PerceviedScreenHeight() - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
 		x = CrossWidth / 2;
 
 		if (gHUD.isNightVisionOn())
@@ -222,17 +223,13 @@ bool CHudHealth::Draw(float flTime)
 			gHUD.getNightVisionHudItemColor(r, g, b);
 		}
 
-		SPR_Set(gHUD.GetSprite(m_HUD_cross), r, g, b);
-		SPR_DrawAdditive(0, x, y, &gHUD.GetSpriteRect(m_HUD_cross));
+		CHud::Renderer().SPR_Set(gHUD.GetSprite(m_HUD_cross), r, g, b);
+		CHud::Renderer().SPR_DrawAdditive(0, x, y, &gHUD.GetSpriteRect(m_HUD_cross));
 
 		x = CrossWidth + HealthWidth / 2;
 
 		//Reserve space for 3 digits by default, but allow it to expand
-		x += gHUD.GetHudNumberWidth(m_iHealth, 3, DHN_DRAWZERO);
-
-		gHUD.DrawHudNumberReverse(x, y, m_iHealth, DHN_DRAWZERO, r, g, b);
-
-		//x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iHealth, r, g, b);
+		x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iHealth, r, g, b);
 
 		x += HealthWidth / 2;
 
@@ -252,7 +249,7 @@ bool CHudHealth::Draw(float flTime)
 			barB = giB;
 		}
 
-		FillRGBA(x, y, iWidth, iHeight, barR, barG, barB, a);
+		CHud::Renderer().FillRGBA(x, y, iWidth, iHeight, r, g, b, a);
 	}
 
 	DrawDamage(flTime);
@@ -451,8 +448,8 @@ bool CHudHealth::DrawDamage(float flTime)
 		if ((m_bitsDamage & giDmgFlags[i]) != 0)
 		{
 			pdmg = &m_dmg[i];
-			SPR_Set(gHUD.GetSprite(m_HUD_dmg_bio + i), r, g, b);
-			SPR_DrawAdditive(0, pdmg->x, pdmg->y, &gHUD.GetSpriteRect(m_HUD_dmg_bio + i));
+			CHud::Renderer().SPR_Set(gHUD.GetSprite(m_HUD_dmg_bio + i), r, g, b);
+			CHud::Renderer().SPR_DrawAdditive(0, pdmg->x, pdmg->y, &gHUD.GetSpriteRect(m_HUD_dmg_bio + i));
 		}
 	}
 
@@ -515,7 +512,7 @@ void CHudHealth::UpdateTiles(float flTime, long bitsDamage)
 		{
 			// put this one at the bottom
 			pdmg->x = giDmgWidth / 8;
-			pdmg->y = ScreenHeight - giDmgHeight * 2;
+			pdmg->y = CHud::Renderer().PerceviedScreenHeight() - giDmgHeight * 2;
 			pdmg->fExpire = flTime + DMG_IMAGE_LIFE;
 
 			// move everyone else up

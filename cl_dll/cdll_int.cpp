@@ -38,6 +38,12 @@
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
 
+#include "hud_sprite.h"
+
+#include "r_studioint.h"
+
+extern engine_studio_api_t IEngineStudio;
+
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
 TeamFortressViewport* gViewPort = NULL;
@@ -168,6 +174,9 @@ so the HUD can reinitialize itself.
 
 int DLLEXPORT HUD_VidInit()
 {
+	// initialize hardwaremode
+	gHUD.m_iHardwareMode = IEngineStudio.IsHardware();
+
 	//	RecClHudVidInit();
 
 	//Reset to default on new map load
@@ -269,6 +278,8 @@ void DLLEXPORT HUD_Frame(double time)
 	//	RecClHudFrame(time);
 
 	GetClientVoiceMgr()->Frame(time);
+
+	CHud::Renderer().HUD_Frame(time);
 }
 
 

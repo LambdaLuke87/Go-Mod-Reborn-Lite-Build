@@ -63,7 +63,7 @@
     </Filter>
     <Filter Include="Header Files\_hl\dlls\weapons">
       <UniqueIdentifier>{c98d7745-f010-438b-9e1f-b4f217174e1f}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="Header Files\engine">
       <UniqueIdentifier>{ebcb0f66-49b6-4e55-9a97-f6720cade9ec}</UniqueIdentifier>
     </Filter>
@@ -381,6 +381,9 @@
     <ClCompile Include="..\..\cl_dll\particleman\CBaseParticle.cpp">
       <Filter>Source Files\cl_dll\particleman</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\hud_sprite.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -523,7 +526,7 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\weapons\CPenguin.h">
       <Filter>Header Files\_hl\dlls\weapons</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\..\dlls\cdll_dll.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
@@ -691,6 +694,9 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\particleman\CBaseParticle.h">
       <Filter>Header Files\cl_dll\particleman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\hud_sprite.h">
+      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

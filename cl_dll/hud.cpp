@@ -90,6 +90,10 @@ cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
 
+// HUD Scale Render
+cvar_t* hud_scale = NULL;
+cvar_t* hud_sprite_offset = NULL;
+
 void ShutdownInput();
 
 int __MsgFunc_HudColor(const char* pszName, int iSize, void* pbuf)
@@ -389,10 +393,19 @@ void CHud::Init()
 	default_fov = CVAR_CREATE("default_fov", "90", FCVAR_ARCHIVE);
 	m_pCvarStealMouse = CVAR_CREATE("hud_capturemouse", "1", FCVAR_ARCHIVE);
 	m_pCvarDraw = CVAR_CREATE("hud_draw", "1", FCVAR_ARCHIVE);
+	m_pCvarCrosshair = gEngfuncs.pfnGetCvarPointer("crosshair");
 	cl_lw = gEngfuncs.pfnGetCvarPointer("cl_lw");
 	cl_rollangle = CVAR_CREATE("cl_rollangle", "2.0", FCVAR_ARCHIVE);
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", FCVAR_ARCHIVE);
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
+
+	hasHudScaleInEngine = gEngfuncs.pfnGetCvarPointer("hud_scale") != NULL;
+
+	if (!hasHudScaleInEngine)
+	{
+		hud_scale = CVAR_CREATE("hud_scale", "0.0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+		hud_sprite_offset = CVAR_CREATE("hud_sprite_offset", "0.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	}
 
 	m_pSpriteList = NULL;
 
@@ -432,6 +445,8 @@ void CHud::Init()
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
 	m_Menu.Init();
+
+	hudRenderer.Init();
 
 	MsgFunc_ResetHUD(0, 0, NULL);
 }
@@ -578,6 +593,8 @@ void CHud::VidInit()
 	m_FlagIcons.VidInit();
 	m_PlayerBrowse.VidInit();
 	GetClientVoiceMgr()->VidInit();
+
+	hudRenderer.VidInit();
 }
 
 bool CHud::MsgFunc_Logo(const char* pszName, int iSize, void* pbuf)
@@ -765,4 +782,9 @@ float CHud::GetSensitivity()
 void CHud::setNightVisionState(bool state)
 {
 	mNightVisionState = state;
+}
+
+HudSpriteRenderer& CHud::Renderer()
+{
+	return gHUD.hudRenderer.DefaultScale();
 }
