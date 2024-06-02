@@ -180,7 +180,7 @@ int DLLEXPORT HUD_VidInit()
 	//	RecClHudVidInit();
 
 	//Reset to default on new map load
-	UnpackRGB(giR, giG, giB, RGB_HUD_COLOR);
+	// UnpackRGB(giR, giG, giB, RGB_HUD_COLOR);
 
 	gHUD.VidInit();
 
@@ -275,6 +275,16 @@ Called by engine every frame that client .dll is loaded
 
 void DLLEXPORT HUD_Frame(double time)
 {
+	if (0 != m_pCvarCrosshairColorable->value)
+	{
+		// Customizable Hud Color
+		giR = m_pCvarHudRed->value;
+		giG = m_pCvarHudGreen->value;
+		giB = m_pCvarHudBlue->value;
+	}
+	else
+		UnpackRGB(giR, giG, giB, RGB_HUD_COLOR); // Default Color
+
 	//	RecClHudFrame(time);
 
 	GetClientVoiceMgr()->Frame(time);

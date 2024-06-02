@@ -3632,7 +3632,7 @@ void CBasePlayer::GiveNamedItem(const char* szName, int defaultAmmo)
 
 bool CBasePlayer::FlashlightIsOn()
 {
-	return FBitSet(pev->effects, EF_BRIGHTLIGHT);
+	return FBitSet(pev->effects, EF_DIMLIGHT);
 }
 
 
@@ -3646,7 +3646,7 @@ void CBasePlayer::FlashlightTurnOn()
 	if (HasSuit())
 	{
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
-		SetBits(pev->effects, EF_BRIGHTLIGHT);
+		SetBits(pev->effects, EF_DIMLIGHT);
 		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 		WRITE_BYTE(1);
 		WRITE_BYTE(m_iFlashBattery);
@@ -3659,8 +3659,8 @@ void CBasePlayer::FlashlightTurnOn()
 
 void CBasePlayer::FlashlightTurnOff()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_OFF, 1.0, ATTN_NORM, 0, PITCH_NORM);
-	ClearBits(pev->effects, EF_BRIGHTLIGHT);
+	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
+	ClearBits(pev->effects, EF_DIMLIGHT);
 	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 	WRITE_BYTE(0);
 	WRITE_BYTE(m_iFlashBattery);

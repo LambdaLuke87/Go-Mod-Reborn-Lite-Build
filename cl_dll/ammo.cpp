@@ -608,19 +608,30 @@ bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 
 	m_pWeapon = pWeapon;
 
+	int rNew, gNew, bNew;
+	if (0 != m_pCvarCrosshairColorable->value)
+	{
+		// Customizable Hud Color
+		rNew = m_pCvarHudRed->value;
+		gNew = m_pCvarHudGreen->value;
+		bNew = m_pCvarHudBlue->value;
+	}
+	else
+		UnpackRGB(rNew, gNew, bNew, RGB_HUD_COLOR); // Default Color
+
 	if (gHUD.m_iFOV >= 90)
 	{ // normal crosshairs
 		if (fOnTarget && 0 != m_pWeapon->hAutoaim)
-			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
+			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, rNew, gNew, bNew);
 		else
-			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, rNew, gNew, bNew);
 	}
 	else
 	{ // zoomed crosshairs
 		if (fOnTarget && 0 != m_pWeapon->hZoomedAutoaim)
-			SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);
+			SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, rNew, gNew, bNew);
 		else
-			SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, 255, 255, 255);
+			SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, rNew, gNew, bNew);
 	}
 
 	m_fFade = 200.0f; //!!!

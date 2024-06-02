@@ -34,6 +34,10 @@ hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
 int giR, giG, giB;
+cvar_t* m_pCvarCrosshairColorable;
+cvar_t* m_pCvarHudRed;
+cvar_t* m_pCvarHudGreen;
+cvar_t* m_pCvarHudBlue;
 
 extern int giOldWeapons;
 
@@ -95,6 +99,13 @@ cvar_t* hud_scale = NULL;
 cvar_t* hud_sprite_offset = NULL;
 
 void ShutdownInput();
+
+static cvar_t* CVAR_CREATE_INTVALUE(const char* name, int value, int flags)
+{
+	char valueStr[12];
+	sprintf(valueStr, "%d", value);
+	return CVAR_CREATE(name, valueStr, flags);
+}
 
 int __MsgFunc_HudColor(const char* pszName, int iSize, void* pbuf)
 {
@@ -333,6 +344,13 @@ int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
 	return 0;
 }
 
+cvar_t* m_pCvarEnabledWhiteColor;
+
+void __CmdFunc_HUDColor()
+{
+	gHUD.HUDColorCmd();
+}
+
 // This is called every time the DLL is loaded
 void CHud::Init()
 {
@@ -352,6 +370,7 @@ void CHud::Init()
 	HOOK_COMMAND("-commandmenu", CloseCommandMenu);
 	HOOK_COMMAND("ForceCloseCommandMenu", ForceCloseCommandMenu);
 	HOOK_COMMAND("special", InputPlayerSpecial);
+	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);
 	HOOK_MESSAGE(TeamNames);
@@ -383,6 +402,13 @@ void CHud::Init()
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
 
+	m_pCvarCrosshairColorable = CVAR_CREATE("hud_colorable", "0", FCVAR_ARCHIVE);
+
+	int hudR, hudG, hudB;
+	UnpackRGB(hudR, hudG, hudB, RGB_YELLOWISH);
+	m_pCvarHudRed = CVAR_CREATE_INTVALUE("hud_color_r", hudR, FCVAR_ARCHIVE);
+	m_pCvarHudGreen = CVAR_CREATE_INTVALUE("hud_color_g", hudG, FCVAR_ARCHIVE);
+	m_pCvarHudBlue = CVAR_CREATE_INTVALUE("hud_color_b", hudB, FCVAR_ARCHIVE);
 
 	m_iLogo = 0;
 	m_iFOV = 0;
@@ -787,4 +813,89 @@ void CHud::setNightVisionState(bool state)
 HudSpriteRenderer& CHud::Renderer()
 {
 	return gHUD.hudRenderer.DefaultScale();
+}
+
+void CHud::HUDColorCmd()
+{
+	int r, g, b;
+	bool shouldPrintHelp = false;
+
+	if (gEngfuncs.Cmd_Argc() == 4)
+	{
+		r = atoi(gEngfuncs.Cmd_Argv(1));
+		g = atoi(gEngfuncs.Cmd_Argv(2));
+		b = atoi(gEngfuncs.Cmd_Argv(3));
+	}
+	else if (gEngfuncs.Cmd_Argc() == 2)
+	{
+		const char* param = gEngfuncs.Cmd_Argv(1);
+		if (param && *param)
+		{
+			if (strcmp(param, "default") == 0)
+			{
+				UnpackRGB(r, g, b, RGB_YELLOWISH);
+			}
+			else if (strncmp(param, "0x", 2) == 0 || *param == '#')
+			{
+				const bool sharp = *param == '#';
+				const int expectedLength = sharp ? 7 : 8;
+				const int shift = sharp ? 1 : 2;
+				if (strlen(param) != expectedLength)
+				{
+					gEngfuncs.Con_Printf("6 hex digits expected after 0x or #\n");
+					shouldPrintHelp = true;
+				}
+				else
+				{
+					char* endPtr;
+					long color = strtol(param + shift, &endPtr, 16);
+					UnpackRGB(r, g, b, color);
+					if (*endPtr != '\0')
+					{
+						gEngfuncs.Con_Printf("Error parsing hex value\n");
+						shouldPrintHelp = true;
+					}
+				}
+			}
+			else
+			{
+				if (sscanf(param, "%d %d %d", &r, &g, &b) != 3)
+				{
+					gEngfuncs.Con_Printf("Expected three integer values\n");
+					shouldPrintHelp = true;
+				}
+			}
+		}
+		else
+		{
+			shouldPrintHelp = true;
+		}
+	}
+	else
+	{
+		shouldPrintHelp = true;
+	}
+
+	if (shouldPrintHelp)
+	{
+		const int hudR = m_pCvarHudRed->value;
+		const int hudG = m_pCvarHudGreen->value;
+		const int hudB = m_pCvarHudBlue->value;
+		const int currentHudColor = ((hudR & 0xFF) << 16) | ((hudG & 0xFF) << 8) | (hudB & 0xFF);
+		gEngfuncs.Con_Printf("Current HUD color: %d %d %d (%06X)\n"
+							  "usage:\n"
+							  "hud_color RRR GGG BBB\n"
+							  "hud_color \"RRR GGG BBB\"\n"
+							  "hud_color 0xRRGGBB\n"
+							  "hud_color #RRGGBB\n"
+							  "hud_color default\n",
+			hudR, hudG, hudB, currentHudColor);
+	}
+	else
+	{
+		gEngfuncs.Cvar_SetValue("hud_color_r", r);
+		gEngfuncs.Cvar_SetValue("hud_color_g", g);
+		gEngfuncs.Cvar_SetValue("hud_color_b", b);
+		gEngfuncs.Con_Printf("Set hud color to (%d, %d, %d)\n", r, g, b);
+	}
 }

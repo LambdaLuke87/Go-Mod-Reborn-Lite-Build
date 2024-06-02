@@ -55,6 +55,10 @@ typedef struct cvar_s cvar_t;
 
 extern int giR, giG, giB;
 
+extern cvar_t* m_pCvarCrosshairColorable;
+extern cvar_t* m_pCvarHudRed;
+extern cvar_t* m_pCvarHudGreen;
+extern cvar_t* m_pCvarHudBlue;
 
 #define HUD_ACTIVE 1
 #define HUD_INTERMISSION 2
@@ -656,6 +660,8 @@ public:
 	int DrawHudStringReverse(int xpos, int ypos, int iMinX, const char* szString, int r, int g, int b);
 	int DrawHudNumberString(int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b);
 	int GetNumWidth(int iNumber, int iFlags);
+
+	void HUDColorCmd();
 
 	int GetHudNumberWidth(int number, int width, int flags);
 	int DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b);
