@@ -93,6 +93,7 @@ cvar_t* cl_lw = NULL;
 cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
+cvar_t* cl_sourcewpnlag = nullptr;
 
 // HUD Scale Render
 cvar_t* hud_scale = NULL;
@@ -423,7 +424,8 @@ void CHud::Init()
 	cl_lw = gEngfuncs.pfnGetCvarPointer("cl_lw");
 	cl_rollangle = CVAR_CREATE("cl_rollangle", "2.0", FCVAR_ARCHIVE);
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", FCVAR_ARCHIVE);
-	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
+	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "1", FCVAR_ARCHIVE);
+	cl_sourcewpnlag = CVAR_CREATE("cl_sourcewpnlag", "0", FCVAR_ARCHIVE);
 
 	hasHudScaleInEngine = gEngfuncs.pfnGetCvarPointer("hud_scale") != NULL;
 

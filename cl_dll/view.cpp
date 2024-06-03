@@ -62,6 +62,7 @@ extern cvar_t* cl_vsmoothing;
 extern cvar_t* cl_rollangle;
 extern cvar_t* cl_rollspeed;
 extern cvar_t* cl_bobtilt;
+extern cvar_t* cl_sourcewpnlag;
 
 #define CAM_MODE_RELAX 1
 #define CAM_MODE_FOCUS 2
@@ -480,6 +481,70 @@ typedef struct
 	int CurrentAngle;
 } viewinterp_t;
 
+float m_flWeaponLag = 1.0f;
+
+void V_CalcViewModelLag(ref_params_t* pparams, Vector& origin, Vector& angles, Vector original_angles)
+{
+	static Vector m_vecLastFacing;
+	Vector vOriginalOrigin = origin;
+	Vector vOriginalAngles = angles;
+
+	// Calculate our drift
+	Vector forward, right, up;
+	AngleVectors(angles, forward, right, up);
+
+	if (pparams->frametime != 0.0f) // not in paused
+	{
+		Vector vDifference;
+
+		vDifference = forward - m_vecLastFacing;
+
+		float flSpeed = 5.0;
+
+		// If we start to lag too far behind, we'll increase the "catch up" speed.
+		// Solves the problem with fast cl_yawspeed, m_yaw or joysticks rotating quickly.
+		// The old code would slam lastfacing with origin causing the viewmodel to pop to a new position
+		float flDiff = vDifference.Length();
+		if ((flDiff > m_flWeaponLag) && (m_flWeaponLag > 0.0f))
+		{
+			float flScale = flDiff / m_flWeaponLag;
+			flSpeed *= flScale;
+		}
+
+		// FIXME:  Needs to be predictable?
+		m_vecLastFacing = m_vecLastFacing + vDifference * (flSpeed * pparams->frametime);
+		// Make sure it doesn't grow out of control!!!
+		m_vecLastFacing = m_vecLastFacing.Normalize();
+		origin = origin + (vDifference * -1.0f) * 5.0;
+	}
+
+	AngleVectors(original_angles, forward, right, up);
+
+	float pitch = original_angles[PITCH];
+
+	if (pitch > 180.0f)
+	{
+		pitch -= 360.0f;
+	}
+	else if (pitch < -180.0f)
+	{
+		pitch += 360.0f;
+	}
+
+	if (m_flWeaponLag <= 0.0f)
+	{
+		origin = vOriginalOrigin;
+		angles = vOriginalAngles;
+	}
+	else
+	{
+		// FIXME: These are the old settings that caused too many exposed polys on some models
+		origin = origin + forward * (-pitch * 0.02f);
+		origin = origin + right * (-pitch * 0.02f);
+		origin = origin + up * (-pitch * 0.02f);
+	}
+}
+
 /*
 ==================
 V_CalcRefdef
@@ -639,6 +704,8 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	// Give gun our viewangles
 	VectorCopy(pparams->cl_viewangles, view->angles);
 
+	Vector lastAngles = view->angles; // save oldangles
+
 	// set up gun position
 	V_CalcGunAngle(pparams);
 
@@ -670,6 +737,11 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
 	// with view model distortion, this may be a cause. (SJB).
 	view->origin[2] -= 1;
+
+	if (0 != cl_sourcewpnlag->value) // Weapon Lag enable/disable
+	{
+		V_CalcViewModelLag(pparams, view->origin, view->angles, lastAngles);
+	}
 
 	// fudge position around to keep amount of weapon visible
 	// roughly equal with different FOV
