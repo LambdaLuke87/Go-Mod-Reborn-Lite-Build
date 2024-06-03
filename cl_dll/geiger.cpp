@@ -63,6 +63,7 @@ bool CHudGeiger::MsgFunc_Geiger(const char* pszName, int iSize, void* pbuf)
 
 bool CHudGeiger::Draw(float flTime)
 {
+	/* Disabled for not use much precaches :)
 	int pct;
 	float flvol;
 	int rg[3];
@@ -173,7 +174,7 @@ bool CHudGeiger::Draw(float flTime)
 			sprintf(sz, "player/geiger%d.wav", j + 1);
 			PlaySound(sz, flvol);
 		}
-	}
+	}*/
 
 	return true;
 }

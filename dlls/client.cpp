@@ -59,6 +59,172 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 
+//extern int m_allied;
+//extern int m_skinned;
+extern int m_aim_spawn;
+
+// Start - Register of NPCS
+struct monster_t
+{
+	const char* classname;
+	const char* convar;
+};
+
+// Standard Monsters
+monster_t gMonsters[] =
+	{
+		{"monster_alien_slave"},
+		{"monster_bullchicken"},
+		{"monster_headcrab"},
+		{"monster_babycrab"},
+		{"monster_houndeye"},
+		{"monster_alien_grunt"},
+		{"monster_alien_controller"},
+		{"monster_zombie"},
+		{"monster_gargantua"},
+		{"monster_bigmomma"},
+		{"monster_ichthyosaur"},
+		{"monster_scientist"},
+		{"monster_human_grunt"},
+		{"monster_barney"},
+		{"monster_human_assassin"},
+		{"monster_sentry"},
+		{"monster_barnacle"},
+		//{"monster_leech"},
+		//{"monster_flyer"},
+		{"monster_gman"},
+		{"monster_gonome"},
+		//{"monster_shocktrooper"},
+		//{"monster_shockroach"},
+		{"monster_pitdrone"},
+		{"monster_alien_voltigore"},
+		{"monster_alien_babyvoltigore"}};
+// End - Register of NPCS
+
+// Start - Register of Weapons
+struct weapon_t
+{
+	const char* classname;
+	WeaponId convar;
+};
+
+// Standard Weapons/Items
+weapon_t gWeapons[] =
+	{
+		{"weapon_crowbar"},
+		{"weapon_physgun"},
+		{"weapon_removetool"},
+		{"weapon_9mmhandgun"},
+		{"weapon_357"},
+		{"weapon_9mmAR"},
+		{"weapon_shotgun"},
+		{"weapon_crossbow"},
+		{"weapon_rpg"},
+		{"weapon_gauss"},
+		{"weapon_egon"},
+		{"weapon_hornetgun"},
+		{"weapon_handgrenade"},
+		{"weapon_tripmine"},
+		{"weapon_satchel"},
+		{"weapon_snark"},
+		{"weapon_grapple"},
+		{"weapon_sniperrifle"},
+		{"weapon_eagle"},
+		{"weapon_m249"},
+		{"weapon_displacer"},
+		{"weapon_sporelauncher"},
+		{"weapon_shockrifle"},
+		{"weapon_pipewrench"},
+		{"weapon_knife"},
+		{"weapon_penguin"},
+		{"item_healthkit"},
+		{"item_battery"},
+		{"item_longjump"},
+		{"item_suit"},
+		{"item_recharge"},
+		{"item_healthcharger"},
+		{"ammo_9mmAR"},
+		{"ammo_9mmclip"},
+		{"ammo_crossbow"},
+		{"ammo_ARgrenades"},
+		{"ammo_gaussclip"},
+		{"ammo_rpgclip"},
+		{"ammo_buckshot"},
+		{"ammo_357"},
+		{"ammo_556"},
+		{"ammo_spore"},
+		{"ammo_762"}};
+// End - Register of Weapons
+
+// Start - Aim spawn code of GM6
+void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
+{
+	UTIL_MakeVectors(pev->v_angle);
+	TraceResult tr;
+	Vector start = pev->origin + pev->view_ofs;
+	Vector end = start + gpGlobals->v_forward * 1024;
+	UTIL_TraceLine(start, end, ignore_monsters, pEntity, &tr);
+
+	if (tr.pHit)
+	{
+		CBasePlayer* pPlayer = (CBasePlayer*)pEntity;
+		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
+		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::Create(sClassname, tr.vecEndPos, vAngle);
+	}
+}
+
+void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
+{
+	UTIL_MakeVectors(pev->v_angle);
+	TraceResult tr;
+	Vector start = pev->origin + pev->view_ofs;
+	Vector end = start + gpGlobals->v_forward * 1024;
+	UTIL_TraceLine(start, end, ignore_monsters, pEntity, &tr);
+
+	if (tr.pHit)
+	{
+		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
+		CBaseEntity* pItem = CBasePlayer::Create(sClassname, tr.vecEndPos, vAngle);
+		pItem->pev->spawnflags |= SF_NORESPAWN;
+	}
+}
+// End - Aim spawn code of GM6
+
+void GoMod_TextScreenHelper(const char* text_hud_message, edict_t* pEntity)
+{
+	entvars_t* pev = &pEntity->v;
+
+	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
+	char szText[201];
+	hudtextparms_t hText;
+
+	sprintf(szText, text_hud_message);
+
+	memset(&hText, 0, sizeof(hText));
+	hText.channel = 1;
+	// These X and Y coordinates are just above
+	//  the health meter.
+	hText.x = 0.01;
+	hText.y = 0.5;
+
+	hText.effect = 0; // Fade in/out
+
+	hText.r1 = hText.g1 = hText.b1 = 255;
+	hText.a1 = 255;
+
+	hText.r2 = hText.g2 = hText.b2 = 255;
+	hText.a2 = 255;
+
+	hText.fadeinTime = 0.2;
+	hText.fadeoutTime = 1;
+	hText.holdTime = 1.5;
+	hText.fxTime = 0.5;
+
+	UTIL_HudMessage(pPlayer, hText, szText);
+}
+
+
 void LinkUserMessages();
 
 /*
@@ -678,6 +844,103 @@ void ClientCommand(edict_t* pEntity)
 		// tell the user they entered an unknown command
 		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Unknown command: %s\n", command));
 	}
+
+	// Go-Mod Reborn Sandbox Mode Central Stuff
+	int is_sandbox = gamerule_sandbox.value;
+	if (is_sandbox == 1)
+	{
+
+		// Start - Noclip Bind-Key
+		if (FStrEq(pcmd, "+noclip"))
+		{
+			int noclip_isON = allow_noclip.value;
+			if (noclip_isON == 1)
+			{
+				CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+				pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+				pPlayer->pev->speed = 450;
+			}
+		}
+		else if (FStrEq(pcmd, "-noclip"))
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			pPlayer->pev->movetype = MOVETYPE_WALK;
+			pPlayer->pev->speed = 300;
+		}
+		// End - Noclip Bind-Key
+
+		if (FStrEq(pcmd, "button_Aim_Spawn"))
+		{
+			if (m_aim_spawn == 1)
+			{
+				m_aim_spawn = 0;
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
+			}
+			else if (m_aim_spawn == 0)
+			{
+				m_aim_spawn = 1;
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
+			}
+		}
+
+		// Start - Spawn NPCS Code
+		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
+		{
+			monster_t monsterInfo = gMonsters[i];
+			char combinetoprefix[512];
+			strcpy(combinetoprefix, "button_");
+			strcat(combinetoprefix, monsterInfo.classname);
+			if (FStrEq(pcmd, combinetoprefix))
+			{
+				if (m_aim_spawn == 1)
+				{
+					GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
+				}
+				else
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+					CBaseEntity::Create(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				}
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94f, ATTN_NORM);
+			}
+		}
+		// End - Spawn NPCS Code
+
+
+		// Start - Spawn Weapons/Items Code
+		// Standard Weapons/items
+		for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
+		{
+			weapon_t weaponInfo = gWeapons[i];
+			char combinetoprefix[512];
+			strcpy(combinetoprefix, "button_");
+			strcat(combinetoprefix, weaponInfo.classname);
+			if (FStrEq(pcmd, combinetoprefix))
+			{
+				if (m_aim_spawn == 1)
+				{
+					GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
+				}
+				else
+				{
+					edict_t* pent;
+					int istr = MAKE_STRING(weaponInfo.classname);
+
+
+					pent = CREATE_NAMED_ENTITY(istr);
+					VARS(pent)->origin = pev->origin;
+					pent->v.spawnflags |= SF_NORESPAWN;
+
+					DispatchSpawn(pent);
+					DispatchTouch(pent, ENT(pev));
+				}
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+			}
+		}
+		// End - Spawn Weapons/Items Code
+	}
 }
 
 
@@ -1087,7 +1350,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("debris/glass3.wav");
 
 	PRECACHE_SOUND(SOUND_FLASHLIGHT_ON);
-	PRECACHE_SOUND(SOUND_FLASHLIGHT_OFF);
+	//PRECACHE_SOUND(SOUND_FLASHLIGHT_OFF);
 
 	// player gib sounds
 	PRECACHE_SOUND("common/bodysplat.wav");
@@ -1111,18 +1374,32 @@ void ClientPrecache()
 
 
 	// geiger sounds
-
+	/* Six Unnecesary sound Precaches >:(
 	PRECACHE_SOUND("player/geiger6.wav");
 	PRECACHE_SOUND("player/geiger5.wav");
 	PRECACHE_SOUND("player/geiger4.wav");
 	PRECACHE_SOUND("player/geiger3.wav");
 	PRECACHE_SOUND("player/geiger2.wav");
-	PRECACHE_SOUND("player/geiger1.wav");
+	PRECACHE_SOUND("player/geiger1.wav");*/
 
-	PRECACHE_SOUND("ctf/pow_big_jump.wav");
+	if (g_pGameRules->IsCTF())
+		PRECACHE_SOUND("ctf/pow_big_jump.wav");
 
 	if (giPrecacheGrunt)
 		UTIL_PrecacheOther("monster_human_grunt");
+
+	// check if sandbox is allowed before precaching everything below
+	int is_sandbox = gamerule_sandbox.value;
+	if (is_sandbox == 1)
+	{
+		// Npcs Precache System
+		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
+		{
+			monster_t sMonster = gMonsters[i];
+			UTIL_PrecacheOther(sMonster.classname);
+		}
+	}
+
 }
 
 /*

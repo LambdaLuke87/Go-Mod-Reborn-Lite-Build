@@ -33,19 +33,23 @@ cvar_t friendlyfire = {"mp_friendlyfire", "0", FCVAR_SERVER};
 cvar_t falldamage = {"mp_falldamage", "0", FCVAR_SERVER};
 cvar_t weaponstay = {"mp_weaponstay", "0", FCVAR_SERVER};
 cvar_t forcerespawn = {"mp_forcerespawn", "1", FCVAR_SERVER};
-cvar_t flashlight = {"mp_flashlight", "0", FCVAR_SERVER};
+cvar_t flashlight = {"mp_flashlight", "1", FCVAR_SERVER};
 cvar_t aimcrosshair = {"mp_autocrosshair", "1", FCVAR_SERVER};
 cvar_t decalfrequency = {"decalfrequency", "30", FCVAR_SERVER};
 cvar_t teamlist = {"mp_teamlist", "hgrunt;scientist", FCVAR_SERVER};
 cvar_t teamoverride = {"mp_teamoverride", "1"};
 cvar_t defaultteam = {"mp_defaultteam", "0"};
-cvar_t allowmonsters = {"mp_allowmonsters", "0", FCVAR_SERVER};
+cvar_t allowmonsters = {"mp_allowmonsters", "1", FCVAR_SERVER};
 
 cvar_t allow_spectators = {"allow_spectators", "0.0", FCVAR_SERVER}; // 0 prevents players from being spectators
 
 cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 
 cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
+
+// Go-Mod Reborn cvars Stuff
+cvar_t gamerule_sandbox = {"mp_gamerule_sandbox", "1", FCVAR_SERVER}; // CVAR for Noclip Press Button
+cvar_t allow_noclip = {"mp_allow_noclip", "1", FCVAR_SERVER};		   // CVAR for Noclip Press Button
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -659,6 +663,10 @@ void GameDLLInit()
 	CVAR_REGISTER(&mp_chattime);
 
 	CVAR_REGISTER(&sv_allowbunnyhopping);
+
+	// Cvar register for Go-Mod Reborn stuff
+	CVAR_REGISTER(&gamerule_sandbox);
+	CVAR_REGISTER(&allow_noclip);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

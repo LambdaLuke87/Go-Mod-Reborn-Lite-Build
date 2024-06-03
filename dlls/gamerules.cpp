@@ -32,6 +32,9 @@
 
 extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 
+// Go-Mod stuff
+int m_aim_spawn;
+
 CBasePlayerItem* CGameRules::FindNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon)
 {
 	if (pCurrentWeapon != nullptr && !pCurrentWeapon->CanHolster())

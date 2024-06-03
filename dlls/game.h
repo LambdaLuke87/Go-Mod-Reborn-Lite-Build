@@ -56,3 +56,7 @@ extern cvar_t* g_footsteps;
 extern cvar_t* g_psv_cheats;
 extern cvar_t allow_spectators;
 extern cvar_t mp_chattime;
+
+// Go-Mod Reborn Cvars
+extern cvar_t gamerule_sandbox;
+extern cvar_t allow_noclip;
