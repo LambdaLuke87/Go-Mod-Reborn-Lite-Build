@@ -41,6 +41,9 @@ public:
 	// Set up model bone positions
 	virtual void StudioSetupBones();
 
+	// Bacontsu's c_hands definition
+	virtual void StudioRenderHands(Vector dir, alight_t lighting);
+
 	// Find final attachment points
 	virtual void StudioCalcAttachments();
 

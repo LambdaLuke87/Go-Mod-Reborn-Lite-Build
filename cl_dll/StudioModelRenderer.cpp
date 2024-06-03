@@ -23,6 +23,9 @@
 
 extern cvar_t* tfc_newmodels;
 
+cvar_t* cl_hands;
+cvar_t* cl_hands_skin;
+
 extern extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1];
 
 // team colors for old TFC models
@@ -52,6 +55,10 @@ void CStudioModelRenderer::Init()
 	m_pCvarDeveloper = IEngineStudio.GetCvar("developer");
 	m_pCvarDrawEntities = IEngineStudio.GetCvar("r_drawentities");
 
+	// cvar for Bacontsu cl_hands
+	cl_hands = CVAR_CREATE("cl_hands", "1", FCVAR_ARCHIVE);
+	cl_hands_skin = CVAR_CREATE("cl_hands_skin", "1", FCVAR_ARCHIVE);
+
 	m_pChromeSprite = IEngineStudio.GetChromeSprite();
 
 	IEngineStudio.GetModelCounters(&m_pStudioModelCount, &m_pModelsDrawn);
@@ -61,6 +68,51 @@ void CStudioModelRenderer::Init()
 	m_plighttransform = (float(*)[MAXSTUDIOBONES][3][4])IEngineStudio.StudioGetLightTransform();
 	m_paliastransform = (float(*)[3][4])IEngineStudio.StudioGetAliasTransform();
 	m_protationmatrix = (float(*)[3][4])IEngineStudio.StudioGetRotationMatrix();
+}
+
+/*
+====================
+StudioRenderHands
+"cl_hands" system, to easily change hand model between mods
+by Bacontsu, written for HL:E
+HOW TO USE : this function will merges v_hands.mdl with weapon models, to easily change between hands
+====================
+*/
+void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
+{
+	if (m_pCurrentEntity == gEngfuncs.GetViewModel())
+	{
+		if (m_pCvarDeveloper->value > 4)
+			gEngfuncs.Con_Printf("viewmodel detected, model is %s\n", m_pCurrentEntity->model->name);
+
+		cl_entity_t saveent = *m_pCurrentEntity;
+
+		model_t* handmodel = IEngineStudio.Mod_ForName("models/v_hands.mdl", 1); // load model
+
+		if (cl_hands_skin->value != 0)
+		{
+			m_pCurrentEntity->curstate.skin = cl_hands_skin->value - 1;
+		}
+
+		if (cl_hands->value != 0)
+		{
+			m_pCurrentEntity->curstate.body = cl_hands->value - 1;
+
+			m_pStudioHeader = (studiohdr_t*)IEngineStudio.Mod_Extradata(handmodel);
+
+			IEngineStudio.StudioSetHeader(m_pStudioHeader);
+
+			StudioMergeBones(handmodel); // merge both model
+
+			IEngineStudio.StudioSetupLighting(&lighting);
+
+			StudioRenderModel();
+
+			StudioCalcAttachments();
+
+			*m_pCurrentEntity = saveent;
+		}
+	}
 }
 
 /*
@@ -1220,6 +1272,8 @@ bool CStudioModelRenderer::StudioDrawModel(int flags)
 		IEngineStudio.StudioSetRemapColors(m_nTopColor, m_nBottomColor);
 
 		StudioRenderModel();
+
+		StudioRenderHands(dir, lighting);
 	}
 
 	return true;
