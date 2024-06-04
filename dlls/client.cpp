@@ -80,6 +80,8 @@ monster_t gMonsters[] =
 		{"monster_alien_grunt"},
 		{"monster_alien_controller"},
 		{"monster_zombie"},
+		{"monster_zombie_barney"},
+		{"monster_zombie_soldier"},
 		{"monster_gargantua"},
 		{"monster_bigmomma"},
 		{"monster_ichthyosaur"},
@@ -89,15 +91,18 @@ monster_t gMonsters[] =
 		{"monster_human_assassin"},
 		{"monster_sentry"},
 		{"monster_barnacle"},
-		//{"monster_leech"},
-		//{"monster_flyer"},
+		{"monster_leech"},
+		{"monster_flyer"},
 		{"monster_gman"},
 		{"monster_gonome"},
-		//{"monster_shocktrooper"},
-		//{"monster_shockroach"},
+		{"monster_shocktrooper"},
+		{"monster_shockroach"},
 		{"monster_pitdrone"},
 		{"monster_alien_voltigore"},
-		{"monster_alien_babyvoltigore"}};
+		{"monster_alien_babyvoltigore"},
+		{"monster_human_grunt_ally"},
+		{"monster_human_medic_ally"},
+		{"monster_human_torch_ally"}};
 // End - Register of NPCS
 
 // Start - Register of Weapons

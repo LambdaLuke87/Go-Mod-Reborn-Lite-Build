@@ -377,8 +377,6 @@ public:
 
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
-	static const char* pPainSounds[];
-	static const char* pAlertSounds[];
 
 	EHANDLE m_pBeam[VOLTIGORE_BEAM_COUNT];
 	int m_iBeams;
@@ -425,21 +423,6 @@ const char* COFVoltigore::pAttackMissSounds[] =
 	{
 		"zombie/claw_miss1.wav",
 		"zombie/claw_miss2.wav",
-};
-
-const char* COFVoltigore::pPainSounds[] =
-	{
-		"voltigore/voltigore_pain1.wav",
-		"voltigore/voltigore_pain2.wav",
-		"voltigore/voltigore_pain3.wav",
-		"voltigore/voltigore_pain4.wav",
-};
-
-const char* COFVoltigore::pAlertSounds[] =
-	{
-		"voltigore/voltigore_alert1.wav",
-		"voltigore/voltigore_alert2.wav",
-		"voltigore/voltigore_alert3.wav",
 };
 
 //=========================================================
@@ -524,7 +507,7 @@ void COFVoltigore::AlertSound()
 {
 	StopTalking();
 
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM);
+	SENTENCEG_PlayRndSz(ENT(pev), "VG_ALERT", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -541,7 +524,7 @@ void COFVoltigore::PainSound()
 
 	StopTalking();
 
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM);
+	SENTENCEG_PlayRndSz(ENT(pev), "VG_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -730,12 +713,6 @@ void COFVoltigore::Precache()
 
 	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
 		PRECACHE_SOUND((char*)pAttackMissSounds[i]);
-
-	for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
-		PRECACHE_SOUND((char*)pPainSounds[i]);
-
-	for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
-		PRECACHE_SOUND((char*)pAlertSounds[i]);
 
 	PRECACHE_SOUND("voltigore/voltigore_attack_melee1.wav");
 	PRECACHE_SOUND("voltigore/voltigore_attack_melee2.wav");

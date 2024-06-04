@@ -272,12 +272,8 @@ private:
 	static const char* pAttackMissSounds[];
 	static const char* pRicSounds[];
 	static const char* pFootSounds[];
-	static const char* pIdleSounds[];
 	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pAttackSounds[];
 	static const char* pStompSounds[];
-	static const char* pBreatheSounds[];
 
 	CBaseEntity* GargantuaCheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
 
@@ -353,24 +349,6 @@ const char* CGargantua::pFootSounds[] =
 		"garg/gar_step2.wav",
 };
 
-
-const char* CGargantua::pIdleSounds[] =
-	{
-		"garg/gar_idle1.wav",
-		"garg/gar_idle2.wav",
-		"garg/gar_idle3.wav",
-		"garg/gar_idle4.wav",
-		"garg/gar_idle5.wav",
-};
-
-
-const char* CGargantua::pAttackSounds[] =
-	{
-		"garg/gar_attack1.wav",
-		"garg/gar_attack2.wav",
-		"garg/gar_attack3.wav",
-};
-
 const char* CGargantua::pAlertSounds[] =
 	{
 		"garg/gar_alert1.wav",
@@ -378,24 +356,11 @@ const char* CGargantua::pAlertSounds[] =
 		"garg/gar_alert3.wav",
 };
 
-const char* CGargantua::pPainSounds[] =
-	{
-		"garg/gar_pain1.wav",
-		"garg/gar_pain2.wav",
-		"garg/gar_pain3.wav",
-};
-
 const char* CGargantua::pStompSounds[] =
 	{
 		"garg/gar_stomp1.wav",
 };
 
-const char* CGargantua::pBreatheSounds[] =
-	{
-		"garg/gar_breathe1.wav",
-		"garg/gar_breathe2.wav",
-		"garg/gar_breathe3.wav",
-};
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
@@ -813,12 +778,8 @@ void CGargantua::Precache()
 	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 	PRECACHE_SOUND_ARRAY(pRicSounds);
 	PRECACHE_SOUND_ARRAY(pFootSounds);
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
 	PRECACHE_SOUND_ARRAY(pStompSounds);
-	PRECACHE_SOUND_ARRAY(pBreatheSounds);
 }
 
 
@@ -837,7 +798,7 @@ void CGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	{
 		if (m_painSoundTime < gpGlobals->time)
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_GARG, 0, PITCH_NORM);
+			SENTENCEG_PlayRndSz(ENT(pev), "GA_ATTACK", 1, ATTN_GARG, 0, PITCH_NORM);
 			m_painSoundTime = gpGlobals->time + RANDOM_FLOAT(2.5, 4);
 		}
 	}
@@ -1013,7 +974,7 @@ void CGargantua::HandleAnimEvent(MonsterEvent_t* pEvent)
 		break;
 
 	case GARG_AE_BREATHE:
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, RANDOM_SOUND_ARRAY(pBreatheSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+		SENTENCEG_PlayRndSz(ENT(pev), "GA_BREATHE", 1, ATTN_NORM, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
 		break;
 
 	default:
@@ -1094,7 +1055,7 @@ void CGargantua::StartTask(Task_t* pTask)
 
 	case TASK_SOUND_ATTACK:
 		if (RANDOM_LONG(0, 100) < 30)
-			EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_GARG, 0, PITCH_NORM);
+			SENTENCEG_PlayRndSz(ENT(pev), "GA_ATTACK", 1, ATTN_GARG, 0, PITCH_NORM);
 		TaskComplete();
 		break;
 

@@ -49,8 +49,9 @@ cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
 // Go-Mod Reborn cvars Stuff
 cvar_t gamerule_sandbox = {"gm_gamerule_sandbox", "1", FCVAR_SERVER}; // CVAR for Noclip Press Button
-cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};         // CVAR for Noclip Press Button
-cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER};                 // CVAR for AI ENABLED/DISABLED
+cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER}; // CVAR for Noclip Press Button
+cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER}; // CVAR for AI ENABLED/DISABLED
+cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};		  // CVAR for AI ENABLED/DISABLED
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -669,6 +670,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&gamerule_sandbox);
 	CVAR_REGISTER(&allow_noclip);
 	CVAR_REGISTER(&npc_noai);
+	CVAR_REGISTER(&monster_polem);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

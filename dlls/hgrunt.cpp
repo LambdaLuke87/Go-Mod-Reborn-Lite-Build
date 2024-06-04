@@ -1056,6 +1056,7 @@ void CHGrunt::Precache()
 	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
 	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
+	/* Less Precache :)
 	PRECACHE_SOUND("hgrunt/gr_die1.wav");
 	PRECACHE_SOUND("hgrunt/gr_die2.wav");
 	PRECACHE_SOUND("hgrunt/gr_die3.wav");
@@ -1064,7 +1065,7 @@ void CHGrunt::Precache()
 	PRECACHE_SOUND("hgrunt/gr_pain2.wav");
 	PRECACHE_SOUND("hgrunt/gr_pain3.wav");
 	PRECACHE_SOUND("hgrunt/gr_pain4.wav");
-	PRECACHE_SOUND("hgrunt/gr_pain5.wav");
+	PRECACHE_SOUND("hgrunt/gr_pain5.wav");*/
 
 	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
@@ -1181,24 +1182,8 @@ void CHGrunt::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 6))
-		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_pain3.wav", 1, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_pain4.wav", 1, ATTN_NORM);
-			break;
-		case 2:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_pain5.wav", 1, ATTN_NORM);
-			break;
-		case 3:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_pain1.wav", 1, ATTN_NORM);
-			break;
-		case 4:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_pain2.wav", 1, ATTN_NORM);
-			break;
-		}
+
+		SENTENCEG_PlayRndSz(ENT(pev), "HG_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1209,18 +1194,7 @@ void CHGrunt::PainSound()
 //=========================================================
 void CHGrunt::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_IDLE);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_IDLE);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_IDLE);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HG_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================

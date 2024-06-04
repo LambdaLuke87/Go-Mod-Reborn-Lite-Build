@@ -61,3 +61,4 @@ extern cvar_t mp_chattime;
 extern cvar_t gamerule_sandbox;
 extern cvar_t allow_noclip;
 extern cvar_t npc_noai;
+extern cvar_t monster_polem;

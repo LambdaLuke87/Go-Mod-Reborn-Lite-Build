@@ -1181,20 +1181,6 @@ void COFTorchAlly::Precache()
 	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
 	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
-	PRECACHE_SOUND("fgrunt/death1.wav");
-	PRECACHE_SOUND("fgrunt/death2.wav");
-	PRECACHE_SOUND("fgrunt/death3.wav");
-	PRECACHE_SOUND("fgrunt/death4.wav");
-	PRECACHE_SOUND("fgrunt/death5.wav");
-	PRECACHE_SOUND("fgrunt/death6.wav");
-
-	PRECACHE_SOUND("fgrunt/pain1.wav");
-	PRECACHE_SOUND("fgrunt/pain2.wav");
-	PRECACHE_SOUND("fgrunt/pain3.wav");
-	PRECACHE_SOUND("fgrunt/pain4.wav");
-	PRECACHE_SOUND("fgrunt/pain5.wav");
-	PRECACHE_SOUND("fgrunt/pain6.wav");
-
 	PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
 	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
 
@@ -1307,27 +1293,7 @@ void COFTorchAlly::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 7))
-		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM);
-			break;
-		case 2:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM);
-			break;
-		case 3:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM);
-			break;
-		case 4:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM);
-			break;
-		case 5:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM);
-			break;
-		}
+		SENTENCEG_PlayRndSz(ENT(pev), "FG_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1338,27 +1304,7 @@ void COFTorchAlly::PainSound()
 //=========================================================
 void COFTorchAlly::DeathSound()
 {
-	switch (RANDOM_LONG(0, 5))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death1.wav", 1, ATTN_IDLE);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death2.wav", 1, ATTN_IDLE);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death3.wav", 1, ATTN_IDLE);
-		break;
-	case 3:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death4.wav", 1, ATTN_IDLE);
-		break;
-	case 4:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death5.wav", 1, ATTN_IDLE);
-		break;
-	case 5:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "fgrunt/death6.wav", 1, ATTN_IDLE);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "FG_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================

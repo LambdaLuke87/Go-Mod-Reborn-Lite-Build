@@ -360,6 +360,7 @@ void CHoundeye::Precache()
 {
 	PRECACHE_MODEL("models/houndeye.mdl");
 
+	/*
 	PRECACHE_SOUND("houndeye/he_alert1.wav");
 	PRECACHE_SOUND("houndeye/he_alert2.wav");
 	PRECACHE_SOUND("houndeye/he_alert3.wav");
@@ -374,15 +375,15 @@ void CHoundeye::Precache()
 
 	PRECACHE_SOUND("houndeye/he_hunt1.wav");
 	PRECACHE_SOUND("houndeye/he_hunt2.wav");
-	PRECACHE_SOUND("houndeye/he_hunt3.wav");
+	PRECACHE_SOUND("houndeye/he_hunt3.wav");*/
 
 	PRECACHE_SOUND("houndeye/he_pain1.wav");
 	PRECACHE_SOUND("houndeye/he_pain3.wav");
 	PRECACHE_SOUND("houndeye/he_pain4.wav");
 	PRECACHE_SOUND("houndeye/he_pain5.wav");
 
-	PRECACHE_SOUND("houndeye/he_attack1.wav");
-	PRECACHE_SOUND("houndeye/he_attack3.wav");
+	//PRECACHE_SOUND("houndeye/he_attack1.wav");
+	//PRECACHE_SOUND("houndeye/he_attack3.wav");
 
 	PRECACHE_SOUND("houndeye/he_blast1.wav");
 	PRECACHE_SOUND("houndeye/he_blast2.wav");
@@ -396,18 +397,7 @@ void CHoundeye::Precache()
 //=========================================================
 void CHoundeye::IdleSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_idle1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_idle2.wav", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_idle3.wav", 1, ATTN_NORM);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HE_IDLE", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -415,15 +405,7 @@ void CHoundeye::IdleSound()
 //=========================================================
 void CHoundeye::WarmUpSound()
 {
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "houndeye/he_attack1.wav", 0.7, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "houndeye/he_attack3.wav", 0.7, ATTN_NORM);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HE_ATTACK", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -431,18 +413,7 @@ void CHoundeye::WarmUpSound()
 //=========================================================
 void CHoundeye::WarnSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_hunt1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_hunt2.wav", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_hunt3.wav", 1, ATTN_NORM);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HE_HUNT", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -456,18 +427,7 @@ void CHoundeye::AlertSound()
 		return; // only leader makes ALERT sound.
 	}
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_alert1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_alert2.wav", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_alert3.wav", 1, ATTN_NORM);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HE_ALERT", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================
@@ -475,18 +435,7 @@ void CHoundeye::AlertSound()
 //=========================================================
 void CHoundeye::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_die1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_die2.wav", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "houndeye/he_die3.wav", 1, ATTN_NORM);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "HE_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 //=========================================================

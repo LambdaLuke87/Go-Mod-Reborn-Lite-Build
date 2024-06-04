@@ -2091,7 +2091,11 @@ void CBaseMonster::StartMonster()
 		if (!WALK_MOVE(ENT(pev), 0, 0, WALKMOVE_NORMAL))
 		{
 			ALERT(at_error, "Monster %s stuck in wall--level design error", STRING(pev->classname));
-			pev->effects = EF_BRIGHTFIELD;
+
+			int polem_enabled = monster_polem.value;
+
+			if (polem_enabled >= 1)
+				pev->effects = EF_BRIGHTFIELD;
 		}
 	}
 	else

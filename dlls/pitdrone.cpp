@@ -426,21 +426,7 @@ void CPitdrone::PainSound()
 {
 	int iPitch = RANDOM_LONG(85, 120);
 
-	switch (RANDOM_LONG(0, 3))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_pain1.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_pain2.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_pain3.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 3:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_pain4.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "PD_PAIN", 1, ATTN_NORM, 0, iPitch);
 }
 
 //=========================================================
@@ -450,18 +436,7 @@ void CPitdrone::AlertSound()
 {
 	int iPitch = RANDOM_LONG(140, 160);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_alert1.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_alert2.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "pitdrone/pit_drone_alert3.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	}
+	SENTENCEG_PlayRndSz(ENT(pev), "PD_ALERT", 1, ATTN_NORM, 0, iPitch);
 }
 
 //=========================================================
@@ -723,9 +698,14 @@ void CPitdrone::Precache()
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 
-	PRECACHE_SOUND("pitdrone/pit_drone_alert1.wav");
+	/* PRECACHE_SOUND("pitdrone/pit_drone_alert1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_alert2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_alert3.wav");
+	PRECACHE_SOUND("pitdrone/pit_drone_pain1.wav");
+	PRECACHE_SOUND("pitdrone/pit_drone_pain2.wav");
+	PRECACHE_SOUND("pitdrone/pit_drone_pain3.wav");
+	PRECACHE_SOUND("pitdrone/pit_drone_pain4.wav");
+	*/
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_communicate1.wav");
@@ -743,10 +723,6 @@ void CPitdrone::Precache()
 	PRECACHE_SOUND("pitdrone/pit_drone_idle3.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack2.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain1.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain2.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain3.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain4.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_run_on_grate.wav");
 	PRECACHE_SOUND("bullchicken/bc_bite2.wav");
 	PRECACHE_SOUND("bullchicken/bc_bite3.wav");

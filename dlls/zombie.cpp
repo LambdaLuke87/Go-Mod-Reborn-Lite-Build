@@ -51,10 +51,6 @@ public:
 	void IdleSound() override;
 	void AttackSound();
 
-	static const char* pAttackSounds[];
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
 
@@ -77,33 +73,6 @@ const char* CZombie::pAttackMissSounds[] =
 	{
 		"zombie/claw_miss1.wav",
 		"zombie/claw_miss2.wav",
-};
-
-const char* CZombie::pAttackSounds[] =
-	{
-		"zombie/zo_attack1.wav",
-		"zombie/zo_attack2.wav",
-};
-
-const char* CZombie::pIdleSounds[] =
-	{
-		"zombie/zo_idle1.wav",
-		"zombie/zo_idle2.wav",
-		"zombie/zo_idle3.wav",
-		"zombie/zo_idle4.wav",
-};
-
-const char* CZombie::pAlertSounds[] =
-	{
-		"zombie/zo_alert10.wav",
-		"zombie/zo_alert20.wav",
-		"zombie/zo_alert30.wav",
-};
-
-const char* CZombie::pPainSounds[] =
-	{
-		"zombie/zo_pain1.wav",
-		"zombie/zo_pain2.wav",
 };
 
 //=========================================================
@@ -159,31 +128,28 @@ void CZombie::PainSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	if (RANDOM_LONG(0, 5) < 2)
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "ZO_PAIN", 1, ATTN_NORM, 0, pitch);
 }
 
 void CZombie::AlertSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ALERT", 1, ATTN_NORM, 0, pitch);
 }
 
 void CZombie::IdleSound()
 {
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
-	// Play a random idle sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "ZO_IDLE", 1, ATTN_NORM, 0, pitch);
 }
 
 void CZombie::AttackSound()
 {
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
-	// Play a random attack sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ATTACK", 1, ATTN_NORM, 0, pitch);
 }
 
 
@@ -303,10 +269,6 @@ void CZombie::Precache()
 
 	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
 }
 
 //=========================================================
