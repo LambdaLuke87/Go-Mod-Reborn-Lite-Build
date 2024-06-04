@@ -155,7 +155,7 @@ bool CHudFlashlight::Draw(float flTime)
 		CHud::Renderer().SPR_Set(m_hBeam, r, g, b);
 		CHud::Renderer().SPR_DrawAdditive(0, x, y, m_prcBeam);
 
-		drawNightVision();
+		//drawNightVision();
 	}
 
 	// draw the flashlight energy level

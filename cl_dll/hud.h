@@ -766,7 +766,7 @@ public:
 	HudSpriteRenderer hudRenderer;
 	bool hasHudScaleInEngine;
 
-	bool isNightVisionOn() { return mNightVisionState; }
+	bool isNightVisionOn() { return false; } // mNightVisionState
 
 	void setNightVisionState(bool state);
 

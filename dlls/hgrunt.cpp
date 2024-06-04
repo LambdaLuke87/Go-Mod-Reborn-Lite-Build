@@ -738,6 +738,9 @@ void CHGrunt::CheckAmmo()
 //=========================================================
 int CHGrunt::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_HUMAN_MILITARY;
 }
 
@@ -1036,6 +1039,9 @@ void CHGrunt::Spawn()
 	}
 
 	CTalkMonster::g_talkWaitTime = 0;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

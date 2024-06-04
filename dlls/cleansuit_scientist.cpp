@@ -570,6 +570,14 @@ void CCleansuitScientist::RunTask(Task_t* pTask)
 //=========================================================
 int CCleansuitScientist::Classify()
 {
+	if (m_AltClass)
+	{
+		Remember(bits_MEMORY_PROVOKED);
+		StopFollowing(true);
+
+		return CLASS_HUMAN_MILITARY;
+	}
+
 	return CLASS_HUMAN_PASSIVE;
 }
 
@@ -666,6 +674,9 @@ void CCleansuitScientist::Spawn()
 	// Luther is black, make his hands black
 	if (pev->body == HEAD_LUTHER)
 		pev->skin = 1;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 	SetUse(&CCleansuitScientist::FollowerUse);

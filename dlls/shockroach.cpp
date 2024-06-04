@@ -164,6 +164,9 @@ const char* COFShockRoach::pBiteSounds[] =
 //=========================================================
 int COFShockRoach::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_PREY;
 }
 
@@ -296,6 +299,9 @@ void COFShockRoach::Spawn()
 
 	m_fRoachSolid = false;
 	m_flBirthTime = gpGlobals->time;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

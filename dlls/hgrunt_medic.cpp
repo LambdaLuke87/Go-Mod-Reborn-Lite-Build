@@ -894,6 +894,9 @@ void COFMedicAlly::CheckAmmo()
 //=========================================================
 int COFMedicAlly::Classify()
 {
+	if (m_AltClass)
+		return CLASS_HUMAN_MILITARY;
+
 	return CLASS_HUMAN_MILITARY_FRIENDLY;
 }
 
@@ -1197,6 +1200,9 @@ void COFMedicAlly::Spawn()
 	}
 
 	COFSquadTalkMonster::g_talkWaitTime = 0;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 

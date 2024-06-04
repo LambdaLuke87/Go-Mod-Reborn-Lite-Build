@@ -251,6 +251,9 @@ int CBarney::ISoundMask()
 //=========================================================
 int CBarney::Classify()
 {
+	if (m_AltClass)
+		return CLASS_HUMAN_MILITARY;
+
 	return CLASS_PLAYER_ALLY;
 }
 
@@ -411,6 +414,9 @@ void CBarney::Spawn()
 	m_fGunDrawn = false;
 
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 	SetUse(&CBarney::FollowerUse);

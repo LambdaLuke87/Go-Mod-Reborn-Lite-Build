@@ -890,6 +890,9 @@ void CHGruntAlly::CheckAmmo()
 //=========================================================
 int CHGruntAlly::Classify()
 {
+	if (m_AltClass)
+		return CLASS_HUMAN_MILITARY;
+
 	return CLASS_HUMAN_MILITARY_FRIENDLY;
 }
 
@@ -1242,6 +1245,9 @@ void CHGruntAlly::Spawn()
 	COFSquadTalkMonster::g_talkWaitTime = 0;
 
 	m_flMedicWaitTime = gpGlobals->time;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 

@@ -31,7 +31,6 @@
 
 int iSquidSpitSprite;
 
-
 //=========================================================
 // monster-specific schedule types
 //=========================================================
@@ -425,6 +424,9 @@ int CBullsquid::ISoundMask()
 //=========================================================
 int CBullsquid::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_PREDATOR;
 }
 
@@ -694,6 +696,9 @@ void CBullsquid::Spawn()
 
 	m_fCanThreatDisplay = true;
 	m_flNextSpitTime = gpGlobals->time;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

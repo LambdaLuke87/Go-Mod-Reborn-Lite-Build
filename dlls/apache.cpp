@@ -31,7 +31,7 @@ class CApache : public CBaseMonster
 
 	void Spawn() override;
 	void Precache() override;
-	int Classify() override { return CLASS_HUMAN_MILITARY; }
+	int Classify() override;
 	int BloodColor() override { return DONT_BLEED; }
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 	void GibMonster() override;
@@ -109,6 +109,13 @@ TYPEDESCRIPTION CApache::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE(CApache, CBaseMonster);
 
+int CApache::Classify()
+{
+	if (m_AltClass)
+		return CLASS_PLAYER_ALLY;
+
+	return CLASS_HUMAN_MILITARY;
+}
 
 void CApache::Spawn()
 {
@@ -148,6 +155,9 @@ void CApache::Spawn()
 	pev->nextthink = gpGlobals->time + 1.0;
 
 	m_iRockets = 10;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 }
 
 

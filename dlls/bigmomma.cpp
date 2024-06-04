@@ -405,6 +405,9 @@ bool CBigMomma::KeyValue(KeyValueData* pkvd)
 //=========================================================
 int CBigMomma::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 
@@ -668,6 +671,9 @@ void CBigMomma::Spawn()
 	pev->view_ofs = Vector(0, 0, 128); // position of the eyes relative to monster's origin.
 	m_flFieldOfView = 0.3;			   // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

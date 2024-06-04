@@ -406,6 +406,9 @@ int CPitdrone::ISoundMask()
 //=========================================================
 int CPitdrone::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_PREDATOR;
 }
 
@@ -699,6 +702,9 @@ void CPitdrone::Spawn()
 	m_cAmmoLoaded = m_iInitialAmmo;
 
 	m_flNextEatTime = gpGlobals->time;
+
+	if (m_bnpc_allied)
+		m_AltClass = true;
 
 	MonsterInit();
 }

@@ -59,9 +59,8 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 
-//extern int m_allied;
-//extern int m_skinned;
-extern int m_aim_spawn;
+extern bool m_bnpc_allied;
+extern bool m_baim_spawn;
 
 // Start - Register of NPCS
 struct monster_t
@@ -744,6 +743,17 @@ void ClientCommand(edict_t* pEntity)
 	{
 		player->SelectLastItem();
 	}
+	// Register "button_" as an valid prefix
+	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
+	{
+	}
+	else if (FStrEq(pcmd, "+noclip"))
+	{
+	}
+	else if (FStrEq(pcmd, "-noclip"))
+	{
+	}
+
 	//In Opposing Force this is handled only by the CTF gamerules
 #if false
 	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
@@ -869,17 +879,49 @@ void ClientCommand(edict_t* pEntity)
 		}
 		// End - Noclip Bind-Key
 
-		if (FStrEq(pcmd, "button_Aim_Spawn"))
+
+		else if (FStrEq(pcmd, "button_allied_set"))
 		{
-			if (m_aim_spawn == 1)
+			if (m_bnpc_allied)
 			{
-				m_aim_spawn = 0;
+				m_bnpc_allied = false;
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("Enemy Npcs", pEntity);
+			}
+			else
+			{
+				m_bnpc_allied = true;
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("Allied Npcs", pEntity);
+			}
+		}
+		else if (FStrEq(pcmd, "button_ai_set"))
+		{
+			int dis_ia_enbl = npc_noai.value;
+			if (dis_ia_enbl >= 1)
+			{
+				CVAR_SET_FLOAT("gm_npc_noai", 0);
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("A.i Enabled", pEntity);
+			}
+			else
+			{
+				CVAR_SET_FLOAT("gm_npc_noai", 1);
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				GoMod_TextScreenHelper("A.i Disabled", pEntity);
+			}
+		}
+		else if (FStrEq(pcmd, "button_aim_spawn"))
+		{
+			if (m_baim_spawn)
+			{
+				m_baim_spawn = false;
 				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
 			}
-			else if (m_aim_spawn == 0)
+			else
 			{
-				m_aim_spawn = 1;
+				m_baim_spawn = true;
 				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
 			}
@@ -894,7 +936,7 @@ void ClientCommand(edict_t* pEntity)
 			strcat(combinetoprefix, monsterInfo.classname);
 			if (FStrEq(pcmd, combinetoprefix))
 			{
-				if (m_aim_spawn == 1)
+				if (m_baim_spawn == true)
 				{
 					GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
 				}
@@ -919,7 +961,7 @@ void ClientCommand(edict_t* pEntity)
 			strcat(combinetoprefix, weaponInfo.classname);
 			if (FStrEq(pcmd, combinetoprefix))
 			{
-				if (m_aim_spawn == 1)
+				if (m_baim_spawn == true)
 				{
 					GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
 				}

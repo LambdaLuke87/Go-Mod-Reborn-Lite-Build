@@ -112,6 +112,9 @@ const char* CZombieSoldier::pPainSounds[] =
 //=========================================================
 int CZombieSoldier::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 
@@ -284,6 +287,9 @@ void CZombieSoldier::Spawn()
 	m_flFieldOfView = 0.5;	  // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
 	m_afCapability = bits_CAP_DOORS_GROUP;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

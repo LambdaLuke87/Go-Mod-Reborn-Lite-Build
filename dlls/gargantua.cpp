@@ -726,6 +726,9 @@ void CGargantua::PrescheduleThink()
 //=========================================================
 int CGargantua::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 
@@ -777,6 +780,9 @@ void CGargantua::Spawn()
 	//pev->view_ofs		= Vector ( 0, 0, 96 );// taken from mdl file
 	m_flFieldOfView = -0.2; // width of forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 

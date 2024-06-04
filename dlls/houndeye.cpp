@@ -127,6 +127,9 @@ IMPLEMENT_SAVERESTORE(CHoundeye, CSquadMonster);
 //=========================================================
 int CHoundeye::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 
@@ -343,6 +346,9 @@ void CHoundeye::Spawn()
 	m_fAsleep = false; // everyone spawns awake
 	m_fDontBlink = false;
 	m_afCapability |= bits_CAP_SQUAD;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

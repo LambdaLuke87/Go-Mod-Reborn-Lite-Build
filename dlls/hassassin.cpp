@@ -156,6 +156,9 @@ int CHAssassin::ISoundMask()
 //=========================================================
 int CHAssassin::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_HUMAN_MILITARY;
 }
 
@@ -296,6 +299,9 @@ void CHAssassin::Spawn()
 	m_iTargetRanderamt = 20;
 	pev->renderamt = 20;
 	pev->rendermode = kRenderTransTexture;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

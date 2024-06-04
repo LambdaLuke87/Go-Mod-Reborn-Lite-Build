@@ -64,8 +64,6 @@ int iAgruntMuzzleFlash;
 #define AGRUNT_AE_LEFT_PUNCH (12)
 #define AGRUNT_AE_RIGHT_PUNCH (13)
 
-
-
 #define AGRUNT_MELEE_DIST 100
 
 class CAGrunt : public CSquadMonster
@@ -385,6 +383,9 @@ void CAGrunt::PainSound()
 //=========================================================
 int CAGrunt::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MILITARY;
 }
 
@@ -608,6 +609,8 @@ void CAGrunt::Spawn()
 
 	m_flNextSpeakTime = m_flNextWordTime = gpGlobals->time + 10 + RANDOM_LONG(0, 10);
 
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

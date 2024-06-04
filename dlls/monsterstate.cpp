@@ -24,6 +24,7 @@
 #include "animation.h"
 #include "saverestore.h"
 #include "soundent.h"
+#include "game.h"
 
 //=========================================================
 // SetState
@@ -65,50 +66,55 @@ void CBaseMonster::RunAI()
 
 	// IDLE sound permitted in ALERT state is because monsters were silent in ALERT state. Only play IDLE sound in IDLE state
 	// once we have sounds for that state.
-	if ((m_MonsterState == MONSTERSTATE_IDLE || m_MonsterState == MONSTERSTATE_ALERT) && RANDOM_LONG(0, 99) == 0 && (pev->spawnflags & SF_MONSTER_GAG) == 0)
-	{
-		IdleSound();
-	}
 
-	if (m_MonsterState != MONSTERSTATE_NONE &&
-		m_MonsterState != MONSTERSTATE_PRONE &&
-		m_MonsterState != MONSTERSTATE_DEAD) // don't bother with this crap if monster is prone.
+	int npc_ai_value = npc_noai.value;
+	if (npc_ai_value == 0)
 	{
-		// collect some sensory Condition information.
-		// don't let monsters outside of the player's PVS act up, or most of the interesting
-		// things will happen before the player gets there!
-		// UPDATE: We now let COMBAT state monsters think and act fully outside of player PVS. This allows the player to leave
-		// an area where monsters are fighting, and the fight will continue.
-		if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())) || (m_MonsterState == MONSTERSTATE_COMBAT))
+		if ((m_MonsterState == MONSTERSTATE_IDLE || m_MonsterState == MONSTERSTATE_ALERT) && RANDOM_LONG(0, 99) == 0 && (pev->spawnflags & SF_MONSTER_GAG) == 0)
 		{
-			Look(m_flDistLook);
-			Listen(); // check for audible sounds.
-
-			// now filter conditions.
-			ClearConditions(IgnoreConditions());
-
-			GetEnemy();
+			IdleSound();
 		}
 
-		// do these calculations if monster has an enemy.
-		if (m_hEnemy != NULL)
+		if (m_MonsterState != MONSTERSTATE_NONE &&
+			m_MonsterState != MONSTERSTATE_PRONE &&
+			m_MonsterState != MONSTERSTATE_DEAD) // don't bother with this crap if monster is prone.
 		{
-			CheckEnemy(m_hEnemy);
+			// collect some sensory Condition information.
+			// don't let monsters outside of the player's PVS act up, or most of the interesting
+			// things will happen before the player gets there!
+			// UPDATE: We now let COMBAT state monsters think and act fully outside of player PVS. This allows the player to leave
+			// an area where monsters are fighting, and the fight will continue.
+			if (!FNullEnt(FIND_CLIENT_IN_PVS(edict())) || (m_MonsterState == MONSTERSTATE_COMBAT))
+			{
+				Look(m_flDistLook);
+				Listen(); // check for audible sounds.
+
+				// now filter conditions.
+				ClearConditions(IgnoreConditions());
+
+				GetEnemy();
+			}
+
+			// do these calculations if monster has an enemy.
+			if (m_hEnemy != NULL)
+			{
+				CheckEnemy(m_hEnemy);
+			}
+
+			CheckAmmo();
 		}
 
-		CheckAmmo();
+		FCheckAITrigger();
+
+		PrescheduleThink();
+
+		MaintainSchedule();
+
+		// if the monster didn't use these conditions during the above call to MaintainSchedule() or CheckAITrigger()
+		// we throw them out cause we don't want them sitting around through the lifespan of a schedule
+		// that doesn't use them.
+		m_afConditions &= ~(bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE);
 	}
-
-	FCheckAITrigger();
-
-	PrescheduleThink();
-
-	MaintainSchedule();
-
-	// if the monster didn't use these conditions during the above call to MaintainSchedule() or CheckAITrigger()
-	// we throw them out cause we don't want them sitting around through the lifespan of a schedule
-	// that doesn't use them.
-	m_afConditions &= ~(bits_COND_LIGHT_DAMAGE | bits_COND_HEAVY_DAMAGE);
 }
 
 //=========================================================

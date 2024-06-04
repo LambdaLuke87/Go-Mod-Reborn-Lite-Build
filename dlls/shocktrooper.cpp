@@ -735,6 +735,9 @@ void CShockTrooper::CheckAmmo()
 //=========================================================
 int CShockTrooper::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_RACE_X;
 }
 
@@ -963,6 +966,9 @@ void CShockTrooper::Spawn()
 	m_flLastShot = gpGlobals->time;
 
 	pev->skin = 0;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

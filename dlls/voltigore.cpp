@@ -550,6 +550,9 @@ void COFVoltigore::PainSound()
 //=========================================================
 int COFVoltigore::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MILITARY;
 }
 
@@ -706,6 +709,9 @@ void COFVoltigore::Spawn()
 	m_flNextBeamAttackCheck = gpGlobals->time;
 	m_fDeathCharge = false;
 	m_flDeathStartTime = gpGlobals->time;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

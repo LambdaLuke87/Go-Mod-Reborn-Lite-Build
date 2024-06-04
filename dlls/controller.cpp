@@ -156,6 +156,9 @@ const char* CController::pDeathSounds[] =
 //=========================================================
 int CController::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MILITARY;
 }
 
@@ -370,6 +373,9 @@ void CController::Spawn()
 	pev->view_ofs = Vector(0, 0, -2);  // position of the eyes relative to monster's origin.
 	m_flFieldOfView = VIEW_FIELD_FULL; // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

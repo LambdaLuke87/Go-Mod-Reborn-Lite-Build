@@ -738,6 +738,9 @@ void CMOFAssassin::CheckAmmo()
 //=========================================================
 int CMOFAssassin::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_HUMAN_MILITARY;
 }
 
@@ -1016,6 +1019,9 @@ void CMOFAssassin::Spawn()
 	m_fStandingGround = m_flStandGroundRange != 0;
 
 	CTalkMonster::g_talkWaitTime = 0;
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }

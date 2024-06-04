@@ -145,6 +145,9 @@ const char* CISlave::pDeathSounds[] =
 //=========================================================
 int CISlave::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MILITARY;
 }
 
@@ -537,6 +540,9 @@ void CISlave::Spawn()
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_RANGE_ATTACK2 | bits_CAP_DOORS_GROUP;
 
 	m_voicePitch = RANDOM_LONG(85, 110);
+
+	if (m_bnpc_allied == true)
+		m_AltClass = true;
 
 	MonsterInit();
 }
