@@ -890,15 +890,14 @@ void ClientCommand(edict_t* pEntity)
 			if (m_bnpc_allied)
 			{
 				m_bnpc_allied = false;
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Enemy Npcs", pEntity);
 			}
 			else
 			{
 				m_bnpc_allied = true;
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Allied Npcs", pEntity);
 			}
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 		}
 		else if (FStrEq(pcmd, "button_ai_set"))
 		{
@@ -906,30 +905,28 @@ void ClientCommand(edict_t* pEntity)
 			if (dis_ia_enbl >= 1)
 			{
 				CVAR_SET_FLOAT("gm_npc_noai", 0);
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("A.i Enabled", pEntity);
 			}
 			else
 			{
 				CVAR_SET_FLOAT("gm_npc_noai", 1);
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("A.i Disabled", pEntity);
 			}
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 		}
 		else if (FStrEq(pcmd, "button_aim_spawn"))
 		{
 			if (m_baim_spawn)
 			{
 				m_baim_spawn = false;
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
 			}
 			else
 			{
 				m_baim_spawn = true;
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
 				GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
 			}
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 		}
 
 		// Start - Spawn NPCS Code
@@ -950,7 +947,7 @@ void ClientCommand(edict_t* pEntity)
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 					CBaseEntity::Create(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 				}
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94f, ATTN_NORM);
+				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 			}
 		}
 		// End - Spawn NPCS Code
@@ -983,7 +980,7 @@ void ClientCommand(edict_t* pEntity)
 					DispatchSpawn(pent);
 					DispatchTouch(pent, ENT(pev));
 				}
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "common/wpn_select.wav", 0.94, ATTN_NORM);
+				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 			}
 		}
 		// End - Spawn Weapons/Items Code

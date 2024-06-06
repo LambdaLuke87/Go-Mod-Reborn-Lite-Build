@@ -20,6 +20,7 @@
 #include<VGUI_ScrollPanel.h>
 #include<VGUI_ScrollBar.h>
 #include<VGUI_Slider.h>
+#include<VGUI_TextEntry.h> 
 
 // custom scheme handling
 #include "vgui_SchemeManager.h"
@@ -48,6 +49,9 @@ class CClassMenuPanel;
 class CTeamMenuPanel;
 class TeamFortressViewport;
 class CStatsMenuPanel;
+class CLinkMenu; // Link Menu
+class CWeaponsMenu; // Weapons Menu
+class CMonstersMenu; // Npcs Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -512,6 +516,14 @@ private:
 	CMenuPanel*	 ShowClassMenu( void );
 	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
+
+	// GO-MOD
+	void CreateLinkMenu(void);
+	CMenuPanel* ShowLinkMenu(void);
+	void CreateWeaponsMenu(void);
+	CMenuPanel* ShowWeaponsMenu(void);
+	void CreateMonstersMenu(void);
+	CMenuPanel* ShowMonstersMenu(void);
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -646,6 +658,9 @@ public:
 	CStatsMenuPanel* m_pStatsMenu;
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
+	CLinkMenu* m_pLinkMenu; // Link Menu
+	CWeaponsMenu* m_pWeaponsMenu; // Weapons Menu
+	CMonstersMenu* m_pMonstersMenu; // Npcs Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1607,6 +1622,75 @@ class CTFScrollPanel : public ScrollPanel
 {
 public:
 	CTFScrollPanel(int x,int y,int wide,int tall);
+};
+
+#define GMENU_WINDOW_X XRES(112)
+#define GMENU_WINDOW_Y YRES(80)
+#define GMENU_WINDOW_SIZE_X XRES(424)
+#define GMENU_WINDOW_SIZE_Y YRES(312)
+
+//================================================================
+// LinkMenu VGUI menu!
+//============================================================
+class CLinkMenu : public CMenuPanel
+{
+private:
+	CTransparentPanel* m_pPanel;
+	CommandButton* m_pSpeak;
+
+	TextEntry* m_pEditbox;
+	CImageLabel* m_pMyPicture;
+
+	int m_iShowText;
+	Label* m_pText;
+	CommandButton* m_pShowButton;
+	CommandButton* m_pHideButton;
+
+
+public:
+	CLinkMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
+// End - LinkMenu
+
+
+//================================================================
+// Weapons VGUI
+//============================================================
+class CWeaponsMenu : public CMenuPanel
+{
+private:
+	CTransparentPanel* m_pPanel;
+	CommandButton* m_pSpeak;
+
+	TextEntry* m_pEditbox;
+	CImageLabel* m_pMyPicture;
+
+	CommandButton* m_pWpnSpeak;
+	CImageLabel* m_pWeaponPicture;
+
+public:
+	CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
+
+//================================================================
+// NPCS VGUI
+//============================================================
+class CMonstersMenu : public CMenuPanel
+{
+private:
+	CTransparentPanel* m_pPanel;
+	CommandButton* m_pSpeak;
+
+	TextEntry* m_pEditbox;
+	CImageLabel* m_pMyPicture;
+
+	int m_iShowText;
+	Label* m_pText;
+	CommandButton* m_pShowButton;
+	CommandButton* m_pHideButton;
+
+public:
+	CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 };
 
 //================================================================

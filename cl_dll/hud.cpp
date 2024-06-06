@@ -202,6 +202,46 @@ void __CmdFunc_ForceCloseCommandMenu()
 	}
 }
 
+void __CmdFunc_OpenMOTDMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_INTRO);
+	}
+}
+
+void __CmdFunc_OpenMapInfoMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_MAPBRIEFING);
+	}
+}
+
+void __CmdFunc_OpenLinkMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_LINKMENU);
+	}
+}
+
+void __CmdFunc_OpenWeaponsMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_WEAPONSMENU);
+	}
+}
+
+void __CmdFunc_OpenMonstersMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_MONSTERSMENU);
+	}
+}
+
 // TFFree Command Menu Message Handlers
 int __MsgFunc_ValClass(const char* pszName, int iSize, void* pbuf)
 {
@@ -371,6 +411,12 @@ void CHud::Init()
 	HOOK_COMMAND("-commandmenu", CloseCommandMenu);
 	HOOK_COMMAND("ForceCloseCommandMenu", ForceCloseCommandMenu);
 	HOOK_COMMAND("special", InputPlayerSpecial);
+
+	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
+	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
+	HOOK_COMMAND("toggleLinkMenu", OpenLinkMenu);
+	HOOK_COMMAND("toggleHLWeaponsMenu", OpenWeaponsMenu);
+	HOOK_COMMAND("toggleMonstersMenu", OpenMonstersMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);
