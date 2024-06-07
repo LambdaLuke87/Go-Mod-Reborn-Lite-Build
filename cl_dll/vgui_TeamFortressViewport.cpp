@@ -79,6 +79,7 @@ int g_iUser3 = 0;
 
 void IN_ResetMouse();
 extern CMenuPanel* CMessageWindowPanel_Create(const char* szMOTD, const char* szTitle, bool iShadeFullscreen, bool iRemoveMe, int x, int y, int wide, int tall);
+extern CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall);
 extern float* GetClientColor(int clientIndex);
 
 using namespace vgui;
@@ -541,7 +542,9 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_pCurrentCommandMenu = NULL;
 	m_pLinkMenu = NULL;	// Link Menu
 	m_pWeaponsMenu = NULL; // Weapons Menu
+	m_pItemsMenu = NULL; // Items Menu
 	m_pMonstersMenu = NULL; // Npcs Menu
+	m_pToolsMenu = NULL;	// Tools Menu
 
 	Initialize();
 	addInputSignal(new CViewPortInputHandler);
@@ -601,10 +604,11 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	CreateSpectatorMenu();
 	CreateStatsMenu();
 
-	// GO-Mod Menus
-	CreateLinkMenu(); // Link Menu
+	// Go-Mod: Reborn
 	CreateWeaponsMenu(); // Weapons Menu
+	CreateItemsMenu();  // Items Menu
 	CreateMonstersMenu(); // Npcs Menu
+	CreateToolsMenu();  // Tools Menu
 
 	//CreateScoreBoard();
 	// Init command menus
@@ -662,20 +666,19 @@ void TeamFortressViewport::Initialize()
 
 	// Go-Mod Menus
 	if (m_pLinkMenu)
-	{
-		// linkmenu
 		m_pLinkMenu->setVisible(false);
-	}
+
 	if (m_pWeaponsMenu)
-	{
-		// weaponns
 		m_pWeaponsMenu->setVisible(false);
-	}
+
+	if (m_pItemsMenu)
+		m_pItemsMenu->setVisible(false);
+
 	if (m_pMonstersMenu)
-	{
-		// npcs
 		m_pMonstersMenu->setVisible(false);
-	}
+
+	if (m_pToolsMenu)
+		m_pToolsMenu->setVisible(false);
 
 	// Make sure all menus are hidden
 	HideVGUIMenu();
@@ -1498,20 +1501,28 @@ void TeamFortressViewport::CreateScoreBoard()
 
 CMenuPanel* TeamFortressViewport::ShowLinkMenu()
 {
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
+	char sz[256];
+	const char* cText = "";
+	char* pfile = NULL;
+	static const int MAX_TITLE_LENGTH = 64;
+
+	strcpy(sz, "gfx/gmrnews.txt");
+	
+	pfile = (char*)gEngfuncs.COM_LoadFile(sz, 5, NULL);
+
+	if (!pfile)
 		return NULL;
 
-	m_pLinkMenu->Reset();
-	return m_pLinkMenu;
-}
+	cText = pfile;
 
-void TeamFortressViewport::CreateLinkMenu()
-{
-	// Create the panel
-	m_pLinkMenu = new CLinkMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pLinkMenu->setParent(this);
-	m_pLinkMenu->setVisible(false);
+	// if we're in the game (ie. have selected a class), flag the menu to be only grayed in the dialog box, instead of full screen
+	CMenuPanel* pMOTDPanel = CLinkMenu_Create(cText, 100, false, 0, 0, ScreenWidth, ScreenHeight);
+	pMOTDPanel->setParent(this);
+
+	if (pfile)
+		gEngfuncs.COM_FreeFile(pfile);
+
+	return pMOTDPanel;
 }
 
 CMenuPanel* TeamFortressViewport::ShowWeaponsMenu()
@@ -1532,6 +1543,24 @@ void TeamFortressViewport::CreateWeaponsMenu()
 	m_pWeaponsMenu->setVisible(false);
 }
 
+CMenuPanel* TeamFortressViewport::ShowItemsMenu()
+{
+	// Don't open menus in demo playback
+	if (gEngfuncs.pDemoAPI->IsPlayingback())
+		return NULL;
+
+	m_pItemsMenu->Reset();
+	return m_pItemsMenu;
+}
+
+void TeamFortressViewport::CreateItemsMenu()
+{
+	// Create the panel
+	m_pItemsMenu = new CItemsMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
+	m_pItemsMenu->setParent(this);
+	m_pItemsMenu->setVisible(false);
+}
+
 CMenuPanel* TeamFortressViewport::ShowMonstersMenu()
 {
 	// Don't open menus in demo playback
@@ -1548,6 +1577,24 @@ void TeamFortressViewport::CreateMonstersMenu()
 	m_pMonstersMenu = new CMonstersMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
 	m_pMonstersMenu->setParent(this);
 	m_pMonstersMenu->setVisible(false);
+}
+
+CMenuPanel* TeamFortressViewport::ShowToolsMenu()
+{
+	// Don't open menus in demo playback
+	if (gEngfuncs.pDemoAPI->IsPlayingback())
+		return NULL;
+
+	m_pToolsMenu->Reset();
+	return m_pToolsMenu;
+}
+
+void TeamFortressViewport::CreateToolsMenu()
+{
+	// Create the panel
+	m_pToolsMenu = new CToolsMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
+	m_pToolsMenu->setParent(this);
+	m_pToolsMenu->setVisible(false);
 }
 
 //======================================================================
@@ -1714,8 +1761,16 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 		pNewMenu = ShowWeaponsMenu();
 		break;
 
+	case MENU_ITEMSMENU:
+		pNewMenu = ShowItemsMenu();
+		break;
+
 	case MENU_MONSTERSMENU:
 		pNewMenu = ShowMonstersMenu();
+		break;
+
+	case MENU_TOOLSMENU:
+		pNewMenu = ShowToolsMenu();
 		break;
 
 		/*

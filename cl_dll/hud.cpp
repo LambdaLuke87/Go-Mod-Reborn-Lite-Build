@@ -234,11 +234,27 @@ void __CmdFunc_OpenWeaponsMenu()
 	}
 }
 
+void __CmdFunc_OpenItemsMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_ITEMSMENU);
+	}
+}
+
 void __CmdFunc_OpenMonstersMenu()
 {
 	if (gViewPort)
 	{
 		gViewPort->ShowVGUIMenu(MENU_MONSTERSMENU);
+	}
+}
+
+void __CmdFunc_OpenToolsMenu()
+{
+	if (gViewPort)
+	{
+		gViewPort->ShowVGUIMenu(MENU_TOOLSMENU);
 	}
 }
 
@@ -415,8 +431,10 @@ void CHud::Init()
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
 	HOOK_COMMAND("toggleLinkMenu", OpenLinkMenu);
-	HOOK_COMMAND("toggleHLWeaponsMenu", OpenWeaponsMenu);
+	HOOK_COMMAND("toggleWeaponsMenu", OpenWeaponsMenu);
+	HOOK_COMMAND("toggleItemsMenu", OpenItemsMenu);
 	HOOK_COMMAND("toggleMonstersMenu", OpenMonstersMenu);
+	HOOK_COMMAND("toggleToolsMenu", OpenToolsMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);

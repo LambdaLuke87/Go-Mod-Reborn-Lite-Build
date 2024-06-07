@@ -51,7 +51,9 @@ class TeamFortressViewport;
 class CStatsMenuPanel;
 class CLinkMenu; // Link Menu
 class CWeaponsMenu; // Weapons Menu
+class CItemsMenu; // Items Menu
 class CMonstersMenu; // Npcs Menu
+class CToolsMenu; // Tools Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -517,13 +519,15 @@ private:
 	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
 
-	// GO-MOD
-	void CreateLinkMenu(void);
 	CMenuPanel* ShowLinkMenu(void);
 	void CreateWeaponsMenu(void);
 	CMenuPanel* ShowWeaponsMenu(void);
+	void CreateItemsMenu(void);
+	CMenuPanel* ShowItemsMenu(void);
 	void CreateMonstersMenu(void);
 	CMenuPanel* ShowMonstersMenu(void);
+	void CreateToolsMenu(void);
+	CMenuPanel* ShowToolsMenu(void);
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -660,7 +664,9 @@ public:
 	SpectatorPanel *		m_pSpectatorPanel;
 	CLinkMenu* m_pLinkMenu; // Link Menu
 	CWeaponsMenu* m_pWeaponsMenu; // Weapons Menu
+	CItemsMenu* m_pItemsMenu; // Items Menu
 	CMonstersMenu* m_pMonstersMenu; // Npcs Menu
+	CToolsMenu* m_pToolsMenu; // Tools Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1630,67 +1636,57 @@ public:
 #define GMENU_WINDOW_SIZE_Y YRES(312)
 
 //================================================================
-// LinkMenu VGUI menu!
+// Go-Mod: Reborn Lite Menus
 //============================================================
-class CLinkMenu : public CMenuPanel
+class CGMMenuBase : public CMenuPanel
 {
 private:
 	CTransparentPanel* m_pPanel;
-	CommandButton* m_pSpeak;
-
-	TextEntry* m_pEditbox;
-	CImageLabel* m_pMyPicture;
-
-	int m_iShowText;
-	Label* m_pText;
-	CommandButton* m_pShowButton;
-	CommandButton* m_pHideButton;
-
 
 public:
-	CLinkMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+
+	CommandButton* m_pButtonLinkMenu;
+	CommandButton* m_pButtonSweepMenu;
+	CommandButton* m_pButtonItemsMenu;
+	CommandButton* m_pButtonNPCMenu;
+	CommandButton* m_pButtonToolsMenu;
+	CommandButton* m_pButtonAimMode;
+
+	int iXSize;
+	int iYSize;
+	int iXPos;
+	int iYPos;
 };
-// End - LinkMenu
 
-
-//================================================================
-// Weapons VGUI
-//============================================================
-class CWeaponsMenu : public CMenuPanel
+class CLinkMenu : public CGMMenuBase
 {
-private:
-	CTransparentPanel* m_pPanel;
-	CommandButton* m_pSpeak;
+public:
+	CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
 
-	TextEntry* m_pEditbox;
-	CImageLabel* m_pMyPicture;
-
-	CommandButton* m_pWpnSpeak;
-	CImageLabel* m_pWeaponPicture;
-
+class CWeaponsMenu : public CGMMenuBase
+{
 public:
 	CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 };
 
-//================================================================
-// NPCS VGUI
-//============================================================
-class CMonstersMenu : public CMenuPanel
+class CItemsMenu : public CGMMenuBase
 {
-private:
-	CTransparentPanel* m_pPanel;
-	CommandButton* m_pSpeak;
+public:
+	CItemsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
 
-	TextEntry* m_pEditbox;
-	CImageLabel* m_pMyPicture;
-
-	int m_iShowText;
-	Label* m_pText;
-	CommandButton* m_pShowButton;
-	CommandButton* m_pHideButton;
-
+class CMonstersMenu : public CGMMenuBase
+{
 public:
 	CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
+
+class CToolsMenu : public CGMMenuBase
+{
+public:
+	CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 };
 
 //================================================================
