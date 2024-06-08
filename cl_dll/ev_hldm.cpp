@@ -2038,6 +2038,39 @@ void EV_PenguinFire(event_args_t* args)
 	}
 }
 
+//======================
+//	    TOOLGUN START
+//	     ( .toolgun )
+//======================
+
+void EV_ToolGun(event_args_t* args)
+{
+	int idx;
+	Vector origin;
+
+	idx = args->entindex;
+	VectorCopy(args->origin, origin);
+
+	if (EV_IsLocal(idx))
+	{
+		// Add muzzle flash to current weapon model
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(REMOVETOOL_SHOOT + gEngfuncs.pfnRandomLong(0, 0), 0);
+
+		V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-0, 0));
+	}
+
+	switch (gEngfuncs.pfnRandomLong(0, 1))
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/tg_shot1.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/tg_shot2.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		break;
+	}
+}
+
 void EV_TrainPitchAdjust(event_args_t* args)
 {
 	int idx;

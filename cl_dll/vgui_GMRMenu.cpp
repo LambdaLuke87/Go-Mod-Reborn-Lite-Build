@@ -128,7 +128,7 @@ CWeaponsMenu ::CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, i
 	pButtonWeapon->setParent(this);
 
 	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Toolgun"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_removetool"));
+	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_toolgun"));
 	pButtonWeapon->setParent(this);
 
 	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Glock"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -403,8 +403,8 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_zombie_soldier"));
 	pButtonNPC->setParent(this);
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gman"), iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_gman"));
+	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Barnacle"), iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_barnacle"));
 	pButtonNPC->setParent(this);
 
 	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Rat"), iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
@@ -468,9 +468,40 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Sentry"), iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_sentry"));
 	pButtonNPC->setParent(this);
+
+	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gman"), iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_gman"));
+	pButtonNPC->setParent(this);
+
+
+
+	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("No AI"), iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_ai_set"));
+	pButtonNPC->setParent(this);
+
+	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Ally"), iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_allied_set"));
+	pButtonNPC->setParent(this);
 }
 
 CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	m_pButtonToolsMenu->setVisible(false);
+
+	CommandButton* pButtonTool;
+	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Duplicator"), iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_duplicatemode"));
+	pButtonTool->setParent(this);
+
+	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Remover"), iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_removemode"));
+	pButtonTool->setParent(this);
+
+	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gib Mode"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_gibmode"));
+	pButtonTool->setParent(this);
+
+	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Poser Mode"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_posermode"));
+	pButtonTool->setParent(this);
 }

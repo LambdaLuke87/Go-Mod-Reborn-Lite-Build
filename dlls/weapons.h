@@ -1273,3 +1273,46 @@ public:
 private:
 	unsigned short m_usSnarkFire;
 };
+
+//****************************
+//
+//		Toolgun
+//
+//****************************
+
+enum removetool_e
+{
+	REMOVETOOL_IDLE,
+	REMOVETOOL_IDLE2,
+	REMOVETOOL_RELOAD,
+	REMOVETOOL_SHOOT,
+	REMOVETOOL_SHOOT2,
+	REMOVETOOL_DRAW,
+
+};
+
+class CToolgun : public CBasePlayerWeapon
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	int iItemSlot() override { return 2; }
+	bool GetItemInfo(ItemInfo* p);
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	bool Deploy() override;
+	void WeaponIdle() override;
+	float m_flSoundDelay;
+
+	virtual bool UseDecrement(void)
+	{
+#if defined(CLIENT_WEAPONS)
+		return true;
+#else
+		return false;
+#endif
+	}
+
+private:
+	unsigned short m_removetool;
+};

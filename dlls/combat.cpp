@@ -36,6 +36,79 @@ extern Vector VecBModelOrigin(entvars_t* pevBModel);
 #define HUMAN_GIB_COUNT 6
 #define ALIEN_GIB_COUNT 4
 
+int monster_type;
+char* monster_name;
+
+struct MonsterInfo
+{
+	int id;
+	const char* classname;
+
+	static int GetId(const char* name);
+	static const char* GetName(int id);
+};
+
+const MonsterInfo gMonsterInfos[] =
+	{
+		{1, "monster_alien_slave"},
+		{2, "monster_bullchicken"},
+		{3, "monster_headcrab"},
+		{4, "monster_babycrab"},
+		{5, "monster_houndeye"},
+		{6, "monster_alien_grunt"},
+		{7, "monster_alien_controller"},
+		{8, "monster_zombie"},
+		{9, "monster_zombie_barney"},
+		{10, "monster_zombie_soldier"},
+		{11, "monster_gargantua"},
+		{12, "monster_bigmomma"},
+		{13, "monster_ichthyosaur"},
+		{14, "monster_scientist"},
+		{15, "monster_cleansuit_scientist"},
+		{16, "monster_human_grunt"},
+		{17, "monster_barney"},
+		{18, "monster_otis"},
+		{19, "monster_male_assassin"},
+		{20, "monster_human_assassin"},
+		{21, "monster_apache"},
+		{22, "monster_sentry"},
+		{23, "monster_rat"},
+		{24, "monster_cockroach"},
+		{25, "monster_barnacle"},
+		{26, "monster_leech"},
+		{27, "monster_flyer"},
+		{28, "monster_gman"},
+		{29, "monster_gonome"},
+		{30, "monster_shocktrooper"},
+		{31, "monster_shockroach"},
+		{32, "monster_pitdrone"},
+		{33,"monster_alien_voltigore"},
+		{34, "monster_alien_babyvoltigore"},
+		{35, "monster_human_grunt_ally"},
+		{36, "monster_human_medic_ally"},
+		{37, "monster_human_torch_ally"}};
+
+int MonsterInfo::GetId(const char* name)
+{
+	for (const auto& mi : gMonsterInfos)
+	{
+		if (FStrEq(mi.classname, name))
+		{
+			return mi.id;
+		}
+	}
+	return -1;
+}
+
+const char* MonsterInfo::GetName(int id)
+{
+	if (id < 0 || id >= ARRAYSIZE(gMonsterInfos))
+	{
+		return "null";
+	}
+
+	return gMonsterInfos[id].classname;
+}
 
 // HACKHACK -- The gib velocity equations don't work
 void CGib::LimitVelocity()
@@ -1685,6 +1758,206 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }
+
+CBaseEntity* FindEntityForwardNew(CBaseEntity* pMe)
+{
+	TraceResult tr;
+
+	UTIL_MakeVectors(pMe->pev->v_angle);
+	UTIL_TraceLine(pMe->pev->origin + pMe->pev->view_ofs, pMe->pev->origin + pMe->pev->view_ofs + gpGlobals->v_forward * 8192, dont_ignore_monsters, pMe->edict(), &tr);
+	if (tr.flFraction != 1.0 && !FNullEnt(tr.pHit))
+	{
+		CBaseEntity* pHit = CBaseEntity::Instance(tr.pHit);
+		return pHit;
+	}
+	return NULL;
+}
+
+Vector CBaseEntity::FireBulletsRemoveTool(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+{
+	static int tracerCount;
+	TraceResult tr;
+	Vector vecRight = gpGlobals->v_right;
+	Vector vecUp = gpGlobals->v_up;
+	float x, y, z, i;
+	CBaseEntity* pEntity;
+
+	x = 0;
+	y = 0;
+	z = 0;
+	i = 0;
+	if (pevAttacker == NULL)
+		pevAttacker = pev; // the default attacker is ourselves
+
+	ClearMultiDamage();
+	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+
+	pEntity = FindEntityForwardNew(this);
+
+	if (pEntity)
+	{
+		if (pevAttacker == NULL)
+		{
+			pevAttacker = pev;
+		}
+		else
+		{
+			// Dont remove players!
+			if (!pEntity->IsNetClient())
+			{
+				pEntity->SetThink(&CBaseEntity::SUB_Remove);
+				pEntity->pev->nextthink = gpGlobals->time;
+			}
+		}
+	}
+
+	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+}
+
+Vector CBaseEntity::FireBulletsDuplicatorSelect(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+{
+	static int tracerCount;
+	TraceResult tr;
+	Vector vecRight = gpGlobals->v_right;
+	Vector vecUp = gpGlobals->v_up;
+	float x, y;
+	CBaseEntity* pEntity;
+
+
+	x = 0;
+	y = 0;
+
+	if (pevAttacker == NULL)
+		pevAttacker = pev; // the default attacker is ourselves
+
+	ClearMultiDamage();
+	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+
+	pEntity = FindEntityForwardNew(this);
+	if (pEntity)
+	{
+
+		monster_type = MonsterInfo::GetId(STRING(pEntity->pev->classname));
+	}
+
+	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
+	{
+	}
+	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+}
+
+
+// DUPLICATE MONSTER
+
+Vector CBaseEntity::FireBulletsDuplicator(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+{
+	static int tracerCount;
+	TraceResult tr;
+	Vector vecRight = gpGlobals->v_right;
+	Vector vecUp = gpGlobals->v_up;
+	float x, y, z;
+
+	if (pevAttacker == NULL)
+		pevAttacker = pev; // the default attacker is ourselves
+
+	ClearMultiDamage();
+	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
+	{
+		// Use player's random seed.
+		//  get circular gaussian spread
+		x = UTIL_SharedRandomFloat(shared_rand + iShot, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + (1 + iShot), -0.5, 0.5);
+		y = UTIL_SharedRandomFloat(shared_rand + (2 + iShot), -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + (3 + iShot), -0.5, 0.5);
+		z = x * x + y * y;
+
+		Vector vecDir = vecDirShooting +
+						x * vecSpread.x * vecRight +
+						y * vecSpread.y * vecUp;
+		Vector vecEnd;
+
+		vecEnd = vecSrc + vecDir * flDistance;
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev) /*pentIgnore*/, &tr);
+
+		UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
+		CBaseEntity::Create(MonsterInfo::GetName(monster_type - 1), tr.vecEndPos, Vector(0, pev->angles.y + 180, 0));
+	}
+	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+}
+
+Vector CBaseEntity::FireBulletsPoserTool(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+{
+	CBaseAnimating Animation;
+	static int tracerCount;
+	TraceResult tr;
+	Vector vecRight = gpGlobals->v_right;
+	Vector vecUp = gpGlobals->v_up;
+	float x, y;
+
+	x = 0;
+	y = 0;
+
+	CBaseEntity* pEntity;
+
+	if (pevAttacker == NULL)
+		pevAttacker = pev; // the default attacker is ourselves
+
+	ClearMultiDamage();
+	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+	int frame = 0;
+
+	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
+	{
+		pEntity = FindEntityForwardNew(this);
+
+		if (pEntity)
+		{
+
+			frame = RANDOM_LONG(0, 256);
+
+			pEntity->pev->frame = frame;
+		}
+	}
+	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+}
+
+
+Vector CBaseEntity::FireBulletsPoserToolSelect(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+{
+	CBaseAnimating Animation;
+	static int tracerCount;
+	TraceResult tr;
+	Vector vecRight = gpGlobals->v_right;
+	Vector vecUp = gpGlobals->v_up;
+	float x, y;
+
+	x = 0;
+	y = 0;
+
+	CBaseEntity* pEntity;
+
+	if (pevAttacker == NULL)
+		pevAttacker = pev; // the default attacker is ourselves
+
+	ClearMultiDamage();
+	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+
+	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
+	{
+		pEntity = FindEntityForwardNew(this);
+
+		if (pEntity)
+		{
+			pEntity->pev->sequence++;
+		}
+	}
+	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+}
+
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
 {

@@ -34,7 +34,6 @@ extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 
 // Go-Mod stuff
 bool m_bnpc_allied;
-bool m_baim_spawn;
 
 CBasePlayerItem* CGameRules::FindNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon)
 {

@@ -60,7 +60,6 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 extern void CopyToBodyQue(entvars_t* pev);
 
 extern bool m_bnpc_allied;
-extern bool m_baim_spawn;
 
 // Start - Register of NPCS
 struct monster_t
@@ -123,7 +122,7 @@ weapon_t gWeapons[] =
 	{
 		{"weapon_crowbar"},
 		//{"weapon_physgun"},
-		//{"weapon_removetool"},
+		{"weapon_toolgun"},
 		{"weapon_9mmhandgun"},
 		{"weapon_357"},
 		{"weapon_9mmAR"},
@@ -163,6 +162,24 @@ weapon_t gWeapons[] =
 		{"ammo_spore"},
 		{"ammo_762"}};
 // End - Register of Weapons
+
+// Start - Toolgun Modes Helper
+struct tgunmodes_helper_t
+{
+	const char* commandname;
+	int id;
+};
+
+// Toolgun Modes
+tgunmodes_helper_t gToolgunModes[] =
+	{
+		{"button_tool_duplicatemode", 1},
+		{"button_tool_removemode", 2},
+		{"button_tool_gibmode", 3},
+		{"button_tool_posermode", 4},
+		{"button_tool_cameramode", 5},
+		{"button_tool_rendermode", 6},
+		{"button_tool_npceditormode", 7}};
 
 // Start - Aim spawn code of GM6
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
@@ -756,12 +773,6 @@ void ClientCommand(edict_t* pEntity)
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
 	}
-	else if (FStrEq(pcmd, "+noclip"))
-	{
-	}
-	else if (FStrEq(pcmd, "-noclip"))
-	{
-	}
 
 	//In Opposing Force this is handled only by the CTF gamerules
 #if false
@@ -795,6 +806,44 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (player->IsObserver())
 			player->Observer_FindNextPlayer(atoi(CMD_ARGV(1)) != 0);
+	}
+	else if (FStrEq(pcmd, "buddha"))
+	{
+		int InmortalRule = allow_healthmodify.value;
+		if (0 != InmortalRule)
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			if (pPlayer->m_buddha)
+			{
+				pPlayer->m_buddha = false;
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode off\n");
+			}
+			else
+			{
+				pPlayer->m_buddha = true;
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode on\n");
+			}
+		}
+	}
+	else if (FStrEq(pcmd, "+noclip"))
+	{
+		int noclip_isON = allow_noclip.value;
+		if (0 != noclip_isON)
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
+			pPlayer->pev->speed = 450;
+		}
+	}
+	else if (FStrEq(pcmd, "-noclip"))
+	{
+		int noclip_ON = allow_noclip.value;
+		if (0 != noclip_ON)
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			pPlayer->pev->movetype = MOVETYPE_WALK;
+			pPlayer->pev->speed = 300;
+		}
 	}
 	else if (g_pGameRules->ClientCommand(player, pcmd))
 	{
@@ -868,28 +917,7 @@ void ClientCommand(edict_t* pEntity)
 	int is_sandbox = gamerule_sandbox.value;
 	if (is_sandbox == 1)
 	{
-
-		// Start - Noclip Bind-Key
-		if (FStrEq(pcmd, "+noclip"))
-		{
-			int noclip_isON = allow_noclip.value;
-			if (noclip_isON == 1)
-			{
-				CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-				pPlayer->pev->movetype = MOVETYPE_NOCLIP;
-				pPlayer->pev->speed = 450;
-			}
-		}
-		else if (FStrEq(pcmd, "-noclip"))
-		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			pPlayer->pev->movetype = MOVETYPE_WALK;
-			pPlayer->pev->speed = 300;
-		}
-		// End - Noclip Bind-Key
-
-
-		else if (FStrEq(pcmd, "button_allied_set"))
+		if (FStrEq(pcmd, "button_allied_set"))
 		{
 			if (m_bnpc_allied)
 			{
@@ -920,29 +948,44 @@ void ClientCommand(edict_t* pEntity)
 		}
 		else if (FStrEq(pcmd, "button_aim_spawn"))
 		{
-			if (m_baim_spawn)
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
+			if (pPlayer->m_fUseSpawnAim)
 			{
-				m_baim_spawn = false;
+				pPlayer->m_fUseSpawnAim = false;
 				GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
 			}
 			else
 			{
-				m_baim_spawn = true;
+				pPlayer->m_fUseSpawnAim = true;
 				GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
 			}
 			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 		}
 
+		for (int i = 0; i < ARRAYSIZE(gToolgunModes); i++)
+		{
+			tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
+			if (FStrEq(pcmd, ToolGunModesinfo.commandname))
+			{
+				CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+				pPlayer->m_iToolMode = ToolGunModesinfo.id;
+				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+			}
+		}
+
 		// Start - Spawn NPCS Code
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
 			monster_t monsterInfo = gMonsters[i];
 			char combinetoprefix[512];
 			strcpy(combinetoprefix, "button_");
 			strcat(combinetoprefix, monsterInfo.classname);
 			if (FStrEq(pcmd, combinetoprefix))
 			{
-				if (m_baim_spawn == true)
+				if (pPlayer->m_fUseSpawnAim)
 				{
 					GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
 				}
@@ -961,13 +1004,15 @@ void ClientCommand(edict_t* pEntity)
 		// Standard Weapons/items
 		for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
 		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
 			weapon_t weaponInfo = gWeapons[i];
 			char combinetoprefix[512];
 			strcpy(combinetoprefix, "button_");
 			strcat(combinetoprefix, weaponInfo.classname);
 			if (FStrEq(pcmd, combinetoprefix))
 			{
-				if (m_baim_spawn == true)
+				if (pPlayer->m_fUseSpawnAim)
 				{
 					GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
 				}

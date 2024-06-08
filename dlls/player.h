@@ -436,6 +436,11 @@ private:
 public:
 	//True if the player is currently spawning.
 	bool m_bIsSpawning = false;
+	bool m_buddha;
+
+	// Go-Mod: Reborn Stuff
+	int m_iToolMode;
+	bool m_fUseSpawnAim;
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)

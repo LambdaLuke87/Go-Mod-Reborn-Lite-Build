@@ -60,4 +60,5 @@ void Game_HookEvents()
 	gEngfuncs.pfnHookEvent("events/sniper.sc", EV_SniperRifle);
 	gEngfuncs.pfnHookEvent("events/knife.sc", EV_Knife);
 	gEngfuncs.pfnHookEvent("events/penguinfire.sc", EV_PenguinFire);
+	gEngfuncs.pfnHookEvent("events/removetool.sc", EV_ToolGun);
 }
