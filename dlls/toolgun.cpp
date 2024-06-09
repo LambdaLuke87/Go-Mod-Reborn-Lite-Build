@@ -4,7 +4,7 @@
  *		     2009-2010 Ranger366 & FITAMOD (HLMODER)		          *
  *                                                                    *
  *           Updated and improved for Go-Mod: Reborn                  *
- *                 2023 - 2024 LambdaLuke87                           *
+ *                  2023-2024 LambdaLuke87                            *
  *														              *
  ********************************************************************/
 
@@ -41,7 +41,7 @@ void CToolgun::Precache()
 	PRECACHE_SOUND ("weapons/tg_shot1.wav");
 	PRECACHE_SOUND ("weapons/tg_shot2.wav");
 
-	m_removetool = PRECACHE_EVENT( 1, "events/removetool.sc" );
+	m_usToolGun = PRECACHE_EVENT(1, "events/toolgun.sc");
 
 }
 
@@ -110,7 +110,7 @@ void CToolgun::PrimaryAttack()
 	flags = 0;
 #endif
 	
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_removetool, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolGun, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
 
@@ -150,7 +150,7 @@ void CToolgun::SecondaryAttack()
 	flags = 0;
 #endif
 	
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_removetool, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolGun, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 

@@ -121,7 +121,7 @@ struct weapon_t
 weapon_t gWeapons[] =
 	{
 		{"weapon_crowbar"},
-		//{"weapon_physgun"},
+		{"weapon_physgun"},
 		{"weapon_toolgun"},
 		{"weapon_9mmhandgun"},
 		{"weapon_357"},
@@ -1366,7 +1366,7 @@ void ClientPrecache()
 
 	// PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound
 
-	PRECACHE_SOUND("player/pl_fallpain2.wav");
+	//PRECACHE_SOUND("player/pl_fallpain2.wav");
 	PRECACHE_SOUND("player/pl_fallpain3.wav");
 
 	PRECACHE_SOUND("player/pl_step1.wav"); // walk on concrete
@@ -1449,9 +1449,9 @@ void ClientPrecache()
 	// player gib sounds
 	PRECACHE_SOUND("common/bodysplat.wav");
 
-	// player pain sounds
+	/* player pain sounds
 	PRECACHE_SOUND("player/pl_pain2.wav");
-	PRECACHE_SOUND("player/pl_pain4.wav");
+	PRECACHE_SOUND("player/pl_pain4.wav");*/
 	PRECACHE_SOUND("player/pl_pain5.wav");
 	PRECACHE_SOUND("player/pl_pain6.wav");
 	PRECACHE_SOUND("player/pl_pain7.wav");

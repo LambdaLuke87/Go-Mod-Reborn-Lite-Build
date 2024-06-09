@@ -63,6 +63,9 @@ extern int nanmask;
 		(b)[1] = (a)[1]; \
 		(b)[2] = (a)[2]; \
 	}
+
+#define VectorAverage(a, b, o) ((o)[0] = ((a)[0] + (b)[0]) * 0.5, (o)[1] = ((a)[1] + (b)[1]) * 0.5, (o)[2] = ((a)[2] + (b)[2]) * 0.5)
+
 inline void VectorClear(float* a)
 {
 	a[0] = 0.0;

@@ -90,6 +90,7 @@ CSporeLauncher g_SporeLauncher;
 CSniperRifle g_SniperRifle;
 CKnife g_Knife;
 CPenguin g_Penguin;
+CPhysgun g_PhysGun;
 CToolgun g_ToolGun;
 
 
@@ -546,6 +547,7 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity(&g_SniperRifle, &player);
 	HUD_PrepEntity(&g_Knife, &player);
 	HUD_PrepEntity(&g_Penguin, &player);
+	HUD_PrepEntity(&g_PhysGun, &player);
 	HUD_PrepEntity(&g_ToolGun, &player);
 }
 
@@ -642,6 +644,8 @@ CBasePlayerWeapon* GetLocalWeapon(int id)
 		return &g_Knife;
 	case WEAPON_PENGUIN:
 		return &g_Penguin;
+	case WEAPON_PHYSGUN:
+		return &g_PhysGun;
 	case WEAPON_TOOLGUN:
 		return &g_ToolGun;
 
