@@ -128,7 +128,8 @@ void CSniperRifle::PrimaryAttack()
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 
-	--m_iClip;
+	if (!rule_infammo.value)
+		--m_iClip;
 
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 

@@ -128,7 +128,8 @@ void CHgun::PrimaryAttack()
 	m_flRechargeTime = gpGlobals->time + 0.5;
 #endif
 
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+	if (!rule_infammo.value)
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
@@ -230,8 +231,9 @@ void CHgun::SecondaryAttack()
 
 	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usHornetFire, 0.0, g_vecZero, g_vecZero, 0.0, 0.0, 0, 0, 0, 0);
 
+	if (!rule_infammo.value)
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 

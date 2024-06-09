@@ -538,7 +538,8 @@ void CSqueak::PrimaryAttack()
 
 			m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			if (!rule_infammo.value)
+				m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 			m_fJustThrown = true;
 

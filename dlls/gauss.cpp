@@ -23,6 +23,7 @@
 #include "shake.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+#include "game.h"
 
 LINK_ENTITY_TO_CLASS(weapon_gauss, CGauss);
 
@@ -140,7 +141,8 @@ void CGauss::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = GAUSS_PRIMARY_FIRE_VOLUME;
 	m_fPrimaryFire = true;
 
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 2;
+	if (!rule_infammo.value)
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 2;
 
 	StartFire();
 	m_fInAttack = 0;
@@ -181,8 +183,11 @@ void CGauss::SecondaryAttack()
 
 		m_fPrimaryFire = false;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--; // take one ammo just to start the spin
-		m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase();
+		if (!rule_infammo.value)
+		{
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--; // take one ammo just to start the spin
+			m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase();
+		}
 
 		// spin up
 		m_pPlayer->m_iWeaponVolume = GAUSS_PRIMARY_CHARGE_VOLUME;
@@ -219,13 +224,19 @@ void CGauss::SecondaryAttack()
 				if (g_pGameRules->IsMultiplayer())
 #endif
 				{
-					m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-					m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.1;
+					if (!rule_infammo.value)
+					{
+						m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+						m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.1;
+					}
 				}
 				else
 				{
-					m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-					m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.3;
+					if (!rule_infammo.value)
+					{
+						m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+						m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.3;
+					}
 				}
 			}
 		}
@@ -332,12 +343,9 @@ void CGauss::StartFire()
 			m_pPlayer->pev->velocity = m_pPlayer->pev->velocity - gpGlobals->v_forward * flDamage * 5;
 		}
 
-		if (!g_pGameRules->IsMultiplayer())
-
-		{
-			// in deathmatch, gauss can pop you up into the air. Not in single play.
+		if (!allow_gaussfly.value) // command for gauss can pop you up into the air.
 			m_pPlayer->pev->velocity.z = flZVel;
-		}
+
 #endif
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);

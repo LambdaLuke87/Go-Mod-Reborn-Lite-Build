@@ -27,6 +27,7 @@
 #include "func_break.h"
 #include "decals.h"
 #include "explode.h"
+#include "game.h"
 
 // =================== FUNC_Breakable ==============================================
 
@@ -963,7 +964,24 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 
 	if (pOther->IsPlayer())
 	{
-		if (push && (pevToucher->button & (IN_FORWARD | IN_USE)) == 0) // Don't push unless the player is pushing forward and NOT use (pull)
+		if (pushablemode.value == -1)
+		{
+			// Don't push unless the player is pushing forward and NOT use (pull)
+			if (push && !(pevToucher->button & (IN_FORWARD | IN_USE)))
+				return;
+		}
+		// g-cont. fix pushable acceleration bug (now implemented as cvar)
+		else if (pushablemode.value != 0)
+		{
+			// Allow player push when moving right, left and back too
+			if (push && !(pevToucher->button & (IN_FORWARD | IN_MOVERIGHT | IN_MOVELEFT | IN_BACK)))
+				return;
+			// Require player walking back when applying '+use' on pushable
+			if (!push && !(pevToucher->button & (IN_BACK)))
+				return;
+		}
+		// Don't push when +use pressed
+		else if (push && (pevToucher->button & (IN_USE)))
 			return;
 		playerTouch = true;
 	}
@@ -972,7 +990,7 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 
 	if (playerTouch)
 	{
-		if ((pevToucher->flags & FL_ONGROUND) == 0) // Don't push away from jumping/falling players unless in water
+		if (!(pevToucher->flags & FL_ONGROUND)) // Don't push away from jumping/falling players unless in water
 		{
 			if (pev->waterlevel < 1)
 				return;
@@ -985,20 +1003,50 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 	else
 		factor = 0.25;
 
-	pev->velocity.x += pevToucher->velocity.x * factor;
-	pev->velocity.y += pevToucher->velocity.y * factor;
+	if (pushablemode.value != 0)
+	{
+		pev->velocity.x += pevToucher->velocity.x * factor;
+		pev->velocity.y += pevToucher->velocity.y * factor;
+	}
+	else
+	{
+		if (push)
+		{
+			factor = 0.25f;
+			pev->velocity.x += pevToucher->velocity.x * factor;
+			pev->velocity.y += pevToucher->velocity.y * factor;
+		}
+		else
+		{
+			// fix for pushable acceleration
+			if (sv_pushable_fixed_tick_fudge.value >= 0)
+				factor *= (sv_pushable_fixed_tick_fudge.value * gpGlobals->frametime);
+
+			if (fabs(pev->velocity.x) < fabs(pevToucher->velocity.x - pevToucher->velocity.x * factor))
+				pev->velocity.x += pevToucher->velocity.x * factor;
+			if (fabs(pev->velocity.y) < fabs(pevToucher->velocity.y - pevToucher->velocity.y * factor))
+				pev->velocity.y += pevToucher->velocity.y * factor;
+		}
+	}
 
 	float length = sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
-	if (push && (length > MaxSpeed()))
+	if ((push && pushablemode.value != 0) || pushablemode.value == 0)
 	{
-		pev->velocity.x = (pev->velocity.x * MaxSpeed() / length);
-		pev->velocity.y = (pev->velocity.y * MaxSpeed() / length);
+		if (length > MaxSpeed())
+		{
+			pev->velocity.x = (pev->velocity.x * MaxSpeed() / length);
+			pev->velocity.y = (pev->velocity.y * MaxSpeed() / length);
+		}
 	}
 	if (playerTouch)
 	{
-		pevToucher->velocity.x = pev->velocity.x;
-		pevToucher->velocity.y = pev->velocity.y;
-		if ((gpGlobals->time - m_soundTime) > 0.7)
+		if (push || pushablemode.value != 0)
+		{
+			pevToucher->velocity.x = pev->velocity.x;
+			pevToucher->velocity.y = pev->velocity.y;
+		}
+
+		if ((gpGlobals->time - m_soundTime) > 0.7f)
 		{
 			m_soundTime = gpGlobals->time;
 			if (length > 0 && FBitSet(pev->flags, FL_ONGROUND))

@@ -271,7 +271,8 @@ void CDisplacer::AltSpinupThink()
 
 void CDisplacer::FireThink()
 {
-	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 20;
+	if (!rule_infammo.value)
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 20;
 
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
@@ -408,7 +409,8 @@ void CDisplacer::AltFireThink()
 		PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFireDisplacer, 0, g_vecZero, g_vecZero,
 			0, 0, static_cast<int>(DisplacerMode::FIRED), 0, 1, 0);
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 60;
+		if (!rule_infammo.value)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 60;
 
 		CDisplacerBall::CreateDisplacerBall(m_pPlayer->m_DisplacerReturn, Vector(90, 0, 0), m_pPlayer);
 

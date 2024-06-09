@@ -457,7 +457,8 @@ void CRpg::PrimaryAttack()
 
 		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usRpg);
 
-		m_iClip--;
+		if (!rule_infammo.value)
+			m_iClip--;
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;

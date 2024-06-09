@@ -182,7 +182,8 @@ void CEagle::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	--m_iClip;
+	if (!rule_infammo.value)
+		--m_iClip;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 

@@ -1506,6 +1506,12 @@ void CBasePlayer::PlayerUse()
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = TRAIN_NEW | TRAIN_OFF;
+
+				CBaseEntity* pTrain = Instance(pev->groundentity);
+				if (pTrain && pTrain->Classify() == CLASS_VEHICLE)
+				{
+					((CFuncVehicle*)pTrain)->m_pDriver = NULL;
+				}
 				return;
 			}
 			else
@@ -1517,7 +1523,14 @@ void CBasePlayer::PlayerUse()
 					m_afPhysicsFlags |= PFLAG_ONTRAIN;
 					m_iTrain = TrainSpeed(pTrain->pev->speed, pTrain->pev->impulse);
 					m_iTrain |= TRAIN_NEW;
-					EMIT_SOUND(ENT(pev), CHAN_ITEM, "plats/train_use1.wav", 0.8, ATTN_NORM);
+					
+					if (pTrain->Classify() == CLASS_VEHICLE)
+					{
+						EMIT_SOUND(ENT(pev), CHAN_ITEM, "plats/vehicle_ignition.wav", 0.8, ATTN_NORM);
+						((CFuncVehicle*)pTrain)->m_pDriver = this;
+					}
+					else
+						EMIT_SOUND(ENT(pev), CHAN_ITEM, "plats/train_use1.wav", 0.8, ATTN_NORM);
 					return;
 				}
 			}
@@ -1641,9 +1654,17 @@ void CBasePlayer::Jump()
 
 	// If you're standing on a conveyor, add it's velocity to yours (for momentum)
 	entvars_t* pevGround = VARS(pev->groundentity);
-	if (pevGround && (pevGround->flags & FL_CONVEYOR) != 0)
+	if (pevGround)
 	{
-		pev->velocity = pev->velocity + pev->basevelocity;
+		if (pevGround->flags & FL_CONVEYOR)
+		{
+			pev->velocity = pev->velocity + pev->basevelocity;
+		}
+
+		if (FClassnameIs(pevGround, "func_vehicle"))
+		{
+			pev->velocity = pevGround->velocity + pev->velocity;
+		}
 	}
 }
 
@@ -2083,28 +2104,59 @@ void CBasePlayer::PreThink()
 				//ALERT( at_error, "In train mode with no train!\n" );
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = TRAIN_NEW | TRAIN_OFF;
+				if (pTrain)
+					((CFuncVehicle*)pTrain)->m_pDriver = NULL;
 				return;
 			}
 		}
-		else if (!FBitSet(pev->flags, FL_ONGROUND) || FBitSet(pTrain->pev->spawnflags, SF_TRACKTRAIN_NOCONTROL) || (pev->button & (IN_MOVELEFT | IN_MOVERIGHT)) != 0)
+		else if (!FBitSet(pev->flags, FL_ONGROUND) || FBitSet(pTrain->pev->spawnflags, SF_TRACKTRAIN_NOCONTROL) || ((pev->button & (IN_MOVELEFT | IN_MOVERIGHT)) && pTrain->Classify() != CLASS_VEHICLE))
 		{
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 			m_iTrain = TRAIN_NEW | TRAIN_OFF;
+			((CFuncVehicle*)pTrain)->m_pDriver = NULL;
 			return;
 		}
 
 		pev->velocity = g_vecZero;
 		vel = 0;
-		if ((m_afButtonPressed & IN_FORWARD) != 0)
+		if (pTrain->Classify() == CLASS_VEHICLE)
 		{
-			vel = 1;
-			pTrain->Use(this, this, USE_SET, (float)vel);
+			if (pev->button & IN_FORWARD)
+			{
+				vel = 1;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
+
+			if (pev->button & IN_BACK)
+			{
+				vel = -1;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
+
+			if (pev->button & IN_MOVELEFT)
+			{
+				vel = 20;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
+			if (pev->button & IN_MOVERIGHT)
+			{
+				vel = 30;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
 		}
-		else if ((m_afButtonPressed & IN_BACK) != 0)
+		else
 		{
-			vel = -1;
-			pTrain->Use(this, this, USE_SET, (float)vel);
+			if (m_afButtonPressed & IN_FORWARD)
+			{
+				vel = 1;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
+			else if (m_afButtonPressed & IN_BACK)
+			{
+				vel = -1;
+				pTrain->Use(this, this, USE_SET, vel);
+			}
 		}
 
 		if (0 != vel)

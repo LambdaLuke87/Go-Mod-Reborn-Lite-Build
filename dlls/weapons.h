@@ -440,6 +440,8 @@ extern void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage);
 extern int DamageDecal(CBaseEntity* pEntity, int bitsDamageType);
 extern void RadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 
+extern cvar_s rule_infammo;
+
 typedef struct
 {
 	CBaseEntity* pEntity;

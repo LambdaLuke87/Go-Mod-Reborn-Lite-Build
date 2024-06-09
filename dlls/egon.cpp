@@ -132,10 +132,13 @@ bool CEgon::HasAmmo()
 
 void CEgon::UseAmmo(int count)
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] >= count)
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= count;
-	else
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] = 0;
+	if (!rule_infammo.value)
+	{
+		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] >= count)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= count;
+		else
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] = 0;
+	}
 }
 
 void CEgon::Attack()

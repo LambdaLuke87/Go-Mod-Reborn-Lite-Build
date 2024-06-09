@@ -33,6 +33,7 @@ cvar_t friendlyfire = {"mp_friendlyfire", "0", FCVAR_SERVER};
 cvar_t falldamage = {"mp_falldamage", "0", FCVAR_SERVER};
 cvar_t weaponstay = {"mp_weaponstay", "0", FCVAR_SERVER};
 cvar_t forcerespawn = {"mp_forcerespawn", "1", FCVAR_SERVER};
+cvar_t pushablemode = {"pushablemode", "0", FCVAR_SERVER};
 cvar_t flashlight = {"mp_flashlight", "1", FCVAR_SERVER};
 cvar_t aimcrosshair = {"mp_autocrosshair", "1", FCVAR_SERVER};
 cvar_t decalfrequency = {"decalfrequency", "30", FCVAR_SERVER};
@@ -51,8 +52,10 @@ cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 cvar_t gamerule_sandbox = {"gm_gamerule_sandbox", "1", FCVAR_SERVER}; // Sandbox Mode
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
+cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
+cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -605,6 +608,8 @@ cvar_t dmjumpsound = {"sv_dmjumpsound", "1", FCVAR_SERVER};
 
 // END Opposing Force variables
 
+cvar_t sv_pushable_fixed_tick_fudge = {"sv_pushable_fixed_tick_fudge", "15"};
+
 static bool SV_InitServer()
 {
 	if (!FileSystem_LoadFileSystem())
@@ -655,6 +660,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&falldamage);
 	CVAR_REGISTER(&weaponstay);
 	CVAR_REGISTER(&forcerespawn);
+	CVAR_REGISTER(&pushablemode);
 	CVAR_REGISTER(&flashlight);
 	CVAR_REGISTER(&aimcrosshair);
 	CVAR_REGISTER(&decalfrequency);
@@ -673,6 +679,8 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_healthmodify);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);
+	CVAR_REGISTER(&rule_infammo);
+	CVAR_REGISTER(&allow_gaussfly);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt
@@ -1200,6 +1208,8 @@ void GameDLLInit()
 	CVAR_REGISTER(&coopplay);
 	CVAR_REGISTER(&defaultcoop);
 	CVAR_REGISTER(&coopweprespawn);
+
+	CVAR_REGISTER(&sv_pushable_fixed_tick_fudge);
 
 	CVAR_REGISTER(&oldgrapple);
 	CVAR_REGISTER(&oldweapons);

@@ -57,9 +57,14 @@ extern cvar_t* g_psv_cheats;
 extern cvar_t allow_spectators;
 extern cvar_t mp_chattime;
 
+// HLSDK-Portable Cvars
+extern cvar_t pushablemode;
+extern cvar_t sv_pushable_fixed_tick_fudge;
+
 // Go-Mod Reborn Cvars
 extern cvar_t gamerule_sandbox;
 extern cvar_t allow_noclip;
 extern cvar_t allow_healthmodify;
+extern cvar_t allow_gaussfly;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;

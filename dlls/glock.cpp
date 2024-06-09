@@ -109,7 +109,8 @@ void CGlock::GlockFire(float flSpread, float flCycleTime, bool fUseAutoAim)
 		return;
 	}
 
-	m_iClip--;
+	if (!rule_infammo.value)
+		m_iClip--;
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 

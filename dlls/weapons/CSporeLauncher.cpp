@@ -194,7 +194,8 @@ void CSporeLauncher::PrimaryAttack()
 
 		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usFireSpore);
 
-		--m_iClip;
+		if (!rule_infammo.value)
+			--m_iClip;
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
@@ -244,7 +245,8 @@ void CSporeLauncher::SecondaryAttack()
 
 		PLAYBACK_EVENT(flags, m_pPlayer->edict(), m_usFireSpore);
 
-		--m_iClip;
+		if (!rule_infammo.value)
+			--m_iClip;
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;

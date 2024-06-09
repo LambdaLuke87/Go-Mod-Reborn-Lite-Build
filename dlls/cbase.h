@@ -111,6 +111,7 @@ typedef void (CBaseEntity::*USEPTR)(CBaseEntity* pActivator, CBaseEntity* pCalle
 #define CLASS_HUMAN_MILITARY_FRIENDLY 14 // Opposing Force friendlies
 #define CLASS_ALIEN_RACE_X 15
 #define CLASS_PLAYER_ALIEN_ALLY 16
+#define CLASS_VEHICLE 17
 #define CLASS_CTFITEM 30
 #define CLASS_BARNACLE 99 // special because no one pays attention to it, and it eats a wide cross-section of creatures.
 

@@ -153,7 +153,8 @@ void CM249::PrimaryAttack()
 		return;
 	}
 
-	--m_iClip;
+	if (!rule_infammo.value)
+		--m_iClip;
 
 	pev->body = RecalculateBody(m_iClip);
 

@@ -176,7 +176,10 @@ void CPenguin::PrimaryAttack()
 				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "squeek/sqk_hunt3.wav", VOL_NORM, ATTN_NORM, 0, 105);
 
 			m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
-			--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+
+			if (!rule_infammo.value)
+				--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+
 			m_fJustThrown = true;
 
 			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.9;

@@ -192,7 +192,8 @@ void CShockRifle::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
-	--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+	if (!rule_infammo.value)
+		--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
 
 	m_flRechargeTime = gpGlobals->time + 1.0;
 

@@ -117,7 +117,8 @@ void CShotgun::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	m_iClip--;
+	if (!rule_infammo.value)
+		m_iClip--;
 
 	int flags;
 #if defined(CLIENT_WEAPONS)
@@ -188,7 +189,8 @@ void CShotgun::SecondaryAttack()
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	m_iClip -= 2;
+	if (!rule_infammo.value)
+		m_iClip -= 2;
 
 
 	int flags;

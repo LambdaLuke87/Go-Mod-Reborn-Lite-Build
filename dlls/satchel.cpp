@@ -315,13 +315,19 @@ void CSatchel::Holster()
 
 void CSatchel::PrimaryAttack()
 {
-	switch (m_chargeReady)
-	{
-	case 0:
+	if (m_chargeReady != 2)
 	{
 		Throw();
 	}
-	break;
+}
+
+
+void CSatchel::SecondaryAttack()
+{
+	switch (m_chargeReady)
+	{
+	case 0:
+		break;
 	case 1:
 	{
 		SendWeaponAnim(SATCHEL_RADIO_FIRE);
@@ -337,32 +343,19 @@ void CSatchel::PrimaryAttack()
 				if (pSatchel->pev->owner == pPlayer)
 				{
 					pSatchel->Use(m_pPlayer, m_pPlayer, USE_ON, 0);
-					m_chargeReady = 2;
 				}
 			}
 		}
 
 		m_chargeReady = 2;
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5f);
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
 		break;
 	}
-
 	case 2:
 		// we're reloading, don't allow fire
-		{
-		}
 		break;
-	}
-}
-
-
-void CSatchel::SecondaryAttack()
-{
-	if (m_chargeReady != 2)
-	{
-		Throw();
 	}
 }
 
@@ -393,7 +386,8 @@ void CSatchel::Throw()
 
 		m_chargeReady = 1;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		if (!rule_infammo.value)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
