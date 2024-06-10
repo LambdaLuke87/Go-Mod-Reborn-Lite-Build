@@ -825,6 +825,24 @@ void ClientCommand(edict_t* pEntity)
 			}
 		}
 	}
+	else if (FStrEq(pcmd, "zeus"))
+	{
+		int InmortalRule = allow_healthmodify.value;
+		if (0 != InmortalRule)
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			if (pPlayer->pev->takedamage == DAMAGE_YES)
+			{
+				pPlayer->pev->takedamage = DAMAGE_NO;
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus Mode on\n");
+			}
+			else
+			{
+				pPlayer->pev->takedamage = DAMAGE_YES;
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus Mode off\n");
+			}
+		}
+	}
 	else if (FStrEq(pcmd, "+noclip"))
 	{
 		int noclip_isON = allow_noclip.value;
