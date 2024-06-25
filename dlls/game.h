@@ -68,3 +68,4 @@ extern cvar_t allow_healthmodify;
 extern cvar_t allow_gaussfly;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;
+extern cvar_t spawn_wpnsetup;

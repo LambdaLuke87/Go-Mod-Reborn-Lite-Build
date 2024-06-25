@@ -658,9 +658,70 @@ void CHalfLifeMultiplay::PlayerSpawn(CBasePlayer* pPlayer)
 
 	if (addDefault)
 	{
-		pPlayer->GiveNamedItem("weapon_crowbar");
-		pPlayer->GiveNamedItem("weapon_9mmhandgun");
-		pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
+		int WeaponSetup = spawn_wpnsetup.value;
+
+		if (WeaponSetup == 4)
+		{
+			pPlayer->GiveNamedItem("weapon_toolgun");
+			pPlayer->GiveNamedItem("weapon_physgun");
+		}
+		else if (WeaponSetup >= 1)
+		{
+			pPlayer->GiveNamedItem("weapon_crowbar");
+			pPlayer->GiveNamedItem("weapon_9mmhandgun");
+			pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
+
+			if (WeaponSetup >= 2)
+			{
+				if (WeaponSetup == 3)
+				{
+					pPlayer->GiveNamedItem("weapon_knife");
+					pPlayer->GiveNamedItem("weapon_pipewrench");
+					pPlayer->GiveNamedItem("weapon_357");
+					pPlayer->GiveNamedItem("weapon_eagle");
+					pPlayer->GiveNamedItem("weapon_9mmAR");
+					pPlayer->GiveNamedItem("weapon_shotgun");
+					pPlayer->GiveNamedItem("weapon_crossbow");
+					pPlayer->GiveNamedItem("weapon_rpg");
+					pPlayer->GiveNamedItem("weapon_gauss");
+					pPlayer->GiveNamedItem("weapon_egon");
+					pPlayer->GiveNamedItem("weapon_handgrenade");
+					pPlayer->GiveNamedItem("weapon_satchel");
+					pPlayer->GiveNamedItem("weapon_tripmine");
+					pPlayer->GiveNamedItem("weapon_snark");
+					pPlayer->GiveNamedItem("weapon_penguin");
+					pPlayer->GiveNamedItem("weapon_m249");
+					pPlayer->GiveNamedItem("weapon_displacer");
+					pPlayer->GiveNamedItem("weapon_sniperrifle");
+					pPlayer->GiveNamedItem("weapon_sporelauncher");
+
+					/* TODO: need be fixed, idk why is Buggy the hornetgun and the shockrifle >:(
+					pPlayer->GiveNamedItem("weapon_hornetgun");
+					pPlayer->GiveNamedItem("weapon_shockrifle"); */
+
+					// Give the maximum amount of ammunition for each weapon
+					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
+					pPlayer->GiveAmmo(_357_MAX_CARRY, "357", _357_MAX_CARRY);
+					pPlayer->GiveAmmo(BUCKSHOT_MAX_CARRY, "buckshot", BUCKSHOT_MAX_CARRY);
+					pPlayer->GiveAmmo(BOLT_MAX_CARRY, "bolts", BOLT_MAX_CARRY);
+					pPlayer->GiveAmmo(ROCKET_MAX_CARRY, "rockets", ROCKET_MAX_CARRY);
+					pPlayer->GiveAmmo(URANIUM_MAX_CARRY, "uranium", URANIUM_MAX_CARRY);
+					//pPlayer->GiveAmmo(HORNET_MAX_CARRY, "Hornets", HORNET_MAX_CARRY);
+					pPlayer->GiveAmmo(HANDGRENADE_MAX_CARRY, "Hand Grenade", HANDGRENADE_MAX_CARRY);
+					pPlayer->GiveAmmo(SATCHEL_MAX_CARRY, "Satchel Charge", SATCHEL_MAX_CARRY);
+					pPlayer->GiveAmmo(TRIPMINE_MAX_CARRY, "Trip Mine", TRIPMINE_MAX_CARRY);
+					pPlayer->GiveAmmo(SNARK_MAX_CARRY, "Snarks", SNARK_MAX_CARRY);
+					pPlayer->GiveAmmo(PENGUIN_MAX_CARRY, "Penguins", PENGUIN_MAX_CARRY);
+					pPlayer->GiveAmmo(M249_MAX_CARRY, "556", M249_MAX_CARRY);
+					pPlayer->GiveAmmo(SNIPERRIFLE_MAX_CARRY, "762", SNIPERRIFLE_MAX_CARRY);
+					pPlayer->GiveAmmo(SPORELAUNCHER_MAX_CARRY, "spores", SPORELAUNCHER_MAX_CARRY);
+					//pPlayer->GiveAmmo(SHOCKRIFLE_MAX_CLIP, "shock", SHOCKRIFLE_MAX_CLIP);
+				}
+
+				pPlayer->GiveNamedItem("weapon_toolgun");
+				pPlayer->GiveNamedItem("weapon_physgun");
+			}
+		}
 	}
 
 	InitItemsForPlayer(pPlayer);

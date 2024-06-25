@@ -82,7 +82,7 @@ const MonsterInfo gMonsterInfos[] =
 		{30, "monster_shocktrooper"},
 		{31, "monster_shockroach"},
 		{32, "monster_pitdrone"},
-		{33,"monster_alien_voltigore"},
+		{33, "monster_alien_voltigore"},
 		{34, "monster_alien_babyvoltigore"},
 		{35, "monster_human_grunt_ally"},
 		{36, "monster_human_medic_ally"},
@@ -1779,19 +1779,14 @@ Vector CBaseEntity::FireBulletsRemoveTool(unsigned int cShots, Vector vecSrc, Ve
 	TraceResult tr;
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
-	float x, y, z, i;
+	float x, y, z, i = 0;
 	CBaseEntity* pEntity;
 
-	x = 0;
-	y = 0;
-	z = 0;
-	i = 0;
 	if (pevAttacker == NULL)
 		pevAttacker = pev; // the default attacker is ourselves
 
 	ClearMultiDamage();
 	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
-
 
 	pEntity = FindEntityForwardNew(this);
 
@@ -1821,12 +1816,8 @@ Vector CBaseEntity::FireBulletsDuplicatorSelect(unsigned int cShots, Vector vecS
 	TraceResult tr;
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
-	float x, y;
+	float x, y = 0;
 	CBaseEntity* pEntity;
-
-
-	x = 0;
-	y = 0;
 
 	if (pevAttacker == NULL)
 		pevAttacker = pev; // the default attacker is ourselves
@@ -1834,17 +1825,13 @@ Vector CBaseEntity::FireBulletsDuplicatorSelect(unsigned int cShots, Vector vecS
 	ClearMultiDamage();
 	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
 
-
 	pEntity = FindEntityForwardNew(this);
 	if (pEntity)
 	{
-
+		// Pick the Monster ID
 		monster_type = MonsterInfo::GetId(STRING(pEntity->pev->classname));
 	}
 
-	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
-	{
-	}
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }
 
@@ -1894,10 +1881,7 @@ Vector CBaseEntity::FireBulletsPoserTool(unsigned int cShots, Vector vecSrc, Vec
 	TraceResult tr;
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
-	float x, y;
-
-	x = 0;
-	y = 0;
+	float x, y = 0;
 
 	CBaseEntity* pEntity;
 
@@ -1915,7 +1899,6 @@ Vector CBaseEntity::FireBulletsPoserTool(unsigned int cShots, Vector vecSrc, Vec
 
 		if (pEntity)
 		{
-
 			frame = RANDOM_LONG(0, 256);
 
 			pEntity->pev->frame = frame;
@@ -1932,10 +1915,7 @@ Vector CBaseEntity::FireBulletsPoserToolSelect(unsigned int cShots, Vector vecSr
 	TraceResult tr;
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
-	float x, y;
-
-	x = 0;
-	y = 0;
+	float x, y = 0;
 
 	CBaseEntity* pEntity;
 
@@ -1945,11 +1925,9 @@ Vector CBaseEntity::FireBulletsPoserToolSelect(unsigned int cShots, Vector vecSr
 	ClearMultiDamage();
 	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
 
-
 	for (unsigned int iShot = 1; iShot <= cShots; iShot++)
 	{
 		pEntity = FindEntityForwardNew(this);
-
 		if (pEntity)
 		{
 			pEntity->pev->sequence++;

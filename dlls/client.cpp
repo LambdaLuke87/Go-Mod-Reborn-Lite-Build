@@ -831,15 +831,15 @@ void ClientCommand(edict_t* pEntity)
 		if (0 != InmortalRule)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			if (pPlayer->pev->takedamage == DAMAGE_YES)
+			if (0 != pPlayer->pev->takedamage)
 			{
 				pPlayer->pev->takedamage = DAMAGE_NO;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus Mode on\n");
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Applied Zeus invulnerability\n");
 			}
 			else
 			{
 				pPlayer->pev->takedamage = DAMAGE_YES;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus Mode off\n");
+				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus invulnerability removed\n");
 			}
 		}
 	}
