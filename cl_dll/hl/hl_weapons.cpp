@@ -304,27 +304,12 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }
 
-Vector CBaseEntity::FireBulletsRemoveTool(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
 }
 
-Vector CBaseEntity::FireBulletsDuplicator(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
-{
-	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
-}
-
-Vector CBaseEntity::FireBulletsDuplicatorSelect(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
-{
-	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
-}
-
-Vector CBaseEntity::FireBulletsPoserTool(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
-{
-	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
-}
-
-Vector CBaseEntity::FireBulletsPoserToolSelect(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
 }

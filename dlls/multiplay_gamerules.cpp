@@ -112,49 +112,25 @@ void CHalfLifeMultiplay::RefreshSkillData()
 	CGameRules::RefreshSkillData();
 
 	// override some values for multiplay.
-
-	// suitcharger
-	gSkillData.suitchargerCapacity = 30;
-
-	// Crowbar whack
-	gSkillData.plrDmgCrowbar = 25;
-
-	// Glock Round
-	gSkillData.plrDmg9MM = 12;
-
-	// 357 Round
-	gSkillData.plrDmg357 = 40;
-
-	// MP5 Round
-	gSkillData.plrDmgMP5 = 12;
-
-	// M203 grenade
-	gSkillData.plrDmgM203Grenade = 100;
-
-	// Shotgun buckshot
-	gSkillData.plrDmgBuckshot = 20; // fewer pellets in deathmatch
-
-	// Crossbow
-	gSkillData.plrDmgCrossbowClient = 20;
-
-	// RPG
-	gSkillData.plrDmgRPG = 120;
-
-	// Egon
-	gSkillData.plrDmgEgonWide = 20;
-	gSkillData.plrDmgEgonNarrow = 10;
-
-	// Hand Grendade
-	gSkillData.plrDmgHandGrenade = 100;
-
-	// Satchel Charge
-	gSkillData.plrDmgSatchel = 120;
-
-	// Tripmine
-	gSkillData.plrDmgTripmine = 150;
-
-	// hornet
-	gSkillData.plrDmgHornet = 10;
+	int SkillWeaponsLevel = allow_dm_weapons_skills.value;
+	if (SkillWeaponsLevel == 1)
+	{
+		gSkillData.suitchargerCapacity = 30;  // suitcharger
+		gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
+		gSkillData.plrDmg9MM = 12;			  // Glock Round
+		gSkillData.plrDmg357 = 40;			  // 357 Round
+		gSkillData.plrDmgMP5 = 12;			  // MP5 Round
+		gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
+		gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
+		gSkillData.plrDmgCrossbowClient = 20; // Crossbow
+		gSkillData.plrDmgRPG = 120;			  // RPG
+		gSkillData.plrDmgEgonWide = 20;		  // Egon Wide
+		gSkillData.plrDmgEgonNarrow = 10;	  // Egon Narrow
+		gSkillData.plrDmgHandGrenade = 100;	  // Hand Grendade
+		gSkillData.plrDmgSatchel = 120;		  // Satchel Charge
+		gSkillData.plrDmgTripmine = 150;	  // Tripmine
+		gSkillData.plrDmgHornet = 10;		  // hornet
+	}
 }
 
 // longest the intermission can last, in seconds

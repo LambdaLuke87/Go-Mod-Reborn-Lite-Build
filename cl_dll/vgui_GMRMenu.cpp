@@ -22,32 +22,32 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 	m_pPanel->getPos(iXPos, iYPos);
 	m_pPanel->getSize(iXSize, iYSize);
 
-	m_pButtonLinkMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENU1"), iXPos + XRES(16), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
+	m_pButtonLinkMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuTab_Main"), iXPos + XRES(16), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	m_pButtonLinkMenu->addActionSignal(new CMenuHandler_StringCommand("toggleLinkMenu"));
 	m_pButtonLinkMenu->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	m_pButtonLinkMenu->setParent(this);
 
-	m_pButtonSweepMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENU2"), iXPos + XRES(82), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
+	m_pButtonSweepMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuTab_Weapons"), iXPos + XRES(82), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	m_pButtonSweepMenu->addActionSignal(new CMenuHandler_StringCommand("toggleWeaponsMenu"));
 	m_pButtonSweepMenu->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	m_pButtonSweepMenu->setParent(this);
 
-	m_pButtonItemsMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENU3"), iXPos + XRES(148), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
+	m_pButtonItemsMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuTab_Items"), iXPos + XRES(148), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	m_pButtonItemsMenu->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	m_pButtonItemsMenu->addActionSignal(new CMenuHandler_StringCommand("toggleItemsMenu"));
 	m_pButtonItemsMenu->setParent(this);
 
-	m_pButtonNPCMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENU4"), iXPos + XRES(214), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
+	m_pButtonNPCMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuTab_Monsters"), iXPos + XRES(214), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	m_pButtonNPCMenu->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	m_pButtonNPCMenu->addActionSignal(new CMenuHandler_StringCommand("toggleMonstersMenu"));
 	m_pButtonNPCMenu->setParent(this);
 
-	m_pButtonToolsMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENU5"), iXPos + XRES(280), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
+	m_pButtonToolsMenu = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuTab_Tools"), iXPos + XRES(280), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	m_pButtonToolsMenu->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	m_pButtonToolsMenu->addActionSignal(new CMenuHandler_StringCommand("toggleToolsMenu"));
 	m_pButtonToolsMenu->setParent(this);
 
-	m_pButtonAimMode = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#GMTABMENUAIM"), iXPos + XRES(370), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(135), BUTTON_SIZE_Y - YRES(8));
+	m_pButtonAimMode = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuButton_Aim"), iXPos + XRES(370), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(135), BUTTON_SIZE_Y - YRES(8));
 	m_pButtonAimMode->addActionSignal(new CMenuHandler_StringCommand("button_aim_spawn"));
 	m_pButtonAimMode->setParent(this);
 	m_pButtonAimMode->setVisible(false);
@@ -503,5 +503,9 @@ CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int ta
 
 	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Poser Mode"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_posermode"));
+	pButtonTool->setParent(this);
+
+	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("HP Modify"), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_health_pick"));
 	pButtonTool->setParent(this);
 }

@@ -53,10 +53,12 @@ cvar_t gamerule_sandbox = {"gm_gamerule_sandbox", "1", FCVAR_SERVER}; // Sandbox
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
+cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
+cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -678,11 +680,13 @@ void GameDLLInit()
 	CVAR_REGISTER(&gamerule_sandbox);
 	CVAR_REGISTER(&allow_noclip);
 	CVAR_REGISTER(&allow_healthmodify);
+	CVAR_REGISTER(&allow_gaussfly);
+	CVAR_REGISTER(&allow_dm_weapons_skills);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);
 	CVAR_REGISTER(&rule_infammo);
-	CVAR_REGISTER(&allow_gaussfly);
 	CVAR_REGISTER(&spawn_wpnsetup);
+	CVAR_REGISTER(&custom_npc_health);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

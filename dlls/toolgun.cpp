@@ -80,28 +80,15 @@ void CToolgun::PrimaryAttack()
 	Vector vecDir;
 
 		// optimized multiplayer. Widened to make it easier to hit a moving player
-	if (m_pPlayer->m_iToolMode == 1)
-		vecDir = m_pPlayer->FireBulletsDuplicator(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	else if (m_pPlayer->m_iToolMode == 2)
-		vecDir = m_pPlayer->FireBulletsRemoveTool(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	else if (m_pPlayer->m_iToolMode == 3)
+	if (m_pPlayer->m_iToolMode == 3)
 	{
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, 1);
 #endif
 	}
-	else if (m_pPlayer->m_iToolMode == 4)
-		vecDir = m_pPlayer->FireBulletsPoserTool(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	/* else if (m_pPlayer->m_iToolMode == 5)
-	{
-		UTIL_MakeVectors(Vector(pev->v_angle.x, pev->v_angle.y, pev->v_angle.z));
-		CBaseEntity::Create("monster_camera", pev->origin, pev->angles, pev->owner, m_pPlayer);
-	}
-	else if (m_pPlayer->m_iToolMode == 6)
-		vecDir = m_pPlayer->FireBulletsRemoveToolRender(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	else if (m_pPlayer->m_iToolMode == 7)
-		vecDir = m_pPlayer->FireBulletsNpcEditorTool(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-		*/
+	else
+		vecDir = m_pPlayer->FireBulletsToolGun(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
+
 
   int flags;
 #if defined( CLIENT_WEAPONS )
@@ -134,14 +121,7 @@ void CToolgun::SecondaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
-	if (m_pPlayer->m_iToolMode == 1)
-		vecDir = m_pPlayer->FireBulletsDuplicatorSelect(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	else if (m_pPlayer->m_iToolMode == 4)
-		vecDir = m_pPlayer->FireBulletsPoserToolSelect(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	/* else if (m_pPlayer->m_iToolMode == 6)
-		vecDir = m_pPlayer->FireBulletsRemoveToolRender(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
-	else (m_pPlayer->m_iToolMode == 7)
-		vecDir = m_pPlayer->FireBulletsNpcEditorTool(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);}*/
+	vecDir = m_pPlayer->FireBulletsToolGunAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
   int flags;
 #if defined( CLIENT_WEAPONS )

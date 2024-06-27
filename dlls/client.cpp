@@ -179,7 +179,7 @@ tgunmodes_helper_t gToolgunModes[] =
 		{"button_tool_posermode", 4},
 		{"button_tool_cameramode", 5},
 		{"button_tool_rendermode", 6},
-		{"button_tool_npceditormode", 7}};
+		{"button_tool_health_pick", 7}};
 
 // Start - Aim spawn code of GM6
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
