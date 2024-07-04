@@ -1839,14 +1839,104 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 		int frame = 0;
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
 		{
-			pEntity = FindEntityForwardNew(this);
-
 			if (pEntity)
 			{
 				frame = RANDOM_LONG(0, 256);
 
 				pEntity->pev->frame = frame;
 			}
+		}
+	}
+	else if (pPlayer->m_iToolMode == 6)
+	{
+		if (pEntity)
+		{
+			// Render Color
+			pEntity->pev->rendercolor.x = pPlayer->m_iToolRenderColorR; // Red
+			pEntity->pev->rendercolor.y = pPlayer->m_iToolRenderColorG; // Green
+			pEntity->pev->rendercolor.z = pPlayer->m_iToolRenderColorB; // Blue
+
+			switch (pPlayer->m_iToolRenderMode)
+			{
+			case 1:
+				pEntity->pev->rendermode = kRenderGlow;
+				break;
+			case 2:
+				pEntity->pev->rendermode = kRenderTransColor;
+				break;
+			case 3:
+				pEntity->pev->rendermode = kRenderTransAlpha;
+				break;
+			case 4:
+				pEntity->pev->rendermode = kRenderTransAdd;
+				break;
+			case 5:
+				pEntity->pev->rendermode = kRenderTransTexture;
+				break;
+			default:
+				pEntity->pev->rendermode = kRenderNormal;
+				break;
+			}
+
+			switch (pPlayer->m_iToolRenderFX)
+			{
+			case 1:
+				pEntity->pev->renderfx = kRenderFxPulseSlow;
+				break;
+			case 2:
+				pEntity->pev->renderfx = kRenderFxPulseFast;
+				break;
+			case 3:
+				pEntity->pev->renderfx = kRenderFxPulseSlowWide;
+				break;
+			case 4:
+				pEntity->pev->renderfx = kRenderFxPulseFastWide;
+				break;
+			case 5:
+				pEntity->pev->renderfx = kRenderFxFadeSlow;
+				break;
+			case 6:
+				pEntity->pev->renderfx = kRenderFxFadeFast;
+				break;
+			case 7:
+				pEntity->pev->renderfx = kRenderFxSolidSlow;
+				break;
+			case 8:
+				pEntity->pev->renderfx = kRenderFxSolidFast;
+				break;
+			case 9:
+				pEntity->pev->renderfx = kRenderFxStrobeSlow;
+				break;
+			case 10:
+				pEntity->pev->renderfx = kRenderFxStrobeFast;
+				break;
+			case 11:
+				pEntity->pev->renderfx = kRenderFxFlickerSlow;
+				break;
+			case 12:
+				pEntity->pev->renderfx = kRenderFxFlickerFast;
+				break;
+			case 13:
+				pEntity->pev->renderfx = kRenderFxNoDissipation;
+				break;
+			case 14:
+				pEntity->pev->renderfx = kRenderFxDistort;
+				break;
+			case 15:
+				pEntity->pev->renderfx = kRenderFxHologram;
+				break;
+			case 16:
+				pEntity->pev->renderfx = kRenderFxExplode;
+				break;
+			case 17:
+				pEntity->pev->renderfx = kRenderFxGlowShell;
+				break;
+			default:
+				pEntity->pev->renderfx = kRenderFxNone;
+				break;
+			}
+			
+			pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
 		}
 	}
 	else if (pPlayer->m_iToolMode == 7)

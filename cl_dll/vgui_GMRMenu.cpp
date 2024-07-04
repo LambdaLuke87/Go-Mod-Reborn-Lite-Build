@@ -47,7 +47,9 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 	m_pButtonToolsMenu->addActionSignal(new CMenuHandler_StringCommand("toggleToolsMenu"));
 	m_pButtonToolsMenu->setParent(this);
 
-	m_pButtonAimMode = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("#Gomod_MenuButton_Aim"), iXPos + XRES(370), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(135), BUTTON_SIZE_Y - YRES(8));
+	m_pButtonAimMode = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(370), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(135), BUTTON_SIZE_Y - YRES(8));
+	m_pButtonAimMode->m_bNoMarginSpace = true;
+	m_pButtonAimMode->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Gomod_MenuButton_Aim"));
 	m_pButtonAimMode->addActionSignal(new CMenuHandler_StringCommand("button_aim_spawn"));
 	m_pButtonAimMode->setParent(this);
 	m_pButtonAimMode->setVisible(false);
@@ -55,6 +57,16 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 	CommandButton* pButtonExit = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(410), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(149), BUTTON_SIZE_Y - YRES(16));
 	pButtonExit->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
 	pButtonExit->setParent(this);
+}
+
+void CGMMenuBase::ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall)
+{
+	CommandButton* EasyButton;
+	EasyButton = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), x, y, wide, tall);
+	EasyButton->m_bNoMarginSpace = true;
+	EasyButton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
+	EasyButton->addActionSignal(new CMenuHandler_StringCommand(command));
+	EasyButton->setParent(this);
 }
 
 CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall)
@@ -118,118 +130,36 @@ CWeaponsMenu ::CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, i
 	m_pButtonSweepMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	CommandButton* pButtonWeapon;
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Crowbar"), iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_crowbar"));
-	pButtonWeapon->setParent(this);
+	ButtonHelper("Crowbar", "button_weapon_crowbar", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Physgun", "button_weapon_physgun", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Toolgun", "button_weapon_toolgun", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Glock", "button_weapon_9mmhandgun", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Python", "button_weapon_357", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Mp5", "button_weapon_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Physgun"), iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_physgun"));
-	pButtonWeapon->setParent(this);
+	ButtonHelper("Shotgun", "button_weapon_shotgun", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Crossbow", "button_weapon_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("RPG", "button_weapon_rpg", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Gauss", "button_weapon_gauss", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Egon", "button_weapon_egon", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("HiveHand", "button_weapon_hornetgun", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Toolgun"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_toolgun"));
-	pButtonWeapon->setParent(this);
+	ButtonHelper("Grenade", "button_weapon_handgrenade", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Satchel", "button_weapon_satchel", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Tripmine", "button_weapon_tripmine", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Snark", "button_weapon_snark", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Barnacle Graple", "button_weapon_grapple", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Knife", "button_weapon_knife", iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Glock"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_9mmhandgun"));
-	pButtonWeapon->setParent(this);
+	ButtonHelper("PipeWrench", "button_weapon_pipewrench", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Desert Egle", "button_weapon_eagle", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("M249", "button_weapon_m249", iXPos + XRES(144), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Sniper Rifle", "button_weapon_sniperrifle", iXPos + XRES(208), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Displacer", "button_weapon_displacer", iXPos + XRES(272), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Shock Rifle", "button_weapon_shockrifle", iXPos + XRES(336), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Python"), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_357"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Mp5"), iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_9mmAR"));
-	pButtonWeapon->setParent(this);
-
-
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Shotgun"), iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_shotgun"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Crossbow"), iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_crossbow"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("RPG"), iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_rpg"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gauss"), iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_gauss"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Egon"), iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_egon"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("HiveHand"), iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_hornetgun"));
-	pButtonWeapon->setParent(this);
-
-
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Grenade"), iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_handgrenade"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Satchel"), iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_satchel"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Tripmine"), iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_tripmine"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Snark"), iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_snark"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("BGraple"), iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_grapple"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Displacer"), iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_displacer"));
-	pButtonWeapon->setParent(this);
-
-
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Knife"), iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_knife"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("SniperRifle"), iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_sniperrifle"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Penguin"), iXPos + XRES(144), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_penguin"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("PipeWrench"), iXPos + XRES(208), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_pipewrench"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("M249"), iXPos + XRES(272), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_m249"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("ShockRifle"), iXPos + XRES(336), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_shockrifle"));
-	pButtonWeapon->setParent(this);
-
-
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Spore Launcher"), iXPos + XRES(16), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_sporelauncher"));
-	pButtonWeapon->setParent(this);
-
-	pButtonWeapon = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Desert Egle"), iXPos + XRES(80), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonWeapon->addActionSignal(new CMenuHandler_StringCommand("button_weapon_eagle"));
-	pButtonWeapon->setParent(this);
+	ButtonHelper("Spore Launcher", "button_weapon_sporelauncher", iXPos + XRES(16), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Penguin", "button_weapon_penguin", iXPos + XRES(80), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 }
 
 CItemsMenu::CItemsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
@@ -237,70 +167,23 @@ CItemsMenu::CItemsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int ta
 	m_pButtonItemsMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	CommandButton* pButtonItem;
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("HealthKit"), iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_item_healthkit"));
-	pButtonItem->setParent(this);
+	ButtonHelper("HealthKit", "button_item_healthkit", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Battery", "button_item_battery", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("LongJump", "button_item_longjump", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("HEV Suit", "button_item_suit", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Glock Ammo", "button_ammo_9mmclip", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Mp5 Ammo", "button_ammo_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Battery"), iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_item_battery"));
-	pButtonItem->setParent(this);
+	ButtonHelper("AR Grenades", "button_ammo_ARgrenades", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Arrows", "button_ammo_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Uranium", "button_ammo_gaussclip", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Rockets", "button_ammo_rpgclip", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Buckshot", "button_ammo_buckshot", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("357 clip", "button_ammo_357", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("LonJump"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_item_longjump"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("HEV Suit"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_item_suit"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Glock Ammo"), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_9mmclip"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Mp5 Ammo"), iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_9mmAR"));
-	pButtonItem->setParent(this);
-
-
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("AR Grenades"), iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_ARgrenades"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Arrows"), iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_crossbow"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Uranium"), iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_gaussclip"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Rockets"), iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_rpgclip"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Buckshot"), iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_buckshot"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("357 clip"), iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_357"));
-	pButtonItem->setParent(this);
-
-
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("556 Ammo"), iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_556"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Spores"), iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_spore"));
-	pButtonItem->setParent(this);
-
-	pButtonItem = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("762 Ammo"), iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonItem->addActionSignal(new CMenuHandler_StringCommand("button_ammo_762"));
-	pButtonItem->setParent(this);
+	ButtonHelper("556 Ammo", "button_ammo_556", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Spores", "button_ammo_spore", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("762 Ammo", "button_ammo_762", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 }
 
 CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
@@ -308,204 +191,102 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 	m_pButtonNPCMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	CommandButton* pButtonNPC;
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Alien Controller"), iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_alien_controller"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("Alien Controller", "button_monster_alien_controller", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Alien Grunt", "button_monster_alien_grunt", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Alien Slave", "button_monster_alien_slave", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Gargantua", "button_monster_gargantua", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Shock Trooper", "button_monster_shocktrooper", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Shock Roach", "button_monster_shockroach", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Alien Grunt"), iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_alien_grunt"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("Voltigore", "button_monster_alien_voltigore", iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Baby Voltigore", "button_monster_alien_babyvoltigore", iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Pitdrone", "button_monster_pitdrone", iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Houndeye", "button_monster_houndeye", iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Bullsquid", "button_monster_bullchicken", iXPos + XRES(272), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Headcrab", "button_monster_headcrab", iXPos + XRES(336), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Alien Slave"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_alien_slave"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("BabyCrab", "button_monster_babycrab", iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Big Momma", "button_monster_bigmomma", iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Tentacle", "button_monster_tentacle", iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Leech", "button_monster_leech", iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Boid", "button_monster_flyer", iXPos + XRES(272), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Ichthyosaur", "button_monster_ichthyosaur", iXPos + XRES(336), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	
+	ButtonHelper("Gonome", "button_monster_gonome", iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Zombie", "button_monster_zombie", iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Zombie Barney", "button_monster_zombie_barney", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Zombie Soldier", "button_monster_zombie_soldier", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Barnacle", "button_monster_barnacle", iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Rat", "button_monster_rat", iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gargantua"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_gargantua"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("CockRoach", "button_monster_cockroach", iXPos + XRES(16), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Scientist", "button_monster_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Cleansuit Scientist", "button_monster_cleansuit_scientist", iXPos + XRES(144), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Barney", "button_monster_barney", iXPos + XRES(208), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Otis", "button_monster_otis", iXPos + XRES(272), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Ally Hgrunt", "button_monster_human_grunt_ally", iXPos + XRES(336), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Shock Trooper"), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_shocktrooper"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("Medic Hgrunt", "button_monster_human_medic_ally", iXPos + XRES(16), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Torch Hgrunt", "button_monster_human_torch_ally", iXPos + XRES(80), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Human Grunt", "button_monster_human_grunt", iXPos + XRES(144), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Male Assassin", "button_monster_male_assassin", iXPos + XRES(208), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Female Assassin", "button_monster_human_assassin", iXPos + XRES(272), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Apache", "button_monster_apache", iXPos + XRES(336), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Shock Roach"), iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_shockroach"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("Sentry", "button_monster_sentry", iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Gman", "button_monster_gman", iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Voltigore"), iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_alien_voltigore"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Baby Voltigore"), iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_alien_babyvoltigore"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Pítdrone"), iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_pitdrone"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Houndeye"), iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_houndeye"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Bullsquid"), iXPos + XRES(272), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_bullchicken"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Headcrab"), iXPos + XRES(336), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_headcrab"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("BabyCrab"), iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_babycrab"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Big Momma"), iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_bigmomma"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Tentacle"), iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_tentacle"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Leech"), iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_leech"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Boid"), iXPos + XRES(272), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_flyer"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Ichthyosaur"), iXPos + XRES(336), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_ichthyosaur"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gonome"), iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_gonome"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Zombie"), iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_zombie"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Zombie Barney"), iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_zombie_barney"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Zombie Soldier"), iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_zombie_soldier"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Barnacle"), iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_barnacle"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Rat"), iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_rat"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("CockRoach"), iXPos + XRES(16), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_cockroach"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Scientist"), iXPos + XRES(80), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_scientist"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Cleansuit Scientist"), iXPos + XRES(144), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_cleansuit_scientist"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Barney"), iXPos + XRES(208), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_barney"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Otis"), iXPos + XRES(272), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_otis"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Ally Hgrunt"), iXPos + XRES(336), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_human_grunt_ally"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Medic Hgrunt"), iXPos + XRES(16), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_human_medic_ally"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Torch Hgrunt"), iXPos + XRES(80), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_human_torch_ally"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Human Grunt"), iXPos + XRES(144), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_human_grunt"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Male Assassin"), iXPos + XRES(208), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_male_assassin"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Female Assass"), iXPos + XRES(272), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_human_assassin"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Apache"), iXPos + XRES(336), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + -YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_apache"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Sentry"), iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_sentry"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gman"), iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_monster_gman"));
-	pButtonNPC->setParent(this);
-
-
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("No AI"), iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_ai_set"));
-	pButtonNPC->setParent(this);
-
-	pButtonNPC = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Ally"), iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	pButtonNPC->addActionSignal(new CMenuHandler_StringCommand("button_allied_set"));
-	pButtonNPC->setParent(this);
+	ButtonHelper("No AI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
 
 CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	m_pButtonToolsMenu->setVisible(false);
 
-	CommandButton* pButtonTool;
-	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Duplicator"), iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_duplicatemode"));
-	pButtonTool->setParent(this);
+	ButtonHelper("Duplicator", "button_tool_duplicatemode", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Remover", "button_tool_removemode", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Gib Mode", "button_tool_gibmode", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("Poser Mode", "button_tool_posermode", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	//ButtonHelper("Render Mode", "button_tool_rendermode", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("HP Modify", "button_tool_health_set", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Remover"), iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_removemode"));
-	pButtonTool->setParent(this);
+	CommandButton* pButtonRender;
+	pButtonRender = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	pButtonRender->m_bNoMarginSpace = true;
+	pButtonRender->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("Render Mode"));
+	pButtonRender->addActionSignal(new CMenuHandler_StringCommand("button_tool_rendermode"));
+	pButtonRender->addActionSignal(new CMenuHandler_StringCommand("toggleRenderMenu"));
+	pButtonRender->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
+	pButtonRender->setParent(this);
+}
 
-	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Gib Mode"), iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_gibmode"));
-	pButtonTool->setParent(this);
+CRenderToolMenu::CRenderToolMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
+{
+	ButtonHelper("Red+", "button_render_red+", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Red-", "button_render_red-", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Red Max", "button_render_red_max", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Red Min", "button_render_red_min", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("Poser Mode"), iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_posermode"));
-	pButtonTool->setParent(this);
+	ButtonHelper("Green+", "button_render_green+", iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Green-", "button_render_green-", iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Green Max", "button_render_green_max", iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Green Min", "button_render_green_min", iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	pButtonTool = new CommandButton(CHudTextMessage::BufferedLocaliseTextString("HP Modify"), iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	pButtonTool->addActionSignal(new CMenuHandler_StringCommand("button_tool_health_pick"));
-	pButtonTool->setParent(this);
+	ButtonHelper("Blue+", "button_render_blue+", iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Blue-", "button_render_blue-", iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Blue Max", "button_render_blue_max", iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Green Min", "button_render_blue_min", iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+
+	ButtonHelper("Amount+", "button_render_amount+", iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Amount-", "button_render_amount-", iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Amount Max", "button_render_amount_max", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Amount Min", "button_render_amount_min", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+
+	ButtonHelper("Normal", "button_render_knormal", iXPos + XRES(16), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Glow", "button_render_kglow", iXPos + XRES(80), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Color", "button_render_ktranscolor", iXPos + XRES(144), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Alpha", "button_render_ktransalpha", iXPos + XRES(208), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Add", "button_render_ktransadd", iXPos + XRES(272), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Texture", "button_render_ktranstext", iXPos + XRES(336), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }

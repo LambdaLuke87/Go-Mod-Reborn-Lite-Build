@@ -440,7 +440,14 @@ public:
 
 	// Go-Mod: Reborn Stuff
 	int m_iToolMode;
+	int m_iToolRenderMode;
+	int m_iToolRenderFX;
+	int m_iToolRenderAMT;
+	int m_iToolRenderColorR;
+	int m_iToolRenderColorG;
+	int m_iToolRenderColorB;
 	bool m_fUseSpawnAim;
+	bool m_fLogButtonInConsole;
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)

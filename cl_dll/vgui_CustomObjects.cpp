@@ -105,6 +105,7 @@ void CommandButton::Init()
 	m_pSubMenu = NULL;
 	m_pSubLabel = NULL;
 	m_pParentMenu = NULL;
+	m_bNoMarginSpace = NULL;
 
 	// Set text color to orange
 	setFgColor(Scheme::sc_primary1);
@@ -143,7 +144,11 @@ void CommandButton::RecalculateText()
 	else
 	{
 		// just draw a space if no key bound
-		sprintf(szBuf, "     %s", m_sMainText);
+		if (m_bNoMarginSpace == true)
+			sprintf(szBuf, " %s", m_sMainText);
+		else
+			sprintf(szBuf, "     %s", m_sMainText);
+
 		szBuf[MAX_BUTTON_SIZE - 1] = 0;
 	}
 

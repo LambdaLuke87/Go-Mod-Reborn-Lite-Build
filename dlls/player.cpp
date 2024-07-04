@@ -136,8 +136,15 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 
 		DEFINE_FIELD(CBasePlayer, m_buddha, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseSpawnAim, FIELD_BOOLEAN),
+		DEFINE_FIELD(CBasePlayer, m_fLogButtonInConsole, FIELD_BOOLEAN),
 
 		DEFINE_FIELD(CBasePlayer, m_iToolMode, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderMode, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderFX, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderAMT, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorR, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorG, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorB, FIELD_INTEGER),
 };
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer);

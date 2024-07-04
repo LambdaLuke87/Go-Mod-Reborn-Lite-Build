@@ -54,6 +54,7 @@ class CWeaponsMenu; // Weapons Menu
 class CItemsMenu; // Items Menu
 class CMonstersMenu; // Npcs Menu
 class CToolsMenu; // Tools Menu
+class CRenderToolMenu; // Render Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -186,7 +187,8 @@ private:
 	void RecalculateText( void );
 
 public:
-	bool	m_bNoHighlight;
+	bool m_bNoHighlight;
+	bool m_bNoMarginSpace; // Remove this evil Space >:/
 
 public:
 	CommandButton(const char* text,int x,int y,int wide,int tall, bool bNoHighlight, bool bFlat);
@@ -528,6 +530,8 @@ private:
 	CMenuPanel* ShowMonstersMenu(void);
 	void CreateToolsMenu(void);
 	CMenuPanel* ShowToolsMenu(void);
+	void CreateRenderToolMenu(void);
+	CMenuPanel* ShowRenderToolMenu(void);
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -667,6 +671,7 @@ public:
 	CItemsMenu* m_pItemsMenu; // Items Menu
 	CMonstersMenu* m_pMonstersMenu; // Npcs Menu
 	CToolsMenu* m_pToolsMenu; // Tools Menu
+	CRenderToolMenu* m_pRenderToolMenu; // Render Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1645,6 +1650,7 @@ private:
 
 public:
 	CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	void ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall);
 
 	CommandButton* m_pButtonLinkMenu;
 	CommandButton* m_pButtonSweepMenu;
@@ -1687,6 +1693,12 @@ class CToolsMenu : public CGMMenuBase
 {
 public:
 	CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+};
+
+class CRenderToolMenu : public CGMMenuBase
+{
+public:
+	CRenderToolMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 };
 
 //================================================================
