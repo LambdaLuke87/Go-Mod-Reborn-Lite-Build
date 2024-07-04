@@ -1993,6 +1993,98 @@ Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Ve
 			}
 		}
 	}
+	else if (pPlayer->m_iToolMode == 6)
+	{
+		if (pEntity)
+		{
+			// Render Color
+			pPlayer->m_iToolRenderColorR = pEntity->pev->rendercolor.x; // Red
+			pPlayer->m_iToolRenderColorG = pEntity->pev->rendercolor.y; // Green
+			pPlayer->m_iToolRenderColorB = pEntity->pev->rendercolor.z; // Blue
+
+			switch (pEntity->pev->rendermode)
+			{
+			case kRenderGlow:
+				pPlayer->m_iToolRenderMode = 1;
+				break;
+			case kRenderTransColor:
+				pPlayer->m_iToolRenderMode = 2;
+				break;
+			case kRenderTransAlpha:
+				pPlayer->m_iToolRenderMode = 3;
+				break;
+			case kRenderTransAdd:
+				pPlayer->m_iToolRenderMode = 4;
+				break;
+			case kRenderTransTexture:
+				pPlayer->m_iToolRenderMode = 5;
+				break;
+			default:
+				pPlayer->m_iToolRenderMode = 0;
+				break;
+			}
+
+			switch (pEntity->pev->renderfx)
+			{
+			case kRenderFxPulseSlow:
+				pPlayer->m_iToolRenderFX = 1;
+				break;
+			case kRenderFxPulseFast:
+				pPlayer->m_iToolRenderFX = 2;
+				break;
+			case kRenderFxPulseSlowWide:
+				pPlayer->m_iToolRenderFX = 3;
+				break;
+			case kRenderFxPulseFastWide:
+				pPlayer->m_iToolRenderFX = 4;
+				break;
+			case kRenderFxFadeSlow:
+				pPlayer->m_iToolRenderFX = 5;
+				break;
+			case kRenderFxFadeFast:
+				pPlayer->m_iToolRenderFX = 6;
+				break;
+			case kRenderFxSolidSlow:
+				pPlayer->m_iToolRenderFX = 7;
+				break;
+			case kRenderFxSolidFast:
+				pPlayer->m_iToolRenderFX = 8;
+				break;
+			case kRenderFxStrobeSlow:
+				pPlayer->m_iToolRenderFX = 9;
+				break;
+			case kRenderFxStrobeFast:
+				pPlayer->m_iToolRenderFX = 10;
+				break;
+			case kRenderFxFlickerSlow:
+				pPlayer->m_iToolRenderFX = 11;
+				break;
+			case kRenderFxFlickerFast:
+				pPlayer->m_iToolRenderFX = 12;
+				break;
+			case kRenderFxNoDissipation:
+				pPlayer->m_iToolRenderFX = 13;
+				break;
+			case kRenderFxDistort:
+				pPlayer->m_iToolRenderFX = 14;
+				break;
+			case kRenderFxHologram:
+				pPlayer->m_iToolRenderFX = 15;
+				break;
+			case kRenderFxExplode:
+				pPlayer->m_iToolRenderFX = 16;
+				break;
+			case kRenderFxGlowShell:
+				pPlayer->m_iToolRenderFX = 17;
+				break;
+			default:
+				pPlayer->m_iToolRenderFX = 0;
+				break;
+			}
+
+			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
+		}
+	}
 
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }

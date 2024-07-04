@@ -62,7 +62,7 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 void CGMMenuBase::ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall)
 {
 	CommandButton* EasyButton;
-	EasyButton = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), x, y, wide, tall);
+	EasyButton = new CommandButton("", x, y, wide, tall);
 	EasyButton->m_bNoMarginSpace = true;
 	EasyButton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
 	EasyButton->addActionSignal(new CMenuHandler_StringCommand(command));
@@ -283,10 +283,31 @@ CRenderToolMenu::CRenderToolMenu(int iTrans, int iRemoveMe, int x, int y, int wi
 	ButtonHelper("Amount Max", "button_render_amount_max", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper("Amount Min", "button_render_amount_min", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Normal", "button_render_knormal", iXPos + XRES(16), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Glow", "button_render_kglow", iXPos + XRES(80), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Transp Color", "button_render_ktranscolor", iXPos + XRES(144), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Transp Alpha", "button_render_ktransalpha", iXPos + XRES(208), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Transp Add", "button_render_ktransadd", iXPos + XRES(272), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Transp Texture", "button_render_ktranstext", iXPos + XRES(336), iYPos + iYSize - YRES(96) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Normal", "button_render_knormal", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Glow", "button_render_kglow", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Color", "button_render_ktranscolor", iXPos + XRES(144), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Alpha", "button_render_ktransalpha", iXPos + XRES(208), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Add", "button_render_ktransadd", iXPos + XRES(272), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Transp Texture", "button_render_ktranstext", iXPos + XRES(336), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+
+	ButtonHelper("None", "button_render_krendernone", iXPos + XRES(16), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Pulse Slow", "button_render_krenderpulseslow", iXPos + XRES(80), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Pulse Fast", "button_render_krenderpulsefast", iXPos + XRES(144), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Pulse SWide", "button_render_krenderpulseslowwide", iXPos + XRES(208), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Pulse FWide", "button_render_krenderpulsefastwide", iXPos + XRES(272), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Fade Slow", "button_render_krenderfadeslow", iXPos + XRES(336), iYPos + iYSize - YRES(70) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+
+	ButtonHelper("Fade Fast", "button_render_krenderfadefast", iXPos + XRES(16), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Solid Slow", "button_render_krendersolidslow", iXPos + XRES(80), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Solid Fast", "button_render_krendersolidfast", iXPos + XRES(144), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Strobe Slow", "button_render_krenderstrobeslow", iXPos + XRES(208), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Strobe Fast", "button_render_krenderstrobefast", iXPos + XRES(272), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Flicker Slow", "button_render_krenderflickerslow", iXPos + XRES(336), iYPos + iYSize - YRES(44) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+
+	ButtonHelper("Flicker Fast", "button_render_krenderflickerfast", iXPos + XRES(16), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("No Dissipation", "button_render_krendernodissipation", iXPos + XRES(80), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Distort", "button_render_krenderdistort", iXPos + XRES(144), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Hologram", "button_render_krenderhologram", iXPos + XRES(208), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Explode", "button_render_krenderexplode", iXPos + XRES(272), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("Glow Shell", "button_render_krenderglowshell", iXPos + XRES(336), iYPos + iYSize - YRES(18) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }

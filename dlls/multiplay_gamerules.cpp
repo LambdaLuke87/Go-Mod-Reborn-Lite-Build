@@ -1122,6 +1122,10 @@ int CHalfLifeMultiplay::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
 		return GR_WEAPON_RESPAWN_NO;
 	}
 
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem >= 1)
+		return GR_WEAPON_RESPAWN_NO;
+
 	return GR_WEAPON_RESPAWN_YES;
 }
 
@@ -1178,6 +1182,10 @@ int CHalfLifeMultiplay::ItemShouldRespawn(CItem* pItem)
 		return GR_ITEM_RESPAWN_NO;
 	}
 
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem >= 1)
+		return GR_ITEM_RESPAWN_NO;
+
 	return GR_ITEM_RESPAWN_YES;
 }
 
@@ -1223,6 +1231,10 @@ int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo* pAmmo)
 	{
 		return GR_AMMO_RESPAWN_NO;
 	}
+
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem >= 1)
+		return GR_AMMO_RESPAWN_NO;
 
 	return GR_AMMO_RESPAWN_YES;
 }
