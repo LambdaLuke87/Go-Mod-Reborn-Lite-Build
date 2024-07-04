@@ -75,6 +75,8 @@ public:
 
 	void ToggleZoom();
 
+	const char* MyWModel() { return "models/w_m40a1.mdl"; }
+
 private:
 	unsigned short m_usSniper;
 

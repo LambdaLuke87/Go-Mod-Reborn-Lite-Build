@@ -82,6 +82,8 @@ public:
 
 	void SetWeaponData(const weapon_data_t& data) override;
 
+	const char* MyWModel() { return "models/w_desert_eagle.mdl"; }
+
 private:
 	void UpdateLaser();
 

@@ -71,6 +71,8 @@ public:
 #endif
 	}
 
+	const char* MyWModel() { return "models/w_shock_rifle.mdl"; }
+
 private:
 	void RechargeAmmo(bool bLoud);
 

@@ -49,7 +49,7 @@ LINK_ENTITY_TO_CLASS(weapon_grapple, CGrapple);
 void CGrapple::Precache()
 {
 	PRECACHE_MODEL("models/v_bgrap.mdl");
-	PRECACHE_MODEL("models/w_bgrap.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_bgrap.mdl");
 
 	PRECACHE_SOUND("weapons/bgrapple_release.wav");
@@ -74,7 +74,7 @@ void CGrapple::Spawn()
 
 	m_iId = WEAPON_GRAPPLE;
 
-	SET_MODEL(edict(), "models/w_bgrap.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iClip = WEAPON_NOCLIP;
 

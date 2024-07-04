@@ -38,7 +38,7 @@ LINK_ENTITY_TO_CLASS(weapon_sporelauncher, CSporeLauncher);
 
 void CSporeLauncher::Precache()
 {
-	PRECACHE_MODEL("models/w_spore_launcher.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/v_spore_launcher.mdl");
 	PRECACHE_MODEL("models/p_spore_launcher.mdl");
 
@@ -59,7 +59,7 @@ void CSporeLauncher::Spawn()
 
 	m_iId = WEAPON_SPORELAUNCHER;
 
-	SET_MODEL(edict(), "models/w_spore_launcher.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = SPORELAUNCHER_DEFAULT_GIVE;
 

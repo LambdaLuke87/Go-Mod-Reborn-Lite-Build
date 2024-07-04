@@ -42,7 +42,7 @@ LINK_ENTITY_TO_CLASS(weapon_m249, CM249);
 void CM249::Precache()
 {
 	PRECACHE_MODEL("models/v_saw.mdl");
-	PRECACHE_MODEL("models/w_saw.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_saw.mdl");
 
 	m_iShell = PRECACHE_MODEL("models/saw_shell.mdl");
@@ -65,7 +65,7 @@ void CM249::Spawn()
 
 	m_iId = WEAPON_M249;
 
-	SET_MODEL(edict(), "models/w_saw.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = M249_DEFAULT_GIVE;
 

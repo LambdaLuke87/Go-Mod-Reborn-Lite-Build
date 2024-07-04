@@ -31,7 +31,7 @@ void CCrowbar::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_CROWBAR;
-	SET_MODEL(ENT(pev), "models/w_crowbar.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 	m_iClip = -1;
 
 	FallInit(); // get ready to fall down.
@@ -41,7 +41,7 @@ void CCrowbar::Spawn()
 void CCrowbar::Precache()
 {
 	PRECACHE_MODEL("models/v_crowbar.mdl");
-	PRECACHE_MODEL("models/w_crowbar.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_crowbar.mdl");
 	PRECACHE_SOUND("weapons/cbar_hit1.wav");
 	PRECACHE_SOUND("weapons/cbar_hit2.wav");

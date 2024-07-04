@@ -27,7 +27,7 @@ void CPhysgun::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_PHYSGUN;
-	SET_MODEL(ENT(pev), "models/w_physgun.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 	m_iClip = -1;
 
 	FallInit(); // get ready to fall down.
@@ -37,7 +37,7 @@ void CPhysgun::Spawn()
 void CPhysgun::Precache()
 {
 	PRECACHE_MODEL("models/v_physgun.mdl");
-	PRECACHE_MODEL("models/w_physgun.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_physgun.mdl");
 
 	m_usPhysGun = PRECACHE_EVENT(1, "events/physgun.sc");

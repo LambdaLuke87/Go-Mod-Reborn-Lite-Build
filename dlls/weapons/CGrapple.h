@@ -86,6 +86,8 @@ private:
 	void UpdateEffect();
 	void DestroyEffect();
 
+	const char* MyWModel() { return "models/w_bgrap.mdl"; }
+
 private:
 	CGrappleTip* m_pTip;
 

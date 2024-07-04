@@ -39,7 +39,7 @@ LINK_ENTITY_TO_CLASS(weapon_displacer, CDisplacer);
 void CDisplacer::Precache()
 {
 	PRECACHE_MODEL("models/v_displacer.mdl");
-	PRECACHE_MODEL("models/w_displacer.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_displacer.mdl");
 
 	PRECACHE_SOUND("weapons/displacer_fire.wav");
@@ -64,7 +64,7 @@ void CDisplacer::Spawn()
 
 	m_iId = WEAPON_DISPLACER;
 
-	SET_MODEL(edict(), "models/w_displacer.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = DISPLACER_DEFAULT_GIVE;
 

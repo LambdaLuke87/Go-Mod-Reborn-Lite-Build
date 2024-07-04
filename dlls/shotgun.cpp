@@ -32,7 +32,7 @@ void CShotgun::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_SHOTGUN;
-	SET_MODEL(ENT(pev), "models/w_shotgun.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 
 	m_iDefaultAmmo = SHOTGUN_DEFAULT_GIVE;
 
@@ -43,7 +43,7 @@ void CShotgun::Spawn()
 void CShotgun::Precache()
 {
 	PRECACHE_MODEL("models/v_shotgun.mdl");
-	PRECACHE_MODEL("models/w_shotgun.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_shotgun.mdl");
 
 	m_iShell = PRECACHE_MODEL("models/shotgunshell.mdl"); // shotgun shell

@@ -85,6 +85,8 @@ public:
 
 	void SetWeaponData(const weapon_data_t& data) override;
 
+	const char* MyWModel() { return "models/w_spore_launcher.mdl"; }
+
 private:
 	unsigned short m_usFireSpore;
 

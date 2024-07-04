@@ -44,7 +44,7 @@ void CShockRifle::Precache()
 	BaseClass::Precache();
 
 	PRECACHE_MODEL("models/v_shock.mdl");
-	PRECACHE_MODEL("models/w_shock_rifle.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_shock.mdl");
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/shockwave.spr");
 	PRECACHE_MODEL("sprites/lgtning.spr");
@@ -68,7 +68,7 @@ void CShockRifle::Spawn()
 
 	Precache();
 
-	SET_MODEL(edict(), "models/w_shock_rifle.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = SHOCKRIFLE_DEFAULT_GIVE;
 

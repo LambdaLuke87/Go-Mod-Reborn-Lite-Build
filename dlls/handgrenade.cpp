@@ -29,7 +29,7 @@ void CHandGrenade::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_HANDGRENADE;
-	SET_MODEL(ENT(pev), "models/w_grenade.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 
 #ifndef CLIENT_DLL
 	pev->dmg = gSkillData.plrDmgHandGrenade;
@@ -43,7 +43,7 @@ void CHandGrenade::Spawn()
 
 void CHandGrenade::Precache()
 {
-	PRECACHE_MODEL("models/w_grenade.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/v_grenade.mdl");
 	PRECACHE_MODEL("models/p_grenade.mdl");
 }

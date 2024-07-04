@@ -38,7 +38,7 @@ void CEgon::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_EGON;
-	SET_MODEL(ENT(pev), "models/w_egon.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 
 	m_iDefaultAmmo = EGON_DEFAULT_GIVE;
 
@@ -48,7 +48,7 @@ void CEgon::Spawn()
 
 void CEgon::Precache()
 {
-	PRECACHE_MODEL("models/w_egon.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/v_egon.mdl");
 	PRECACHE_MODEL("models/p_egon.mdl");
 

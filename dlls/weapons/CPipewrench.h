@@ -89,6 +89,8 @@ public:
 	int m_iSwing;
 	TraceResult m_trHit;
 
+	const char* MyWModel() { return "models/w_pipe_wrench.mdl"; }
+
 private:
 	unsigned short m_usPipewrench;
 };

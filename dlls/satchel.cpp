@@ -195,7 +195,7 @@ void CSatchel::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_SATCHEL;
-	SET_MODEL(ENT(pev), "models/w_satchel.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 
 	m_iDefaultAmmo = SATCHEL_DEFAULT_GIVE;
 
@@ -207,7 +207,7 @@ void CSatchel::Precache()
 {
 	PRECACHE_MODEL("models/v_satchel.mdl");
 	PRECACHE_MODEL("models/v_satchel_radio.mdl");
-	PRECACHE_MODEL("models/w_satchel.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_satchel.mdl");
 	PRECACHE_MODEL("models/p_satchel_radio.mdl");
 

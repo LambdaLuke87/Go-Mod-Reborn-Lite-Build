@@ -73,6 +73,8 @@ public:
 
 	void SetWeaponData(const weapon_data_t& data) override;
 
+	const char* MyWModel() { return "models/w_saw.mdl"; }
+
 private:
 	static int RecalculateBody(int iClip);
 

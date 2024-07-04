@@ -24,7 +24,7 @@ LINK_ENTITY_TO_CLASS(weapon_toolgun, CToolgun);
 void CToolgun::Spawn()
 {
 	Precache( );
-	SET_MODEL(ENT(pev), "models/w_removetool.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 	m_iId = WEAPON_TOOLGUN;
 
 	m_iDefaultAmmo = -1;
@@ -35,7 +35,7 @@ void CToolgun::Spawn()
 void CToolgun::Precache()
 {
 	PRECACHE_MODEL("models/v_removetool.mdl");
-	PRECACHE_MODEL("models/w_removetool.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_removetool.mdl");         
 
 	PRECACHE_SOUND ("weapons/tg_shot1.wav");

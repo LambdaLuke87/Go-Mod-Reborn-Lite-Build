@@ -63,6 +63,8 @@ public:
 #endif
 	}
 
+	const char* MyWModel() { return "models/w_penguinnest.mdl"; }
+
 private:
 	bool m_fJustThrown;
 	unsigned short m_usPenguinFire;

@@ -42,7 +42,7 @@ void CSniperRifle::Precache()
 
 	m_iId = WEAPON_SNIPERRIFLE;
 
-	PRECACHE_MODEL("models/w_m40a1.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/v_m40a1.mdl");
 	PRECACHE_MODEL("models/p_m40a1.mdl");
 
@@ -61,7 +61,7 @@ void CSniperRifle::Spawn()
 {
 	Precache();
 
-	SET_MODEL(edict(), "models/w_m40a1.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = SNIPERRIFLE_DEFAULT_GIVE;
 

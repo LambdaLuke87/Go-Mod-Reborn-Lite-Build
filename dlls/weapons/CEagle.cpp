@@ -38,7 +38,7 @@ LINK_ENTITY_TO_CLASS(weapon_eagle, CEagle);
 void CEagle::Precache()
 {
 	PRECACHE_MODEL("models/v_desert_eagle.mdl");
-	PRECACHE_MODEL("models/w_desert_eagle.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_desert_eagle.mdl");
 	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 	PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
@@ -56,7 +56,7 @@ void CEagle::Spawn()
 
 	m_iId = WEAPON_EAGLE;
 
-	SET_MODEL(edict(), "models/w_desert_eagle.mdl");
+	SET_MODEL(edict(), MyWModel());
 
 	m_iDefaultAmmo = DEAGLE_DEFAULT_GIVE;
 

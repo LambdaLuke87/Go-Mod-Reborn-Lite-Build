@@ -43,7 +43,7 @@ void CPipewrench::Spawn()
 	pev->classname = MAKE_STRING("weapon_pipewrench");
 	Precache();
 	m_iId = WEAPON_PIPEWRENCH;
-	SET_MODEL(edict(), "models/w_pipe_wrench.mdl");
+	SET_MODEL(edict(), MyWModel());
 	m_iClip = WEAPON_NOCLIP;
 	m_iSwingMode = SWING_NONE;
 
@@ -53,7 +53,7 @@ void CPipewrench::Spawn()
 void CPipewrench::Precache()
 {
 	PRECACHE_MODEL("models/v_pipe_wrench.mdl");
-	PRECACHE_MODEL("models/w_pipe_wrench.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_pipe_wrench.mdl");
 	// Shepard - The commented sounds below are unused
 	// in Opposing Force, if you wish to use them,

@@ -1065,6 +1065,11 @@ void CHalfLifeMultiplay::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* 
 {
 }
 
+bool CHalfLifeMultiplay::PlayerCanDropWeapon(CBasePlayer* pPlayer)
+{
+	return weaponstay.value == 0 && dropweapons.value > 0;
+}
+
 //=========================================================
 // FlWeaponRespawnTime - what is the time in the future
 // at which this weapon may spawn?
@@ -1123,7 +1128,7 @@ int CHalfLifeMultiplay::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
 	}
 
 	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem >= 1)
+	if (RespawnItem == 0)
 		return GR_WEAPON_RESPAWN_NO;
 
 	return GR_WEAPON_RESPAWN_YES;
@@ -1183,7 +1188,7 @@ int CHalfLifeMultiplay::ItemShouldRespawn(CItem* pItem)
 	}
 
 	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem >= 1)
+	if (RespawnItem == 0)
 		return GR_ITEM_RESPAWN_NO;
 
 	return GR_ITEM_RESPAWN_YES;
@@ -1233,7 +1238,7 @@ int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo* pAmmo)
 	}
 
 	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem >= 1)
+	if (RespawnItem == 0)
 		return GR_AMMO_RESPAWN_NO;
 
 	return GR_AMMO_RESPAWN_YES;

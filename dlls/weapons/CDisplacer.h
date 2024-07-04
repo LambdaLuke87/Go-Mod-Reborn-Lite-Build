@@ -80,6 +80,8 @@ public:
 #endif
 	}
 
+	const char* MyWModel() { return "models/w_displacer.mdl"; }
+
 private:
 	int m_iSpriteTexture;
 

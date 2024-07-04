@@ -227,7 +227,7 @@ void CCrossbow::Spawn()
 {
 	Precache();
 	m_iId = WEAPON_CROSSBOW;
-	SET_MODEL(ENT(pev), "models/w_crossbow.mdl");
+	SET_MODEL(ENT(pev), MyWModel());
 
 	m_iDefaultAmmo = CROSSBOW_DEFAULT_GIVE;
 
@@ -236,7 +236,7 @@ void CCrossbow::Spawn()
 
 void CCrossbow::Precache()
 {
-	PRECACHE_MODEL("models/w_crossbow.mdl");
+	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/v_crossbow.mdl");
 	PRECACHE_MODEL("models/p_crossbow.mdl");
 

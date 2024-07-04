@@ -66,6 +66,8 @@ public:
 #endif
 	}
 
+	const char* MyWModel() { return "models/w_knife.mdl"; }
+
 private:
 	unsigned short m_usKnife;
 
