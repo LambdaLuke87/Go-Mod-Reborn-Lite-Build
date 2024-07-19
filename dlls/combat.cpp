@@ -1939,16 +1939,37 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 			pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
 		}
 	}
-	else if (pPlayer->m_iToolMode == 7)
+	else if (pPlayer->m_iToolMode >= 7)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			int Set_TheHP = custom_npc_health.value;
-			pMonster->pev->health = Set_TheHP;
-			pMonster->pev->max_health = Set_TheHP;
+			if (pPlayer->m_iToolMode == 7)
+			{
+				int Set_TheHP = custom_npc_health.value;
+				pMonster->pev->health = Set_TheHP;
+				pMonster->pev->max_health = Set_TheHP;
+			}
+			else if (pPlayer->m_iToolMode == 8)
+			{
+				pMonster->pev->solid = SOLID_NOT;
+			}
+			else if (pPlayer->m_iToolMode == 9)
+			{
+				if (0 != pMonster->pev->takedamage)
+					pMonster->pev->takedamage = DAMAGE_NO;
+				else
+					pMonster->pev->takedamage = DAMAGE_YES;
+			}
+			else if (pPlayer->m_iToolMode == 10)
+			{
+				if (BLOOD_COLOR_RED != pMonster->m_bloodColor)
+					pMonster->m_bloodColor = BLOOD_COLOR_RED;
+				else
+					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
+			}
 		}
 	}
 
@@ -2083,6 +2104,16 @@ Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Ve
 			}
 
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
+		}
+	}
+	else if (pPlayer->m_iToolMode == 10)
+	{
+		CBaseMonster* pMonster;
+		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
+
+		if (pMonster)
+		{
+			pMonster->m_bloodColor = DONT_BLEED;
 		}
 	}
 

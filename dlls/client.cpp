@@ -180,7 +180,10 @@ tgunmodes_helper_t gToolgunModes[] =
 		{"button_tool_posermode", 4},
 		{"button_tool_cameramode", 5},
 		{"button_tool_rendermode", 6},
-		{"button_tool_health_set", 7}};
+		{"button_tool_health_set", 7},
+		{"button_tool_nocolide", 8},
+		{"button_tool_takedamage", 9},
+		{"button_tool_bloodcolor", 10}};
 
 
 // RenderMode: Type of Texture

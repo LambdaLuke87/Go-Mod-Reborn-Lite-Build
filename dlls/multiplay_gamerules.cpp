@@ -678,6 +678,7 @@ void CHalfLifeMultiplay::PlayerSpawn(CBasePlayer* pPlayer)
 					// Give the maximum amount of ammunition for each weapon
 					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
 					pPlayer->GiveAmmo(_357_MAX_CARRY, "357", _357_MAX_CARRY);
+					pPlayer->GiveAmmo(M203_GRENADE_MAX_CARRY, "ARgrenades", M203_GRENADE_MAX_CARRY);
 					pPlayer->GiveAmmo(BUCKSHOT_MAX_CARRY, "buckshot", BUCKSHOT_MAX_CARRY);
 					pPlayer->GiveAmmo(BOLT_MAX_CARRY, "bolts", BOLT_MAX_CARRY);
 					pPlayer->GiveAmmo(ROCKET_MAX_CARRY, "rockets", ROCKET_MAX_CARRY);
