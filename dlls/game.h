@@ -72,5 +72,6 @@ extern cvar_t allow_spawn_bosses;
 extern cvar_t worlditems_respawn;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;
+extern cvar_t monster_variation;
 extern cvar_t spawn_wpnsetup;
 extern cvar_t custom_npc_health;

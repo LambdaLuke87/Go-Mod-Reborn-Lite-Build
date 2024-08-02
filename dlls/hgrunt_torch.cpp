@@ -45,6 +45,7 @@
 #include "effects.h"
 #include "customentity.h"
 #include "explode.h"
+#include "game.h"
 
 int g_fTorchAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -1131,6 +1132,16 @@ void COFTorchAlly::Spawn()
 	if (0 == pev->weapons)
 	{
 		pev->weapons |= TorchAllyWeaponFlag::DesertEagle;
+	}
+
+	int body_variation = monster_variation.value;
+	if (0 != body_variation)
+	{
+		switch (RANDOM_LONG(0, 1))
+		{
+		case 0: pev->weapons = TorchAllyWeaponFlag::DesertEagle; break;
+		case 1: pev->weapons = TorchAllyWeaponFlag::DesertEagle | TorchAllyWeaponFlag::HandGrenade; break;
+		}
 	}
 
 	int weaponIndex = TorchAllyWeapon::None;

@@ -44,6 +44,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+#include "game.h"
 
 int g_fGruntAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -1179,6 +1180,22 @@ void CHGruntAlly::Spawn()
 	//Note: this code has been rewritten to use SetBodygroup since it relies on hardcoded offsets in the original
 	pev->body = 0;
 	m_iGruntTorso = HGruntAllyTorso::Normal;
+
+	int body_variation = monster_variation.value;
+	if (0 != body_variation)
+	{
+		switch (RANDOM_LONG(0, 5))
+		{
+		case 0: pev->weapons = HGruntAllyWeaponFlag::MP5; break;
+		case 1: pev->weapons = HGruntAllyWeaponFlag::MP5 | HGruntAllyWeaponFlag::HandGrenade; break;
+		case 2: pev->weapons = HGruntAllyWeaponFlag::Shotgun; break;
+		case 3: pev->weapons = HGruntAllyWeaponFlag::Shotgun | HGruntAllyWeaponFlag::HandGrenade; break;
+		case 4: pev->weapons = HGruntAllyWeaponFlag::Saw; break;
+		case 5: pev->weapons = HGruntAllyWeaponFlag::MP5 | HGruntAllyWeaponFlag::GrenadeLauncher; break;
+		}
+
+		m_iGruntHead = RANDOM_LONG(HGruntAllyHead::Default, HGruntAllyHead::BeretBlack);
+	}
 
 	if ((pev->weapons & HGruntAllyWeaponFlag::MP5) != 0)
 	{

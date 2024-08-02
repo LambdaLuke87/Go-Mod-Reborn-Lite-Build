@@ -41,6 +41,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+#include "game.h"
 
 int g_fGruntQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -1010,6 +1011,19 @@ void CHGrunt::Spawn()
 		pev->weapons = HGRUNT_9MMAR | HGRUNT_HANDGRENADE;
 		// pev->weapons = HGRUNT_SHOTGUN;
 		// pev->weapons = HGRUNT_9MMAR | HGRUNT_GRENADELAUNCHER;
+	}
+
+	int body_variation = monster_variation.value;
+	if (0 != body_variation)
+	{
+		switch (RANDOM_LONG(0, 4))
+		{
+		case 0: pev->weapons = HGRUNT_9MMAR; break;
+		case 1: pev->weapons = HGRUNT_9MMAR | HGRUNT_HANDGRENADE; break;
+		case 2: pev->weapons = HGRUNT_SHOTGUN; break;
+		case 3: pev->weapons = HGRUNT_SHOTGUN | HGRUNT_HANDGRENADE; break;
+		case 4: pev->weapons = HGRUNT_9MMAR | HGRUNT_GRENADELAUNCHER; break;
+		}
 	}
 
 	if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))

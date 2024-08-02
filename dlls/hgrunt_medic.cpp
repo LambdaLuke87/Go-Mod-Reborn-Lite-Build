@@ -45,6 +45,7 @@
 #include "effects.h"
 #include "customentity.h"
 #include "explode.h"
+#include "game.h"
 
 int g_fMedicAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -1155,6 +1156,19 @@ void COFMedicAlly::Spawn()
 	if (0 == pev->weapons)
 	{
 		pev->weapons |= MedicAllyWeaponFlag::Glock;
+	}
+
+	int body_variation = monster_variation.value;
+	if (0 != body_variation)
+	{
+		switch (RANDOM_LONG(0, 3))
+		{
+		case 0: pev->weapons = MedicAllyWeaponFlag::DesertEagle; break;
+;		case 1: pev->weapons = MedicAllyWeaponFlag::DesertEagle | MedicAllyWeaponFlag::HandGrenade; break;
+	    case 2: pev->weapons = MedicAllyWeaponFlag::Glock; break;
+;		case 3: pev->weapons = MedicAllyWeaponFlag::Glock | MedicAllyWeaponFlag::HandGrenade; break;
+		}
+		m_iBlackOrWhite = RANDOM_LONG(MedicAllyHead::Default, MedicAllyHead::Black);
 	}
 
 	if (m_iBlackOrWhite == MedicAllyHead::Default)

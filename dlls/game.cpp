@@ -59,6 +59,7 @@ cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
+cvar_t monster_variation = {"gm_monster_variation", "0", FCVAR_SERVER};
 cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
 cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
@@ -690,6 +691,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);
+	CVAR_REGISTER(&monster_variation);
 	CVAR_REGISTER(&rule_infammo);
 	CVAR_REGISTER(&spawn_wpnsetup);
 	CVAR_REGISTER(&custom_npc_health);

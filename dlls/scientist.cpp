@@ -26,6 +26,7 @@
 #include "scripted.h"
 #include "animation.h"
 #include "soundent.h"
+#include "game.h"
 
 
 #define NUM_SCIENTIST_HEADS 4			 // four heads available for scientist model
@@ -656,7 +657,8 @@ void CScientist::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 void CScientist::Spawn()
 {
-	if (pev->body == -1)
+	int body_variation = monster_variation.value;
+	if (pev->body == -1 || 0 != body_variation)
 	{														 // -1 chooses a random head
 		pev->body = RANDOM_LONG(0, NUM_SCIENTIST_HEADS - 1); // pick a head, any head
 	}

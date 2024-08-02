@@ -41,6 +41,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+#include "game.h"
 
 extern DLL_GLOBAL int g_iSkillLevel;
 
@@ -982,6 +983,21 @@ void CMOFAssassin::Spawn()
 		pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade;
 		// pev->weapons = HGRUNT_SHOTGUN;
 		// pev->weapons = HGRUNT_9MMAR | HGRUNT_GRENADELAUNCHER;
+	}
+
+	int body_variation = monster_variation.value;
+	if (0 != body_variation)
+	{
+		switch (RANDOM_LONG(0, 4))
+		{
+		case 0: pev->weapons = MAssassinWeaponFlag::MP5; break;
+		case 1: pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::HandGrenade; break;
+		case 2: pev->weapons = MAssassinWeaponFlag::MP5 | MAssassinWeaponFlag::GrenadeLauncher; break;
+		case 3: pev->weapons = MAssassinWeaponFlag::SniperRifle; break;
+		case 4: pev->weapons = MAssassinWeaponFlag::SniperRifle | MAssassinWeaponFlag::HandGrenade; break;
+		}
+
+		m_iAssassinHead = RANDOM_LONG(MAssassinHead::White, MAssassinHead::ThermalVision);
 	}
 
 	if (m_iAssassinHead == MAssassinHead::Random)
