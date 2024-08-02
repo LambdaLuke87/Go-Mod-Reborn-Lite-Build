@@ -65,7 +65,7 @@ extern bool m_bnpc_allied;
 struct monster_t
 {
 	const char* classname;
-	const char* convar;
+	//const char* convar;
 };
 
 // Standard Monsters
@@ -91,7 +91,6 @@ monster_t gMonsters[] =
 		{"monster_otis"},
 		{"monster_male_assassin"},
 		{"monster_human_assassin"},
-		{"monster_apache"},
 		{"monster_sentry"},
 		{"monster_rat"},
 		{"monster_cockroach"},
@@ -114,7 +113,7 @@ monster_t gMonsters[] =
 struct weapon_t
 {
 	const char* classname;
-	WeaponId convar;
+	//WeaponId convar;
 };
 
 // Standard Weapons/Items
@@ -757,6 +756,8 @@ void ClientCommand(edict_t* pEntity)
 
 	auto player = GetClassPtr<CBasePlayer>(reinterpret_cast<CBasePlayer*>(&pEntity->v));
 
+	int is_sandbox = gamerule_sandbox.value;
+
 	if (FStrEq(pcmd, "say"))
 	{
 		Host_Say(pEntity, false);
@@ -806,10 +807,259 @@ void ClientCommand(edict_t* pEntity)
 	{
 		player->SelectLastItem();
 	}
-	// Register "button_" as an valid prefix
+	// Go-Mod Reborn Sandbox Mode Commands
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+		if (0 != is_sandbox) // is sandbox mode?
+		{
+			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+			int allow_bosses = allow_spawn_bosses.value;
+
+			if (FStrEq(pcmd, "button_allied_set"))
+			{
+				if (m_bnpc_allied)
+				{
+					m_bnpc_allied = false;
+					GoMod_TextScreenHelper("Enemy Npcs", pEntity);
+				}
+				else
+				{
+					m_bnpc_allied = true;
+					GoMod_TextScreenHelper("Allied Npcs", pEntity);
+				}
+			}
+			else if (FStrEq(pcmd, "button_ai_set"))
+			{
+				int dis_ia_enbl = npc_noai.value;
+				if (dis_ia_enbl >= 1)
+				{
+					CVAR_SET_FLOAT("gm_npc_noai", 0);
+					GoMod_TextScreenHelper("A.i Enabled", pEntity);
+				}
+				else
+				{
+					CVAR_SET_FLOAT("gm_npc_noai", 1);
+					GoMod_TextScreenHelper("A.i Disabled", pEntity);
+				}
+			}
+			else if (FStrEq(pcmd, "button_aim_spawn"))
+			{
+				if (pPlayer->m_fUseSpawnAim)
+				{
+					pPlayer->m_fUseSpawnAim = false;
+					GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
+				}
+				else
+				{
+					pPlayer->m_fUseSpawnAim = true;
+					GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
+				}
+			}
+
+			for (int i = 0; i < ARRAYSIZE(gToolgunModes); i++)
+			{
+				tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
+				if (FStrEq(pcmd, ToolGunModesinfo.commandname))
+					pPlayer->m_iToolMode = ToolGunModesinfo.id;
+			}
+
+			// Start - Render/TextureMode
+			for (int i = 0; i < ARRAYSIZE(gTextureTypeMode); i++)
+			{
+				tgunmodes_helper_t rendertextureInfo = gTextureTypeMode[i];
+				if (FStrEq(pcmd, rendertextureInfo.commandname))
+					pPlayer->m_iToolRenderMode = rendertextureInfo.id;
+			}
+			// End - Render/TextureMode
+
+			// Start - Render Type Select
+			for (int i = 0; i < ARRAYSIZE(gRenderTypeMode); i++)
+			{
+				tgunmodes_helper_t renderInfo = gRenderTypeMode[i];
+				if (FStrEq(pcmd, renderInfo.commandname))
+					pPlayer->m_iToolRenderFX = renderInfo.id;
+			}
+			// End - Render Type Select
+
+			// Start - Spawn NPCS Code
+			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
+			{
+				monster_t monsterInfo = gMonsters[i];
+				char combinetoprefix[512];
+				strcpy(combinetoprefix, "button_");
+				strcat(combinetoprefix, monsterInfo.classname);
+				if (FStrEq(pcmd, combinetoprefix))
+				{
+					if (pPlayer->m_fUseSpawnAim)
+					{
+						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
+					}
+					else
+					{
+						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+						CBaseEntity::Create(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+					}
+				}
+			}
+
+			// No listed Spawns
+			if (FStrEq(pcmd, "button_monster_apache"))
+			{
+				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+			}
+			else if (0 != allow_bosses)
+			{
+				if (FStrEq(pcmd, "button_monster_nihilanth"))
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+					CBaseEntity::Create("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				}
+				else if (FStrEq(pcmd, "button_monster_tentacle"))
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				}
+			}
+			// End - Spawn NPCS Code
+
+
+			// Start - Spawn Weapons/Items Code
+			// Standard Weapons/items
+			for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
+			{
+				weapon_t weaponInfo = gWeapons[i];
+				char combinetoprefix[512];
+				strcpy(combinetoprefix, "button_");
+				strcat(combinetoprefix, weaponInfo.classname);
+				if (FStrEq(pcmd, combinetoprefix))
+				{
+					if (pPlayer->m_fUseSpawnAim)
+					{
+						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
+					}
+					else
+					{
+						edict_t* pent;
+						int istr = MAKE_STRING(weaponInfo.classname);
+
+						pent = CREATE_NAMED_ENTITY(istr);
+						VARS(pent)->origin = pev->origin;
+						pent->v.spawnflags |= SF_NORESPAWN;
+
+						DispatchSpawn(pent);
+						DispatchTouch(pent, ENT(pev));
+					}
+				}
+			}
+			// End - Spawn Weapons/Items Code
+
+			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle"))
+			{
+				if (!allow_bosses)
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_denyselect.wav", 0.94, ATTN_NORM, 0, 90);
+				else
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+			}
+			else
+				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+		}
+	}
+	else if (FStrEq(pcmd, "render_color_red"))
+	{
+		if (0 != is_sandbox && CMD_ARGC() > 1)
+		{
+			player->m_iToolRenderColorR = atoi(CMD_ARGV(1));
+
+			if (player->m_iToolRenderColorR > 255)
+			{
+				player->m_iToolRenderColorR = 255;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
+			}
+			else if (player->m_iToolRenderColorR < 0)
+			{
+				player->m_iToolRenderColorR = 0;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
+			}
+			else
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed red render color\" to \"%d\"\n", (int)player->m_iToolRenderColorR));
+		}
+		else
+		{
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
+		}
+	}
+	else if (FStrEq(pcmd, "render_color_green"))
+	{
+		if (0 != is_sandbox && CMD_ARGC() > 1)
+		{
+			player->m_iToolRenderColorG = atoi(CMD_ARGV(1));
+
+			if (player->m_iToolRenderColorG > 255)
+			{
+				player->m_iToolRenderColorG = 255;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
+			}
+			else if (player->m_iToolRenderColorG < 0)
+			{
+				player->m_iToolRenderColorG = 0;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
+			}
+			else
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed green render color\" to \"%d\"\n", (int)player->m_iToolRenderColorG));
+		}
+		else
+		{
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
+		}
+	}
+	else if (FStrEq(pcmd, "render_color_blue"))
+	{
+		if (0 != is_sandbox && CMD_ARGC() > 1)
+		{
+			player->m_iToolRenderColorB = atoi(CMD_ARGV(1));
+
+			if (player->m_iToolRenderColorB > 255)
+			{
+				player->m_iToolRenderColorB = 255;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
+			}
+			else if (player->m_iToolRenderColorB < 0)
+			{
+				player->m_iToolRenderColorB = 0;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
+			}
+			else
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed blue render color\" to \"%d\"\n", (int)player->m_iToolRenderColorB));
+		}
+		else
+		{
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
+		}
+	}
+	else if (FStrEq(pcmd, "render_amount"))
+	{
+		if (0 != is_sandbox && CMD_ARGC() > 1)
+		{
+			player->m_iToolRenderAMT = atoi(CMD_ARGV(1));
+
+			if (player->m_iToolRenderAMT > 255)
+			{
+				player->m_iToolRenderAMT = 255;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
+			}
+			else if (player->m_iToolRenderAMT <= 0)
+			{
+				player->m_iToolRenderAMT = 0;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
+			}
+			else
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed render amount\" to \"%d\"\n", (int)player->m_iToolRenderAMT));
+		}
+		else
+		{
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
+		}
 	}
 
 	//In Opposing Force this is handled only by the CTF gamerules
@@ -967,294 +1217,6 @@ void ClientCommand(edict_t* pEntity)
 
 		// tell the user they entered an unknown command
 		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Unknown command: %s\n", command));
-	}
-
-	// Go-Mod Reborn Sandbox Mode Central Stuff
-	int is_sandbox = gamerule_sandbox.value;
-	if (is_sandbox == 1)
-	{
-		CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-
-		if (FStrEq(pcmd, "button_allied_set"))
-		{
-			if (m_bnpc_allied)
-			{
-				m_bnpc_allied = false;
-				GoMod_TextScreenHelper("Enemy Npcs", pEntity);
-			}
-			else
-			{
-				m_bnpc_allied = true;
-				GoMod_TextScreenHelper("Allied Npcs", pEntity);
-			}
-		}
-		else if (FStrEq(pcmd, "button_ai_set"))
-		{
-			int dis_ia_enbl = npc_noai.value;
-			if (dis_ia_enbl >= 1)
-			{
-				CVAR_SET_FLOAT("gm_npc_noai", 0);
-				GoMod_TextScreenHelper("A.i Enabled", pEntity);
-			}
-			else
-			{
-				CVAR_SET_FLOAT("gm_npc_noai", 1);
-				GoMod_TextScreenHelper("A.i Disabled", pEntity);
-			}
-		}
-		else if (FStrEq(pcmd, "button_aim_spawn"))
-		{
-			if (pPlayer->m_fUseSpawnAim)
-			{
-				pPlayer->m_fUseSpawnAim = false;
-				GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
-			}
-			else
-			{
-				pPlayer->m_fUseSpawnAim = true;
-				GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
-			}
-		}
-
-		else if (FStrEq(pcmd, "button_allow_logs"))
-		{
-			if (pPlayer->m_fLogButtonInConsole)
-			{
-				pPlayer->m_fLogButtonInConsole = false;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Disabled button logs\n");
-			}
-			else
-			{
-				pPlayer->m_fLogButtonInConsole = true;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Enabled button logs\n");
-			}
-		}
-
-		// Start - Red Render Color
-		else if (FStrEq(pcmd, "button_render_red+"))
-		{
-			if (pPlayer->m_iToolRenderColorR >= 255)
-				pPlayer->m_iToolRenderColorR = 255;
-			else
-				pPlayer->m_iToolRenderColorR = pPlayer->m_iToolRenderColorR + 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Increased render Red color to: %d\n", (int)pPlayer->m_iToolRenderColorR));
-		}
-		else if (FStrEq(pcmd, "button_render_red-"))
-		{
-			if (pPlayer->m_iToolRenderColorR <= 0)
-				pPlayer->m_iToolRenderColorR = 0;
-			else
-				pPlayer->m_iToolRenderColorR = pPlayer->m_iToolRenderColorR - 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Decreased render Red color to: %d\n", (int)pPlayer->m_iToolRenderColorR));
-		}
-		else if (FStrEq(pcmd, "button_render_red_min"))
-		{
-			pPlayer->m_iToolRenderColorR = 0;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Red color to: %d\n", (int)pPlayer->m_iToolRenderColorR));
-		}
-		else if (FStrEq(pcmd, "button_render_red_max"))
-		{
-			pPlayer->m_iToolRenderColorR = 255;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Red color to: %d\n", (int)pPlayer->m_iToolRenderColorR));
-		}
-		// End - Red Render Color
-
-		// Start - Green Render Color
-		else if (FStrEq(pcmd, "button_render_green+"))
-		{
-			if (pPlayer->m_iToolRenderColorG >= 255)
-				pPlayer->m_iToolRenderColorG = 255;
-			else
-				pPlayer->m_iToolRenderColorG = pPlayer->m_iToolRenderColorG + 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Increased render Green color to: %d\n", (int)pPlayer->m_iToolRenderColorG));
-		}
-		else if (FStrEq(pcmd, "button_render_green-"))
-		{
-			if (pPlayer->m_iToolRenderColorG <= 0)
-				pPlayer->m_iToolRenderColorG = 0;
-			else
-				pPlayer->m_iToolRenderColorG = pPlayer->m_iToolRenderColorG - 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Decreased render Green color to: %d\n", (int)pPlayer->m_iToolRenderColorG));
-		}
-		else if (FStrEq(pcmd, "button_render_green_min"))
-		{
-			pPlayer->m_iToolRenderColorG = 0;
-			
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Green color to: %d\n", (int)pPlayer->m_iToolRenderColorG));
-		}
-		else if (FStrEq(pcmd, "button_render_green_max"))
-		{
-			pPlayer->m_iToolRenderColorG = 255;
-			
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Green color to: %d\n", (int)pPlayer->m_iToolRenderColorG));
-		}
-		// End - Green Render Color
-
-		// Start - Blue Render Color
-		else if (FStrEq(pcmd, "button_render_blue+"))
-		{
-			if (pPlayer->m_iToolRenderColorB >= 255)
-				pPlayer->m_iToolRenderColorB = 255;
-			else
-				pPlayer->m_iToolRenderColorB = pPlayer->m_iToolRenderColorB + 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Increased render Blue color to: %d\n", (int)pPlayer->m_iToolRenderColorB));
-		}
-		else if (FStrEq(pcmd, "button_render_blue-"))
-		{
-			if (pPlayer->m_iToolRenderColorB <= 0)
-				pPlayer->m_iToolRenderColorB = 0;
-			else
-				pPlayer->m_iToolRenderColorB = pPlayer->m_iToolRenderColorB - 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Decreased render Blue color to: %d\n", (int)pPlayer->m_iToolRenderColorB));
-		}
-		else if (FStrEq(pcmd, "button_render_blue_min"))
-		{
-			pPlayer->m_iToolRenderColorB = 0;
-			
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Blue color to: %d\n", (int)pPlayer->m_iToolRenderColorB));
-		}
-		else if (FStrEq(pcmd, "button_render_blue_max"))
-		{
-			pPlayer->m_iToolRenderColorB = 255;
-			
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Blue color to: %d\n", (int)pPlayer->m_iToolRenderColorB));
-		}
-		// End - Blue Render Color
-
-		// Start - Set Renderamt
-		else if (FStrEq(pcmd, "button_render_amount+"))
-		{
-			if (pPlayer->m_iToolRenderAMT >= 255)
-				pPlayer->m_iToolRenderAMT = 255;
-			else
-				pPlayer->m_iToolRenderAMT = pPlayer->m_iToolRenderAMT + 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Increased render Amount to: %d\n", (int)pPlayer->m_iToolRenderAMT));
-		}
-		else if (FStrEq(pcmd, "button_render_amount-"))
-		{
-			if (pPlayer->m_iToolRenderAMT <= 0)
-				pPlayer->m_iToolRenderAMT = 0;
-			else
-				pPlayer->m_iToolRenderAMT = pPlayer->m_iToolRenderAMT - 1;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Decreased render Amount to: %d\n", (int)pPlayer->m_iToolRenderAMT));
-		}
-		else if (FStrEq(pcmd, "button_render_amount_min"))
-		{
-			pPlayer->m_iToolRenderAMT = 0;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Amount to: %d\n", (int)pPlayer->m_iToolRenderAMT));
-		}
-		else if (FStrEq(pcmd, "button_render_amount_max"))
-		{
-			pPlayer->m_iToolRenderAMT = 255;
-
-			if (pPlayer->m_fLogButtonInConsole)
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Set render Amount to: %d\n", (int)pPlayer->m_iToolRenderAMT));
-		}
-		// End - Set Renderamt
-
-		for (int i = 0; i < ARRAYSIZE(gToolgunModes); i++)
-		{
-			tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
-			if (FStrEq(pcmd, ToolGunModesinfo.commandname))
-				pPlayer->m_iToolMode = ToolGunModesinfo.id;
-		}
-
-		// Start - Render/TextureMode
-		for (int i = 0; i < ARRAYSIZE(gTextureTypeMode); i++)
-		{
-			tgunmodes_helper_t rendertextureInfo = gTextureTypeMode[i];
-			if (FStrEq(pcmd, rendertextureInfo.commandname))
-				pPlayer->m_iToolRenderMode = rendertextureInfo.id;
-		}
-		// End - Render/TextureMode
-
-		// Start - Render Type Select
-		for (int i = 0; i < ARRAYSIZE(gRenderTypeMode); i++)
-		{
-			tgunmodes_helper_t renderInfo = gRenderTypeMode[i];
-			if (FStrEq(pcmd, renderInfo.commandname))
-				pPlayer->m_iToolRenderFX = renderInfo.id;
-		}
-		// End - Render Type Select
-
-		// Start - Spawn NPCS Code
-		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
-		{
-			monster_t monsterInfo = gMonsters[i];
-			char combinetoprefix[512];
-			strcpy(combinetoprefix, "button_");
-			strcat(combinetoprefix, monsterInfo.classname);
-			if (FStrEq(pcmd, combinetoprefix))
-			{
-				if (pPlayer->m_fUseSpawnAim)
-				{
-					GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
-				}
-				else
-				{
-					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::Create(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
-				}
-			}
-		}
-		// End - Spawn NPCS Code
-
-
-		// Start - Spawn Weapons/Items Code
-		// Standard Weapons/items
-		for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
-		{
-			weapon_t weaponInfo = gWeapons[i];
-			char combinetoprefix[512];
-			strcpy(combinetoprefix, "button_");
-			strcat(combinetoprefix, weaponInfo.classname);
-			if (FStrEq(pcmd, combinetoprefix))
-			{
-				if (pPlayer->m_fUseSpawnAim)
-				{
-					GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
-				}
-				else
-				{
-					edict_t* pent;
-					int istr = MAKE_STRING(weaponInfo.classname);
-
-					pent = CREATE_NAMED_ENTITY(istr);
-					VARS(pent)->origin = pev->origin;
-					pent->v.spawnflags |= SF_NORESPAWN;
-
-					DispatchSpawn(pent);
-					DispatchTouch(pent, ENT(pev));
-				}
-			}
-		}
-		// End - Spawn Weapons/Items Code
 	}
 }
 
@@ -1706,13 +1668,22 @@ void ClientPrecache()
 
 	// check if sandbox is allowed before precaching everything below
 	int is_sandbox = gamerule_sandbox.value;
-	if (is_sandbox == 1)
+	if (0 != is_sandbox)
 	{
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 		{
 			monster_t sMonster = gMonsters[i];
 			UTIL_PrecacheOther(sMonster.classname);
+		}
+
+		UTIL_PrecacheOther("monster_apache");
+
+		int allow_bosses = allow_spawn_bosses.value;
+		if (0 != allow_bosses)
+		{
+			UTIL_PrecacheOther("monster_nihilanth");
+			UTIL_PrecacheOther("monster_tentacle");
 		}
 	}
 

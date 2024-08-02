@@ -447,7 +447,6 @@ public:
 	int m_iToolRenderColorG;
 	int m_iToolRenderColorB;
 	bool m_fUseSpawnAim;
-	bool m_fLogButtonInConsole;
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)
