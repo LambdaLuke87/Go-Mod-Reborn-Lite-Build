@@ -1048,7 +1048,7 @@ void ClientCommand(edict_t* pEntity)
 				player->m_iToolRenderAMT = 255;
 				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
 			}
-			else if (player->m_iToolRenderAMT <= 0)
+			else if (player->m_iToolRenderAMT < 0)
 			{
 				player->m_iToolRenderAMT = 0;
 				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));

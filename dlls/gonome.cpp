@@ -218,12 +218,12 @@ public:
 	void PainSound() override;
 	void DeathSound() override;
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
+	//static const char* pIdleSounds[];
+	//static const char* pAlertSounds[];
+	//static const char* pPainSounds[];
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
-	static const char* pDeathSounds[];
+	//static const char* pDeathSounds[];
 
 	bool CheckMeleeAttack2(float flDot, float flDist) override;
 	bool CheckRangeAttack1(float flDot, float flDist) override;
@@ -266,7 +266,7 @@ IMPLEMENT_SAVERESTORE(CGonome, CBaseMonster)
 LINK_ENTITY_TO_CLASS(monster_gonome, CGonome)
 
 
-const char* CGonome::pPainSounds[] = {
+/*const char* CGonome::pPainSounds[] = {
 	"gonome/gonome_pain1.wav",
 	"gonome/gonome_pain2.wav",
 	"gonome/gonome_pain3.wav",
@@ -277,7 +277,7 @@ const char* CGonome::pAlertSounds[] =
 		"zombie/zo_alert10.wav",
 		"zombie/zo_alert20.wav",
 		"zombie/zo_alert30.wav",
-};
+}; 
 
 const char* CGonome::pIdleSounds[] = {
 	"gonome/gonome_idle1.wav",
@@ -287,7 +287,7 @@ const char* CGonome::pIdleSounds[] = {
 const char* CGonome::pDeathSounds[] = {
 	"gonome/gonome_death2.wav",
 	"gonome/gonome_death3.wav",
-	"gonome/gonome_death4.wav"};
+	"gonome/gonome_death4.wav"};*/
 
 const char* CGonome::pAttackHitSounds[] =
 	{
@@ -503,7 +503,7 @@ void CGonome::IdleSound()
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
 	// Play a random idle sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "GO_IDLE", 1, ATTN_NORM, 0, pitch);
 }
 
 //=========================================================
@@ -514,7 +514,7 @@ void CGonome::PainSound()
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
 	if (RANDOM_LONG(0, 5) < 2)
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+		SENTENCEG_PlayRndSz(ENT(pev), "GO_PAIN", 1, ATTN_NORM, 0, pitch);
 }
 
 //=========================================================
@@ -524,7 +524,15 @@ void CGonome::AlertSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ALERT", 1, ATTN_NORM, 0, pitch);
+}
+
+//=========================================================
+// DeathSound
+//=========================================================
+void CGonome::DeathSound()
+{
+	SENTENCEG_PlayRndSz(ENT(pev), "GO_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
 }
 
 
@@ -782,10 +790,10 @@ void CGonome::Precache()
 	PRECACHE_SOUND("gonome/gonome_melee1.wav");
 	PRECACHE_SOUND("gonome/gonome_melee2.wav");
 
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pDeathSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
+	//PRECACHE_SOUND_ARRAY(pIdleSounds);
+	//PRECACHE_SOUND_ARRAY(pPainSounds);
+	//PRECACHE_SOUND_ARRAY(pDeathSounds);
+	//PRECACHE_SOUND_ARRAY(pAlertSounds);
 	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 
@@ -801,14 +809,6 @@ void CGonome::Precache()
 
 	PRECACHE_SOUND("gonome/gonome_step1.wav");
 	PRECACHE_SOUND("gonome/gonome_step2.wav");
-}
-
-//=========================================================
-// DeathSound
-//=========================================================
-void CGonome::DeathSound(void)
-{
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), 1, ATTN_NORM);
 }
 
 //=========================================================
