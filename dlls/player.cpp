@@ -1665,18 +1665,20 @@ void CBasePlayer::Jump()
 
 	// If you're standing on a conveyor, add it's velocity to yours (for momentum)
 	entvars_t* pevGround = VARS(pev->groundentity);
-	if (pevGround)
+	if (pevGround && (pevGround->flags & FL_CONVEYOR))
 	{
-		if (pevGround->flags & FL_CONVEYOR)
-		{
-			pev->velocity = pev->velocity + pev->basevelocity;
-		}
-
-		if (FClassnameIs(pevGround, "func_vehicle"))
-		{
-			pev->velocity = pevGround->velocity + pev->velocity;
-		}
+		pev->velocity = pev->velocity + pev->basevelocity;
 	}
+
+
+	// JoshA: CS behaviour does this for tracktrain + train as well,
+	// but let's just do this for func_vehicle to avoid breaking existing content.
+	//
+	// If you're standing on a moving train... then add the velocity of the train to yours.
+	if (pevGround && (/*(!strcmp( "func_tracktrain", STRING(pevGround->classname))) ||
+					   (!strcmp( "func_train", STRING(pevGround->classname))) ) ||*/
+						 (!strcmp("func_vehicle", STRING(pevGround->classname)))))
+		pev->velocity = pev->velocity + pevGround->velocity;
 }
 
 
@@ -2115,7 +2117,7 @@ void CBasePlayer::PreThink()
 				//ALERT( at_error, "In train mode with no train!\n" );
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = TRAIN_NEW | TRAIN_OFF;
-				if (pTrain)
+				if (pTrain->Classify() == CLASS_VEHICLE)
 					((CFuncVehicle*)pTrain)->m_pDriver = NULL;
 				return;
 			}

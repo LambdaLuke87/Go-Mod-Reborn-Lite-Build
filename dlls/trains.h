@@ -127,39 +127,40 @@ private:
 class CFuncVehicle : public CBaseEntity
 {
 public:
-	virtual void Spawn();
-	virtual void Precache();
-	virtual void Restart();
-	virtual bool KeyValue(KeyValueData* pkvd);
-	virtual bool Save(CSave& save);
-	virtual bool Restore(CRestore& restore);
-	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE; }
-	virtual int Classify();
-	virtual void OverrideReset();
-	virtual bool OnControls(entvars_t* pev);
-	virtual void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	virtual void Blocked(CBaseEntity* pOther);
+	void Spawn();
+	void Precache();
 
-public:
+	void Blocked(CBaseEntity* pOther);
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	bool KeyValue(KeyValueData* pkvd);
+
 	void EXPORT Next();
 	void EXPORT Find();
 	void EXPORT NearestPath();
 	void EXPORT DeadEnd();
 
 	void NextThink(float thinkTime, bool alwaysThink);
+	int Classify();
 	void CollisionDetection();
 	void TerrainFollowing();
 	void CheckTurning();
 
 	void SetTrack(CPathTrack* track) { m_ppath = track->Nearest(pev->origin); }
 	void SetControls(entvars_t* pevControls);
+	bool OnControls(entvars_t* pev);
 
 	void StopSound();
 	void UpdateSound();
 
-public:
 	static CFuncVehicle* Instance(edict_t* pent);
-	static TYPEDESCRIPTION m_SaveData[12];
+
+	virtual bool Save(CSave& save);
+	virtual bool Restore(CRestore& restore);
+
+	static TYPEDESCRIPTION m_SaveData[];
+	virtual int ObjectCaps() { return (CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DIRECTIONAL_USE; }
+
+	virtual void OverrideReset();
 
 	CPathTrack* m_ppath;
 	float m_length;
@@ -180,7 +181,7 @@ public:
 	float m_flSteeringWheelDecay;
 	float m_flAcceleratorDecay;
 	float m_flTurnStartTime;
-	float m_flLaunchTime;
+	float m_flLaunchTime; // Time at which the vehicle has become airborne
 	float m_flLastNormalZ;
 	float m_flCanTurnNow;
 	float m_flUpdateSound;
@@ -192,18 +193,11 @@ public:
 	Vector m_vBackRight;
 	Vector m_vSurfaceNormal;
 	Vector m_vVehicleDirection;
-	CBaseEntity* m_pDriver;
+	CBasePlayer* m_pDriver;
+
+	// GOOSEMAN
+	void Restart();
 
 private:
 	unsigned short m_usAdjustPitch;
-};
-
-class CFuncVehicleControls : public CBaseEntity
-{
-public:
-	virtual void Spawn();
-	virtual int ObjectCaps() { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-
-public:
-	void EXPORT Find();
 };
