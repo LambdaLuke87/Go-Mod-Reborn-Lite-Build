@@ -151,6 +151,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/otis.o \
 	$(HLDLL_OBJ_DIR)/pathcorner.o \
 	$(HLDLL_OBJ_DIR)/penguin_grenade.o \
+	$(HLDLL_OBJ_DIR)/physgun.o \
 	$(HLDLL_OBJ_DIR)/pitdrone.o \
 	$(HLDLL_OBJ_DIR)/pitworm_up.o \
 	$(HLDLL_OBJ_DIR)/plane.o \
@@ -181,6 +182,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/singleplay_gamerules.o \
 	$(HLDLL_OBJ_DIR)/tempmonster.o \
 	$(HLDLL_OBJ_DIR)/tentacle.o \
+	$(HLDLL_OBJ_DIR)/toolgun.o \
 	$(HLDLL_OBJ_DIR)/triggers.o \
 	$(HLDLL_OBJ_DIR)/tripmine.o \
 	$(HLDLL_OBJ_DIR)/turret.o \
