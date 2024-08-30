@@ -784,11 +784,11 @@ void CGonome::Precache()
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 
-	PRECACHE_SOUND("gonome/gonome_eat.wav");
+	//PRECACHE_SOUND("gonome/gonome_eat.wav");
 
-	PRECACHE_SOUND("gonome/gonome_jumpattack.wav");
-	PRECACHE_SOUND("gonome/gonome_melee1.wav");
-	PRECACHE_SOUND("gonome/gonome_melee2.wav");
+	//PRECACHE_SOUND("gonome/gonome_jumpattack.wav");
+	//PRECACHE_SOUND("gonome/gonome_melee1.wav");
+	//PRECACHE_SOUND("gonome/gonome_melee2.wav");
 
 	//PRECACHE_SOUND_ARRAY(pIdleSounds);
 	//PRECACHE_SOUND_ARRAY(pPainSounds);
@@ -979,11 +979,11 @@ void CGonome::RunTask(Task_t* pTask)
 			const char* sample = NULL;
 			if (m_meleeAttack2)
 			{
-				sample = "gonome/gonome_melee2.wav";
+				sample = "!GO_MELEE1";
 			}
 			else
 			{
-				sample = "gonome/gonome_melee1.wav";
+				sample = "!GO_MELEE0";
 			}
 			EMIT_SOUND(ENT(pev), CHAN_BODY, sample, 1, ATTN_NORM);
 			m_playedAttackSound = true;

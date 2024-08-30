@@ -705,7 +705,6 @@ void CPitdrone::Precache()
 	PRECACHE_SOUND("pitdrone/pit_drone_pain2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_pain3.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_pain4.wav");
-	*/
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_communicate1.wav");
@@ -723,7 +722,7 @@ void CPitdrone::Precache()
 	PRECACHE_SOUND("pitdrone/pit_drone_idle3.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack2.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_run_on_grate.wav");
+	PRECACHE_SOUND("pitdrone/pit_drone_run_on_grate.wav");*/
 	PRECACHE_SOUND("bullchicken/bc_bite2.wav");
 	PRECACHE_SOUND("bullchicken/bc_bite3.wav");
 }

@@ -506,13 +506,13 @@ void COFBabyVoltigore::Precache()
 
 	PRECACHE_SOUND("voltigore/voltigore_attack_shock.wav");
 
-	PRECACHE_SOUND("voltigore/voltigore_communicate1.wav");
-	PRECACHE_SOUND("voltigore/voltigore_communicate2.wav");
-	PRECACHE_SOUND("voltigore/voltigore_communicate3.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_communicate1.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_communicate2.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_communicate3.wav");
 
-	PRECACHE_SOUND("voltigore/voltigore_die1.wav");
-	PRECACHE_SOUND("voltigore/voltigore_die2.wav");
-	PRECACHE_SOUND("voltigore/voltigore_die3.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_die1.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_die2.wav");
+	//PRECACHE_SOUND("voltigore/voltigore_die3.wav");
 
 	PRECACHE_SOUND("voltigore/voltigore_footstep1.wav");
 	PRECACHE_SOUND("voltigore/voltigore_footstep2.wav");
