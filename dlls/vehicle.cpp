@@ -4,7 +4,7 @@
 #include "trains.h"
 #include "saverestore.h"
 #include "weapons.h"
-#include "minmax.h"
+//#include "minmax.h"
 
 static float Fix2(float angle)
 {
@@ -161,10 +161,10 @@ void CFuncVehicle ::Blocked(CBaseEntity* pOther)
 	float minx, miny, minz;
 	float maxx, maxy, maxz;
 
-	minx = min(vFrontLeft.x, vBackRight.x);
-	maxx = max(vFrontLeft.x, vBackRight.x);
-	miny = min(vFrontLeft.y, vBackRight.y);
-	maxy = max(vFrontLeft.y, vBackRight.y);
+	minx = V_min(vFrontLeft.x, vBackRight.x);
+	maxx = V_max(vFrontLeft.x, vBackRight.x);
+	miny = V_min(vFrontLeft.y, vBackRight.y);
+	maxy = V_max(vFrontLeft.y, vBackRight.y);
 	minz = pev->origin.z;
 	maxz = pev->origin.z + abs(pev->mins.z - pev->maxs.z) * 2;
 
