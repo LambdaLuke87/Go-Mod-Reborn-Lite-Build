@@ -500,6 +500,9 @@ void CHud::Init()
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "1", FCVAR_ARCHIVE);
 	cl_sourcewpnlag = CVAR_CREATE("cl_sourcewpnlag", "0", FCVAR_ARCHIVE);
 
+	// Player Sounds
+	CVAR_CREATE("cl_player_sfx_type", "hevsuit", FCVAR_ARCHIVE | FCVAR_USERINFO); // Custom Player sounds
+
 	hasHudScaleInEngine = gEngfuncs.pfnGetCvarPointer("hud_scale") != NULL;
 
 	if (!hasHudScaleInEngine)

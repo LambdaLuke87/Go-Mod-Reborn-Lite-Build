@@ -1007,7 +1007,7 @@ typedef struct sentenceg
 
 } SENTENCEG;
 
-#define CSENTENCEG_MAX 200 // max number of sentence groups
+#define CSENTENCEG_MAX 400 // max number of sentence groups
 // globals
 
 SENTENCEG rgsentenceg[CSENTENCEG_MAX];

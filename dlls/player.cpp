@@ -50,6 +50,8 @@
 
 #include "rope/CRope.h"
 
+#include "pm_defs.h"
+
 // #define DUCKFIX
 
 extern void CopyToBodyQue(entvars_t* pev);
@@ -152,16 +154,31 @@ LINK_ENTITY_TO_CLASS(player, CBasePlayer);
 
 void CBasePlayer::Pain()
 {
-	float flRndSound; //sound randomizer
+	char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
+	if (RANDOM_FLOAT(0.0f, 100.0f) <= 35.0f)
+	{
+		if (0 == strcmp(PlayerSFXString, "dmc"))
+		{
+			SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+		}
+		else if (0 == strcmp(PlayerSFXString, "cstrike"))
+		{
+			SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+		}
+		else if (0 == strcmp(PlayerSFXString, "hlalpha"))
+		{
+			float flRndSound; // sound randomizer
 
-	flRndSound = RANDOM_FLOAT(0, 1);
+			flRndSound = RANDOM_FLOAT(0, 1);
 
-	if (flRndSound <= 0.33)
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
-	else if (flRndSound <= 0.66)
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
-	else
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+			if (flRndSound <= 0.33)
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+			else if (flRndSound <= 0.66)
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+			else
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+		}
+	}
 }
 
 /* 
@@ -260,22 +277,56 @@ void CBasePlayer::DeathSound()
 	}
 	*/
 
-	// temporarily using pain sounds for death sounds
-	switch (RANDOM_LONG(1, 5))
+	char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
+	if (0 == strcmp(PlayerSFXString, "hevsuit"))
 	{
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
-		break;
-	case 3:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
-		break;
-	}
+		// temporarily using pain sounds for death sounds
+		switch (RANDOM_LONG(1, 5))
+		{
+		case 1:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+			break;
+		case 2:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+			break;
+		case 3:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+			break;
+		}
 
-	// play one of the suit death alarms
-	EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+		// play one of the suit death alarms
+		EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+	}
+	else if (0 == strcmp(PlayerSFXString, "dmc"))
+	{
+		if (m_bitsDamageType == DMG_DROWN)
+		{
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_DROWNDIEDMC", 1, ATTN_NORM);
+		}
+		else
+		{
+			SENTENCEG_PlayRndSz(ENT(pev), "PL_DIEDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+		}
+	}
+	else if (0 == strcmp(PlayerSFXString, "cstrike"))
+	{
+		SENTENCEG_PlayRndSz(ENT(pev), "PL_DIECSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+	}
+	else
+	{
+		switch (RANDOM_LONG(1, 3))
+		{
+		case 1:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+			break;
+		case 2:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+			break;
+		case 3:
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+			break;
+		}
+	}
 }
 
 // override takehealth
@@ -475,6 +526,56 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 
 	m_bitsDamageType |= bitsDamage; // Save this so we can report it to the client
 	m_bitsHUDDamage = -1;			// make sure the damage bits get resent
+
+	if (pev->deadflag == DEAD_NO)
+	{
+		char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
+		if (0 == strcmp(PlayerSFXString, "hevsuit"))
+		{
+			if ((bitsDamage & DMG_FALL) != 0)
+			{
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
+			}
+		}
+		else if (0 == strcmp(PlayerSFXString, "dmc"))
+		{
+			if ((bitsDamage & DMG_FALL) != 0)
+			{
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
+			}
+			else if ((bitsDamage & DMG_BURN) != 0)
+			{
+				SENTENCEG_PlayRndSz(ENT(pev), "PL_BURNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+			}
+			else if ((bitsDamage & DMG_DROWN) != 0)
+			{
+				SENTENCEG_PlayRndSz(ENT(pev), "PL_DROWNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+			}
+			else
+				Pain();
+		}
+		else if ((bitsDamage & DMG_FALL) != 0)
+		{
+			if (0 == strcmp(PlayerSFXString, "cstrike"))
+			{
+				SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+			}
+			else if (0 == strcmp(PlayerSFXString, "hlalpha"))
+			{
+				switch (RANDOM_LONG(1, 2))
+				{
+				case 1:
+					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain1.wav", 1, ATTN_NORM);
+					break;
+				case 2:
+					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain2.wav", 1, ATTN_NORM);
+					break;
+				}
+			}
+		}
+		else
+			Pain();
+	}
 
 	while (fTookDamage && (!ftrivial || (bitsDamage & DMG_TIMEBASED) != 0) && ffound && 0 != bitsDamage)
 	{
@@ -1628,6 +1729,23 @@ void CBasePlayer::Jump()
 	Vector vecAdjustedVelocity;
 	Vector vecSpot;
 	TraceResult tr;
+
+	char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
+
+	if (!pmove->waterlevel && !pmove->onground)
+	{
+		if (FBitSet(m_afButtonPressed, IN_JUMP))
+		{
+			if (0 == strcmp(PlayerSFXString, "dmc"))
+			{
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_JUMPDMC", 1, ATTN_NORM);
+			}
+			else if (0 == strcmp(PlayerSFXString, "hlalpha"))
+			{
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_JUMPHLALPHA", 1, ATTN_NORM);
+			}
+		}
+	}
 
 	if (FBitSet(pev->flags, FL_WATERJUMP))
 		return;
