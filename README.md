@@ -8,6 +8,7 @@ Used Public Repositories:
 
 Thanks for those guys:
 
+* a1batross
 * Admer456
 * FreeSlave
 * Bacontsu
