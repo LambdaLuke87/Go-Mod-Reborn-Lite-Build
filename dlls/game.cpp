@@ -596,6 +596,8 @@ cvar_t sk_player_leg3 = {"sk_player_leg3", "1"};
 
 // END Cvars for Skill Level settings
 
+cvar_t sv_pushable_fixed_tick_fudge = {"sv_pushable_fixed_tick_fudge", "15"};
+
 cvar_t sv_busters = {"sv_busters", "0", FCVAR_SERVER};
 
 // BEGIN Opposing Force variables
@@ -616,8 +618,6 @@ cvar_t multipower = {"mp_multipower", "0", FCVAR_SERVER};
 cvar_t dmjumpsound = {"sv_dmjumpsound", "1", FCVAR_SERVER};
 
 // END Opposing Force variables
-
-cvar_t sv_pushable_fixed_tick_fudge = {"sv_pushable_fixed_tick_fudge", "15"};
 
 static bool SV_InitServer()
 {
@@ -1228,8 +1228,6 @@ void GameDLLInit()
 	CVAR_REGISTER(&defaultcoop);
 	CVAR_REGISTER(&coopweprespawn);
 
-	CVAR_REGISTER(&sv_pushable_fixed_tick_fudge);
-
 	CVAR_REGISTER(&oldgrapple);
 	CVAR_REGISTER(&oldweapons);
 
@@ -1238,6 +1236,8 @@ void GameDLLInit()
 	CVAR_REGISTER(&dmjumpsound);
 
 	// END REGISTER CVARS FOR OPPOSING FORCE
+
+	CVAR_REGISTER(&sv_pushable_fixed_tick_fudge);
 
 	InitMapLoadingUtils();
 
