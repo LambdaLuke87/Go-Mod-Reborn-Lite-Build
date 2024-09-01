@@ -140,14 +140,14 @@ void CZombie::AlertSound()
 
 void CZombie::IdleSound()
 {
-	int pitch = 100 + RANDOM_LONG(-5, 5);
+	int pitch = 95 + RANDOM_LONG(0, 9);
 
 	SENTENCEG_PlayRndSz(ENT(pev), "ZO_IDLE", 1, ATTN_NORM, 0, pitch);
 }
 
 void CZombie::AttackSound()
 {
-	int pitch = 100 + RANDOM_LONG(-5, 5);
+	int pitch = 95 + RANDOM_LONG(0, 9);
 
 	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ATTACK", 1, ATTN_NORM, 0, pitch);
 }
