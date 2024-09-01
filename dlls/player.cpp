@@ -5041,7 +5041,7 @@ Vector CBasePlayer::GetAutoaimVectorFromPoint(const Vector& vecSrc, float flDelt
 	// m_vecAutoAim = m_vecAutoAim * 0.99;
 
 	// Don't send across network if sv_aim is 0
-	if (g_psv_aim->value != 0)
+	if (g_psv_aim->value != 0 && g_psv_allow_autoaim != 0)
 	{
 		if (m_vecAutoAim.x != m_lastx ||
 			m_vecAutoAim.y != m_lasty)
@@ -5072,7 +5072,7 @@ Vector CBasePlayer::AutoaimDeflection(const Vector& vecSrc, float flDist, float 
 	edict_t* bestent;
 	TraceResult tr;
 
-	if (g_psv_aim->value == 0)
+	if (g_psv_aim->value == 0 || g_psv_allow_autoaim->value == 0)
 	{
 		m_fOnTarget = false;
 		return g_vecZero;
