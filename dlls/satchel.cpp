@@ -1,17 +1,17 @@
 /***
-*
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
+ *
+ *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+ *
+ *	This product contains software technology licensed from Id
+ *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
+ *	All Rights Reserved.
+ *
+ *   Use, distribution, and modification of this source code and/or resulting
+ *   object code is restricted to non-commercial enhancements to products from
+ *   Valve LLC.  All other use, distribution, or modification is prohibited
+ *   without written permission from Valve LLC.
+ *
+ ****/
 
 #include "extdll.h"
 #include "util.h"
@@ -20,6 +20,10 @@
 #include "weapons.h"
 #include "player.h"
 #include "gamerules.h"
+
+// If you want the "legacy" controls where primary attack is "throw first charge / detonate" and secondary attack is
+// "throw extra" charge, simply comment this define.
+#define MODERN_SATCHEL_CONTROLS
 
 class CSatchelCharge : public CGrenade
 {
@@ -54,7 +58,7 @@ void CSatchelCharge::Spawn()
 	pev->solid = SOLID_BBOX;
 
 	SET_MODEL(ENT(pev), "models/w_satchel.mdl");
-	//UTIL_SetSize(pev, Vector( -16, -16, -4), Vector(16, 16, 32));	// Old box -- size of headcrab monsters/players get blocked by this
+	// UTIL_SetSize(pev, Vector( -16, -16, -4), Vector(16, 16, 32));	// Old box -- size of headcrab monsters/players get blocked by this
 	UTIL_SetSize(pev, Vector(-4, -4, -4), Vector(4, 4, 4)); // Uses point-sized, and can be stepped over
 	UTIL_SetOrigin(pev, pev->origin);
 
@@ -289,7 +293,7 @@ bool CSatchel::CanDeploy()
 bool CSatchel::Deploy()
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
-	//m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	// m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 
 	bool result;
 
@@ -333,48 +337,49 @@ void CSatchel::Holster()
 
 void CSatchel::PrimaryAttack()
 {
+#ifdef MODERN_SATCHEL_CONTROLS
+	// we're reloading, don't allow fire
 	if (m_chargeReady != 2)
 	{
 		Throw();
 	}
+#else
+	switch (m_chargeReady)
+	{
+	case 0:
+	{
+		Throw();
+	}
+	break;
+	case 1:
+	{
+		Detonate();
+		break;
+	}
+
+	case 2:
+		// we're reloading, don't allow fire
+		{
+		}
+		break;
+	}
+#endif
 }
 
 
 void CSatchel::SecondaryAttack()
 {
-	switch (m_chargeReady)
+#ifdef MODERN_SATCHEL_CONTROLS
+	if (m_chargeReady == 1)
 	{
-	case 0:
-		break;
-	case 1:
+		Detonate();
+	}
+#else
+	if (m_chargeReady != 2)
 	{
-		SendWeaponAnim(SATCHEL_RADIO_FIRE);
-
-		edict_t* pPlayer = m_pPlayer->edict();
-
-		CBaseEntity* pSatchel = NULL;
-
-		while ((pSatchel = UTIL_FindEntityInSphere(pSatchel, m_pPlayer->pev->origin, 4096)) != NULL)
-		{
-			if (FClassnameIs(pSatchel->pev, "monster_satchel"))
-			{
-				if (pSatchel->pev->owner == pPlayer)
-				{
-					pSatchel->Use(m_pPlayer, m_pPlayer, USE_ON, 0);
-				}
-			}
-		}
-
-		m_chargeReady = 2;
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.5f);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5f;
-		break;
+		Throw();
 	}
-	case 2:
-		// we're reloading, don't allow fire
-		break;
-	}
+#endif
 }
 
 
@@ -404,12 +409,38 @@ void CSatchel::Throw()
 
 		m_chargeReady = 1;
 
-		if (!rule_infammo.value)
-			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 	}
+}
+
+
+void CSatchel::Detonate()
+{
+	SendWeaponAnim(SATCHEL_RADIO_FIRE);
+
+	edict_t* pPlayer = m_pPlayer->edict();
+
+	CBaseEntity* pSatchel = NULL;
+
+	while ((pSatchel = UTIL_FindEntityInSphere(pSatchel, m_pPlayer->pev->origin, 4096)) != NULL)
+	{
+		if (FClassnameIs(pSatchel->pev, "monster_satchel"))
+		{
+			if (pSatchel->pev->owner == pPlayer)
+			{
+				pSatchel->Use(m_pPlayer, m_pPlayer, USE_ON, 0);
+				m_chargeReady = 2;
+			}
+		}
+	}
+
+	m_chargeReady = 2;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 }
 
 
