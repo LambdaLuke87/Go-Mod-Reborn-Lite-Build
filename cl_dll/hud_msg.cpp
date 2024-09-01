@@ -99,6 +99,15 @@ bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 	//TODO: define game mode constants
 	m_Teamplay = giTeamplay = READ_BYTE();
 
+#ifdef STEAM_RICH_PRESENCE
+	if (m_Teamplay)
+		gEngfuncs.pfnClientCmd("richpresence_gamemode Teamplay\n");
+	else
+		gEngfuncs.pfnClientCmd("richpresence_gamemode\n"); // reset
+
+	gEngfuncs.pfnClientCmd("richpresence_update\n");
+#endif
+
 	if (gViewPort && !gViewPort->m_pScoreBoard)
 	{
 		gViewPort->CreateScoreBoard();
