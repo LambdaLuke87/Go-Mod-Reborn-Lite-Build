@@ -92,6 +92,7 @@ inline void FillRGBA(int x, int y, int width, int height, int r, int g, int b, i
 #define GetScreenInfo (*gEngfuncs.pfnGetScreenInfo)
 #define ServerCmd (*gEngfuncs.pfnServerCmd)
 #define EngineClientCmd (*gEngfuncs.pfnClientCmd)
+#define EngineFilteredClientCmd (*gEngfuncs.pfnFilteredClientCmd)
 inline void SetCrosshair(HSPRITE hspr, Rect rc, int r, int g, int b)
 {
 	gEngfuncs.pfnSetCrosshair(hspr, rc, r, g, b);
