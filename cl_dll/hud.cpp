@@ -93,6 +93,7 @@ cvar_t* cl_lw = NULL;
 cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
+cvar_t* r_decals = nullptr;
 cvar_t* cl_sourcewpnlag = nullptr;
 
 // HUD Scale Render
@@ -498,6 +499,7 @@ void CHud::Init()
 	cl_rollangle = CVAR_CREATE("cl_rollangle", "2.0", FCVAR_ARCHIVE);
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", FCVAR_ARCHIVE);
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "1", FCVAR_ARCHIVE);
+	r_decals = gEngfuncs.pfnGetCvarPointer("r_decals");
 	cl_sourcewpnlag = CVAR_CREATE("cl_sourcewpnlag", "0", FCVAR_ARCHIVE);
 
 	// Player Sounds
