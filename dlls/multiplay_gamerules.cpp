@@ -27,8 +27,8 @@
 #include "items.h"
 #include "voice_gamemgr.h"
 #include "hltv.h"
-#include "UserMessages.h"
 #include "trains.h"
+#include "UserMessages.h"
 
 #include "ctf/ctfplay_gamerules.h"
 
@@ -740,26 +740,26 @@ int CHalfLifeMultiplay::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKil
 //=========================================================
 void CHalfLifeMultiplay::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor)
 {
-	DeathNotice(pVictim, pKiller, pInflictor);
-
-	pVictim->m_iDeaths += 1;
-
-
-	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 	CBasePlayer* peKiller = NULL;
 	CBaseEntity* ktmp = CBaseEntity::Instance(pKiller);
 	if (ktmp && (ktmp->Classify() == CLASS_PLAYER))
 		peKiller = (CBasePlayer*)ktmp;
-	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
+	else if (ktmp && (ktmp->Classify() == CLASS_VEHICLE))
 	{
-		CBasePlayer* pDriver = (CBasePlayer*)((CFuncVehicle*)ktmp)->m_pDriver;
-
+		CBasePlayer* pDriver = ((CFuncVehicle*)ktmp)->m_pDriver;
 		if (pDriver != NULL)
 		{
+			peKiller = pDriver;
+			ktmp = pDriver;
 			pKiller = pDriver->pev;
-			peKiller = (CBasePlayer*)pDriver;
 		}
 	}
+
+	DeathNotice(pVictim, pKiller, pInflictor);
+
+	pVictim->m_iDeaths += 1;
+
+	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
 
 	if (pVictim->pev == pKiller)
 	{ // killed self
