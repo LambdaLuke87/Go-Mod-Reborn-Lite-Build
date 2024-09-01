@@ -491,7 +491,17 @@ CGameRules* InstallGameRules(CBaseEntity* pWorld)
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 
-	if (0 == gpGlobals->deathmatch)
+	if (1 == gamerule_sandbox.value)
+	{
+		g_teamplay = false;
+		return new CMultiplaySandbox;
+	}
+	else if (1 == sv_busters.value)
+	{
+		g_teamplay = false;
+		return new CMultiplayBusters;
+	}
+	else if (0 == gpGlobals->deathmatch)
 	{
 		// generic half-life
 		g_teamplay = false;

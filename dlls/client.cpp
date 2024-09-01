@@ -59,6 +59,7 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 
+extern bool IsSandBox();
 extern bool m_bnpc_allied;
 
 // Start - Register of NPCS
@@ -756,8 +757,6 @@ void ClientCommand(edict_t* pEntity)
 
 	auto player = GetClassPtr<CBasePlayer>(reinterpret_cast<CBasePlayer*>(&pEntity->v));
 
-	int is_sandbox = gamerule_sandbox.value;
-
 	if (FStrEq(pcmd, "say"))
 	{
 		Host_Say(pEntity, false);
@@ -810,7 +809,7 @@ void ClientCommand(edict_t* pEntity)
 	// Go-Mod Reborn Sandbox Mode Commands
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
-		if (0 != is_sandbox) // is sandbox mode?
+		if (IsSandBox()) // is sandbox mode?
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			int allow_bosses = allow_spawn_bosses.value;
@@ -967,7 +966,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
 	{
-		if (0 != is_sandbox && CMD_ARGC() > 1)
+		if (IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorR = atoi(CMD_ARGV(1));
 
@@ -991,7 +990,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_green"))
 	{
-		if (0 != is_sandbox && CMD_ARGC() > 1)
+		if (IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorG = atoi(CMD_ARGV(1));
 
@@ -1015,7 +1014,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_blue"))
 	{
-		if (0 != is_sandbox && CMD_ARGC() > 1)
+		if (IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorB = atoi(CMD_ARGV(1));
 
@@ -1039,7 +1038,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_amount"))
 	{
-		if (0 != is_sandbox && CMD_ARGC() > 1)
+		if (IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderAMT = atoi(CMD_ARGV(1));
 
@@ -1098,7 +1097,7 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "buddha"))
 	{
 		int InmortalRule = allow_healthmodify.value;
-		if (0 != InmortalRule)
+		if (IsSandBox() && 0 != InmortalRule)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (pPlayer->m_buddha)
@@ -1116,7 +1115,7 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "zeus"))
 	{
 		int InmortalRule = allow_healthmodify.value;
-		if (0 != InmortalRule)
+		if (IsSandBox() && 0 != InmortalRule)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (0 != pPlayer->pev->takedamage)
@@ -1134,7 +1133,7 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "+noclip"))
 	{
 		int noclip_isON = allow_noclip.value;
-		if (0 != noclip_isON)
+		if (IsSandBox() && 0 != noclip_isON)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
@@ -1144,7 +1143,7 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "-noclip"))
 	{
 		int noclip_ON = allow_noclip.value;
-		if (0 != noclip_ON)
+		if (IsSandBox() && 0 != noclip_ON)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_WALK;
@@ -1675,8 +1674,7 @@ void ClientPrecache()
 		UTIL_PrecacheOther("monster_human_grunt");
 
 	// check if sandbox is allowed before precaching everything below
-	int is_sandbox = gamerule_sandbox.value;
-	if (0 != is_sandbox)
+	if (IsSandBox())
 	{
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)

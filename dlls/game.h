@@ -50,6 +50,8 @@ extern cvar_t dropweapons;
 
 extern cvar_t sv_allowbunnyhopping;
 
+extern cvar_t sv_busters;
+
 // Engine Cvars
 extern cvar_t* g_psv_gravity;
 extern cvar_t* g_psv_aim;

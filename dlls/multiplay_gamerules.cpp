@@ -32,6 +32,9 @@
 
 #include "ctf/ctfplay_gamerules.h"
 
+// longest the intermission can last, in seconds
+#define MAX_INTERMISSION_TIME 120
+
 CVoiceGameMgr g_VoiceGameMgr;
 
 class CMultiplayGameMgrHelper : public IVoiceGameMgrHelper
@@ -112,29 +115,22 @@ void CHalfLifeMultiplay::RefreshSkillData()
 	CGameRules::RefreshSkillData();
 
 	// override some values for multiplay.
-	int SkillWeaponsLevel = allow_dm_weapons_skills.value;
-	if (SkillWeaponsLevel == 1)
-	{
-		gSkillData.suitchargerCapacity = 30;  // suitcharger
-		gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
-		gSkillData.plrDmg9MM = 12;			  // Glock Round
-		gSkillData.plrDmg357 = 50;			  // 357 Round
-		gSkillData.plrDmgMP5 = 12;			  // MP5 Round
-		gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
-		gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
-		gSkillData.plrDmgCrossbowClient = 20; // Crossbow
-		gSkillData.plrDmgRPG = 120;			  // RPG
-		gSkillData.plrDmgEgonWide = 20;		  // Egon Wide
-		gSkillData.plrDmgEgonNarrow = 10;	  // Egon Narrow
-		gSkillData.plrDmgHandGrenade = 100;	  // Hand Grendade
-		gSkillData.plrDmgSatchel = 120;		  // Satchel Charge
-		gSkillData.plrDmgTripmine = 150;	  // Tripmine
-		gSkillData.plrDmgHornet = 10;		  // hornet
-	}
+	gSkillData.suitchargerCapacity = 30;  // suitcharger
+	gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
+	gSkillData.plrDmg9MM = 12;			  // Glock Round
+	gSkillData.plrDmg357 = 50;			  // 357 Round
+	gSkillData.plrDmgMP5 = 12;			  // MP5 Round
+	gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
+	gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
+	gSkillData.plrDmgCrossbowClient = 20; // Crossbow
+	gSkillData.plrDmgRPG = 120;			  // RPG
+	gSkillData.plrDmgEgonWide = 20;		  // Egon Wide
+	gSkillData.plrDmgEgonNarrow = 10;	  // Egon Narrow
+	gSkillData.plrDmgHandGrenade = 100;	  // Hand Grendade
+	gSkillData.plrDmgSatchel = 120;		  // Satchel Charge
+	gSkillData.plrDmgTripmine = 150;	  // Tripmine
+	gSkillData.plrDmgHornet = 10;		  // hornet
 }
-
-// longest the intermission can last, in seconds
-#define MAX_INTERMISSION_TIME 120
 
 //=========================================================
 //=========================================================
@@ -634,71 +630,9 @@ void CHalfLifeMultiplay::PlayerSpawn(CBasePlayer* pPlayer)
 
 	if (addDefault)
 	{
-		int WeaponSetup = spawn_wpnsetup.value;
-
-		if (WeaponSetup == 4)
-		{
-			pPlayer->GiveNamedItem("weapon_toolgun");
-			pPlayer->GiveNamedItem("weapon_physgun");
-		}
-		else if (WeaponSetup >= 1)
-		{
-			pPlayer->GiveNamedItem("weapon_crowbar");
-			pPlayer->GiveNamedItem("weapon_9mmhandgun");
-			pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
-
-			if (WeaponSetup >= 2)
-			{
-				if (WeaponSetup == 3)
-				{
-					pPlayer->GiveNamedItem("weapon_knife");
-					pPlayer->GiveNamedItem("weapon_pipewrench");
-					pPlayer->GiveNamedItem("weapon_357");
-					pPlayer->GiveNamedItem("weapon_eagle");
-					pPlayer->GiveNamedItem("weapon_9mmAR");
-					pPlayer->GiveNamedItem("weapon_shotgun");
-					pPlayer->GiveNamedItem("weapon_crossbow");
-					pPlayer->GiveNamedItem("weapon_rpg");
-					pPlayer->GiveNamedItem("weapon_gauss");
-					pPlayer->GiveNamedItem("weapon_egon");
-					pPlayer->GiveNamedItem("weapon_handgrenade");
-					pPlayer->GiveNamedItem("weapon_satchel");
-					pPlayer->GiveNamedItem("weapon_tripmine");
-					pPlayer->GiveNamedItem("weapon_snark");
-					pPlayer->GiveNamedItem("weapon_penguin");
-					pPlayer->GiveNamedItem("weapon_m249");
-					pPlayer->GiveNamedItem("weapon_displacer");
-					pPlayer->GiveNamedItem("weapon_sniperrifle");
-					pPlayer->GiveNamedItem("weapon_sporelauncher");
-
-					/* TODO: need be fixed, idk why is Buggy the hornetgun and the shockrifle >:(
-					pPlayer->GiveNamedItem("weapon_hornetgun");
-					pPlayer->GiveNamedItem("weapon_shockrifle"); */
-
-					// Give the maximum amount of ammunition for each weapon
-					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
-					pPlayer->GiveAmmo(_357_MAX_CARRY, "357", _357_MAX_CARRY);
-					pPlayer->GiveAmmo(M203_GRENADE_MAX_CARRY, "ARgrenades", M203_GRENADE_MAX_CARRY);
-					pPlayer->GiveAmmo(BUCKSHOT_MAX_CARRY, "buckshot", BUCKSHOT_MAX_CARRY);
-					pPlayer->GiveAmmo(BOLT_MAX_CARRY, "bolts", BOLT_MAX_CARRY);
-					pPlayer->GiveAmmo(ROCKET_MAX_CARRY, "rockets", ROCKET_MAX_CARRY);
-					pPlayer->GiveAmmo(URANIUM_MAX_CARRY, "uranium", URANIUM_MAX_CARRY);
-					//pPlayer->GiveAmmo(HORNET_MAX_CARRY, "Hornets", HORNET_MAX_CARRY);
-					pPlayer->GiveAmmo(HANDGRENADE_MAX_CARRY, "Hand Grenade", HANDGRENADE_MAX_CARRY);
-					pPlayer->GiveAmmo(SATCHEL_MAX_CARRY, "Satchel Charge", SATCHEL_MAX_CARRY);
-					pPlayer->GiveAmmo(TRIPMINE_MAX_CARRY, "Trip Mine", TRIPMINE_MAX_CARRY);
-					pPlayer->GiveAmmo(SNARK_MAX_CARRY, "Snarks", SNARK_MAX_CARRY);
-					pPlayer->GiveAmmo(PENGUIN_MAX_CARRY, "Penguins", PENGUIN_MAX_CARRY);
-					pPlayer->GiveAmmo(M249_MAX_CARRY, "556", M249_MAX_CARRY);
-					pPlayer->GiveAmmo(SNIPERRIFLE_MAX_CARRY, "762", SNIPERRIFLE_MAX_CARRY);
-					pPlayer->GiveAmmo(SPORELAUNCHER_MAX_CARRY, "spores", SPORELAUNCHER_MAX_CARRY);
-					//pPlayer->GiveAmmo(SHOCKRIFLE_MAX_CLIP, "shock", SHOCKRIFLE_MAX_CLIP);
-				}
-
-				pPlayer->GiveNamedItem("weapon_toolgun");
-				pPlayer->GiveNamedItem("weapon_physgun");
-			}
-		}
+		pPlayer->GiveNamedItem("weapon_crowbar");
+		pPlayer->GiveNamedItem("weapon_9mmhandgun");
+		pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
 	}
 
 	InitItemsForPlayer(pPlayer);
@@ -1128,10 +1062,6 @@ int CHalfLifeMultiplay::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
 		return GR_WEAPON_RESPAWN_NO;
 	}
 
-	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem == 0)
-		return GR_WEAPON_RESPAWN_NO;
-
 	return GR_WEAPON_RESPAWN_YES;
 }
 
@@ -1188,10 +1118,6 @@ int CHalfLifeMultiplay::ItemShouldRespawn(CItem* pItem)
 		return GR_ITEM_RESPAWN_NO;
 	}
 
-	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem == 0)
-		return GR_ITEM_RESPAWN_NO;
-
 	return GR_ITEM_RESPAWN_YES;
 }
 
@@ -1237,10 +1163,6 @@ int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo* pAmmo)
 	{
 		return GR_AMMO_RESPAWN_NO;
 	}
-
-	int RespawnItem = worlditems_respawn.value;
-	if (RespawnItem == 0)
-		return GR_AMMO_RESPAWN_NO;
 
 	return GR_AMMO_RESPAWN_YES;
 }
@@ -1892,4 +1814,433 @@ void CHalfLifeMultiplay::SendMOTDToClient(edict_t* client)
 	}
 
 	FREE_FILE(aFileList);
+}
+
+//=========================================================
+//=========================================================
+// Busters Gamerules
+//=========================================================
+//=========================================================
+
+#define EGON_BUSTING_TIME 10
+
+bool IsBustingGame()
+{
+	return sv_busters.value == 1;
+}
+
+bool IsPlayerBusting(CBaseEntity* pPlayer)
+{
+	if (!pPlayer || !pPlayer->IsPlayer() || !IsBustingGame())
+		return false;
+
+	return ((CBasePlayer*)pPlayer)->HasPlayerItemFromID(WEAPON_EGON);
+}
+
+bool BustingCanHaveItem(CBasePlayer* pPlayer, CBaseEntity* pItem)
+{
+	bool bIsWeaponOrAmmo = false;
+
+	if (strstr(STRING(pItem->pev->classname), "weapon_") || strstr(STRING(pItem->pev->classname), "ammo_"))
+	{
+		bIsWeaponOrAmmo = true;
+	}
+
+	// Busting players can't have ammo nor weapons
+	if (IsPlayerBusting(pPlayer) && bIsWeaponOrAmmo)
+		return false;
+
+	return true;
+}
+
+//=========================================================
+CMultiplayBusters::CMultiplayBusters()
+{
+	m_flEgonBustingCheckTime = -1;
+}
+
+//=========================================================
+void CMultiplayBusters::Think()
+{
+	CheckForEgons();
+
+	CHalfLifeMultiplay::Think();
+}
+
+//=========================================================
+int CMultiplayBusters::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
+{
+	// If the attacker is busting, they get a point per kill
+	if (IsPlayerBusting(pAttacker))
+		return 1;
+
+	// If the victim is busting, then the attacker gets a point
+	if (IsPlayerBusting(pKilled))
+		return 2;
+
+	return 0;
+}
+
+//=========================================================
+void CMultiplayBusters::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor)
+{
+	if (IsPlayerBusting(pVictim))
+	{
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "The Buster is dead!!");
+
+		// Reset egon check time
+		m_flEgonBustingCheckTime = -1;
+
+		CBasePlayer* peKiller = NULL;
+		CBaseEntity* ktmp = CBaseEntity::Instance(pKiller);
+
+		if (ktmp && (ktmp->Classify() == CLASS_PLAYER))
+		{
+			peKiller = (CBasePlayer*)ktmp;
+		}
+		else if (ktmp && (ktmp->Classify() == CLASS_VEHICLE))
+		{
+			CBasePlayer* pDriver = ((CFuncVehicle*)ktmp)->m_pDriver;
+
+			if (pDriver != NULL)
+			{
+				peKiller = pDriver;
+				ktmp = pDriver;
+				pKiller = pDriver->pev;
+			}
+		}
+
+		if (peKiller)
+		{
+			UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s has has killed the Buster!\n", STRING((CBasePlayer*)peKiller->pev->netname)));
+		}
+
+		pVictim->pev->renderfx = kRenderFxNone;
+		pVictim->pev->rendercolor = g_vecZero;
+		// pVictim->pev->effects &= ~EF_BRIGHTFIELD;
+	}
+
+	CHalfLifeMultiplay::PlayerKilled(pVictim, pKiller, pInflictor);
+}
+
+//=========================================================
+void CMultiplayBusters::DeathNotice(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pevInflictor)
+{
+	// Only death notices that the Buster was involved in in Busting game mode
+	if (!IsPlayerBusting(pVictim) && !IsPlayerBusting(CBaseEntity::Instance(pKiller)))
+		return;
+
+	CHalfLifeMultiplay::DeathNotice(pVictim, pKiller, pevInflictor);
+}
+
+//=========================================================
+int CMultiplayBusters::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
+{
+	if (pWeapon->m_iId == WEAPON_EGON)
+		return GR_WEAPON_RESPAWN_NO;
+
+	return CHalfLifeMultiplay::WeaponShouldRespawn(pWeapon);
+}
+
+
+//=========================================================
+// CheckForEgons:
+// Check to see if any player has an egon
+// If they don't then get the lowest player on the scoreboard and give them one
+// Then check to see if any weapon boxes out there has an egon, and delete it
+//=========================================================
+void CMultiplayBusters::CheckForEgons()
+{
+	if (m_flEgonBustingCheckTime <= 0.0f)
+	{
+		m_flEgonBustingCheckTime = gpGlobals->time + EGON_BUSTING_TIME;
+		return;
+	}
+
+	if (m_flEgonBustingCheckTime <= gpGlobals->time)
+	{
+		m_flEgonBustingCheckTime = -1.0f;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
+
+			// Someone is busting, no need to continue
+			if (IsPlayerBusting(pPlayer))
+				return;
+		}
+
+		int bBestFrags = 9999;
+		CBasePlayer* pBestPlayer = NULL;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
+
+			if (pPlayer && pPlayer->pev->frags <= bBestFrags)
+			{
+				bBestFrags = pPlayer->pev->frags;
+				pBestPlayer = pPlayer;
+			}
+		}
+
+		if (pBestPlayer)
+		{
+			pBestPlayer->GiveNamedItem("weapon_egon");
+
+			CBaseEntity* pEntity = NULL;
+
+			// Find a weaponbox that includes an Egon, then destroy it
+			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "weaponbox")) != NULL)
+			{
+				CWeaponBox* pWeaponBox = (CWeaponBox*)pEntity;
+
+				if (pWeaponBox)
+				{
+					CBasePlayerItem* pWeapon;
+
+					for (int i = 0; i < MAX_ITEM_TYPES; i++)
+					{
+						pWeapon = pWeaponBox->m_rgpPlayerItems[i];
+
+						while (pWeapon)
+						{
+							// There you are, bye box
+							if (pWeapon->m_iId == WEAPON_EGON)
+							{
+								pWeaponBox->Kill();
+								break;
+							}
+
+							pWeapon = pWeapon->m_pNext;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//=========================================================
+bool CMultiplayBusters::CanHavePlayerItem(CBasePlayer* pPlayer, CBasePlayerItem* pItem)
+{
+	// Buster cannot have more weapons nor ammo
+	if (BustingCanHaveItem(pPlayer, pItem) == false)
+	{
+		return false;
+	}
+
+	return CHalfLifeMultiplay::CanHavePlayerItem(pPlayer, pItem);
+}
+
+//=========================================================
+bool CMultiplayBusters::CanHaveItem(CBasePlayer* pPlayer, CItem* pItem)
+{
+	// Buster cannot have more weapons nor ammo
+	if (BustingCanHaveItem(pPlayer, pItem) == false)
+	{
+		return false;
+	}
+
+	return CHalfLifeMultiplay::CanHaveItem(pPlayer, pItem);
+}
+
+//=========================================================
+void CMultiplayBusters::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon)
+{
+	if (pWeapon->m_iId == WEAPON_EGON)
+	{
+		pPlayer->RemoveAllItems(false);
+
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "Long live the new Buster!");
+		UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s is busting!\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
+
+		SetPlayerModel(pPlayer);
+
+		pPlayer->pev->health = pPlayer->pev->max_health;
+		pPlayer->pev->armorvalue = 100;
+
+		pPlayer->pev->renderfx = kRenderFxGlowShell;
+		pPlayer->pev->renderamt = 25;
+		pPlayer->pev->rendercolor = Vector(0, 75, 250);
+
+		CBasePlayerWeapon* pEgon = (CBasePlayerWeapon*)pWeapon;
+
+		pEgon->m_iDefaultAmmo = 100;
+		pPlayer->m_rgAmmo[pEgon->m_iPrimaryAmmoType] = pEgon->m_iDefaultAmmo;
+
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "ivan");
+	}
+}
+
+void CMultiplayBusters::ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer)
+{
+	SetPlayerModel(pPlayer);
+
+	// Set preferences
+	pPlayer->SetPrefsFromUserinfo(infobuffer);
+}
+
+void CMultiplayBusters::PlayerSpawn(CBasePlayer* pPlayer)
+{
+	CHalfLifeMultiplay::PlayerSpawn(pPlayer);
+	SetPlayerModel(pPlayer);
+}
+
+void CMultiplayBusters::SetPlayerModel(CBasePlayer* pPlayer)
+{
+	if (IsPlayerBusting(pPlayer))
+	{
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "ivan");
+	}
+	else
+	{
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
+	}
+}
+
+//=========================================================
+//=========================================================
+// Sandbox Gamerules
+//=========================================================
+//=========================================================
+
+bool IsSandBox()
+{
+	return gamerule_sandbox.value == 1;
+}
+
+void CMultiplaySandbox::RefreshSkillData()
+{
+	// TODO: this has an bug and need be fixed
+	int SkillWeaponsLevel = allow_dm_weapons_skills.value;
+
+	if (SkillWeaponsLevel == 1)
+		CHalfLifeMultiplay::RefreshSkillData(); // use deathmatch values
+	else
+		CGameRules::RefreshSkillData(); // load all default values
+}
+
+void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
+{
+	bool addDefault;
+	CBaseEntity* pWeaponEntity = NULL;
+
+	// Ensure the player switches to the Glock on spawn regardless of setting
+	const int originalAutoWepSwitch = pPlayer->m_iAutoWepSwitch;
+	pPlayer->m_iAutoWepSwitch = 1;
+
+	pPlayer->SetHasSuit(true);
+
+	addDefault = true;
+
+	while (pWeaponEntity = UTIL_FindEntityByClassname(pWeaponEntity, "game_player_equip"))
+	{
+		pWeaponEntity->Touch(pPlayer);
+		addDefault = false;
+	}
+
+	g_engfuncs.pfnMessageBegin(MSG_ONE, gmsgOldWeapon, nullptr, pPlayer->edict());
+	g_engfuncs.pfnWriteByte(static_cast<int>(1 == oldweapons.value));
+	g_engfuncs.pfnMessageEnd();
+
+	if (addDefault)
+	{
+		int WeaponSetup = spawn_wpnsetup.value;
+
+		if (WeaponSetup == 4)
+		{
+			pPlayer->GiveNamedItem("weapon_toolgun");
+			pPlayer->GiveNamedItem("weapon_physgun");
+		}
+		else if (WeaponSetup >= 1)
+		{
+			pPlayer->GiveNamedItem("weapon_crowbar");
+			pPlayer->GiveNamedItem("weapon_9mmhandgun");
+			pPlayer->GiveAmmo(68, "9mm", _9MM_MAX_CARRY); // 4 full reloads
+
+			if (WeaponSetup >= 2)
+			{
+				if (WeaponSetup == 3)
+				{
+					pPlayer->GiveNamedItem("weapon_knife");
+					pPlayer->GiveNamedItem("weapon_pipewrench");
+					pPlayer->GiveNamedItem("weapon_357");
+					pPlayer->GiveNamedItem("weapon_eagle");
+					pPlayer->GiveNamedItem("weapon_9mmAR");
+					pPlayer->GiveNamedItem("weapon_shotgun");
+					pPlayer->GiveNamedItem("weapon_crossbow");
+					pPlayer->GiveNamedItem("weapon_rpg");
+					pPlayer->GiveNamedItem("weapon_gauss");
+					pPlayer->GiveNamedItem("weapon_egon");
+					pPlayer->GiveNamedItem("weapon_handgrenade");
+					pPlayer->GiveNamedItem("weapon_satchel");
+					pPlayer->GiveNamedItem("weapon_tripmine");
+					pPlayer->GiveNamedItem("weapon_snark");
+					pPlayer->GiveNamedItem("weapon_penguin");
+					pPlayer->GiveNamedItem("weapon_m249");
+					pPlayer->GiveNamedItem("weapon_displacer");
+					pPlayer->GiveNamedItem("weapon_sniperrifle");
+					pPlayer->GiveNamedItem("weapon_sporelauncher");
+
+					/* TODO: need be fixed, idk why is Buggy the hornetgun and the shockrifle >:(
+					pPlayer->GiveNamedItem("weapon_hornetgun");
+					pPlayer->GiveNamedItem("weapon_shockrifle"); */
+
+					// Give the maximum amount of ammunition for each weapon
+					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
+					pPlayer->GiveAmmo(_357_MAX_CARRY, "357", _357_MAX_CARRY);
+					pPlayer->GiveAmmo(M203_GRENADE_MAX_CARRY, "ARgrenades", M203_GRENADE_MAX_CARRY);
+					pPlayer->GiveAmmo(BUCKSHOT_MAX_CARRY, "buckshot", BUCKSHOT_MAX_CARRY);
+					pPlayer->GiveAmmo(BOLT_MAX_CARRY, "bolts", BOLT_MAX_CARRY);
+					pPlayer->GiveAmmo(ROCKET_MAX_CARRY, "rockets", ROCKET_MAX_CARRY);
+					pPlayer->GiveAmmo(URANIUM_MAX_CARRY, "uranium", URANIUM_MAX_CARRY);
+					// pPlayer->GiveAmmo(HORNET_MAX_CARRY, "Hornets", HORNET_MAX_CARRY);
+					pPlayer->GiveAmmo(HANDGRENADE_MAX_CARRY, "Hand Grenade", HANDGRENADE_MAX_CARRY);
+					pPlayer->GiveAmmo(SATCHEL_MAX_CARRY, "Satchel Charge", SATCHEL_MAX_CARRY);
+					pPlayer->GiveAmmo(TRIPMINE_MAX_CARRY, "Trip Mine", TRIPMINE_MAX_CARRY);
+					pPlayer->GiveAmmo(SNARK_MAX_CARRY, "Snarks", SNARK_MAX_CARRY);
+					pPlayer->GiveAmmo(PENGUIN_MAX_CARRY, "Penguins", PENGUIN_MAX_CARRY);
+					pPlayer->GiveAmmo(M249_MAX_CARRY, "556", M249_MAX_CARRY);
+					pPlayer->GiveAmmo(SNIPERRIFLE_MAX_CARRY, "762", SNIPERRIFLE_MAX_CARRY);
+					pPlayer->GiveAmmo(SPORELAUNCHER_MAX_CARRY, "spores", SPORELAUNCHER_MAX_CARRY);
+					// pPlayer->GiveAmmo(SHOCKRIFLE_MAX_CLIP, "shock", SHOCKRIFLE_MAX_CLIP);
+				}
+
+				pPlayer->GiveNamedItem("weapon_toolgun");
+				pPlayer->GiveNamedItem("weapon_physgun");
+			}
+		}
+	}
+
+	InitItemsForPlayer(pPlayer);
+
+	pPlayer->m_iAutoWepSwitch = originalAutoWepSwitch;
+}
+
+int CMultiplaySandbox::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
+{
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem == 0)
+		return GR_WEAPON_RESPAWN_NO;
+
+	return CHalfLifeMultiplay::WeaponShouldRespawn(pWeapon);
+}
+
+int CMultiplaySandbox::ItemShouldRespawn(CItem* pItem)
+{
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem == 0)
+		return GR_ITEM_RESPAWN_NO;
+
+	return CHalfLifeMultiplay::ItemShouldRespawn(pItem);
+}
+
+int CMultiplaySandbox::AmmoShouldRespawn(CBasePlayerAmmo* pAmmo)
+{
+	int RespawnItem = worlditems_respawn.value;
+	if (RespawnItem == 0)
+		return GR_AMMO_RESPAWN_NO;
+
+	return CHalfLifeMultiplay::AmmoShouldRespawn(pAmmo);
 }

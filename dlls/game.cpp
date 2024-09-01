@@ -596,6 +596,8 @@ cvar_t sk_player_leg3 = {"sk_player_leg3", "1"};
 
 // END Cvars for Skill Level settings
 
+cvar_t sv_busters = {"sv_busters", "0", FCVAR_SERVER};
+
 // BEGIN Opposing Force variables
 
 cvar_t ctfplay = {"mp_ctfplay", "0", FCVAR_SERVER};
@@ -679,6 +681,8 @@ void GameDLLInit()
 	CVAR_REGISTER(&dropweapons);
 
 	CVAR_REGISTER(&mp_chattime);
+
+	CVAR_REGISTER(&sv_busters);
 
 	CVAR_REGISTER(&sv_allowbunnyhopping);
 
