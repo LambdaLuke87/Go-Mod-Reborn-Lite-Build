@@ -118,7 +118,7 @@ void CHalfLifeMultiplay::RefreshSkillData()
 		gSkillData.suitchargerCapacity = 30;  // suitcharger
 		gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
 		gSkillData.plrDmg9MM = 12;			  // Glock Round
-		gSkillData.plrDmg357 = 40;			  // 357 Round
+		gSkillData.plrDmg357 = 50;			  // 357 Round
 		gSkillData.plrDmgMP5 = 12;			  // MP5 Round
 		gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
 		gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
