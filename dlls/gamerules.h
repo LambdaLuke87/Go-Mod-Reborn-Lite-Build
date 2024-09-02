@@ -426,6 +426,9 @@ public:
 	int WeaponShouldRespawn(CBasePlayerItem* pWeapon);
 	int ItemShouldRespawn(CItem* pItem);
 	int AmmoShouldRespawn(CBasePlayerAmmo* pAmmo);
+
+	// Monsters
+	bool FAllowMonsters() override;
 };
 
 inline DLL_GLOBAL CGameRules* g_pGameRules = nullptr;

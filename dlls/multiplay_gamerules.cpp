@@ -2244,3 +2244,8 @@ int CMultiplaySandbox::AmmoShouldRespawn(CBasePlayerAmmo* pAmmo)
 
 	return CHalfLifeMultiplay::AmmoShouldRespawn(pAmmo);
 }
+
+bool CMultiplaySandbox::FAllowMonsters()
+{
+	return true;
+}
