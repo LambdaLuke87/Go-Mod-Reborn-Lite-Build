@@ -310,6 +310,7 @@ public:
 
 	void UpdatePlayerSound();
 	void DeathSound() override;
+	void DefaultDeathSound();
 
 	int Classify() override;
 	void SetAnimation(PLAYER_ANIM playerAnim);
