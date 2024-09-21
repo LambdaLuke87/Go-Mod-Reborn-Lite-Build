@@ -168,55 +168,56 @@ struct tgunmodes_helper_t
 {
 	const char* commandname;
 	int id;
+	char* toolprintname;
 };
 
 // Toolgun Modes
 tgunmodes_helper_t gToolgunModes[] =
 	{
-		{"button_tool_none", 0},
-		{"button_tool_duplicatemode", 1},
-		{"button_tool_removemode", 2},
-		{"button_tool_gibmode", 3},
-		{"button_tool_posermode", 4},
-		{"button_tool_cameramode", 5},
-		{"button_tool_rendermode", 6},
-		{"button_tool_health_set", 7},
-		{"button_tool_nocolide", 8},
-		{"button_tool_takedamage", 9},
-		{"button_tool_bloodcolor", 10}};
+		{"button_tool_none", 0, "Deselected"},
+		{"button_tool_duplicatemode", 1, "Duplicate Mode"},
+		{"button_tool_removemode", 2, "Remover Mode"},
+		{"button_tool_gibmode", 3, "Gib Mode"},
+		{"button_tool_posermode", 4, "Poser Mode"},
+		{"button_tool_cameramode", 5, "Camera Mode"},
+		{"button_tool_rendermode", 6, "Render Mode"},
+		{"button_tool_health_set", 7, "NPC HP Modify Mode"},
+		{"button_tool_nocolide", 8, "NPC No Colide Mode"},
+		{"button_tool_takedamage", 9, "NPC TakeDamage Mode"},
+		{"button_tool_bloodcolor", 10, "NPC Blood Color Mode"}};
 
 
 // RenderMode: Type of Texture
 tgunmodes_helper_t gTextureTypeMode[] =
 	{
-		{"button_render_knormal", 0},
-		{"button_render_kglow", 1},
-		{"button_render_ktranscolor", 2},
-		{"button_render_ktransalpha", 3},
-		{"button_render_ktransadd", 4},
-		{"button_render_ktranstext", 5}};
+		{"button_render_knormal", 0, "Normal"},
+		{"button_render_kglow", 1, "Glow"},
+		{"button_render_ktranscolor", 2, "Transparent Color"},
+		{"button_render_ktransalpha", 3, "Transparent Alpha"},
+		{"button_render_ktransadd", 4, "Transparent Add"},
+		{"button_render_ktranstext", 5, "Transparent Texture"}};
 
 // RenderMode: Type of Render
 tgunmodes_helper_t gRenderTypeMode[] =
 	{
-		{"button_render_krendernone", 0},
-		{"button_render_krenderpulseslow", 1},
-		{"button_render_krenderpulsefast", 2},
-		{"button_render_krenderpulseslowwide", 3},
-		{"button_render_krenderpulsefastwide", 4},
-		{"button_render_krenderfadeslow", 5},
-		{"button_render_krenderfadefast", 6},
-		{"button_render_krendersolidslow", 7},
-		{"button_render_krendersolidfast", 8},
-		{"button_render_krenderstrobeslow", 9},
-		{"button_render_krenderstrobefast", 10},
-		{"button_render_krenderflickerslow", 11},
-		{"button_render_krenderflickerfast", 12},
-		{"button_render_krendernodissipation", 13},
-		{"button_render_krenderdistort", 14},
-		{"button_render_krenderhologram", 15},
-		{"button_render_krenderexplode", 16},
-		{"button_render_krenderglowshell", 17}};
+		{"button_render_krendernone", 0, "None"},
+		{"button_render_krenderpulseslow", 1, "Pulse Slow"},
+		{"button_render_krenderpulsefast", 2, "Pulse Fast"},
+		{"button_render_krenderpulseslowwide", 3, "Pulse Slow Wide"},
+		{"button_render_krenderpulsefastwide", 4, "Pulse Fast Wide"},
+		{"button_render_krenderfadeslow", 5, "Fade Slow"},
+		{"button_render_krenderfadefast", 6, "Fade Fast"},
+		{"button_render_krendersolidslow", 7, "Solid Slow"},
+		{"button_render_krendersolidfast", 8, "Solid Fast"},
+		{"button_render_krenderstrobeslow", 9, "Strobe Slow"},
+		{"button_render_krenderstrobefast", 10, "Strobe Fast"},
+		{"button_render_krenderflickerslow", 11, "Flicker Slow"},
+		{"button_render_krenderflickerfast", 12, "Flicker Fast"},
+		{"button_render_krendernodissipation", 13, "No Dissipation"},
+		{"button_render_krenderdistort", 14, "Distort"},
+		{"button_render_krenderhologram", 15, "Hologram"},
+		{"button_render_krenderexplode", 16, "Explode"},
+		{"button_render_krenderglowshell", 17, "Glow Shell"}};
 
 // Start - Aim spawn code of GM6
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
@@ -252,6 +253,7 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 }
 // End - Aim spawn code of GM6
 
+/* Removed, no longer used
 void GoMod_TextScreenHelper(const char* text_hud_message, edict_t* pEntity)
 {
 	entvars_t* pev = &pEntity->v;
@@ -284,7 +286,7 @@ void GoMod_TextScreenHelper(const char* text_hud_message, edict_t* pEntity)
 	hText.fxTime = 0.5;
 
 	UTIL_HudMessage(pPlayer, hText, szText);
-}
+}*/
 
 
 void LinkUserMessages();
@@ -819,12 +821,12 @@ void ClientCommand(edict_t* pEntity)
 				if (m_bnpc_allied)
 				{
 					m_bnpc_allied = false;
-					GoMod_TextScreenHelper("Enemy Npcs", pEntity);
+					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s set the NPC classify to default\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 				else
 				{
 					m_bnpc_allied = true;
-					GoMod_TextScreenHelper("Allied Npcs", pEntity);
+					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s set the NPC classify to alternate/allieds\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 			}
 			else if (FStrEq(pcmd, "button_ai_set"))
@@ -833,12 +835,12 @@ void ClientCommand(edict_t* pEntity)
 				if (dis_ia_enbl >= 1)
 				{
 					CVAR_SET_FLOAT("gm_npc_noai", 0);
-					GoMod_TextScreenHelper("A.i Enabled", pEntity);
+					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s enabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 				else
 				{
 					CVAR_SET_FLOAT("gm_npc_noai", 1);
-					GoMod_TextScreenHelper("A.i Disabled", pEntity);
+					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s disabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 			}
 			else if (FStrEq(pcmd, "button_aim_spawn"))
@@ -846,12 +848,12 @@ void ClientCommand(edict_t* pEntity)
 				if (pPlayer->m_fUseSpawnAim)
 				{
 					pPlayer->m_fUseSpawnAim = false;
-					GoMod_TextScreenHelper("Enabled Aim Spawn", pEntity);
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Aim Spawn\n");
 				}
 				else
 				{
 					pPlayer->m_fUseSpawnAim = true;
-					GoMod_TextScreenHelper("Disabled Aim Spawn", pEntity);
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Aim Spawn\n");
 				}
 			}
 
@@ -859,7 +861,10 @@ void ClientCommand(edict_t* pEntity)
 			{
 				tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
 				if (FStrEq(pcmd, ToolGunModesinfo.commandname))
+				{
 					pPlayer->m_iToolMode = ToolGunModesinfo.id;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("ToolGun changed to %s\n", ToolGunModesinfo.toolprintname));
+				}
 			}
 
 			// Start - Render/TextureMode
@@ -867,7 +872,10 @@ void ClientCommand(edict_t* pEntity)
 			{
 				tgunmodes_helper_t rendertextureInfo = gTextureTypeMode[i];
 				if (FStrEq(pcmd, rendertextureInfo.commandname))
+				{
 					pPlayer->m_iToolRenderMode = rendertextureInfo.id;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed render mode texture to %s\n", rendertextureInfo.toolprintname));
+				}
 			}
 			// End - Render/TextureMode
 
@@ -876,7 +884,10 @@ void ClientCommand(edict_t* pEntity)
 			{
 				tgunmodes_helper_t renderInfo = gRenderTypeMode[i];
 				if (FStrEq(pcmd, renderInfo.commandname))
+				{
 					pPlayer->m_iToolRenderFX = renderInfo.id;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed render mode to %s\n", renderInfo.toolprintname));
+				}
 			}
 			// End - Render Type Select
 
