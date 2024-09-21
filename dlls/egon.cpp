@@ -139,7 +139,7 @@ void CEgon::UseAmmo(int count)
 		return;
 #endif
 
-	if (!rule_infammo.value)
+	if (rule_infammo.value)
 		return;
 
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] >= count)

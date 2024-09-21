@@ -409,7 +409,8 @@ void CSatchel::Throw()
 
 		m_chargeReady = 1;
 
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+		if (!rule_infammo.value)
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
