@@ -4,7 +4,6 @@
 #include "trains.h"
 #include "saverestore.h"
 #include "weapons.h"
-//#include "minmax.h"
 
 static float Fix2(float angle)
 {
@@ -54,43 +53,43 @@ TYPEDESCRIPTION CFuncVehicle::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CFuncVehicle, CBaseEntity);
 LINK_ENTITY_TO_CLASS(func_vehicle, CFuncVehicle);
 
-bool CFuncVehicle ::KeyValue(KeyValueData* pkvd)
+bool CFuncVehicle::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "length"))
 	{
 		m_length = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	if (FStrEq(pkvd->szKeyName, "width"))
 	{
 		m_width = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "height"))
 	{
 		m_height = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "startspeed"))
 	{
 		m_startSpeed = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "sounds"))
 	{
 		m_sounds = atoi(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "volume"))
 	{
 		m_flVolume = (float)(atoi(pkvd->szValue));
 		m_flVolume *= 0.1;
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "bank"))
 	{
 		m_flBank = atof(pkvd->szValue);
-		pkvd->fHandled = true;
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "acceleration"))
 	{
@@ -99,7 +98,7 @@ bool CFuncVehicle ::KeyValue(KeyValueData* pkvd)
 			m_acceleration = 1;
 		else if (m_acceleration > 10)
 			m_acceleration = 10;
-		pkvd->fHandled = true;
+		return true;
 	}
 	
 	return CBaseEntity::KeyValue(pkvd);
@@ -1072,7 +1071,7 @@ void CFuncVehicle ::Precache()
 class CFuncVehicleControls : public CBaseEntity
 {
 public:
-	virtual int ObjectCaps() { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int ObjectCaps() { return CBaseEntity ::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 	void Spawn();
 	void EXPORT Find();
 };
