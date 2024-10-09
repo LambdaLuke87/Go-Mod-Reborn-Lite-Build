@@ -373,6 +373,7 @@ public:
 
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
+	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
 	virtual bool FBecomeProne() { return false; }
 	edict_t* edict() { return ENT(pev); }

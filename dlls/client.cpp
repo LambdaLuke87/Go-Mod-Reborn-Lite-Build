@@ -814,7 +814,6 @@ void ClientCommand(edict_t* pEntity)
 		if (IsSandBox()) // is sandbox mode?
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			int allow_bosses = allow_spawn_bosses.value;
 
 			if (FStrEq(pcmd, "button_allied_set"))
 			{
@@ -918,7 +917,7 @@ void ClientCommand(edict_t* pEntity)
 				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 			}
-			else if (0 != allow_bosses)
+			else if (allow_spawn_bosses.value)
 			{
 				if (FStrEq(pcmd, "button_monster_nihilanth"))
 				{
@@ -966,7 +965,7 @@ void ClientCommand(edict_t* pEntity)
 
 			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle"))
 			{
-				if (!allow_bosses)
+				if (allow_spawn_bosses.value)
 					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_denyselect.wav", 0.94, ATTN_NORM, 0, 90);
 				else
 					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
@@ -1107,8 +1106,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "buddha"))
 	{
-		int InmortalRule = allow_healthmodify.value;
-		if (IsSandBox() && 0 != InmortalRule)
+		if (IsSandBox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (pPlayer->m_buddha)
@@ -1125,8 +1123,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "zeus"))
 	{
-		int InmortalRule = allow_healthmodify.value;
-		if (IsSandBox() && 0 != InmortalRule)
+		if (IsSandBox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (0 != pPlayer->pev->takedamage)
@@ -1143,8 +1140,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "+noclip"))
 	{
-		int noclip_isON = allow_noclip.value;
-		if (IsSandBox() && 0 != noclip_isON)
+		if (IsSandBox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
@@ -1153,8 +1149,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "-noclip"))
 	{
-		int noclip_ON = allow_noclip.value;
-		if (IsSandBox() && 0 != noclip_ON)
+		if (IsSandBox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_WALK;
@@ -1696,8 +1691,12 @@ void ClientPrecache()
 
 		UTIL_PrecacheOther("monster_apache");
 
-		int allow_bosses = allow_spawn_bosses.value;
-		if (0 != allow_bosses)
+		if (allow_camera.value)
+		{
+			UTIL_PrecacheOther("monster_camera");
+		}
+
+		if (allow_spawn_bosses.value)
 		{
 			UTIL_PrecacheOther("monster_nihilanth");
 			UTIL_PrecacheOther("monster_tentacle");

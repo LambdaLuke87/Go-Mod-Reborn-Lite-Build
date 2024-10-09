@@ -18,6 +18,9 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
+#ifndef CLIENT_DLL
+#include "game.h"
+#endif
 
 LINK_ENTITY_TO_CLASS(weapon_toolgun, CToolgun);
 
@@ -79,11 +82,23 @@ void CToolgun::PrimaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
-		// optimized multiplayer. Widened to make it easier to hit a moving player
+	// some specific tools are defined here
 	if (m_pPlayer->m_iToolMode == 3)
 	{
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, 1);
+#endif
+	}
+	else if (m_pPlayer->m_iToolMode == 5)
+	{
+#ifndef CLIENT_DLL
+		if (allow_camera.value)
+		{
+			UTIL_MakeVectors(Vector(pev->v_angle.x * -1, pev->v_angle.y, pev->v_angle.z));
+			CBaseEntity::CreateCamera(pev->origin, pev->angles, m_pPlayer);
+		}
+		else
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Camera_NotAllowed");
 #endif
 	}
 	else

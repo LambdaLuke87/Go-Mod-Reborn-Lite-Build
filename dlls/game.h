@@ -67,6 +67,7 @@ extern cvar_t sv_pushable_fixed_tick_fudge;
 
 // Go-Mod Reborn Cvars
 extern cvar_t gamerule_sandbox;
+extern cvar_t allow_camera;
 extern cvar_t allow_noclip;
 extern cvar_t allow_healthmodify;
 extern cvar_t allow_gaussfly;

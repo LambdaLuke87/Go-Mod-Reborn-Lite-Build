@@ -29,5 +29,6 @@
 #define IN_ATTACK2 (1 << 11)
 #define IN_RUN (1 << 12)
 #define IN_RELOAD (1 << 13)
-#define IN_ALT1 (1 << 14)
+//#define IN_ALT1 (1 << 14) // had to be sacrificed, 16 bits limitation
+#define IN_CAMERA (1 << 14) // Used by client.dll for when camera
 #define IN_SCORE (1 << 15) // Used by client.dll for when scoreboard is held down

@@ -55,6 +55,7 @@ cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 cvar_t allow_spawn_bosses = {"gm_allow_spawn_bosses", "0", FCVAR_SERVER};
+cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_npc_noai", "0", FCVAR_SERVER};
@@ -688,6 +689,7 @@ void GameDLLInit()
 
 	// Cvar register for Go-Mod Reborn stuff
 	CVAR_REGISTER(&gamerule_sandbox);
+	CVAR_REGISTER(&allow_camera);
 	CVAR_REGISTER(&allow_noclip);
 	CVAR_REGISTER(&allow_healthmodify);
 	CVAR_REGISTER(&allow_gaussfly);

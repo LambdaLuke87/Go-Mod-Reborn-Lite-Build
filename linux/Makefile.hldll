@@ -138,6 +138,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/male_assassin.o \
 	$(HLDLL_OBJ_DIR)/maprules.o \
 	$(HLDLL_OBJ_DIR)/monstermaker.o \
+	$(HLDLL_OBJ_DIR)/monster_camera.o \
 	$(HLDLL_OBJ_DIR)/monsters.o \
 	$(HLDLL_OBJ_DIR)/monsterstate.o \
 	$(HLDLL_OBJ_DIR)/mortar.o \
