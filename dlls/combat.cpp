@@ -1812,7 +1812,7 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 			UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev) /*pentIgnore*/, &tr);
 
 			UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-			CBaseEntity::Create(MonsterInfo::GetName(monster_type - 1), tr.vecEndPos, Vector(0, pev->angles.y + 180, 0));
+			CBaseEntity::CreateCustom(MonsterInfo::GetName(monster_type - 1), tr.vecEndPos, Vector(0, pev->angles.y + 180, 0), pPlayer->m_fUseAlliedMode);
 		}
 	}
 	else if (pPlayer->m_iToolMode == 2)
