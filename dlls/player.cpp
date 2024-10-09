@@ -141,6 +141,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 
 		DEFINE_FIELD(CBasePlayer, m_buddha, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseSpawnAim, FIELD_BOOLEAN),
+		DEFINE_FIELD(CBasePlayer, m_fGiveItemMode, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseAlliedMode, FIELD_BOOLEAN),
 
 		DEFINE_FIELD(CBasePlayer, m_iToolMode, FIELD_INTEGER),
@@ -3396,6 +3397,9 @@ void CBasePlayer::Spawn()
 
 	m_bloodColor = BLOOD_COLOR_RED;
 	m_flNextAttack = UTIL_WeaponTimeBase();
+
+	m_fGiveItemMode = true;
+
 	StartSneaking();
 
 	m_iFlashBattery = 99;
@@ -4245,6 +4249,13 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		}
 		break;
 	}
+}
+
+void CBasePlayer::GiveCurrentItem(const char* szName)
+{
+	gEvilImpulse101 = true;
+	GiveNamedItem(szName);
+	gEvilImpulse101 = false;
 }
 
 //

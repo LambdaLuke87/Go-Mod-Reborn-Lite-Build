@@ -346,6 +346,7 @@ public:
 	int GiveAmmo(int iAmount, const char* szName, int iMax) override;
 	void SendAmmoUpdate();
 	void SendSingleAmmoUpdate(int ammoIndex);
+	void GiveCurrentItem(const char* szName);
 
 private:
 	void InternalSendSingleAmmoUpdate(int ammoIndex);
@@ -449,6 +450,7 @@ public:
 	int m_iToolRenderColorG;
 	int m_iToolRenderColorB;
 	bool m_fUseAlliedMode;
+	bool m_fGiveItemMode;
 	bool m_fUseSpawnAim;
 };
 

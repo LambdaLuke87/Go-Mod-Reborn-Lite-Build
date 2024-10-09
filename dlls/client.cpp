@@ -158,7 +158,6 @@ weapon_t gWeapons[] =
 		{"ammo_buckshot"},
 		{"ammo_357"},
 		{"ammo_556"},
-		{"ammo_spore"},
 		{"ammo_762"}};
 // End - Register of Weapons
 
@@ -840,6 +839,19 @@ void ClientCommand(edict_t* pEntity)
 					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s disabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 			}
+			else if (FStrEq(pcmd, "button_self_pickup"))
+			{
+				if (pPlayer->m_fGiveItemMode)
+				{
+					pPlayer->m_fGiveItemMode = false;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Give Mode\n");
+				}
+				else
+				{
+					pPlayer->m_fGiveItemMode = true;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Give Mode\n");
+				}
+			}
 			else if (FStrEq(pcmd, "button_aim_spawn"))
 			{
 				if (pPlayer->m_fUseSpawnAim)
@@ -941,10 +953,10 @@ void ClientCommand(edict_t* pEntity)
 				strcat(combinetoprefix, weaponInfo.classname);
 				if (FStrEq(pcmd, combinetoprefix))
 				{
-					if (pPlayer->m_fUseSpawnAim)
-					{
+					if (pPlayer->m_fGiveItemMode)
+						pPlayer->GiveCurrentItem(weaponInfo.classname);
+					else if (pPlayer->m_fUseSpawnAim)
 						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
-					}
 					else
 					{
 						edict_t* pent;
@@ -958,6 +970,14 @@ void ClientCommand(edict_t* pEntity)
 						DispatchTouch(pent, ENT(pev));
 					}
 				}
+			}
+
+			if (FStrEq(pcmd, "button_ammo_spore"))
+			{
+				if (pPlayer->m_fUseSpawnAim)
+					GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
+				else
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("aim spawn mode is required to use ammo_spore\n"));
 			}
 			// End - Spawn Weapons/Items Code
 
