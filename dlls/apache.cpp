@@ -155,9 +155,6 @@ void CApache::Spawn()
 	pev->nextthink = gpGlobals->time + 1.0;
 
 	m_iRockets = 10;
-
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
 }
 
 

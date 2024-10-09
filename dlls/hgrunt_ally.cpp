@@ -1263,9 +1263,6 @@ void CHGruntAlly::Spawn()
 
 	m_flMedicWaitTime = gpGlobals->time;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 
 	SetUse(&CHGruntAlly::FollowerUse);

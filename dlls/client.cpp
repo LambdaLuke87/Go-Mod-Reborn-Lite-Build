@@ -60,7 +60,6 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 extern void CopyToBodyQue(entvars_t* pev);
 
 extern bool IsSandBox();
-extern bool m_bnpc_allied;
 
 // Start - Register of NPCS
 struct monster_t
@@ -220,7 +219,7 @@ tgunmodes_helper_t gRenderTypeMode[] =
 		{"button_render_krenderglowshell", 17, "Glow Shell"}};
 
 // Start - Aim spawn code of GM6
-void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
+void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
 {
 	UTIL_MakeVectors(pev->v_angle);
 	TraceResult tr;
@@ -232,7 +231,7 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 	{
 		CBasePlayer* pPlayer = (CBasePlayer*)pEntity;
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
-		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::Create(sClassname, tr.vecEndPos, vAngle);
+		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::CreateCustom(sClassname, tr.vecEndPos, vAngle, IsAllied);
 	}
 }
 
@@ -817,21 +816,20 @@ void ClientCommand(edict_t* pEntity)
 
 			if (FStrEq(pcmd, "button_allied_set"))
 			{
-				if (m_bnpc_allied)
+				if (pPlayer->m_fUseAlliedMode)
 				{
-					m_bnpc_allied = false;
-					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s set the NPC classify to default\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
+					pPlayer->m_fUseAlliedMode = false;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "NPC classify to default\n");
 				}
 				else
 				{
-					m_bnpc_allied = true;
-					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s set the NPC classify to alternate/allieds\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
+					pPlayer->m_fUseAlliedMode = true;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "NPC classify to alternate/allieds\n");
 				}
 			}
 			else if (FStrEq(pcmd, "button_ai_set"))
 			{
-				int dis_ia_enbl = npc_noai.value;
-				if (dis_ia_enbl >= 1)
+				if (npc_noai.value)
 				{
 					CVAR_SET_FLOAT("gm_npc_noai", 0);
 					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s enabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
@@ -901,12 +899,12 @@ void ClientCommand(edict_t* pEntity)
 				{
 					if (pPlayer->m_fUseSpawnAim)
 					{
-						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity);
+						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
 					}
 					else
 					{
 						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-						CBaseEntity::Create(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 					}
 				}
 			}

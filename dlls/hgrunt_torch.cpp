@@ -1171,9 +1171,6 @@ void COFTorchAlly::Spawn()
 
 	m_flMedicWaitTime = gpGlobals->time;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 
 	SetUse(&COFTorchAlly::FollowerUse);

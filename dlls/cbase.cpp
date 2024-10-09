@@ -763,3 +763,23 @@ CBaseEntity* CBaseEntity::Create(const char* szName, const Vector& vecOrigin, co
 	DispatchSpawn(pEntity->edict());
 	return pEntity;
 }
+
+CBaseEntity* CBaseEntity::CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner)
+{
+	edict_t* pent;
+	CBaseEntity* pEntity;
+
+	pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
+	if (FNullEnt(pent))
+	{
+		ALERT(at_console, "NULL Ent in Create!\n");
+		return NULL;
+	}
+	pEntity = Instance(pent);
+	pEntity->pev->owner = pentOwner;
+	pEntity->pev->origin = vecOrigin;
+	pEntity->pev->angles = vecAngles;
+	pEntity->m_AltClass = IsAllied; // Allied/Alt Classify
+	DispatchSpawn(pEntity->edict());
+	return pEntity;
+}

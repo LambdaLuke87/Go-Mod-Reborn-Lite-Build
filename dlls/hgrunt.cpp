@@ -1054,9 +1054,6 @@ void CHGrunt::Spawn()
 
 	CTalkMonster::g_talkWaitTime = 0;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

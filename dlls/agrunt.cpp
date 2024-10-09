@@ -574,9 +574,6 @@ void CAGrunt::Spawn()
 
 	m_flNextSpeakTime = m_flNextWordTime = gpGlobals->time + 10 + RANDOM_LONG(0, 10);
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

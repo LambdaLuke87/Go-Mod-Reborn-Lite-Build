@@ -290,9 +290,6 @@ void CHeadCrab::Spawn()
 	m_flFieldOfView = 0.5;			  // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

@@ -767,9 +767,6 @@ void CGonome::Spawn()
 	m_flNextThrowTime = gpGlobals->time;
 	m_pGonomeGuts = nullptr;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

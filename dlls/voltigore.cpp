@@ -693,9 +693,6 @@ void COFVoltigore::Spawn()
 	m_fDeathCharge = false;
 	m_flDeathStartTime = gpGlobals->time;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

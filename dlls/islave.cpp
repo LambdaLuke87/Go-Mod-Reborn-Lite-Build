@@ -524,9 +524,6 @@ void CISlave::Spawn()
 
 	m_voicePitch = RANDOM_LONG(85, 110);
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

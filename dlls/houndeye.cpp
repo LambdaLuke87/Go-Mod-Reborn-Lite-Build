@@ -347,9 +347,6 @@ void CHoundeye::Spawn()
 	m_fDontBlink = false;
 	m_afCapability |= bits_CAP_SQUAD;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

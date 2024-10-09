@@ -300,9 +300,6 @@ void CHAssassin::Spawn()
 	pev->renderamt = 20;
 	pev->rendermode = kRenderTransTexture;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

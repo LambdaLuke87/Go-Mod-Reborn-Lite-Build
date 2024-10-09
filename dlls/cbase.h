@@ -373,6 +373,7 @@ public:
 
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
+	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
 	virtual bool FBecomeProne() { return false; }
@@ -407,6 +408,8 @@ public:
 	int m_fInAttack;
 
 	int m_fireState;
+
+	bool m_AltClass; // alternate classify, used for allied npcs mode
 };
 
 inline bool FNullEnt(CBaseEntity* ent) { return (ent == NULL) || FNullEnt(ent->edict()); }

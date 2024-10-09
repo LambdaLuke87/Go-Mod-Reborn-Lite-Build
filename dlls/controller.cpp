@@ -374,9 +374,6 @@ void CController::Spawn()
 	m_flFieldOfView = VIEW_FIELD_FULL; // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

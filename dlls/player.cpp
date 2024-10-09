@@ -141,6 +141,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 
 		DEFINE_FIELD(CBasePlayer, m_buddha, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseSpawnAim, FIELD_BOOLEAN),
+		DEFINE_FIELD(CBasePlayer, m_fUseAlliedMode, FIELD_BOOLEAN),
 
 		DEFINE_FIELD(CBasePlayer, m_iToolMode, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderMode, FIELD_INTEGER),

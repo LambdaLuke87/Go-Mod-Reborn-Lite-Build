@@ -46,6 +46,7 @@ bool CBaseEntity::IsInWorld() { return true; }
 bool CBaseEntity::ShouldToggle(USE_TYPE useType, bool currentState) { return false; }
 int CBaseEntity::DamageDecal(int bitsDamageType) { return -1; }
 CBaseEntity* CBaseEntity::Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner) { return NULL; }
+CBaseEntity* CBaseEntity::CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner) { return NULL; }
 CBaseEntity* CBaseEntity::CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner) { return NULL; }
 void CBaseEntity::SUB_Remove() {}
 

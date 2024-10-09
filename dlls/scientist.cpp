@@ -700,9 +700,6 @@ void CScientist::Spawn()
 	if (pev->body == HEAD_LUTHER)
 		pev->skin = 1;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 	SetUse(&CScientist::FollowerUse);
 }

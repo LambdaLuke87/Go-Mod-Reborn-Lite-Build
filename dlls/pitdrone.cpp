@@ -678,9 +678,6 @@ void CPitdrone::Spawn()
 
 	m_flNextEatTime = gpGlobals->time;
 
-	if (m_bnpc_allied)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 

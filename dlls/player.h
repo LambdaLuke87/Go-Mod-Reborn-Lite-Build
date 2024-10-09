@@ -448,6 +448,7 @@ public:
 	int m_iToolRenderColorR;
 	int m_iToolRenderColorG;
 	int m_iToolRenderColorB;
+	bool m_fUseAlliedMode;
 	bool m_fUseSpawnAim;
 };
 

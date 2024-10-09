@@ -967,9 +967,6 @@ void CShockTrooper::Spawn()
 
 	pev->skin = 0;
 
-	if (m_bnpc_allied == true)
-		m_AltClass = true;
-
 	MonsterInit();
 }
 
