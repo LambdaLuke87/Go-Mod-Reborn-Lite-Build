@@ -84,7 +84,7 @@ public:
 	virtual bool IsTeamplay() { return false; }							  // is this deathmatch game being played with team rules?
 	virtual bool IsCoOp() = 0;											  // is this a coop game?
 	virtual bool IsCTF() = 0;											  // is this a ctf game?
-	virtual const char* GetGameDescription() { return "Opposing Force"; } // this is the game name that gets seen in the server browser
+	virtual const char* GetGameDescription() { return "Go-Mod: Reborn"; } // this is the game name that gets seen in the server browser
 
 	// Client connection/disconnection
 	virtual bool ClientConnected(edict_t* pEntity, const char* pszName, const char* pszAddress, char szRejectReason[128]) = 0; // a client just connected to the server (player hasn't spawned yet)

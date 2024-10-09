@@ -4116,9 +4116,6 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		GiveNamedItem("weapon_satchel");
 		GiveNamedItem("weapon_snark");
 		GiveNamedItem("weapon_hornetgun");
-		GiveNamedItem("weapon_penguin");
-		GiveNamedItem("weapon_physgun");
-		GiveNamedItem("weapon_toolgun");
 
 		GiveNamedItem("weapon_eagle");
 		GiveNamedItem("weapon_sporelauncher");
@@ -4129,6 +4126,13 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		GiveNamedItem("weapon_grapple");
 		GiveNamedItem("weapon_sniperrifle");
 		GiveNamedItem("weapon_displacer");
+
+		if (IsSandBox()) // You shouldn't get these things, only in Sandbox
+		{
+			GiveNamedItem("weapon_physgun");
+			GiveNamedItem("weapon_toolgun");
+			GiveNamedItem("weapon_penguin");
+		}
 		//TODO: not given
 		//GiveNamedItem( "ammo_762" );
 
