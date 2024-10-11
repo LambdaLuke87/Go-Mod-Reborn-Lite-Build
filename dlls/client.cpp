@@ -61,14 +61,14 @@ extern void CopyToBodyQue(entvars_t* pev);
 
 extern bool IsSandBox();
 
-// Start - Register of NPCS
+
 struct monster_t
 {
 	const char* classname;
 	//const char* convar;
 };
 
-// Standard Monsters
+// Monsters List
 monster_t gMonsters[] =
 	{
 		{"monster_alien_slave"},
@@ -107,16 +107,15 @@ monster_t gMonsters[] =
 		{"monster_human_grunt_ally"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"}};
-// End - Register of NPCS
 
-// Start - Register of Weapons
+
 struct weapon_t
 {
 	const char* classname;
 	//WeaponId convar;
 };
 
-// Standard Weapons/Items
+// Weapons/Items List
 weapon_t gWeapons[] =
 	{
 		{"weapon_crowbar"},
@@ -159,9 +158,8 @@ weapon_t gWeapons[] =
 		{"ammo_357"},
 		{"ammo_556"},
 		{"ammo_762"}};
-// End - Register of Weapons
 
-// Start - Toolgun Modes Helper
+
 struct tgunmodes_helper_t
 {
 	const char* commandname;
@@ -172,52 +170,53 @@ struct tgunmodes_helper_t
 // Toolgun Modes
 tgunmodes_helper_t gToolgunModes[] =
 	{
-		{"button_tool_none", 0, "Deselected"},
-		{"button_tool_duplicatemode", 1, "Duplicate Mode"},
-		{"button_tool_removemode", 2, "Remover Mode"},
-		{"button_tool_gibmode", 3, "Gib Mode"},
-		{"button_tool_posermode", 4, "Poser Mode"},
-		{"button_tool_cameramode", 5, "Camera Mode"},
-		{"button_tool_rendermode", 6, "Render Mode"},
-		{"button_tool_health_set", 7, "NPC HP Modify Mode"},
-		{"button_tool_nocolide", 8, "NPC No Colide Mode"},
-		{"button_tool_takedamage", 9, "NPC TakeDamage Mode"},
-		{"button_tool_bloodcolor", 10, "NPC Blood Color Mode"}};
+		{"button_tool_none", 0, "None"},
+		{"button_tool_duplicator", 1, "Duplicator"},
+		{"button_tool_remover", 2, "Remover"},
+		{"button_tool_gib", 3, "Gib Spawner"},
+		{"button_tool_poser", 4, "Poser"},
+		{"button_tool_camera", 5, "Camera Spawn"},
+		{"button_tool_render", 6, "Render"},
+		{"button_tool_health_set", 7, "NPC HP Modify"},
+		{"button_tool_no_colide", 8, "NPC No Colide"},
+		{"button_tool_take_damage", 9, "NPC TakeDamage"},
+		{"button_tool_blood_color", 10, "NPC Blood Color"}};
 
 
-// RenderMode: Type of Texture
-tgunmodes_helper_t gTextureTypeMode[] =
+// Render Tool: Render Mode
+tgunmodes_helper_t gRenderModeType[] =
 	{
-		{"button_render_knormal", 0, "Normal"},
-		{"button_render_kglow", 1, "Glow"},
-		{"button_render_ktranscolor", 2, "Transparent Color"},
-		{"button_render_ktransalpha", 3, "Transparent Alpha"},
-		{"button_render_ktransadd", 4, "Transparent Add"},
-		{"button_render_ktranstext", 5, "Transparent Texture"}};
+		{"button_rendermode_normal", 0, "Normal"},
+		{"button_rendermode_color", 1, "Color"},
+		{"button_rendermode_texture", 2, "Texture"},
+		{"button_rendermode_glow", 3, "Glow"},
+		{"button_rendermode_solid", 4, "Solid"},
+		{"button_rendermode_additive", 5, "Additive"}};
 
-// RenderMode: Type of Render
-tgunmodes_helper_t gRenderTypeMode[] =
+// Render Tool: Render FX
+tgunmodes_helper_t gRenderFXType[] =
 	{
-		{"button_render_krendernone", 0, "None"},
-		{"button_render_krenderpulseslow", 1, "Pulse Slow"},
-		{"button_render_krenderpulsefast", 2, "Pulse Fast"},
-		{"button_render_krenderpulseslowwide", 3, "Pulse Slow Wide"},
-		{"button_render_krenderpulsefastwide", 4, "Pulse Fast Wide"},
-		{"button_render_krenderfadeslow", 5, "Fade Slow"},
-		{"button_render_krenderfadefast", 6, "Fade Fast"},
-		{"button_render_krendersolidslow", 7, "Solid Slow"},
-		{"button_render_krendersolidfast", 8, "Solid Fast"},
-		{"button_render_krenderstrobeslow", 9, "Strobe Slow"},
-		{"button_render_krenderstrobefast", 10, "Strobe Fast"},
-		{"button_render_krenderflickerslow", 11, "Flicker Slow"},
-		{"button_render_krenderflickerfast", 12, "Flicker Fast"},
-		{"button_render_krendernodissipation", 13, "No Dissipation"},
-		{"button_render_krenderdistort", 14, "Distort"},
-		{"button_render_krenderhologram", 15, "Hologram"},
-		{"button_render_krenderexplode", 16, "Explode"},
-		{"button_render_krenderglowshell", 17, "Glow Shell"}};
+		{"button_renderfx_normal", 0, "Normal"},
+		{"button_renderfx_slow_pulse", 1, "Slow Pulse"},
+		{"button_renderfx_fast_pulse", 2, "Fast Pulse"},
+		{"button_renderfx_slow_wide_pulse", 3, "Slow Wide Pulse"},
+		{"button_renderfx_fast_wide_pulse", 4, "Fast Wide Pulse"},
+		{"button_renderfx_slow_fade_away", 5, "Slow Fade Away"},
+		{"button_renderfx_fast_fade_away", 6, "Fast Fade Away"},
+		{"button_renderfx_slow_become_solid", 7, "Slow Become Solid"},
+		{"button_renderfx_fast_become_solid", 8, "Fast Become Solid"},
+		{"button_renderfx_slow_strobe", 9, "Slow Strobe"},
+		{"button_renderfx_fast_strobe", 10, "Fast Strobe"},
+		{"button_renderfx_faster_strobe", 11, "Faster Strobe"},
+		{"button_renderfx_slow_flicker", 12, "Slow Flicker"},
+		{"button_renderfx_fast_flicker", 13, "Fast Flicker"},
+		{"button_renderfx_constant_glow", 14, "Constant Glow"},
+		{"button_renderfx_distort", 15, "Distort"},
+		{"button_renderfx_hologram", 16, "Hologram"},
+		{"button_renderfx_explode", 17, "Explode"},
+		{"button_renderfx_glow_shell", 18, "Glow Shell"}};
 
-// Start - Aim spawn code of GM6
+// GM6 Spawn Monster Trace
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
 {
 	UTIL_MakeVectors(pev->v_angle);
@@ -234,6 +233,7 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 	}
 }
 
+// GM6 Spawn Item Trace
 void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity)
 {
 	UTIL_MakeVectors(pev->v_angle);
@@ -249,43 +249,6 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 		pItem->pev->spawnflags |= SF_NORESPAWN;
 	}
 }
-// End - Aim spawn code of GM6
-
-/* Removed, no longer used
-void GoMod_TextScreenHelper(const char* text_hud_message, edict_t* pEntity)
-{
-	entvars_t* pev = &pEntity->v;
-
-	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-
-	char szText[201];
-	hudtextparms_t hText;
-
-	sprintf(szText, text_hud_message);
-
-	memset(&hText, 0, sizeof(hText));
-	hText.channel = 1;
-	// These X and Y coordinates are just above
-	//  the health meter.
-	hText.x = 0.01;
-	hText.y = 0.5;
-
-	hText.effect = 0; // Fade in/out
-
-	hText.r1 = hText.g1 = hText.b1 = 255;
-	hText.a1 = 255;
-
-	hText.r2 = hText.g2 = hText.b2 = 255;
-	hText.a2 = 255;
-
-	hText.fadeinTime = 0.2;
-	hText.fadeoutTime = 1;
-	hText.holdTime = 1.5;
-	hText.fxTime = 0.5;
-
-	UTIL_HudMessage(pPlayer, hText, szText);
-}*/
-
 
 void LinkUserMessages();
 
@@ -866,41 +829,40 @@ void ClientCommand(edict_t* pEntity)
 				}
 			}
 
+			// ToolGun Tools
 			for (int i = 0; i < ARRAYSIZE(gToolgunModes); i++)
 			{
 				tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
 				if (FStrEq(pcmd, ToolGunModesinfo.commandname))
 				{
 					pPlayer->m_iToolMode = ToolGunModesinfo.id;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("ToolGun changed to %s\n", ToolGunModesinfo.toolprintname));
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolGunModesinfo.toolprintname));
 				}
 			}
 
-			// Start - Render/TextureMode
-			for (int i = 0; i < ARRAYSIZE(gTextureTypeMode); i++)
+		    // Render Tool: Render Mode
+			for (int i = 0; i < ARRAYSIZE(gRenderModeType); i++)
 			{
-				tgunmodes_helper_t rendertextureInfo = gTextureTypeMode[i];
+				tgunmodes_helper_t rendertextureInfo = gRenderModeType[i];
 				if (FStrEq(pcmd, rendertextureInfo.commandname))
 				{
 					pPlayer->m_iToolRenderMode = rendertextureInfo.id;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed render mode texture to %s\n", rendertextureInfo.toolprintname));
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render Mode to [%s]\n", rendertextureInfo.toolprintname));
 				}
 			}
-			// End - Render/TextureMode
 
-			// Start - Render Type Select
-			for (int i = 0; i < ARRAYSIZE(gRenderTypeMode); i++)
+			// Render Tool: Render FX
+			for (int i = 0; i < ARRAYSIZE(gRenderFXType); i++)
 			{
-				tgunmodes_helper_t renderInfo = gRenderTypeMode[i];
+				tgunmodes_helper_t renderInfo = gRenderFXType[i];
 				if (FStrEq(pcmd, renderInfo.commandname))
 				{
 					pPlayer->m_iToolRenderFX = renderInfo.id;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed render mode to %s\n", renderInfo.toolprintname));
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render FX to [%s]\n", renderInfo.toolprintname));
 				}
 			}
-			// End - Render Type Select
 
-			// Start - Spawn NPCS Code
+			// Spawn Monsters
 			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 			{
 				monster_t monsterInfo = gMonsters[i];
@@ -940,11 +902,8 @@ void ClientCommand(edict_t* pEntity)
 					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 				}
 			}
-			// End - Spawn NPCS Code
 
-
-			// Start - Spawn Weapons/Items Code
-			// Standard Weapons/items
+			// Weapons/items Spawn
 			for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
 			{
 				weapon_t weaponInfo = gWeapons[i];
@@ -972,6 +931,8 @@ void ClientCommand(edict_t* pEntity)
 				}
 			}
 
+			// not listed ammo_spore
+			// because it is generated in the air
 			if (FStrEq(pcmd, "button_ammo_spore"))
 			{
 				if (pPlayer->m_fUseSpawnAim)
@@ -979,14 +940,14 @@ void ClientCommand(edict_t* pEntity)
 				else
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("aim spawn mode is required to use ammo_spore\n"));
 			}
-			// End - Spawn Weapons/Items Code
 
+			// TODO: This sound should be played on the clientside.
 			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle"))
 			{
 				if (allow_spawn_bosses.value)
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_denyselect.wav", 0.94, ATTN_NORM, 0, 90);
-				else
 					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+				else
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_denyselect.wav", 0.94, ATTN_NORM, 0, 90);
 			}
 			else
 				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);

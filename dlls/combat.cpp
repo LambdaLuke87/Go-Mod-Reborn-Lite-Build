@@ -1859,19 +1859,19 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 			switch (pPlayer->m_iToolRenderMode)
 			{
 			case 1:
-				pEntity->pev->rendermode = kRenderGlow;
-				break;
-			case 2:
 				pEntity->pev->rendermode = kRenderTransColor;
 				break;
+			case 2:
+				pEntity->pev->rendermode = kRenderTransTexture;
+				break;
 			case 3:
-				pEntity->pev->rendermode = kRenderTransAlpha;
+				pEntity->pev->rendermode = kRenderGlow;
 				break;
 			case 4:
-				pEntity->pev->rendermode = kRenderTransAdd;
+				pEntity->pev->rendermode = kRenderTransAlpha;
 				break;
 			case 5:
-				pEntity->pev->rendermode = kRenderTransTexture;
+				pEntity->pev->rendermode = kRenderTransAdd;
 				break;
 			default:
 				pEntity->pev->rendermode = kRenderNormal;
@@ -1911,24 +1911,27 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 				pEntity->pev->renderfx = kRenderFxStrobeFast;
 				break;
 			case 11:
-				pEntity->pev->renderfx = kRenderFxFlickerSlow;
+				pEntity->pev->renderfx = kRenderFxStrobeFaster;
 				break;
 			case 12:
-				pEntity->pev->renderfx = kRenderFxFlickerFast;
+				pEntity->pev->renderfx = kRenderFxFlickerSlow;
 				break;
 			case 13:
-				pEntity->pev->renderfx = kRenderFxNoDissipation;
+				pEntity->pev->renderfx = kRenderFxFlickerFast;
 				break;
 			case 14:
-				pEntity->pev->renderfx = kRenderFxDistort;
+				pEntity->pev->renderfx = kRenderFxNoDissipation;
 				break;
 			case 15:
-				pEntity->pev->renderfx = kRenderFxHologram;
+				pEntity->pev->renderfx = kRenderFxDistort;
 				break;
 			case 16:
-				pEntity->pev->renderfx = kRenderFxExplode;
+				pEntity->pev->renderfx = kRenderFxHologram;
 				break;
 			case 17:
+				pEntity->pev->renderfx = kRenderFxExplode;
+				break;
+			case 18:
 				pEntity->pev->renderfx = kRenderFxGlowShell;
 				break;
 			default:
@@ -2025,19 +2028,19 @@ Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Ve
 
 			switch (pEntity->pev->rendermode)
 			{
-			case kRenderGlow:
+			case kRenderTransColor:
 				pPlayer->m_iToolRenderMode = 1;
 				break;
-			case kRenderTransColor:
+			case kRenderTransTexture:
 				pPlayer->m_iToolRenderMode = 2;
 				break;
-			case kRenderTransAlpha:
+			case kRenderGlow:
 				pPlayer->m_iToolRenderMode = 3;
 				break;
-			case kRenderTransAdd:
+			case kRenderTransAlpha:
 				pPlayer->m_iToolRenderMode = 4;
 				break;
-			case kRenderTransTexture:
+			case kRenderTransAdd:
 				pPlayer->m_iToolRenderMode = 5;
 				break;
 			default:
@@ -2077,26 +2080,29 @@ Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Ve
 			case kRenderFxStrobeFast:
 				pPlayer->m_iToolRenderFX = 10;
 				break;
-			case kRenderFxFlickerSlow:
+			case kRenderFxStrobeFaster:
 				pPlayer->m_iToolRenderFX = 11;
 				break;
-			case kRenderFxFlickerFast:
+			case kRenderFxFlickerSlow:
 				pPlayer->m_iToolRenderFX = 12;
 				break;
-			case kRenderFxNoDissipation:
+			case kRenderFxFlickerFast:
 				pPlayer->m_iToolRenderFX = 13;
 				break;
-			case kRenderFxDistort:
+			case kRenderFxNoDissipation:
 				pPlayer->m_iToolRenderFX = 14;
 				break;
-			case kRenderFxHologram:
+			case kRenderFxDistort:
 				pPlayer->m_iToolRenderFX = 15;
 				break;
-			case kRenderFxExplode:
+			case kRenderFxHologram:
 				pPlayer->m_iToolRenderFX = 16;
 				break;
-			case kRenderFxGlowShell:
+			case kRenderFxExplode:
 				pPlayer->m_iToolRenderFX = 17;
+				break;
+			case kRenderFxGlowShell:
+				pPlayer->m_iToolRenderFX = 18;
 				break;
 			default:
 				pPlayer->m_iToolRenderFX = 0;
