@@ -180,7 +180,8 @@ tgunmodes_helper_t gToolgunModes[] =
 		{"button_tool_health_set", 7, "NPC HP Modify"},
 		{"button_tool_no_colide", 8, "NPC No Colide"},
 		{"button_tool_take_damage", 9, "NPC TakeDamage"},
-		{"button_tool_blood_color", 10, "NPC Blood Color"}};
+		{"button_tool_blood_color", 10, "NPC Blood Color"},
+		{"button_tool_frame_set", 11, "¨NPC Frame Editor"}};
 
 
 // Render Tool: Render Mode

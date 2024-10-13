@@ -111,6 +111,8 @@ public:
 
 	bool m_AllowItemDropping = true;
 
+	int m_CustomFrame = 0;
+
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 

@@ -1973,6 +1973,31 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 				else
 					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
 			}
+			else if (pPlayer->m_iToolMode == 11)
+			{
+				switch (pMonster->m_CustomFrame)
+				{
+				case 0:
+					pMonster->m_CustomFrame = 1;
+					break;
+				case 1:
+					pMonster->m_CustomFrame = 2;
+					break;
+				case 2:
+					pMonster->m_CustomFrame = 3;
+					break;
+				case 3:
+					pMonster->m_CustomFrame = 4;
+					break;
+				case 4:
+					pMonster->m_CustomFrame = 5;
+					break;
+				case 5:
+					pMonster->m_CustomFrame = 0;
+					pMonster->pev->framerate = 1.0;
+					break;
+				}
+			}
 		}
 	}
 
@@ -2112,14 +2137,40 @@ Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode == 10)
+	else if (pPlayer->m_iToolMode >= 10)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			pMonster->m_bloodColor = DONT_BLEED;
+			if (pPlayer->m_iToolMode == 10)
+				pMonster->m_bloodColor = DONT_BLEED;
+			else if (pPlayer->m_iToolMode == 11)
+			{
+				switch (pMonster->m_CustomFrame)
+				{
+				case 0:
+					pMonster->m_CustomFrame = 5;
+					break;
+				case 1:
+					pMonster->m_CustomFrame = 0;
+					pMonster->pev->framerate = 1.0;
+					break;
+				case 2:
+					pMonster->m_CustomFrame = 1;
+					break;
+				case 3:
+					pMonster->m_CustomFrame = 2;
+					break;
+				case 4:
+					pMonster->m_CustomFrame = 3;
+					break;
+				case 5:
+					pMonster->m_CustomFrame = 4;
+					break;
+				}
+			}
 		}
 	}
 

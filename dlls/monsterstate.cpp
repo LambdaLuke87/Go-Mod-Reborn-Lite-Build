@@ -67,6 +67,25 @@ void CBaseMonster::RunAI()
 	// IDLE sound permitted in ALERT state is because monsters were silent in ALERT state. Only play IDLE sound in IDLE state
 	// once we have sounds for that state.
 
+	switch (m_CustomFrame)
+	{
+	case 1:
+		pev->framerate = 1.5;
+		break;
+	case 2:
+		pev->framerate = 2.0;
+		break;
+	case 3:
+		pev->framerate = 2.5;
+		break;
+	case 4:
+		pev->framerate = 3.0;
+		break;
+	case 5:
+		pev->framerate = 0.5;
+		break;
+	}
+
 	int npc_ai_value = npc_noai.value;
 	if (npc_ai_value == 0)
 	{
