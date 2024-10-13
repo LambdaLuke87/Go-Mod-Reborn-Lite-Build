@@ -34,7 +34,6 @@ hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
 int giR, giG, giB;
-cvar_t* m_pCvarCrosshairColorable;
 cvar_t* m_pCvarHudRed;
 cvar_t* m_pCvarHudGreen;
 cvar_t* m_pCvarHudBlue;
@@ -410,8 +409,6 @@ int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
 	return 0;
 }
 
-cvar_t* m_pCvarEnabledWhiteColor;
-
 void __CmdFunc_HUDColor()
 {
 	gHUD.HUDColorCmd();
@@ -476,8 +473,6 @@ void CHud::Init()
 
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
-
-	m_pCvarCrosshairColorable = CVAR_CREATE("hud_colorable", "0", FCVAR_ARCHIVE);
 
 	int hudR, hudG, hudB;
 	UnpackRGB(hudR, hudG, hudB, RGB_YELLOWISH);

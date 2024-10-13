@@ -55,7 +55,6 @@ typedef struct cvar_s cvar_t;
 
 extern int giR, giG, giB;
 
-extern cvar_t* m_pCvarCrosshairColorable;
 extern cvar_t* m_pCvarHudRed;
 extern cvar_t* m_pCvarHudGreen;
 extern cvar_t* m_pCvarHudBlue;

@@ -609,15 +609,11 @@ bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 	m_pWeapon = pWeapon;
 
 	int rNew, gNew, bNew;
-	if (0 != m_pCvarCrosshairColorable->value)
-	{
-		// Customizable Hud Color
-		rNew = m_pCvarHudRed->value;
-		gNew = m_pCvarHudGreen->value;
-		bNew = m_pCvarHudBlue->value;
-	}
-	else
-		UnpackRGB(rNew, gNew, bNew, RGB_HUD_COLOR); // Default Color
+	
+	// Customizable Hud Color
+	rNew = m_pCvarHudRed->value;
+	gNew = m_pCvarHudGreen->value;
+	bNew = m_pCvarHudBlue->value;
 
 	if (gHUD.m_iFOV >= 90)
 	{ // normal crosshairs
