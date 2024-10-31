@@ -30,6 +30,8 @@ extern BEAM* pBeam;
 extern BEAM* pBeam2;
 void HUD_GetLastOrg(float* org);
 
+extern BEAM* pPhysBeam;
+
 void UpdateBeams()
 {
 	Vector forward, vecSrc, vecEnd, origin, angles, right, up;
@@ -76,6 +78,22 @@ void UpdateBeams()
 	}
 }
 
+void UpdatePhysBeam()
+{
+	if (pPhysBeam)
+	{
+		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(pPhysBeam->endEntity);
+
+		Vector targpos = targent->origin;
+		targpos[2] += targent->curstate.maxs[2] / 2;
+		if (pPhysBeam->frameCount > 0)
+			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
+
+		pPhysBeam->target = targpos;
+		pPhysBeam->die = gEngfuncs.GetClientTime() + 0.1; // We keep it alive just a little bit forward in the future, just in case.
+	}
+}
+
 /*
 =====================
 Game_AddObjects
@@ -87,4 +105,6 @@ void Game_AddObjects()
 {
 	if (pBeam || pBeam2)
 		UpdateBeams();
+
+	UpdatePhysBeam();
 }
