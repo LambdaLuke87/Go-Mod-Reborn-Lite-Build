@@ -75,82 +75,10 @@ void CPhysgun::Holster()
 
 void CPhysgun::PrimaryAttack()
 {
-	int idx = 0;
-	bool isBspModel = false;
-
 	if (m_pCurrentEntity)
 	{
-		Vector forward = m_pPlayer->GetAutoaimVector(0.0f);
+		TraceResult tr;
 
-		idx = ENTINDEX(m_pCurrentEntity->edict());
-		if (m_pCurrentEntity->IsBSPModel())
-			isBspModel = true;
-
-		m_pCurrentEntity->pev->velocity = m_pPlayer->pev->velocity + forward * 512;
-		m_pCurrentEntity = nullptr;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase();
-	}
-	else
-	{
-		CBaseEntity* pEntity = GetEntity(324, true);
-		#ifndef CLIENT_DLL
-		TraceResult tr = UTIL_GetGlobalTrace();
-		if (pEntity)
-		{
-			idx = ENTINDEX(pEntity->edict());
-			isBspModel = pEntity->IsBSPModel();
-
-			ClearMultiDamage();
-			pEntity->TraceAttack(m_pPlayer->pev, 1, gpGlobals->v_forward, &tr, DMG_ENERGYBEAM);
-			ApplyMultiDamage(pev, m_pPlayer->pev);
-			pEntity->pev->velocity = gpGlobals->v_forward * 256;
-
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase();
-		}
-		#endif
-	}
-
-	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-		0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, idx,
-		0, isBspModel ? 1 : 0, 0);
-
-	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(0.4f);
-	m_flNextIdleTime = gpGlobals->time + 2.0f;
-}
-
-void CPhysgun::SecondaryAttack()
-{
-	if (m_pCurrentEntity)
-	{
-		STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
-		m_pCurrentEntity->pev->velocity = m_pPlayer->pev->velocity;
-		m_pCurrentEntity = nullptr;
-	}
-	else
-	{
-		m_pCurrentEntity = GetEntity(2048);
-		if (m_pCurrentEntity)
-		{
-			m_pCurrentEntity->pev->origin[2] += 0.2f;
-			SendWeaponAnim(PHYSGUN_SPIN);
-			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav", 1.0, ATTN_NORM, 0, PITCH_HIGH);
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.53f;
-		}
-	}
-
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(0.4f);
-
-	m_flNextIdleTime = gpGlobals->time + 2.0f;
-
-	if (!m_pCurrentEntity)
-		SendWeaponAnim(PHYSGUN_FIRE);
-}
-
-void CPhysgun::ItemPostFrame()
-{
-	if (m_pCurrentEntity)
-	{
 		m_pPlayer->GetAutoaimVector(0.0f);
 
 		if (m_pCurrentEntity->IsBSPModel())
@@ -158,17 +86,70 @@ void CPhysgun::ItemPostFrame()
 			Vector absorigin;
 			VectorAverage(m_pCurrentEntity->pev->absmax, m_pCurrentEntity->pev->absmin, absorigin);
 
-			m_pCurrentEntity->pev->velocity = ((m_pPlayer->pev->origin - absorigin) + gpGlobals->v_forward * 86) * 35;
+			Vector normal = (m_pPlayer->pev->origin - absorigin).Normalize();
+
+			m_pCurrentEntity->pev->velocity = (normal + gpGlobals->v_forward * 150) * 35;
 		}
 		else
 		{
+			Vector diff = (m_pPlayer->pev->origin - m_pCurrentEntity->pev->origin);
+
+			UTIL_TraceLine(m_pPlayer->GetGunPosition(), m_pCurrentEntity->pev->origin + gpGlobals->v_forward * 20, ignore_monsters, m_pPlayer->edict(), &tr);
+
 			if (!strncmp("weapon_", STRING(m_pCurrentEntity->pev->classname), 7) || !strncmp("item_", STRING(m_pCurrentEntity->pev->classname), 5))
-				m_pCurrentEntity->pev->velocity = ((m_pPlayer->pev->origin - m_pCurrentEntity->pev->origin) + gpGlobals->v_forward * 86 + Vector(0, 0, 24)) * 35;
+				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (150 + tr.flFraction) + Vector(0, 0, 24)) * 35;
 			else
-				m_pCurrentEntity->pev->velocity = ((m_pPlayer->pev->origin - m_pCurrentEntity->pev->origin) + gpGlobals->v_forward * 86) * 35;
+				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (150 * tr.flFraction)) * 35;
+		}
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+	}
+	else
+	{
+		m_pCurrentEntity = GetEntity(2048);
+		if (m_pCurrentEntity)
+		{
+			bool isBspModel = m_pCurrentEntity->IsBSPModel();
+
+			m_pCurrentEntity->pev->origin[2] += 0.2f;
+			SendWeaponAnim(PHYSGUN_SPIN);
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+
+			if (m_pCurrentEntity->m_movetype == MOVETYPE_NONE)
+				m_pCurrentEntity->m_movetype = m_pCurrentEntity->pev->movetype + 1;
+		
+			m_pCurrentEntity->pev->movetype = MOVETYPE_FLY;
+
+			PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+				0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, ENTINDEX(m_pCurrentEntity->edict()),
+				0, isBspModel ? 1 : 0, false);
 		}
 	}
+}
 
+void CPhysgun::SecondaryAttack()
+{
+	if (m_pCurrentEntity)
+	{
+		m_pCurrentEntity->pev->movetype = MOVETYPE_NONE;
+
+		m_pCurrentEntity->pev->velocity = g_vecZero;
+		m_pCurrentEntity = nullptr;
+
+		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
+			0, 0, true);
+
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+	}
+
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(0.4f);
+	//m_flNextIdleTime = gpGlobals->time + 2.0f;
+
+	SendWeaponAnim(PHYSGUN_FIRE);
+}
+
+void CPhysgun::ItemPostFrame()
+{
 	CBasePlayerWeapon::ItemPostFrame();
 }
 
@@ -214,63 +195,38 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 
 void CPhysgun::WeaponIdle()
 {	
-	CBaseEntity* pPotentialTarget = nullptr;
-
-	if (m_flNextIdleTime > gpGlobals->time)
-		return;
-
-	if (!m_pCurrentEntity)
-	{
-		pPotentialTarget = GetEntity(2048);
-		if (m_bFoundPotentialTarget && !pPotentialTarget)
-		{
-			m_bFoundPotentialTarget = false;
-			m_bResetIdle = true;
-		}
-		else if (pPotentialTarget && !m_bFoundPotentialTarget)
-		{
-			m_bResetIdle = true;
-		}	
-	}
-
-	if (m_bResetIdle)
-	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase();
-		m_bResetIdle = false;
-	}
+	//if (m_flNextIdleTime > gpGlobals->time)
+	//	return;
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 		return;
 
 	if (m_pCurrentEntity)
 	{
-		SendWeaponAnim(PHYSGUN_SPIN);
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.53;
+		if (m_pCurrentEntity->m_movetype > MOVETYPE_NONE)
+			m_pCurrentEntity->pev->movetype = m_pCurrentEntity->m_movetype - 1;
+
+		m_pCurrentEntity->pev->velocity = m_pCurrentEntity->pev->velocity.Normalize() * (m_pCurrentEntity->pev->velocity.Length() / 3.5f);
+
+		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
+			0, 0, true);
+
+		m_pCurrentEntity = nullptr;
+	}
+
+	int iAnim;
+	float flRand = RANDOM_FLOAT(0, 1);
+	if (flRand <= 0.5)
+	{
+		iAnim = PHYSGUN_IDLE;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 	}
 	else
 	{
-		if (pPotentialTarget)
-		{
-			SendWeaponAnim(PHYSGUN_SPINUP);
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0f;
-			m_bFoundPotentialTarget = true;
-		}
-		else
-		{
-			int iAnim;
-			float flRand = RANDOM_FLOAT(0, 1);
-			if (flRand <= 0.5)
-			{
-				iAnim = PHYSGUN_IDLE;
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
-			}
-			else
-			{
-				iAnim = PHYSGUN_IDLE2;
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
-			}
-
-			SendWeaponAnim(iAnim);
-		}
+		iAnim = PHYSGUN_IDLE2;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 	}
+
+	SendWeaponAnim(iAnim);
 }

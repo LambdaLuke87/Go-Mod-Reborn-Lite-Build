@@ -573,6 +573,9 @@ TYPEDESCRIPTION CBaseEntity::m_SaveData[] =
 		DEFINE_FIELD(CBaseEntity, m_pfnTouch, FIELD_FUNCTION),
 		DEFINE_FIELD(CBaseEntity, m_pfnUse, FIELD_FUNCTION),
 		DEFINE_FIELD(CBaseEntity, m_pfnBlocked, FIELD_FUNCTION),
+
+
+		DEFINE_FIELD(CBaseEntity, m_movetype, FIELD_INTEGER),
 };
 
 
