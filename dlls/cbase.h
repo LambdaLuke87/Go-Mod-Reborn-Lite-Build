@@ -410,6 +410,9 @@ public:
 	int m_fireState;
 
 	bool m_AltClass; // alternate classify, used for allied npcs mode
+
+	// Used by physgun
+	int m_movetype = 0;
 };
 
 inline bool FNullEnt(CBaseEntity* ent) { return (ent == NULL) || FNullEnt(ent->edict()); }

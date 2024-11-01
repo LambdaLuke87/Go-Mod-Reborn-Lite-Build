@@ -2019,6 +2019,7 @@ void EV_PenguinFire(event_args_t* args)
 	}
 }
 
+#if 0
 //======================
 //	   PHYSGUN START
 //======================
@@ -2061,6 +2062,67 @@ void EV_PhysGun(event_args_t* args)
 		gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, targpos, m_iBeam, 0.1, 0.4, 0.4, 1, 0.4, 0, 1, 1, 1, 0);
 
 		gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5, ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
+	}
+}
+//======================
+//	   PHYSGUN END
+//======================
+#endif
+
+//======================
+//	   PHYSGUN START
+//======================
+BEAM* pPhysBeam;
+
+void EV_PhysGun(event_args_t* args)
+{
+	int idx;
+	int targidx;
+	int m_iBeam;
+	bool isBspModel;
+	Vector vecSrc, angles, forward;
+	pmtrace_t tr;
+
+	idx = args->entindex;
+	targidx = args->iparam1;
+	isBspModel = args->bparam1;
+	VectorCopy(args->origin, vecSrc);
+	VectorCopy(args->angles, angles);
+
+	m_iBeam = gEngfuncs.pEventAPI->EV_FindModelIndex("sprites/smoke.spr");
+
+	AngleVectors(angles, forward, NULL, NULL);
+
+	if (args->bparam2 > 0)
+	{
+		if (pPhysBeam)
+		{
+			pPhysBeam->die = 0.0f;
+			pPhysBeam = nullptr;
+		}
+		return;
+	}
+
+	if (pPhysBeam)
+		return;
+
+	if (targidx > 0)
+	{
+		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(targidx);
+
+		Vector targpos = targent->origin;
+		targpos[2] += targent->curstate.maxs[2] / 2;
+		if (isBspModel)
+			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
+
+		pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, targpos, m_iBeam, 99999, 1.0, 0.0f, 1, 0.0f, 0, 1, 1, 1, 1);
+
+		if (pPhysBeam)
+		{
+			pPhysBeam->endEntity = targidx;
+		//	pPhysBeam->frameCount = isBspModel;
+		}
+		//gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5, ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
 	}
 }
 //======================

@@ -1394,7 +1394,7 @@ public:
 #else
 	EHANDLE m_pCurrentEntity;
 #endif
-	float m_flNextIdleTime;
+	//float m_flNextIdleTime;
 
 	bool m_bResetIdle;
 	bool m_bFoundPotentialTarget;
