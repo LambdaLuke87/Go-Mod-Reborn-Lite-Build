@@ -62,7 +62,9 @@ bool CPhysgun::GetItemInfo(ItemInfo* p)
 
 bool CPhysgun::Deploy()
 {
+#ifndef CLIENT_DLL
 	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+#endif
 	m_pCurrentEntity = nullptr;
 
 	pev->fixangle = 0;
@@ -78,7 +80,9 @@ void CPhysgun::Holster()
 
 	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
 
+#ifndef CLIENT_DLL
 	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+#endif
 	m_pCurrentEntity = nullptr;
 
 	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
@@ -145,7 +149,9 @@ void CPhysgun::SecondaryAttack()
 
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
 
+#ifndef CLIENT_DLL
 		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+#endif
 
 		pev->fixangle = 0;
 		pev->v_angle = g_vecZero;
@@ -213,7 +219,7 @@ void CPhysgun::ItemThink()
 
 			Vector delta = m_pPlayer->pev->v_angle - pev->v_angle;
 			Vector angleadd = g_vecZero;
-			ALERT(at_console, "%f %f %f\n", delta.x, delta.y / 10.0f, delta.z);
+		//	ALERT(at_console, "%f %f %f\n", delta.x, delta.y / 10.0f, delta.z);
 
 			if (fabs(delta.x) > 0.087f)
 			{
@@ -222,7 +228,7 @@ void CPhysgun::ItemThink()
 				if (delta.x < 0.0f)
 					sign = 1;
 
-				angleadd.x = (90 * sign) * (gpGlobals->frametime + fabs(delta.x / 10.0f));
+				angleadd.x = (66.8f * sign) * (gpGlobals->frametime + fabs(delta.x / 10.0f));
 			}
 
 			if (fabs(delta.y) > 0.02f)
@@ -253,7 +259,9 @@ void CPhysgun::ItemThink()
 
 			NormalizeAngles(m_pCurrentEntity->pev->angles);
 
+#ifndef CLIENT_DLL
 			g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "1");
+#endif
 
 			UTIL_MakeVectors(m_pPlayer->pev->angles + m_pPlayer->pev->punchangle);
 		}
@@ -262,8 +270,10 @@ void CPhysgun::ItemThink()
 			pev->fixangle = 0;
 			pev->v_angle = g_vecZero;
 
+#ifndef CLIENT_DLL
 			g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
-		
+#endif		
+
 			m_pPlayer->GetAutoaimVector(0.0f);
 		}
 
@@ -357,7 +367,9 @@ void CPhysgun::WeaponIdle()
 
 		pev->fixangle = 0;
 		pev->v_angle = g_vecZero;
+#ifndef CLIENT_DLL
 		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+#endif
 	}
 
 	int iAnim;
