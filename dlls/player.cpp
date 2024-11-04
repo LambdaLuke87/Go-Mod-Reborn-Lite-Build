@@ -2991,6 +2991,11 @@ void CBasePlayer::PostThink()
 	if (!IsAlive())
 		goto pt_end;
 
+	if (m_pActiveItem)
+	{
+		m_pActiveItem->ItemThink();
+	}
+
 	// Handle Tank controlling
 	if (m_pTank != NULL)
 	{ // if they've moved too far from the gun,  or selected a weapon, unuse the gun
@@ -5781,6 +5786,14 @@ void CBasePlayer::SetPrefsFromUserinfo(char* infobuffer)
 	else
 	{
 		m_iAutoWepSwitch = 1;
+	}
+}
+
+void CBasePlayer::PhysGunHandler(int mode)
+{
+	if (m_pActiveItem && m_pActiveItem->m_iId == WEAPON_PHYSGUN)
+	{
+		((CPhysgun*)m_pActiveItem)->HandleEvent(mode);
 	}
 }
 

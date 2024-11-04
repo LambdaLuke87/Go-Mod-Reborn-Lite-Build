@@ -765,9 +765,16 @@ void CHudAmmo::UserCmd_Close()
 }
 
 
+extern BEAM* pPhysBeam;
+
 // Selects the next item in the weapon menu
 void CHudAmmo::UserCmd_NextWeapon()
 {
+	if (pPhysBeam && pPhysBeam->endEntity > 0)
+	{
+		gEngfuncs.pfnClientCmd("+physback");
+		return;
+	}
 	if (gHUD.m_fPlayerDead || (gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0)
 		return;
 
@@ -809,6 +816,12 @@ void CHudAmmo::UserCmd_NextWeapon()
 // Selects the previous item in the menu
 void CHudAmmo::UserCmd_PrevWeapon()
 {
+	if (pPhysBeam && pPhysBeam->endEntity > 0)
+	{
+		gEngfuncs.pfnClientCmd("+physfwd");
+		return;
+	}
+
 	if (gHUD.m_fPlayerDead || (gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0)
 		return;
 

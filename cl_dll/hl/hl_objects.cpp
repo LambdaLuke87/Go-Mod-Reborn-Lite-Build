@@ -30,8 +30,6 @@ extern BEAM* pBeam;
 extern BEAM* pBeam2;
 void HUD_GetLastOrg(float* org);
 
-extern BEAM* pPhysBeam;
-
 void UpdateBeams()
 {
 	Vector forward, vecSrc, vecEnd, origin, angles, right, up;
@@ -78,9 +76,14 @@ void UpdateBeams()
 	}
 }
 
+extern BEAM* pPhysBeam;
+
 void UpdatePhysBeam()
 {
-	if (pPhysBeam)
+	if (!pPhysBeam)
+		return;
+
+	if (pPhysBeam->endEntity > 0)
 	{
 		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(pPhysBeam->endEntity);
 
@@ -90,8 +93,45 @@ void UpdatePhysBeam()
 			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
 
 		pPhysBeam->target = targpos;
-		pPhysBeam->die = gEngfuncs.GetClientTime() + 0.1; // We keep it alive just a little bit forward in the future, just in case.
 	}
+	else
+	{
+		Vector forward, vecSrc, vecEnd, origin, angles, right, up;
+		Vector view_ofs;
+		pmtrace_t tr;
+		cl_entity_t* pthisplayer = gEngfuncs.GetLocalPlayer();
+		int idx = pthisplayer->index;
+
+		// Get our exact viewangles from engine
+		gEngfuncs.GetViewAngles((float*)angles);
+
+		// Determine our last predicted origin
+		HUD_GetLastOrg((float*)&origin);
+
+		AngleVectors(angles, forward, right, up);
+
+		VectorCopy(origin, vecSrc);
+
+		VectorMA(vecSrc, 2048, forward, vecEnd);
+
+		gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction(0, 1);
+
+		// Store off the old count
+		gEngfuncs.pEventAPI->EV_PushPMStates();
+
+		// Now add in all of the players.
+		gEngfuncs.pEventAPI->EV_SetSolidPlayers(idx - 1);
+
+		gEngfuncs.pEventAPI->EV_SetTraceHull(2);
+		gEngfuncs.pEventAPI->EV_PlayerTrace(vecSrc, vecEnd, PM_STUDIO_BOX, -1, &tr);
+
+		gEngfuncs.pEventAPI->EV_PopPMStates();
+	
+		pPhysBeam->target = tr.endpos;
+	}
+
+	pPhysBeam->die = gEngfuncs.GetClientTime() + 0.1; // We keep it alive just a little bit forward in the future, just in case.
+	pPhysBeam->freq = pPhysBeam->speed * gEngfuncs.GetClientTime();
 }
 
 /*

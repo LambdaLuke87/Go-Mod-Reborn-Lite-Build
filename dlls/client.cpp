@@ -1190,6 +1190,18 @@ void ClientCommand(edict_t* pEntity)
 			DumpCTFFlagInfo(reinterpret_cast<CBasePlayer*>(GET_PRIVATE(pEntity)));
 		}
 	}
+	else if (FStrEq(pcmd, "+physfwd"))
+	{
+		CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
+		pPlayer->PhysGunHandler(1);
+	}
+	else if (FStrEq(pcmd, "+physback"))
+	{
+		CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
+		pPlayer->PhysGunHandler(2);
+	}
 	else
 	{
 		// tell the user they entered an unknown command

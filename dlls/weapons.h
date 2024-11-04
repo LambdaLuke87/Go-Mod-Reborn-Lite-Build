@@ -280,6 +280,8 @@ public:
 	virtual void ItemPreFrame() {}	// called each frame by the player PreThink
 	virtual void ItemPostFrame() {} // called each frame by the player PostThink
 
+	virtual void ItemThink() {} // called each frame by the player PostThink
+
 	virtual void Drop();
 	virtual void Kill();
 	virtual void AttachToPlayer(CBasePlayer* pPlayer);
@@ -1384,7 +1386,7 @@ public:
 	bool Deploy() override;
 	void Holster() override;
 
-	void ItemPostFrame() override;
+	void ItemThink() override;
 	void WeaponIdle() override;
 
 	CBaseEntity* GetEntity(float dist, bool m_bTakeDamage = false);
@@ -1410,6 +1412,12 @@ public:
 
 	const char* MyWModel() { return "models/w_physgun.mdl"; }
 
+	void HandleEvent(int mode);
+
 private:
+	float m_flDist = 0.0f;
+	float m_flHorDist = 0.0f;
+	float m_flVertDist = 0.0f;
+
 	unsigned short m_usPhysGun;
 };

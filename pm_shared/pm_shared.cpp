@@ -2978,6 +2978,13 @@ void PM_CheckParamters()
 		pmove->maxspeed *= 1.0f / 3.0f;
 	}
 
+	const bool physgun = atoi(pmove->PM_Info_ValueForKey(pmove->physinfo, "phg")) == 1;
+
+	if (physgun)
+	{
+		pmove->maxspeed = 0.0f;
+	}
+
 	if ((spd != 0.0) &&
 		(spd > pmove->maxspeed))
 	{
