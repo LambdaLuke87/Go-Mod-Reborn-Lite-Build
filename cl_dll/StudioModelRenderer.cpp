@@ -25,6 +25,7 @@ extern cvar_t* tfc_newmodels;
 
 cvar_t* cl_hands;
 cvar_t* cl_hands_skin;
+cvar_t* cl_pred_physgun;
 
 extern extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1];
 
@@ -38,6 +39,8 @@ int m_nPlayerGaitSequences[MAX_PLAYERS];
 
 // Global engine <-> studio model rendering code interface
 engine_studio_api_t IEngineStudio;
+
+extern BEAM* pPhysBeam;
 
 /////////////////////
 // Implementation of CStudioModelRenderer.h
@@ -58,6 +61,8 @@ void CStudioModelRenderer::Init()
 	// cvar for Bacontsu cl_hands
 	cl_hands = CVAR_CREATE("cl_hands", "1", FCVAR_ARCHIVE);
 	cl_hands_skin = CVAR_CREATE("cl_hands_skin", "1", FCVAR_ARCHIVE);
+
+	cl_pred_physgun = CVAR_CREATE("cl_pred_physgun", "1", FCVAR_ARCHIVE);
 
 	m_pChromeSprite = IEngineStudio.GetChromeSprite();
 
@@ -1177,6 +1182,13 @@ bool CStudioModelRenderer::StudioDrawModel(int flags)
 	IEngineStudio.GetTimes(&m_nFrameCount, &m_clTime, &m_clOldTime);
 	IEngineStudio.GetViewInfo(m_vRenderOrigin, m_vUp, m_vRight, m_vNormal);
 	IEngineStudio.GetAliasScale(&m_fSoftwareXScale, &m_fSoftwareYScale);
+
+	if ((int)cl_pred_physgun->value > 0 && pPhysBeam && pPhysBeam->endEntity == m_pCurrentEntity->index)
+	{
+	//	UpdatePhysBeam();
+		m_pCurrentEntity->origin = m_pCurrentEntity->baseline.origin;
+		m_pCurrentEntity->angles = m_pCurrentEntity->baseline.angles;
+	}
 
 	if (m_pCurrentEntity->curstate.renderfx == kRenderFxDeadPlayer)
 	{

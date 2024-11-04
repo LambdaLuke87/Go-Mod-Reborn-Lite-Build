@@ -33,6 +33,8 @@ void DLLEXPORT HUD_DrawNormalTriangles()
 {
 	//	RecClDrawNormalTriangles();
 
+	UpdatePhysBeam();
+
 	gHUD.m_Spectator.DrawOverview();
 }
 

@@ -101,6 +101,10 @@ cvar_t v_ipitch_level = {"v_ipitch_level", "0.3", 0, 0.3};
 
 float v_idlescale; // used by TFC for concussion grenade effect
 
+Vector v_lockedangles;
+extern BEAM* pPhysBeam;
+extern kbutton_t in_use;
+
 //=============================================================================
 /*
 void V_NormalizeAngles( Vector& angles )
@@ -863,6 +867,9 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	v_angles = pparams->viewangles;
 	v_client_aimangles = pparams->cl_viewangles;
 	v_lastAngles = pparams->viewangles;
+
+	v_frametime = pparams->frametime;
+
 	//	v_cl_angles = pparams->cl_viewangles;	// keep old user mouse angles !
 	if (0 != CL_IsThirdPerson())
 	{
@@ -1697,7 +1704,7 @@ void V_CalcSpectatorRefdef(struct ref_params_s* pparams)
 		VectorCopy(v_origin, pparams->vieworg);
 }
 
-
+extern cvar_t* cl_pred_physgun;
 
 void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 {
@@ -1715,6 +1722,16 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 	else if (0 == pparams->paused)
 	{
 		V_CalcNormalRefdef(pparams);
+	}
+
+	if ((cl_pred_physgun && (int)cl_pred_physgun->value > 0) && (pPhysBeam && pPhysBeam->endEntity > 0) && (in_use.state & 1) != 0)
+	{
+		VectorCopy(Vector(v_lockedangles.x, v_lockedangles.y, 0.0f), pparams->viewangles);
+		VectorCopy(Vector(-v_lockedangles.x, v_lockedangles.y, 0.0f), gEngfuncs.GetViewModel()->curstate.angles);
+	}
+	else
+	{
+		v_lockedangles = pparams->viewangles;
 	}
 
 	/*
