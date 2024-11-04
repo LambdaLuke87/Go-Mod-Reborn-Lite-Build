@@ -452,6 +452,9 @@ public:
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
 	bool m_fUseSpawnAim;
+
+public:
+	void PhysGunHandler(int mode);
 };
 
 inline void CBasePlayer::SetWeaponBit(int id)

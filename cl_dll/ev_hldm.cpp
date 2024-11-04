@@ -2089,7 +2089,7 @@ void EV_PhysGun(event_args_t* args)
 	VectorCopy(args->origin, vecSrc);
 	VectorCopy(args->angles, angles);
 
-	m_iBeam = gEngfuncs.pEventAPI->EV_FindModelIndex("sprites/smoke.spr");
+	m_iBeam = gEngfuncs.pEventAPI->EV_FindModelIndex(EGON_BEAM_SPRITE);
 
 	AngleVectors(angles, forward, NULL, NULL);
 
@@ -2104,8 +2104,16 @@ void EV_PhysGun(event_args_t* args)
 	}
 
 	if (pPhysBeam)
-		return;
+	{
+		if (pPhysBeam->endEntity > 0)
+			return;
+	
+		if (targidx == 0)
+			return;
 
+		pPhysBeam->die = 0.01f;
+		pPhysBeam = nullptr;
+	}
 	if (targidx > 0)
 	{
 		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(targidx);
@@ -2115,14 +2123,50 @@ void EV_PhysGun(event_args_t* args)
 		if (isBspModel)
 			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
 
-		pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, targpos, m_iBeam, 99999, 1.0, 0.0f, 1, 0.0f, 0, 1, 1, 1, 1);
+		pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
 
 		if (pPhysBeam)
 		{
 			pPhysBeam->endEntity = targidx;
-		//	pPhysBeam->frameCount = isBspModel;
 		}
-		//gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5, ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
+	}
+	else
+	{
+		Vector vecSrc, vecEnd, angles, forward, right, up;
+		pmtrace_t tr;
+
+		cl_entity_t* pl = gEngfuncs.GetEntityByIndex(idx);
+
+		if (pl)
+		{
+			VectorCopy(gHUD.m_vecAngles, angles);
+
+			AngleVectors(angles, forward, right, up);
+
+			EV_GetGunPosition(args, vecSrc, pl->origin);
+
+			VectorMA(vecSrc, 2048, forward, vecEnd);
+
+			gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction(0, 1);
+
+			// Store off the old count
+			gEngfuncs.pEventAPI->EV_PushPMStates();
+
+			// Now add in all of the players.
+			gEngfuncs.pEventAPI->EV_SetSolidPlayers(idx - 1);
+
+			gEngfuncs.pEventAPI->EV_SetTraceHull(2);
+			gEngfuncs.pEventAPI->EV_PlayerTrace(vecSrc, vecEnd, PM_NORMAL, -1, &tr);
+
+			gEngfuncs.pEventAPI->EV_PopPMStates();
+
+			pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
+
+			if (pPhysBeam)
+			{
+				pPhysBeam->endEntity = 0;
+			}
+		}
 	}
 }
 //======================

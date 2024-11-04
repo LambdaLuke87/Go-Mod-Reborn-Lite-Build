@@ -62,6 +62,12 @@ bool CPhysgun::GetItemInfo(ItemInfo* p)
 
 bool CPhysgun::Deploy()
 {
+	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+	m_pCurrentEntity = nullptr;
+
+	pev->fixangle = 0;
+	pev->v_angle = g_vecZero;
+
 	return DefaultDeploy("models/v_physgun.mdl", "models/p_physgun.mdl", PHYSGUN_DRAW, "gauss");
 }
 
@@ -71,58 +77,56 @@ void CPhysgun::Holster()
 	SendWeaponAnim(PHYSGUN_HOLSTER);
 
 	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
+
+	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+	m_pCurrentEntity = nullptr;
+
+	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+		0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
+		0, 0, true);
+
+	pev->fixangle = 0;
+	pev->v_angle = g_vecZero;
 }
 
 void CPhysgun::PrimaryAttack()
 {
 	if (m_pCurrentEntity)
 	{
-		TraceResult tr;
+		return;
+	}
 
-		m_pPlayer->GetAutoaimVector(0.0f);
+	auto pEnt = GetEntity(2048);
+	if (pEnt)
+	{
+		m_pCurrentEntity = pEnt;
 
-		if (m_pCurrentEntity->IsBSPModel())
-		{
-			Vector absorigin;
-			VectorAverage(m_pCurrentEntity->pev->absmax, m_pCurrentEntity->pev->absmin, absorigin);
+		bool isBspModel = m_pCurrentEntity->IsBSPModel();
 
-			Vector normal = (m_pPlayer->pev->origin - absorigin).Normalize();
-
-			m_pCurrentEntity->pev->velocity = (normal + gpGlobals->v_forward * 150) * 35;
-		}
-		else
-		{
-			Vector diff = (m_pPlayer->pev->origin - m_pCurrentEntity->pev->origin);
-
-			UTIL_TraceLine(m_pPlayer->GetGunPosition(), m_pCurrentEntity->pev->origin + gpGlobals->v_forward * 20, ignore_monsters, m_pPlayer->edict(), &tr);
-
-			if (!strncmp("weapon_", STRING(m_pCurrentEntity->pev->classname), 7) || !strncmp("item_", STRING(m_pCurrentEntity->pev->classname), 5))
-				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (150 + tr.flFraction) + Vector(0, 0, 24)) * 35;
-			else
-				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (150 * tr.flFraction)) * 35;
-		}
+		m_pCurrentEntity->pev->origin[2] += 0.2f;
+		SendWeaponAnim(PHYSGUN_SPIN);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+
+		if (m_pCurrentEntity->m_movetype == MOVETYPE_NONE)
+			m_pCurrentEntity->m_movetype = m_pCurrentEntity->pev->movetype + 1;
+
+		if (!m_pCurrentEntity->IsBSPModel())
+		{
+			m_pCurrentEntity->pev->movetype = MOVETYPE_FLY;
+		}
+		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, ENTINDEX(m_pCurrentEntity->edict()),
+			0, isBspModel ? 1 : 0, false);
+
+		m_flDist = 150.0f;
+		m_flHorDist = 0.0f;
+		m_flVertDist = 0.0f;
 	}
 	else
 	{
-		m_pCurrentEntity = GetEntity(2048);
-		if (m_pCurrentEntity)
-		{
-			bool isBspModel = m_pCurrentEntity->IsBSPModel();
-
-			m_pCurrentEntity->pev->origin[2] += 0.2f;
-			SendWeaponAnim(PHYSGUN_SPIN);
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
-
-			if (m_pCurrentEntity->m_movetype == MOVETYPE_NONE)
-				m_pCurrentEntity->m_movetype = m_pCurrentEntity->pev->movetype + 1;
-		
-			m_pCurrentEntity->pev->movetype = MOVETYPE_FLY;
-
-			PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-				0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, ENTINDEX(m_pCurrentEntity->edict()),
-				0, isBspModel ? 1 : 0, false);
-		}
+		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
+			0, 0, false);
 	}
 }
 
@@ -140,6 +144,11 @@ void CPhysgun::SecondaryAttack()
 			0, 0, true);
 
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+
+		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+
+		pev->fixangle = 0;
+		pev->v_angle = g_vecZero;
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(0.4f);
@@ -148,9 +157,138 @@ void CPhysgun::SecondaryAttack()
 	SendWeaponAnim(PHYSGUN_FIRE);
 }
 
-void CPhysgun::ItemPostFrame()
+void CPhysgun::HandleEvent(int mode)
 {
-	CBasePlayerWeapon::ItemPostFrame();
+	if (!m_pCurrentEntity || (m_pPlayer->pev->button & IN_ATTACK) == 0)
+		return;
+
+	if (mode == 1)
+	{
+		m_flDist += gpGlobals->frametime * 1000.0f;
+	}
+	else if (mode == 2)
+	{
+		m_flDist -= gpGlobals->frametime * 1000.0f;
+	}
+
+	if (m_flDist < 50.0f)
+		m_flDist = 50.0f;
+}
+
+void CPhysgun::ItemThink()
+{
+	if (m_pCurrentEntity && (m_pPlayer->pev->button & IN_ATTACK) != 0)
+	{
+		TraceResult tr;
+
+		if ((m_pPlayer->pev->button & IN_USE) != 0)
+		{
+			if (m_pPlayer->pev->button & IN_MOVERIGHT)
+			{
+				m_flHorDist += gpGlobals->frametime * 150.0f;
+			}
+			else if (m_pPlayer->pev->button & IN_MOVELEFT)
+			{
+				m_flHorDist -= gpGlobals->frametime * 150.0f;
+			}
+			else if (m_pPlayer->pev->button & IN_FORWARD)
+			{
+				m_flVertDist += gpGlobals->frametime * 150.0f;
+			}
+			else if (m_pPlayer->pev->button & IN_BACK)
+			{
+				m_flVertDist -= gpGlobals->frametime * 150.0f;
+			}
+
+			m_pPlayer->pev->fixangle = 1;
+
+			if (pev->fixangle == 0)
+			{
+				pev->fixangle = 1;
+				pev->v_angle = m_pPlayer->pev->v_angle;
+				pev->v_angle.z = 0;
+			}
+
+			m_pPlayer->pev->angles = pev->v_angle;
+
+			Vector delta = m_pPlayer->pev->v_angle - pev->v_angle;
+			Vector angleadd = g_vecZero;
+			ALERT(at_console, "%f %f %f\n", delta.x, delta.y / 10.0f, delta.z);
+
+			if (fabs(delta.x) > 0.087f)
+			{
+				int sign = -1;
+
+				if (delta.x < 0.0f)
+					sign = 1;
+
+				angleadd.x = (90 * sign) * (gpGlobals->frametime + fabs(delta.x / 10.0f));
+			}
+
+			if (fabs(delta.y) > 0.02f)
+			{
+				int sign = -1;
+
+				if (delta.y < 0.0f)
+					sign = 1;
+
+				angleadd.y = (150 * sign) * (gpGlobals->frametime + fabs(delta.y / 10.0f));
+			}
+
+			if (m_pPlayer->pev->button & IN_LEFT)
+			{
+				angleadd.y = gpGlobals->frametime * -300.0f;
+			}
+			else if (m_pPlayer->pev->button & IN_RIGHT)
+			{
+				angleadd.y = gpGlobals->frametime * 300.0f;
+			}
+
+			m_pCurrentEntity->pev->angles = m_pCurrentEntity->pev->angles + angleadd;
+
+			if (m_pPlayer->pev->button & IN_RELOAD)
+			{
+				m_pCurrentEntity->pev->angles.x = 0.0f;
+			}
+
+			NormalizeAngles(m_pCurrentEntity->pev->angles);
+
+			g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "1");
+
+			UTIL_MakeVectors(m_pPlayer->pev->angles + m_pPlayer->pev->punchangle);
+		}
+		else
+		{
+			pev->fixangle = 0;
+			pev->v_angle = g_vecZero;
+
+			g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+		
+			m_pPlayer->GetAutoaimVector(0.0f);
+		}
+
+		if (m_pCurrentEntity->IsBSPModel())
+		{
+			Vector absorigin;
+			VectorAverage(m_pCurrentEntity->pev->absmax, m_pCurrentEntity->pev->absmin, absorigin);
+
+			Vector diff = (m_pPlayer->pev->origin - absorigin);
+
+			m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * m_flDist + gpGlobals->v_right * m_flHorDist + gpGlobals->v_up * m_flVertDist) * 35;
+		}
+		else
+		{
+			Vector diff = (m_pPlayer->pev->origin - m_pCurrentEntity->pev->origin);
+
+			UTIL_TraceLine(m_pPlayer->GetGunPosition(), m_pCurrentEntity->pev->origin + gpGlobals->v_forward * 20, ignore_monsters, m_pPlayer->edict(), &tr);
+
+			if (!strncmp("weapon_", STRING(m_pCurrentEntity->pev->classname), 7) || !strncmp("item_", STRING(m_pCurrentEntity->pev->classname), 5))
+				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (m_flDist * tr.flFraction) + gpGlobals->v_right * m_flHorDist + Vector(0, 0, 24)) * 35;
+			else
+				m_pCurrentEntity->pev->velocity = (diff + gpGlobals->v_forward * (m_flDist * tr.flFraction) + gpGlobals->v_right * m_flHorDist + gpGlobals->v_up * m_flVertDist) * 35;
+		}
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
+	}
 }
 
 CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
@@ -164,39 +302,46 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
 
-	if (!tr.pHit)
-		pEntity = UTIL_FindEntityInSphere(pEntity, tr.vecEndPos, 2.0f);
-	else
-		pEntity = CBaseEntity::Instance(tr.pHit);
+	pEntity = CBaseEntity::Instance(tr.pHit);
 
-	if (m_bTakeDamage)
+	if (pEntity)
 	{
-		if (!pEntity)
-			return nullptr;
-
-		if ((pEntity->IsBSPModel() && (pEntity->pev->movetype == MOVETYPE_PUSHSTEP || pEntity->pev->takedamage == DAMAGE_YES)))
+		if (pEntity->IsBSPModel())
 		{
-			return pEntity;
+			if (pEntity->edict() != INDEXENT(0) && pEntity->pev->movetype == MOVETYPE_PUSHSTEP)
+				return pEntity;
 		}
+		else
+			return pEntity;
 	}
-	else
-	{
-		if (!pEntity || (pEntity->IsBSPModel() && pEntity->pev->movetype != MOVETYPE_PUSHSTEP))
-			pEntity = UTIL_FindEntityInSphere(pEntity, tr.vecEndPos, 2.0f);
 
-		if (!pEntity || (pEntity->IsBSPModel() && pEntity->pev->movetype != MOVETYPE_PUSHSTEP))
-			return nullptr;
+	pEntity = nullptr;
+
+	while (pEntity = UTIL_FindEntityInSphere(pEntity, tr.vecEndPos, 2.0f))
+	{
+		if (pEntity == m_pPlayer)
+			continue;
+
+		if (pEntity->edict() == INDEXENT(0))
+			continue;
+
+		if (pEntity->IsBSPModel())
+		{
+			if (pEntity->pev->movetype == MOVETYPE_PUSHSTEP)
+				return pEntity;
+		}
+		else
+			return pEntity;
 	}
-	if (pEntity == m_pPlayer)
-		return nullptr;
 
 	return pEntity;
 }
 
 void CPhysgun::WeaponIdle()
 {	
-	//if (m_flNextIdleTime > gpGlobals->time)
-	//	return;
+	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
+		0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
+		0, 0, true);
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 		return;
@@ -207,12 +352,12 @@ void CPhysgun::WeaponIdle()
 			m_pCurrentEntity->pev->movetype = m_pCurrentEntity->m_movetype - 1;
 
 		m_pCurrentEntity->pev->velocity = m_pCurrentEntity->pev->velocity.Normalize() * (m_pCurrentEntity->pev->velocity.Length() / 3.5f);
-
-		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
-			0, 0, true);
-
 		m_pCurrentEntity = nullptr;
+
+
+		pev->fixangle = 0;
+		pev->v_angle = g_vecZero;
+		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
 	}
 
 	int iAnim;
