@@ -777,6 +777,8 @@ public:
 	}
 };
 
+extern void UpdatePhysBeam();
+
 extern CHud gHUD;
 
 extern int g_iPlayerClass;

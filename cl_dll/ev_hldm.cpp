@@ -2127,6 +2127,9 @@ void EV_PhysGun(event_args_t* args)
 
 		if (pPhysBeam)
 		{
+			// SAVED ANGLES
+			targent->baseline.origin = targent->origin;
+			targent->baseline.angles = targent->angles;
 			pPhysBeam->endEntity = targidx;
 		}
 	}

@@ -26,9 +26,21 @@
 #include "entity_types.h"
 #include "r_efx.h"
 
+#include <cmath>
+
 extern BEAM* pBeam;
 extern BEAM* pBeam2;
 void HUD_GetLastOrg(float* org);
+
+extern BEAM* pPhysBeam;
+extern float v_frametime;
+extern void V_SmoothInterpolateAngles(float* startAngle, float* endAngle, float* finalAngle, float degreesPerSec);
+
+// TODO: Move to mathlib
+static float lerp(float a, float b, float f)
+{
+	return (a * (1.0 - f)) + (b * f);
+}
 
 void UpdateBeams()
 {
@@ -76,8 +88,6 @@ void UpdateBeams()
 	}
 }
 
-extern BEAM* pPhysBeam;
-
 void UpdatePhysBeam()
 {
 	if (!pPhysBeam)
@@ -87,7 +97,20 @@ void UpdatePhysBeam()
 	{
 		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(pPhysBeam->endEntity);
 
-		Vector targpos = targent->origin;
+		NormalizeAngles(targent->baseline.angles);
+		Vector targang = targent->curstate.angles;
+		NormalizeAngles(targang);
+
+		// Interpolate angles side-side so it looks nicer
+		v_frametime = gHUD.m_flTimeDelta * 20.0f;
+		V_SmoothInterpolateAngles(targent->baseline.angles, targang, targent->baseline.angles, 180.0f);
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			targent->baseline.origin[i] = lerp(targent->baseline.origin[i], targent->curstate.origin[i], gHUD.m_flTimeDelta * 13.0f);
+		}
+
+		Vector targpos = targent->baseline.origin;
 		targpos[2] += targent->curstate.maxs[2] / 2;
 		if (pPhysBeam->frameCount > 0)
 			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
@@ -146,5 +169,6 @@ void Game_AddObjects()
 	if (pBeam || pBeam2)
 		UpdateBeams();
 
-	UpdatePhysBeam();
+	if (pPhysBeam && pPhysBeam->endEntity == 0)
+		UpdatePhysBeam();
 }
