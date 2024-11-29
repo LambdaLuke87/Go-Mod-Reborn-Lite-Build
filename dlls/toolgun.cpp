@@ -86,7 +86,7 @@ void CToolgun::PrimaryAttack()
 	if (m_pPlayer->m_iToolMode == 3)
 	{
 #ifndef CLIENT_DLL
-		CGib::SpawnRandomGibs(pev, 1, 1);
+		CGib::SpawnRandomGibs(pev, 1, true);
 #endif
 	}
 	else if (m_pPlayer->m_iToolMode == 5)
@@ -136,7 +136,15 @@ void CToolgun::SecondaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
-	vecDir = m_pPlayer->FireBulletsToolGunAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
+	// some specific tools are defined here
+	if (m_pPlayer->m_iToolMode == 3)
+	{
+#ifndef CLIENT_DLL
+		CGib::SpawnRandomGibs(pev, 1, false);
+#endif
+	}
+	else
+		vecDir = m_pPlayer->FireBulletsToolGunAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
   int flags;
 #if defined( CLIENT_WEAPONS )

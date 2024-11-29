@@ -594,9 +594,6 @@
     <ClCompile Include="..\..\dlls\monster_camera.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\gravitygun.cpp">
-      <Filter>Source Files\dlls</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">

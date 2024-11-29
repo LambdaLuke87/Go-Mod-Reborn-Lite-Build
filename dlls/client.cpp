@@ -108,6 +108,15 @@ monster_t gMonsters[] =
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"}};
 
+monster_t gXenProps[] =
+	{
+		{"xen_hair"},
+		{"xen_tree"},
+		{"xen_plantlight"},
+		{"xen_spore_small"},
+		{"xen_spore_medium"},
+		{"xen_spore_large"}};
+
 
 struct weapon_t
 {
@@ -794,12 +803,12 @@ void ClientCommand(edict_t* pEntity)
 			{
 				if (npc_noai.value)
 				{
-					CVAR_SET_FLOAT("gm_npc_noai", 0);
+					CVAR_SET_FLOAT("gm_ai_disable", 0);
 					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s enabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 				else
 				{
-					CVAR_SET_FLOAT("gm_npc_noai", 1);
+					CVAR_SET_FLOAT("gm_ai_disable", 1);
 					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s disabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
 				}
 			}
@@ -873,14 +882,26 @@ void ClientCommand(edict_t* pEntity)
 				if (FStrEq(pcmd, combinetoprefix))
 				{
 					if (pPlayer->m_fUseSpawnAim)
-					{
 						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
-					}
 					else
 					{
 						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 					}
+				}
+			}
+
+			// Spawn Props
+			if (allow_props.value)
+			{
+				for (int i = 0; i < ARRAYSIZE(gXenProps); i++)
+				{
+					monster_t xenpropInfo = gXenProps[i];
+					char combinetoprefix[512];
+					strcpy(combinetoprefix, "button_");
+					strcat(combinetoprefix, xenpropInfo.classname);
+					if (FStrEq(pcmd, combinetoprefix))
+						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
 				}
 			}
 
@@ -1684,8 +1705,20 @@ void ClientPrecache()
 		UTIL_PrecacheOther("monster_apache");
 
 		if (allow_camera.value)
-		{
 			UTIL_PrecacheOther("monster_camera");
+
+		if (allow_props.value)
+		{
+			for (int i = 0; i < ARRAYSIZE(gXenProps); i++)
+			{
+				monster_t sXenProps = gXenProps[i];
+				UTIL_PrecacheOther(sXenProps.classname);
+			}
+
+			// Aditional Precaches needed bellow
+			PRECACHE_MODEL("models/fungus(small).mdl");
+			PRECACHE_MODEL("models/fungus.mdl");
+			PRECACHE_MODEL("models/fungus(large).mdl");
 		}
 
 		if (allow_spawn_bosses.value)
