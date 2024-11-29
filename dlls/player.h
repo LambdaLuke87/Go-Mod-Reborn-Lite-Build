@@ -451,7 +451,7 @@ public:
 	int m_iToolRenderColorB;
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
-	bool m_fUseSpawnAim;
+	bool m_fUseFrontSpawn;
 
 public:
 	void PhysGunHandler(int mode);

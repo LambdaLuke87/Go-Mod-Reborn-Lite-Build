@@ -2107,7 +2107,7 @@ void CMultiplayBusters::SetPlayerModel(CBasePlayer* pPlayer)
 
 bool IsSandBox()
 {
-	return gamerule_sandbox.value == 1;
+	return current_gamemode.value == 1;
 }
 
 void CMultiplaySandbox::RefreshSkillData()

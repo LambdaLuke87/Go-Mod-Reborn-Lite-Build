@@ -50,7 +50,7 @@ cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
 // Go-Mod Reborn cvars Stuff
-cvar_t gamerule_sandbox = {"gm_gamerule_sandbox", "1", FCVAR_SERVER}; // Sandbox Mode
+cvar_t current_gamemode = {"gm_gamemode", "1", FCVAR_SERVER}; // Sandbox Mode
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
@@ -689,7 +689,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&sv_allowbunnyhopping);
 
 	// Cvar register for Go-Mod Reborn stuff
-	CVAR_REGISTER(&gamerule_sandbox);
+	CVAR_REGISTER(&current_gamemode);
 	CVAR_REGISTER(&allow_camera);
 	CVAR_REGISTER(&allow_props);
 	CVAR_REGISTER(&allow_noclip);

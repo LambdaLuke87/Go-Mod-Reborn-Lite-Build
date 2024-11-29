@@ -493,7 +493,7 @@ CGameRules* InstallGameRules(CBaseEntity* pWorld)
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 
-	if (1 == gamerule_sandbox.value)
+	if (1 == current_gamemode.value)
 	{
 		g_teamplay = false;
 		return new CMultiplaySandbox;

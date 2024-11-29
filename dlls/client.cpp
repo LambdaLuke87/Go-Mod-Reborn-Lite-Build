@@ -825,17 +825,17 @@ void ClientCommand(edict_t* pEntity)
 					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Give Mode\n");
 				}
 			}
-			else if (FStrEq(pcmd, "button_aim_spawn"))
+			else if (FStrEq(pcmd, "button_front_spawn"))
 			{
-				if (pPlayer->m_fUseSpawnAim)
+				if (pPlayer->m_fUseFrontSpawn)
 				{
-					pPlayer->m_fUseSpawnAim = false;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Aim Spawn\n");
+					pPlayer->m_fUseFrontSpawn = false;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Front Spawn\n");
 				}
 				else
 				{
-					pPlayer->m_fUseSpawnAim = true;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Aim Spawn\n");
+					pPlayer->m_fUseFrontSpawn = true;
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Front Spawn\n");
 				}
 			}
 
@@ -881,13 +881,13 @@ void ClientCommand(edict_t* pEntity)
 				strcat(combinetoprefix, monsterInfo.classname);
 				if (FStrEq(pcmd, combinetoprefix))
 				{
-					if (pPlayer->m_fUseSpawnAim)
-						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
-					else
+					if (pPlayer->m_fUseFrontSpawn)
 					{
 						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 					}
+					else
+						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
 				}
 			}
 
@@ -936,9 +936,7 @@ void ClientCommand(edict_t* pEntity)
 				{
 					if (pPlayer->m_fGiveItemMode)
 						pPlayer->GiveCurrentItem(weaponInfo.classname);
-					else if (pPlayer->m_fUseSpawnAim)
-						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
-					else
+					else if (pPlayer->m_fUseFrontSpawn)
 					{
 						edict_t* pent;
 						int istr = MAKE_STRING(weaponInfo.classname);
@@ -950,18 +948,15 @@ void ClientCommand(edict_t* pEntity)
 						DispatchSpawn(pent);
 						DispatchTouch(pent, ENT(pev));
 					}
+					else
+						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
 				}
 			}
 
 			// not listed ammo_spore
 			// because it is generated in the air
 			if (FStrEq(pcmd, "button_ammo_spore"))
-			{
-				if (pPlayer->m_fUseSpawnAim)
-					GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
-				else
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("aim spawn mode is required to use ammo_spore\n"));
-			}
+				GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
 
 			// TODO: This sound should be played on the clientside.
 			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle"))

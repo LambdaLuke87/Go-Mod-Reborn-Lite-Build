@@ -140,7 +140,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_DisplacerSndRoomtype, FIELD_INTEGER),
 
 		DEFINE_FIELD(CBasePlayer, m_buddha, FIELD_BOOLEAN),
-		DEFINE_FIELD(CBasePlayer, m_fUseSpawnAim, FIELD_BOOLEAN),
+		DEFINE_FIELD(CBasePlayer, m_fUseFrontSpawn, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fGiveItemMode, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseAlliedMode, FIELD_BOOLEAN),
 

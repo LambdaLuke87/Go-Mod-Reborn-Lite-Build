@@ -49,8 +49,8 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 
 	m_pButtonAimMode = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(370), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(135), BUTTON_SIZE_Y - YRES(8));
 	m_pButtonAimMode->m_bNoMarginSpace = true;
-	m_pButtonAimMode->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Gomod_MenuButton_Aim"));
-	m_pButtonAimMode->addActionSignal(new CMenuHandler_StringCommand("button_aim_spawn"));
+	m_pButtonAimMode->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Gomod_MenuButton_FrontSpawn"));
+	m_pButtonAimMode->addActionSignal(new CMenuHandler_StringCommand("button_front_spawn"));
 	m_pButtonAimMode->setParent(this);
 	m_pButtonAimMode->setVisible(false);
 
