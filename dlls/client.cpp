@@ -782,7 +782,7 @@ void ClientCommand(edict_t* pEntity)
 	// Go-Mod Reborn Sandbox Mode Commands
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
-		if (IsSandBox()) // is sandbox mode?
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox()) // is sandbox mode?
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
@@ -972,7 +972,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
 	{
-		if (IsSandBox() && CMD_ARGC() > 1)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorR = atoi(CMD_ARGV(1));
 
@@ -996,7 +996,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_green"))
 	{
-		if (IsSandBox() && CMD_ARGC() > 1)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorG = atoi(CMD_ARGV(1));
 
@@ -1020,7 +1020,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_blue"))
 	{
-		if (IsSandBox() && CMD_ARGC() > 1)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderColorB = atoi(CMD_ARGV(1));
 
@@ -1044,7 +1044,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_amount"))
 	{
-		if (IsSandBox() && CMD_ARGC() > 1)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
 		{
 			player->m_iToolRenderAMT = atoi(CMD_ARGV(1));
 
@@ -1102,7 +1102,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "buddha"))
 	{
-		if (IsSandBox() && allow_healthmodify.value)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (pPlayer->m_buddha)
@@ -1119,7 +1119,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "zeus"))
 	{
-		if (IsSandBox() && allow_healthmodify.value)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (0 != pPlayer->pev->takedamage)
@@ -1136,7 +1136,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "+noclip"))
 	{
-		if (IsSandBox() && allow_noclip.value)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
@@ -1145,7 +1145,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "-noclip"))
 	{
-		if (IsSandBox() && allow_noclip.value)
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_WALK;
@@ -1688,7 +1688,7 @@ void ClientPrecache()
 		UTIL_PrecacheOther("monster_human_grunt");
 
 	// check if sandbox is allowed before precaching everything below
-	if (IsSandBox())
+	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 	{
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)

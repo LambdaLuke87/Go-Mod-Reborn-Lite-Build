@@ -50,13 +50,14 @@ cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
 // Go-Mod Reborn cvars Stuff
-cvar_t current_gamemode = {"gm_gamemode", "1", FCVAR_SERVER}; // Sandbox Mode
+cvar_t current_gamemode = {"gm_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 cvar_t allow_spawn_bosses = {"gm_allow_spawn_bosses", "0", FCVAR_SERVER};
 cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+cvar_t allow_player_jump_sfx = {"gm_allow_player_jump_sfx", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
@@ -697,6 +698,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_gaussfly);
 	CVAR_REGISTER(&allow_dm_weapons_skills);
 	CVAR_REGISTER(&allow_spawn_bosses);
+	CVAR_REGISTER(&allow_player_jump_sfx);
 	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);

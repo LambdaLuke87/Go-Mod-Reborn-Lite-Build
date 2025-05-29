@@ -162,9 +162,7 @@ void CBasePlayer::Pain()
 	char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
 	if (RANDOM_FLOAT(0.0f, 100.0f) <= 35.0f)
 	{
-		if (0 == strcmp(PlayerSFXString, "dmc"))
-			SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINDMC", 1, ATTN_NORM, 0, PITCH_NORM);
-		else if (0 == strcmp(PlayerSFXString, "cstrike"))
+		if (0 == strcmp(PlayerSFXString, "cstrike"))
 			SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
 		else if (0 == strcmp(PlayerSFXString, "hlalpha"))
 		{
@@ -269,25 +267,10 @@ int TrainSpeed(int iSpeed, int iMax)
 
 void CBasePlayer::DeathSound()
 {
-	if (IsSandBox())
+	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 	{
 		char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
-		if (0 == strcmp(PlayerSFXString, "hevsuit"))
-			DefaultDeathSound();
-		else if (0 == strcmp(PlayerSFXString, "dmc"))
-		{
-			if (m_bitsDamageType == DMG_DROWN)
-			{
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_DROWNDIEDMC", 1, ATTN_NORM);
-			}
-			else
-			{
-				SENTENCEG_PlayRndSz(ENT(pev), "PL_DIEDMC", 1, ATTN_NORM, 0, PITCH_NORM);
-			}
-		}
-		else if (0 == strcmp(PlayerSFXString, "cstrike"))
-			SENTENCEG_PlayRndSz(ENT(pev), "PL_DIECSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
-		else
+		if (0 == strcmp(PlayerSFXString, "hlalpha"))
 		{
 			switch (RANDOM_LONG(1, 3))
 			{
@@ -302,6 +285,17 @@ void CBasePlayer::DeathSound()
 				break;
 			}
 		}
+		else if (0 == strcmp(PlayerSFXString, "dmc"))
+		{
+			if (m_bitsDamageType == DMG_DROWN)
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_DROWNDIEDMC", 1, ATTN_NORM);
+			else
+				SENTENCEG_PlayRndSz(ENT(pev), "PL_DIEDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+		}
+		else if (0 == strcmp(PlayerSFXString, "cstrike"))
+			SENTENCEG_PlayRndSz(ENT(pev), "PL_DIECSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+		else
+			DefaultDeathSound();
 	}
 	else
 		DefaultDeathSound();
@@ -534,28 +528,12 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 	m_bitsDamageType |= bitsDamage; // Save this so we can report it to the client
 	m_bitsHUDDamage = -1;			// make sure the damage bits get resent
 
-	if (IsSandBox())
+	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 	{
 		if (pev->deadflag == DEAD_NO)
 		{
 			char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
-			if (0 == strcmp(PlayerSFXString, "hevsuit"))
-			{
-				if ((bitsDamage & DMG_FALL) != 0)
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
-			}
-			else if (0 == strcmp(PlayerSFXString, "dmc"))
-			{
-				if ((bitsDamage & DMG_FALL) != 0)
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
-				else if ((bitsDamage & DMG_BURN) != 0)
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_BURNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
-				else if ((bitsDamage & DMG_DROWN) != 0)
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_DROWNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
-				else
-					Pain();
-			}
-			else if ((bitsDamage & DMG_FALL) != 0)
+			if ((bitsDamage & DMG_FALL) != 0)
 			{
 				if (0 == strcmp(PlayerSFXString, "cstrike"))
 					SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
@@ -571,6 +549,17 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 						break;
 					}
 				}
+				else
+					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
+			}
+			else if (0 == strcmp(PlayerSFXString, "dmc"))
+			{
+				if ((bitsDamage & DMG_BURN) != 0)
+					SENTENCEG_PlayRndSz(ENT(pev), "PL_BURNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+				else if ((bitsDamage & DMG_DROWN) != 0)
+					SENTENCEG_PlayRndSz(ENT(pev), "PL_DROWNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+				else
+					SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINDMC", 1, ATTN_NORM, 0, PITCH_NORM);
 			}
 			else
 				Pain();
@@ -1806,7 +1795,7 @@ void CBasePlayer::Jump()
 	Vector vecSpot;
 	TraceResult tr;
 
-	if (IsSandBox())
+	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_player_jump_sfx.value)
 	{
 		char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
 		if (!pmove->waterlevel && !pmove->onground)
@@ -4132,7 +4121,8 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		GiveNamedItem("weapon_sniperrifle");
 		GiveNamedItem("weapon_displacer");
 
-		if (IsSandBox()) // You shouldn't get these things, only in Sandbox
+		// You shouldn't get these things, only in Sandbox or Singleplayer
+		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 		{
 			GiveNamedItem("weapon_physgun");
 			GiveNamedItem("weapon_toolgun");
