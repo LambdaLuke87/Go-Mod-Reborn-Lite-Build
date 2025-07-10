@@ -157,6 +157,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\ctf\CTFGoalFlag.cpp" />
     <ClCompile Include="..\..\dlls\ctf\ctfplay_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\ctf\CTFSpawn.cpp" />
+    <ClCompile Include="..\..\dlls\custom_props.cpp" />
     <ClCompile Include="..\..\dlls\defaultai.cpp" />
     <ClCompile Include="..\..\dlls\doors.cpp" />
     <ClCompile Include="..\..\dlls\effects.cpp" />

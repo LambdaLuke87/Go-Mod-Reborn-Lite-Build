@@ -108,14 +108,17 @@ monster_t gMonsters[] =
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"}};
 
-monster_t gXenProps[] =
+monster_t gProps[] =
 	{
 		{"xen_hair"},
 		{"xen_tree"},
 		{"xen_plantlight"},
 		{"xen_spore_small"},
 		{"xen_spore_medium"},
-		{"xen_spore_large"}};
+		{"xen_spore_large"},
+		{"prop_chiken"},
+		{"prop_colored_chummy"},
+		{"prop_c4"}};
 
 
 struct weapon_t
@@ -894,9 +897,9 @@ void ClientCommand(edict_t* pEntity)
 			// Spawn Props
 			if (allow_props.value)
 			{
-				for (int i = 0; i < ARRAYSIZE(gXenProps); i++)
+				for (int i = 0; i < ARRAYSIZE(gProps); i++)
 				{
-					monster_t xenpropInfo = gXenProps[i];
+					monster_t xenpropInfo = gProps[i];
 					char combinetoprefix[512];
 					strcpy(combinetoprefix, "button_");
 					strcat(combinetoprefix, xenpropInfo.classname);
@@ -1704,9 +1707,9 @@ void ClientPrecache()
 
 		if (allow_props.value)
 		{
-			for (int i = 0; i < ARRAYSIZE(gXenProps); i++)
+			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				monster_t sXenProps = gXenProps[i];
+				monster_t sXenProps = gProps[i];
 				UTIL_PrecacheOther(sXenProps.classname);
 			}
 

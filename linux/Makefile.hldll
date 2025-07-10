@@ -91,6 +91,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/CRecruit.o \
 	$(HLDLL_OBJ_DIR)/crossbow.o \
 	$(HLDLL_OBJ_DIR)/crowbar.o \
+	$(HLDLL_OBJ_DIR)/custom_props.o \
 	$(HLDLL_OBJ_DIR)/defaultai.o \
 	$(HLDLL_OBJ_DIR)/doors.o \
 	$(HLDLL_OBJ_DIR)/effects.o \

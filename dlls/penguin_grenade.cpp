@@ -21,6 +21,7 @@
 #include "soundent.h"
 #include "decals.h"
 #include "gamerules.h"
+#include "game.h"
 
 #define PENGUIN_DETONATE_DELAY 15.0
 
@@ -298,7 +299,10 @@ void CPenguinGrenade::Killed(entvars_t* pevAttacker, int iGib)
 	if (m_hOwner != NULL)
 		pev->owner = m_hOwner->edict();
 
-	Detonate();
+	if (explosion_control.value)
+		CBaseMonster::Killed(pevAttacker, GIB_ALWAYS);
+	else
+		Detonate();
 
 	UTIL_BloodDrips(pev->origin, g_vecZero, BloodColor(), 80);
 

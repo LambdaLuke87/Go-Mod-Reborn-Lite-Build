@@ -59,6 +59,7 @@ cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
 cvar_t allow_player_jump_sfx = {"gm_allow_player_jump_sfx", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
+cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
 cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
@@ -699,6 +700,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_dm_weapons_skills);
 	CVAR_REGISTER(&allow_spawn_bosses);
 	CVAR_REGISTER(&allow_player_jump_sfx);
+	CVAR_REGISTER(&explosion_control);
 	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);

@@ -75,6 +75,7 @@ extern cvar_t allow_dm_weapons_skills;
 extern cvar_t allow_spawn_bosses;
 extern cvar_t allow_props;
 extern cvar_t allow_player_jump_sfx;
+extern cvar_t explosion_control;
 extern cvar_t worlditems_respawn;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;
