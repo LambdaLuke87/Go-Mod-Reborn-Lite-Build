@@ -130,36 +130,36 @@ CWeaponsMenu ::CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, i
 	m_pButtonSweepMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	ButtonHelper("Crowbar", "button_weapon_crowbar", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Physgun", "button_weapon_physgun", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Toolgun", "button_weapon_toolgun", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Glock", "button_weapon_9mmhandgun", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Python", "button_weapon_357", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Mp5", "button_weapon_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Crowbar", "button_weapon_crowbar", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Physgun", "button_weapon_physgun", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Toolgun", "button_weapon_toolgun", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Glock", "button_weapon_9mmhandgun", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Python", "button_weapon_357", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Mp5", "button_weapon_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("Shotgun", "button_weapon_shotgun", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Crossbow", "button_weapon_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("RPG", "button_weapon_rpg", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Gauss", "button_weapon_gauss", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Egon", "button_weapon_egon", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("HiveHand", "button_weapon_hornetgun", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Shotgun", "button_weapon_shotgun", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Crossbow", "button_weapon_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_RPG", "button_weapon_rpg", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Gauss", "button_weapon_gauss", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Egon", "button_weapon_egon", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_HiveHand", "button_weapon_hornetgun", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("Grenade", "button_weapon_handgrenade", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Satchel", "button_weapon_satchel", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Tripmine", "button_weapon_tripmine", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Snark", "button_weapon_snark", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Barnacle Graple", "button_weapon_grapple", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Knife", "button_weapon_knife", iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Grenade", "button_weapon_handgrenade", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Satchel", "button_weapon_satchel", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Tripmine", "button_weapon_tripmine", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Snark", "button_weapon_snark", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Knife", "button_weapon_knife", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_PipeWrench", "button_weapon_pipewrench", iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("PipeWrench", "button_weapon_pipewrench", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Desert Egle", "button_weapon_eagle", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("M249", "button_weapon_m249", iXPos + XRES(144), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Sniper Rifle", "button_weapon_sniperrifle", iXPos + XRES(208), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Displacer", "button_weapon_displacer", iXPos + XRES(272), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Shock Rifle", "button_weapon_shockrifle", iXPos + XRES(336), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Barnacle", "button_weapon_grapple", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_DesertEgle", "button_weapon_eagle", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_M249", "button_weapon_m249", iXPos + XRES(144), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_SniperRifle", "button_weapon_sniperrifle", iXPos + XRES(208), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Displacer", "button_weapon_displacer", iXPos + XRES(272), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_ShockRifle", "button_weapon_shockrifle", iXPos + XRES(336), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("Spore Launcher", "button_weapon_sporelauncher", iXPos + XRES(16), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Penguin", "button_weapon_penguin", iXPos + XRES(80), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_SporeLauncher", "button_weapon_sporelauncher", iXPos + XRES(16), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Weapon_Penguin", "button_weapon_penguin", iXPos + XRES(80), iYPos + iYSize - YRES(64) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	ButtonHelper("#Gomod_GiveItem_Mode", "button_self_pickup", iXPos + XRES(16), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
@@ -169,23 +169,23 @@ CItemsMenu::CItemsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int ta
 	m_pButtonItemsMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	ButtonHelper("HealthKit", "button_item_healthkit", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Battery", "button_item_battery", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("LongJump", "button_item_longjump", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("HEV Suit", "button_item_suit", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Glock Ammo", "button_ammo_9mmclip", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Mp5 Ammo", "button_ammo_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_HealthKit", "button_item_healthkit", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Battery", "button_item_battery", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_LongJump", "button_item_longjump", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_HEV", "button_item_suit", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_GlockAmmo", "button_ammo_9mmclip", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Mp5Ammo", "button_ammo_9mmAR", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("AR Grenades", "button_ammo_ARgrenades", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Arrows", "button_ammo_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Uranium", "button_ammo_gaussclip", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Rockets", "button_ammo_rpgclip", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Buckshot", "button_ammo_buckshot", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("357 clip", "button_ammo_357", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_ARGrenades", "button_ammo_ARgrenades", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Arrows", "button_ammo_crossbow", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Uranium", "button_ammo_gaussclip", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Rockets", "button_ammo_rpgclip", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Buckshot", "button_ammo_buckshot", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_357Ammo", "button_ammo_357", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("556 Ammo", "button_ammo_556", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Spores", "button_ammo_spore", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("762 Ammo", "button_ammo_762", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_556Ammo", "button_ammo_556", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_Spores", "button_ammo_spore", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Item_762Ammo", "button_ammo_762", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	ButtonHelper("#Gomod_GiveItem_Mode", "button_self_pickup", iXPos + XRES(16), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
@@ -195,76 +195,76 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 	m_pButtonNPCMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	ButtonHelper("Alien Controller", "button_monster_alien_controller", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Alien Grunt", "button_monster_alien_grunt", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Alien Slave", "button_monster_alien_slave", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Gargantua", "button_monster_gargantua", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Shock Trooper", "button_monster_shocktrooper", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Shock Roach", "button_monster_shockroach", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_AlienController", "button_monster_alien_controller", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_AlienGrunt", "button_monster_alien_grunt", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_AlienSlave", "button_monster_alien_slave", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Gargantua", "button_monster_gargantua", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_ShockTrooper", "button_monster_shocktrooper", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_ShockRoach", "button_monster_shockroach", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Voltigore", "button_monster_alien_voltigore", iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Baby Voltigore", "button_monster_alien_babyvoltigore", iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Pitdrone", "button_monster_pitdrone", iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Houndeye", "button_monster_houndeye", iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Bullsquid", "button_monster_bullchicken", iXPos + XRES(272), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Headcrab", "button_monster_headcrab", iXPos + XRES(336), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Voltigore", "button_monster_alien_voltigore", iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_BabyVoltigore", "button_monster_alien_babyvoltigore", iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Pitdrone", "button_monster_pitdrone", iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Houndeye", "button_monster_houndeye", iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Bullsquid", "button_monster_bullchicken", iXPos + XRES(272), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Headcrab", "button_monster_headcrab", iXPos + XRES(336), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("BabyCrab", "button_monster_babycrab", iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Big Momma", "button_monster_bigmomma", iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Tentacle", "button_monster_tentacle", iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Leech", "button_monster_leech", iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Boid", "button_monster_flyer", iXPos + XRES(272), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Ichthyosaur", "button_monster_ichthyosaur", iXPos + XRES(336), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_BabyCrab", "button_monster_babycrab", iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_BigMomma", "button_monster_bigmomma", iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Tentacle", "button_monster_tentacle", iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Leech", "button_monster_leech", iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Boid", "button_monster_flyer", iXPos + XRES(272), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Ichthyosaur", "button_monster_ichthyosaur", iXPos + XRES(336), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	
-	ButtonHelper("Gonome", "button_monster_gonome", iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Zombie", "button_monster_zombie", iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Zombie Barney", "button_monster_zombie_barney", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Zombie Soldier", "button_monster_zombie_soldier", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Barnacle", "button_monster_barnacle", iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Rat", "button_monster_rat", iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Gonome", "button_monster_gonome", iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Zombie", "button_monster_zombie", iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_ZombieBarney", "button_monster_zombie_barney", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_ZombieSoldier", "button_monster_zombie_soldier", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Barnacle", "button_monster_barnacle", iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Rat", "button_monster_rat", iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("CockRoach", "button_monster_cockroach", iXPos + XRES(16), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Scientist", "button_monster_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Cleansuit Scientist", "button_monster_cleansuit_scientist", iXPos + XRES(144), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Barney", "button_monster_barney", iXPos + XRES(208), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Otis", "button_monster_otis", iXPos + XRES(272), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Ally Hgrunt", "button_monster_human_grunt_ally", iXPos + XRES(336), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_CockRoach", "button_monster_cockroach", iXPos + XRES(16), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Scientist", "button_monster_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_ClScientist", "button_monster_cleansuit_scientist", iXPos + XRES(144), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Barney", "button_monster_barney", iXPos + XRES(208), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Otis", "button_monster_otis", iXPos + XRES(272), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_AllyHgrunt", "button_monster_human_grunt_ally", iXPos + XRES(336), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Medic Hgrunt", "button_monster_human_medic_ally", iXPos + XRES(16), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Torch Hgrunt", "button_monster_human_torch_ally", iXPos + XRES(80), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Human Grunt", "button_monster_human_grunt", iXPos + XRES(144), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Male Assassin", "button_monster_male_assassin", iXPos + XRES(208), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Female Assassin", "button_monster_human_assassin", iXPos + XRES(272), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Apache", "button_monster_apache", iXPos + XRES(336), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_MedicHgrunt", "button_monster_human_medic_ally", iXPos + XRES(16), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_TorchHgrunt", "button_monster_human_torch_ally", iXPos + XRES(80), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_HGrunt", "button_monster_human_grunt", iXPos + XRES(144), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_MAssassin", "button_monster_male_assassin", iXPos + XRES(208), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_FAssassin", "button_monster_human_assassin", iXPos + XRES(272), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Apache", "button_monster_apache", iXPos + XRES(336), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Sentry", "button_monster_sentry", iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Gman", "button_monster_gman", iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Nihilanth", "button_monster_nihilanth", iXPos + XRES(144), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Sentry", "button_monster_sentry", iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Gman", "button_monster_gman", iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_NPC_Nihilanth", "button_monster_nihilanth", iXPos + XRES(144), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("No AI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_MenuButton_NoAI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_MenuButton_Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
 
 CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	m_pButtonToolsMenu->setVisible(false);
 
-	ButtonHelper("Duplicator", "button_tool_duplicator", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Remover", "button_tool_remover", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Gib Spawner", "button_tool_gib", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Poser", "button_tool_poser", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Camera", "button_tool_camera", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_Duplicator", "button_tool_duplicator", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_Remover", "button_tool_remover", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_Gib", "button_tool_gib", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_Poser", "button_tool_poser", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_Camera", "button_tool_camera", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("HP Modify", "button_tool_health_set", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("No Colide", "button_tool_no_colide", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("TakeDamage", "button_tool_take_damage", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Blood Color", "button_tool_blood_color", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper("Frame Editor", "button_tool_frame_set", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_HPModify", "button_tool_health_set", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_NoColide", "button_tool_no_colide", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_TakeDamage", "button_tool_take_damage", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_BloodColor", "button_tool_blood_color", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper("#Gomod_Tool_FrameEditor", "button_tool_frame_set", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	CommandButton* pButtonRender;
 	pButtonRender = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	pButtonRender->m_bNoMarginSpace = true;
-	pButtonRender->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("Render"));
+	pButtonRender->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Gomod_Tool_Render"));
 	pButtonRender->addActionSignal(new CMenuHandler_StringCommand("button_tool_render"));
 	pButtonRender->addActionSignal(new CMenuHandler_StringCommand("toggleRenderMenu"));
 	pButtonRender->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
@@ -273,33 +273,33 @@ CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int ta
 
 CRenderToolMenu::CRenderToolMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
-	ButtonHelper("Normal", "button_rendermode_normal", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Color", "button_rendermode_color", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Texture", "button_rendermode_texture", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Glow", "button_rendermode_glow", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Solid", "button_rendermode_solid", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Additive", "button_rendermode_additive", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Normal", "button_rendermode_normal", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Color", "button_rendermode_color", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Texture", "button_rendermode_texture", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Glow", "button_rendermode_glow", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Solid", "button_rendermode_solid", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderMode_Additive", "button_rendermode_additive", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("None", "button_renderfx_normal", iXPos + XRES(16), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Slow Pulse", "button_renderfx_slow_pulse", iXPos + XRES(80), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Fast Pulse", "button_renderfx_fast_pulse", iXPos + XRES(144), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("SWide Pulse", "button_renderfx_slow_wide_pulse", iXPos + XRES(208), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("FWide Pulse", "button_renderfx_fast_wide_pulse", iXPos + XRES(272), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("SFade Away", "button_renderfx_slow_fade_away", iXPos + XRES(336), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_None", "button_renderfx_normal", iXPos + XRES(16), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SPulse", "button_renderfx_slow_pulse", iXPos + XRES(80), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FPulse", "button_renderfx_fast_pulse", iXPos + XRES(144), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SWPulse", "button_renderfx_slow_wide_pulse", iXPos + XRES(208), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FWPulse", "button_renderfx_fast_wide_pulse", iXPos + XRES(272), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SFadeAway", "button_renderfx_slow_fade_away", iXPos + XRES(336), iYPos + iYSize - YRES(190) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("FFade Away", "button_renderfx_fast_fade_away", iXPos + XRES(16), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Slow Solid", "button_renderfx_slow_become_solid", iXPos + XRES(80), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Fast Solid", "button_renderfx_fast_become_solid", iXPos + XRES(144), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Slow Strobe", "button_renderfx_slow_strobe", iXPos + XRES(208), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Fast Strobe", "button_renderfx_fast_strobe", iXPos + XRES(272), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Faster Strobe", "button_renderfx_faster_strobe", iXPos + XRES(336), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FFadeAway", "button_renderfx_fast_fade_away", iXPos + XRES(16), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SSolid", "button_renderfx_slow_become_solid", iXPos + XRES(80), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FSolid", "button_renderfx_fast_become_solid", iXPos + XRES(144), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SStrobe", "button_renderfx_slow_strobe", iXPos + XRES(208), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FStrobe", "button_renderfx_fast_strobe", iXPos + XRES(272), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FRStrobe", "button_renderfx_faster_strobe", iXPos + XRES(336), iYPos + iYSize - YRES(164) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Slow Flicker", "button_renderfx_slow_flicker", iXPos + XRES(16), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Fast Flicker", "button_renderfx_fast_flicker", iXPos + XRES(80), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Constant Glow", "button_renderfx_constant_glow", iXPos + XRES(144), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Distort", "button_renderfx_distort", iXPos + XRES(208), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Hologram", "button_renderfx_hologram", iXPos + XRES(272), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("Explode", "button_renderfx_explode", iXPos + XRES(336), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_SFlicker", "button_renderfx_slow_flicker", iXPos + XRES(16), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_FFlicker", "button_renderfx_fast_flicker", iXPos + XRES(80), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_ConstantGlow", "button_renderfx_constant_glow", iXPos + XRES(144), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_Distort", "button_renderfx_distort", iXPos + XRES(208), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_Hologram", "button_renderfx_hologram", iXPos + XRES(272), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_Explode", "button_renderfx_explode", iXPos + XRES(336), iYPos + iYSize - YRES(138) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("Glow Shell", "button_renderfx_glow_shell", iXPos + XRES(16), iYPos + iYSize - YRES(112) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_RenderFX_GlowShell", "button_renderfx_glow_shell", iXPos + XRES(16), iYPos + iYSize - YRES(112) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
