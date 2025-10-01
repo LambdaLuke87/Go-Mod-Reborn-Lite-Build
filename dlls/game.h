@@ -50,7 +50,7 @@ extern cvar_t dropweapons;
 
 extern cvar_t sv_allowbunnyhopping;
 
-extern cvar_t sv_busters;
+//extern cvar_t sv_busters; // moved to mp_gamemode 2
 
 // Engine Cvars
 extern cvar_t* g_psv_gravity;

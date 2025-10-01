@@ -1826,7 +1826,7 @@ void CHalfLifeMultiplay::SendMOTDToClient(edict_t* client)
 
 bool IsBustingGame()
 {
-	return sv_busters.value == 1;
+	return current_gamemode.value == 2;
 }
 
 bool IsPlayerBusting(CBaseEntity* pPlayer)

@@ -50,7 +50,7 @@ cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
 // Go-Mod Reborn cvars Stuff
-cvar_t current_gamemode = {"gm_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
+cvar_t current_gamemode = {"mp_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
@@ -602,7 +602,7 @@ cvar_t sk_player_leg3 = {"sk_player_leg3", "1"};
 
 cvar_t sv_pushable_fixed_tick_fudge = {"sv_pushable_fixed_tick_fudge", "15"};
 
-cvar_t sv_busters = {"sv_busters", "0", FCVAR_SERVER};
+//cvar_t sv_busters = {"sv_busters", "0", FCVAR_SERVER}; // moved to mp_gamemode 2
 
 // BEGIN Opposing Force variables
 
@@ -686,7 +686,7 @@ void GameDLLInit()
 
 	CVAR_REGISTER(&mp_chattime);
 
-	CVAR_REGISTER(&sv_busters);
+	//CVAR_REGISTER(&sv_busters); // moved to mp_gamemode 2
 
 	CVAR_REGISTER(&sv_allowbunnyhopping);
 

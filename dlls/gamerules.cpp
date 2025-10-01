@@ -498,7 +498,7 @@ CGameRules* InstallGameRules(CBaseEntity* pWorld)
 		g_teamplay = false;
 		return new CMultiplaySandbox;
 	}
-	else if (1 == sv_busters.value)
+	else if (2 == current_gamemode.value)
 	{
 		g_teamplay = false;
 		return new CMultiplayBusters;
