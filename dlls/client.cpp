@@ -895,16 +895,18 @@ void ClientCommand(edict_t* pEntity)
 			}
 
 			// Spawn Props
-			if (allow_props.value)
+			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				for (int i = 0; i < ARRAYSIZE(gProps); i++)
+				monster_t xenpropInfo = gProps[i];
+				char combinetoprefix[512];
+				strcpy(combinetoprefix, "button_");
+				strcat(combinetoprefix, xenpropInfo.classname);
+				if (FStrEq(pcmd, combinetoprefix))
 				{
-					monster_t xenpropInfo = gProps[i];
-					char combinetoprefix[512];
-					strcpy(combinetoprefix, "button_");
-					strcat(combinetoprefix, xenpropInfo.classname);
-					if (FStrEq(pcmd, combinetoprefix))
+					if (allow_props.value)
 						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
+					else
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
 				}
 			}
 
