@@ -964,15 +964,12 @@ void ClientCommand(edict_t* pEntity)
 				GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
 
 			// TODO: This sound should be played on the clientside.
-			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle"))
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+
+			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle") && !allow_spawn_bosses.value)
 			{
-				if (allow_spawn_bosses.value)
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
-				else
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_denyselect.wav", 0.94, ATTN_NORM, 0, 90);
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Bosses Disabled - gm_allow_spawn_bosses required\n");
 			}
-			else
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 		}
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
