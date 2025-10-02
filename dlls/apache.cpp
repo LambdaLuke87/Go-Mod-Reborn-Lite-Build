@@ -19,6 +19,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "effects.h"
+#include "game.h"
 
 #define SF_WAITFORTRIGGER (0x04 | 0x40) // UNDONE: Fix!
 #define SF_NOWRECKAGE 0x08
@@ -304,115 +305,119 @@ void CApache::DyingThink()
 	}
 	else
 	{
-		Vector vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
-
-		/*
-		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
-			WRITE_BYTE( TE_EXPLOSION);		// This just makes a dynamic light now
-			WRITE_COORD( vecSpot.x );
-			WRITE_COORD( vecSpot.y );
-			WRITE_COORD( vecSpot.z + 300 );
-			WRITE_SHORT( g_sModelIndexFireball );
-			WRITE_BYTE( 250 ); // scale * 10
-			WRITE_BYTE( 8  ); // framerate
-		MESSAGE_END();
-		*/
-
-		// fireball
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
-		WRITE_BYTE(TE_SPRITE);
-		WRITE_COORD(vecSpot.x);
-		WRITE_COORD(vecSpot.y);
-		WRITE_COORD(vecSpot.z + 256);
-		WRITE_SHORT(m_iExplode);
-		WRITE_BYTE(120); // scale * 10
-		WRITE_BYTE(255); // brightness
-		MESSAGE_END();
-
-		// big smoke
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
-		WRITE_BYTE(TE_SMOKE);
-		WRITE_COORD(vecSpot.x);
-		WRITE_COORD(vecSpot.y);
-		WRITE_COORD(vecSpot.z + 512);
-		WRITE_SHORT(g_sModelIndexSmoke);
-		WRITE_BYTE(250); // scale * 10
-		WRITE_BYTE(5);	 // framerate
-		MESSAGE_END();
-
-		// blast circle
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
-		WRITE_BYTE(TE_BEAMCYLINDER);
-		WRITE_COORD(pev->origin.x);
-		WRITE_COORD(pev->origin.y);
-		WRITE_COORD(pev->origin.z);
-		WRITE_COORD(pev->origin.x);
-		WRITE_COORD(pev->origin.y);
-		WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
-		WRITE_SHORT(m_iSpriteTexture);
-		WRITE_BYTE(0);	 // startframe
-		WRITE_BYTE(0);	 // framerate
-		WRITE_BYTE(4);	 // life
-		WRITE_BYTE(32);	 // width
-		WRITE_BYTE(0);	 // noise
-		WRITE_BYTE(255); // r, g, b
-		WRITE_BYTE(255); // r, g, b
-		WRITE_BYTE(192); // r, g, b
-		WRITE_BYTE(128); // brightness
-		WRITE_BYTE(0);	 // speed
-		MESSAGE_END();
-
-		EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
-
-		RadiusDamage(pev->origin, pev, pev, 300, CLASS_NONE, DMG_BLAST);
-
-		if (/*!(pev->spawnflags & SF_NOWRECKAGE) && */ (pev->flags & FL_ONGROUND) != 0)
+		if (explosion_control.value)
 		{
-			CBaseEntity* pWreckage = Create("cycler_wreckage", pev->origin, pev->angles);
-			// SET_MODEL( ENT(pWreckage->pev), STRING(pev->model) );
-			UTIL_SetSize(pWreckage->pev, Vector(-200, -200, -128), Vector(200, 200, -32));
-			pWreckage->pev->frame = pev->frame;
-			pWreckage->pev->sequence = pev->sequence;
-			pWreckage->pev->framerate = 0;
-			pWreckage->pev->dmgtime = gpGlobals->time + 5;
+			Vector vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+
+			/*
+			MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+				WRITE_BYTE( TE_EXPLOSION);		// This just makes a dynamic light now
+				WRITE_COORD( vecSpot.x );
+				WRITE_COORD( vecSpot.y );
+				WRITE_COORD( vecSpot.z + 300 );
+				WRITE_SHORT( g_sModelIndexFireball );
+				WRITE_BYTE( 250 ); // scale * 10
+				WRITE_BYTE( 8  ); // framerate
+			MESSAGE_END();
+			*/
+
+			// fireball
+
+			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
+			WRITE_BYTE(TE_SPRITE);
+			WRITE_COORD(vecSpot.x);
+			WRITE_COORD(vecSpot.y);
+			WRITE_COORD(vecSpot.z + 256);
+			WRITE_SHORT(m_iExplode);
+			WRITE_BYTE(120); // scale * 10
+			WRITE_BYTE(255); // brightness
+			MESSAGE_END();
+
+			// big smoke
+			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
+			WRITE_BYTE(TE_SMOKE);
+			WRITE_COORD(vecSpot.x);
+			WRITE_COORD(vecSpot.y);
+			WRITE_COORD(vecSpot.z + 512);
+			WRITE_SHORT(g_sModelIndexSmoke);
+			WRITE_BYTE(250); // scale * 10
+			WRITE_BYTE(5);	 // framerate
+			MESSAGE_END();
+
+			// blast circle
+			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
+			WRITE_BYTE(TE_BEAMCYLINDER);
+			WRITE_COORD(pev->origin.x);
+			WRITE_COORD(pev->origin.y);
+			WRITE_COORD(pev->origin.z);
+			WRITE_COORD(pev->origin.x);
+			WRITE_COORD(pev->origin.y);
+			WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
+			WRITE_SHORT(m_iSpriteTexture);
+			WRITE_BYTE(0);	 // startframe
+			WRITE_BYTE(0);	 // framerate
+			WRITE_BYTE(4);	 // life
+			WRITE_BYTE(32);	 // width
+			WRITE_BYTE(0);	 // noise
+			WRITE_BYTE(255); // r, g, b
+			WRITE_BYTE(255); // r, g, b
+			WRITE_BYTE(192); // r, g, b
+			WRITE_BYTE(128); // brightness
+			WRITE_BYTE(0);	 // speed
+			MESSAGE_END();
+
+			EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
+
+			RadiusDamage(pev->origin, pev, pev, 300, CLASS_NONE, DMG_BLAST);
+
+			if (/*!(pev->spawnflags & SF_NOWRECKAGE) && */ (pev->flags & FL_ONGROUND) != 0)
+			{
+				CBaseEntity* pWreckage = Create("cycler_wreckage", pev->origin, pev->angles);
+				// SET_MODEL( ENT(pWreckage->pev), STRING(pev->model) );
+				UTIL_SetSize(pWreckage->pev, Vector(-200, -200, -128), Vector(200, 200, -32));
+				pWreckage->pev->frame = pev->frame;
+				pWreckage->pev->sequence = pev->sequence;
+				pWreckage->pev->framerate = 0;
+				pWreckage->pev->dmgtime = gpGlobals->time + 5;
+			}
+
+			// gibs
+			vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
+			WRITE_BYTE(TE_BREAKMODEL);
+
+			// position
+			WRITE_COORD(vecSpot.x);
+			WRITE_COORD(vecSpot.y);
+			WRITE_COORD(vecSpot.z + 64);
+
+			// size
+			WRITE_COORD(400);
+			WRITE_COORD(400);
+			WRITE_COORD(128);
+
+			// velocity
+			WRITE_COORD(0);
+			WRITE_COORD(0);
+			WRITE_COORD(200);
+
+			// randomization
+			WRITE_BYTE(30);
+
+			// Model
+			WRITE_SHORT(m_iBodyGibs); // model id#
+
+			// # of shards
+			WRITE_BYTE(200);
+
+			// duration
+			WRITE_BYTE(200); // 10.0 seconds
+
+			// flags
+
+			WRITE_BYTE(BREAK_METAL);
+			MESSAGE_END();
 		}
-
-		// gibs
-		vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
-		WRITE_BYTE(TE_BREAKMODEL);
-
-		// position
-		WRITE_COORD(vecSpot.x);
-		WRITE_COORD(vecSpot.y);
-		WRITE_COORD(vecSpot.z + 64);
-
-		// size
-		WRITE_COORD(400);
-		WRITE_COORD(400);
-		WRITE_COORD(128);
-
-		// velocity
-		WRITE_COORD(0);
-		WRITE_COORD(0);
-		WRITE_COORD(200);
-
-		// randomization
-		WRITE_BYTE(30);
-
-		// Model
-		WRITE_SHORT(m_iBodyGibs); //model id#
-
-		// # of shards
-		WRITE_BYTE(200);
-
-		// duration
-		WRITE_BYTE(200); // 10.0 seconds
-
-		// flags
-
-		WRITE_BYTE(BREAK_METAL);
-		MESSAGE_END();
 
 		SetThink(&CApache::SUB_Remove);
 		pev->nextthink = gpGlobals->time + 0.1;

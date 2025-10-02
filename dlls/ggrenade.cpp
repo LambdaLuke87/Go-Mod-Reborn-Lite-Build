@@ -25,6 +25,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "decals.h"
+#include "game.h"
 
 
 //===================grenade
@@ -64,25 +65,28 @@ void CGrenade::Explode(TraceResult* pTrace, int bitsDamageType)
 
 	int iContents = UTIL_PointContents(pev->origin);
 
-	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
-	WRITE_BYTE(TE_EXPLOSION);	// This makes a dynamic light and the explosion sprites/sound
-	WRITE_COORD(pev->origin.x); // Send to PAS because of the sound
-	WRITE_COORD(pev->origin.y);
-	WRITE_COORD(pev->origin.z);
-	if (iContents != CONTENTS_WATER)
+	if (explosion_control.value != 2)
 	{
-		WRITE_SHORT(g_sModelIndexFireball);
-	}
-	else
-	{
-		WRITE_SHORT(g_sModelIndexWExplosion);
-	}
-	WRITE_BYTE((pev->dmg - 50) * .60); // scale * 10
-	WRITE_BYTE(15);					   // framerate
-	WRITE_BYTE(TE_EXPLFLAG_NONE);
-	MESSAGE_END();
+		MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
+		WRITE_BYTE(TE_EXPLOSION);	// This makes a dynamic light and the explosion sprites/sound
+		WRITE_COORD(pev->origin.x); // Send to PAS because of the sound
+		WRITE_COORD(pev->origin.y);
+		WRITE_COORD(pev->origin.z);
+		if (iContents != CONTENTS_WATER)
+		{
+			WRITE_SHORT(g_sModelIndexFireball);
+		}
+		else
+		{
+			WRITE_SHORT(g_sModelIndexWExplosion);
+		}
+		WRITE_BYTE((pev->dmg - 50) * .60); // scale * 10
+		WRITE_BYTE(15);					   // framerate
+		WRITE_BYTE(TE_EXPLFLAG_NONE);
+		MESSAGE_END();
 
-	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0);
+		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0);
+	}
 	entvars_t* pevOwner;
 	if (pev->owner)
 		pevOwner = VARS(pev->owner);
@@ -95,7 +99,8 @@ void CGrenade::Explode(TraceResult* pTrace, int bitsDamageType)
 	Vector origin = pev->origin;
 	origin.z -= 1;
 
-	RadiusDamage(origin, pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
+	if (explosion_control.value != 2)
+		RadiusDamage(origin, pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
 
 	if (RANDOM_FLOAT(0, 1) < 0.5)
 	{
