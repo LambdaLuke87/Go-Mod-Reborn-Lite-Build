@@ -1343,7 +1343,15 @@ public:
 	void SecondaryAttack() override;
 	bool Deploy() override;
 	void WeaponIdle() override;
+	void ThrowTP();
+
 	float m_flSoundDelay;
+
+	int m_iBalls;
+	int m_iTeleport;
+	int not_out;
+
+	Vector v_Src;
 
 	virtual bool UseDecrement(void)
 	{
@@ -1358,6 +1366,23 @@ public:
 
 private:
 	unsigned short m_usToolGun;
+};
+
+class CTeleporter : public CGrenade
+{
+public:
+	entvars_t* pevOwner;
+
+	virtual void Spawn();
+	void Precache();
+	void BounceSound();
+
+	static CTeleporter* ShootTeleporter(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity);
+
+	void TeleportSlide(CBaseEntity* pOther);
+	void TeleportThink();
+
+	Vector m_vecDir;
 };
 
 enum physgun_e
