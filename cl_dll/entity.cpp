@@ -33,6 +33,23 @@ int DLLEXPORT HUD_AddEntity(int type, struct cl_entity_s* ent, const char* model
 {
 	//	RecClAddEntity(type, ent, modelname);
 
+	if (!strcmp(modelname, "models/gomod/glowstick.mdl"))
+	{
+		cl_entity_t* pPlayer = gEngfuncs.GetLocalPlayer(); // Get the local player
+
+		if ((pPlayer->curstate.origin - ent->curstate.origin).Length2D() <= 1100)
+		{
+			dlight_t* dl = gEngfuncs.pEfxAPI->CL_AllocDlight(ent->index);
+			VectorCopy(ent->curstate.origin, dl->origin);
+			dl->radius = 100;
+			dl->color.r = 0;
+			dl->color.g = 255;
+			dl->color.b = 255;
+			dl->decay = 255;
+			dl->die = gHUD.m_flTimeDelta + 0.1f + gHUD.m_flTime;
+		}
+	}
+
 	switch (type)
 	{
 	case ET_NORMAL:

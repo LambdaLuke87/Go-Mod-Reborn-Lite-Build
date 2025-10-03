@@ -22,16 +22,16 @@
 #include "game.h"
 #endif
 
-//---------------------------------------------------------------------
+//=====================================================================
 // Teleporter Code By Shadow Consumes from planethalflife.com (deleted)
-//---------------------------------------------------------------------
+//=====================================================================
 
-LINK_ENTITY_TO_CLASS(teleporter, CTeleporter);
+LINK_ENTITY_TO_CLASS(item_teleporter, CTeleporter);
 
 void CTeleporter ::Spawn()
 {
 	pev->movetype = MOVETYPE_BOUNCE;
-	pev->classname = MAKE_STRING("teleporter");
+	pev->classname = MAKE_STRING("item_teleporter");
 
 	pev->solid = SOLID_BBOX;
 
@@ -121,9 +121,177 @@ void CTeleporter ::BounceSound()
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/bounce.wav", 1, ATTN_NORM);
 }
 
-#define GAUSS_PRIMARY_FIRE_VOLUME 450 // how loud gauss is when discharged
-
 LINK_ENTITY_TO_CLASS(weapon_toolgun, CToolgun);
+
+#ifndef CLIENT_DLL
+//=====================================================================
+// Bacontsu: Glowstick (originally it was a flare) - world item
+//=====================================================================
+class CGlowstick : public CBaseEntity
+{
+	void Spawn();
+	void Precache();
+	void BounceSound();
+
+	void EXPORT FlareSlide(CBaseEntity* pOther);
+	void EXPORT FlareThink();
+	void EXPORT GlowstickUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+	int ObjectCaps() override { return CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE; }
+
+public:
+	void Deactivate();
+
+	float lerp[2];
+};
+
+LINK_ENTITY_TO_CLASS(item_glowstick, CGlowstick);
+
+//=========================================================
+// Deactivate - do whatever it is we do to an orphaned
+// satchel when we don't want it in the world anymore.
+//=========================================================
+void CGlowstick::Deactivate()
+{
+	pev->solid = SOLID_NOT;
+	UTIL_Remove(this);
+}
+
+void CGlowstick::Spawn()
+{
+	Precache();
+	// motor
+	pev->movetype = MOVETYPE_BOUNCE;
+	pev->solid = SOLID_BBOX;
+
+	SET_MODEL(ENT(pev), "models/gomod/glowstick.mdl");
+	// UTIL_SetSize(pev, Vector( -16, -16, -4), Vector(16, 16, 32));	// Old box -- size of headcrab monsters/players get blocked by this
+	UTIL_SetSize(pev, Vector(-4, -4, -4), Vector(4, 4, 4)); // Uses point-sized, and can be stepped over
+	UTIL_SetOrigin(pev, pev->origin);
+
+	SetTouch(&CGlowstick::FlareSlide);
+	SetThink(&CGlowstick::FlareThink);
+	SetUse(&CGlowstick::GlowstickUse);
+	pev->nextthink = gpGlobals->time + 0.001;
+
+	pev->gravity = 0.5;
+	pev->friction = 0.8;
+
+	// ResetSequenceInfo( );
+	pev->sequence = 1;
+}
+
+void CGlowstick::FlareSlide(CBaseEntity* pOther)
+{
+	entvars_t* pevOther = pOther->pev;
+
+	// don't hit the guy that launched this grenade
+	if (pOther->edict() == pev->owner)
+		return;
+
+	// pev->avelocity = Vector (300, 300, 300);
+	pev->gravity = 1; // normal gravity now
+
+	// HACKHACK - On ground isn't always set, so look for ground underneath
+	TraceResult tr;
+	UTIL_TraceLine(pev->origin, pev->origin - Vector(0, 0, 10), ignore_monsters, edict(), &tr);
+
+	if (tr.flFraction < 1.0)
+	{
+		// add a bit of static friction
+		pev->velocity = pev->velocity * 0.95;
+		// pev->avelocity = pev->avelocity * 0.9;
+		//  play sliding sound, volume based on velocity
+	}
+	if (!(pev->flags & FL_ONGROUND) && pev->velocity.Length2D() > 10)
+	{
+		BounceSound();
+	}
+
+	if (pOther->IsPlayer())
+	{
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(pOther);
+
+		if (pPlayer->HasNamedPlayerItem("weapon_flare"))
+			return;
+
+		Vector src = pOther->pev->origin;
+		Vector ang = pOther->pev->angles;
+
+		// CBaseEntity* flare;
+		// flare = CFlareItem::Create("weapon_flare", src, ang);
+		// flare->pev->effects |= EF_NODRAW;
+
+		pPlayer->GiveNamedItem("weapon_flare");
+
+		pev->solid = SOLID_NOT;
+		UTIL_Remove(this);
+	}
+}
+
+void CGlowstick::FlareThink()
+{
+	pev->nextthink = gpGlobals->time + 0.001;
+
+	if (!IsInWorld())
+	{
+		UTIL_Remove(this);
+		return;
+	}
+
+	if (pev->waterlevel == 3)
+	{
+		pev->movetype = MOVETYPE_FLY;
+		pev->velocity = pev->velocity * 0.8;
+		// pev->avelocity = pev->avelocity * 0.9;
+		pev->velocity.z += 8;
+	}
+	else if (pev->waterlevel == 0)
+	{
+		pev->movetype = MOVETYPE_BOUNCE;
+	}
+	else
+	{
+		pev->velocity.z -= 8;
+	}
+
+	if ((!(pev->flags & FL_ONGROUND)))
+	{
+		pev->avelocity = pev->velocity;
+		lerp[0] = pev->angles.x;
+		lerp[1] = pev->angles.y;
+	}
+
+	if (pev->flags & FL_ONGROUND)
+	{
+		// ALERT(at_console, "angles %f %f \n", pev->angles[0], pev->angles[2]);
+		lerp[0] = (0 * 0.03f) + (lerp[0] * (1.0 - 0.1f));
+		pev->angles.x = lerp[0];
+
+		lerp[1] = (0 * 0.03f) + (lerp[1] * (1.0 - 0.1f));
+		pev->angles.z = lerp[1];
+	}
+}
+
+void CGlowstick::GlowstickUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	UTIL_Remove(this);
+}
+
+void CGlowstick::Precache()
+{
+	PRECACHE_MODEL("models/gomod/glowstick.mdl");
+}
+
+void CGlowstick::BounceSound()
+{
+	switch (RANDOM_LONG(0, 2))
+	{
+	case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce1.wav", 1, ATTN_NORM); break;
+	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce2.wav", 1, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce3.wav", 1, ATTN_NORM); break;
+	}
+}
+#endif // ! CLIENT_DLL
 
 void CToolgun::Spawn()
 {
@@ -148,7 +316,8 @@ void CToolgun::Precache()
 	m_iTeleport = PRECACHE_MODEL("sprites/blast.spr");
 	m_usToolGun = PRECACHE_EVENT(1, "events/toolgun.sc");
 
-	UTIL_PrecacheOther("teleporter");
+	UTIL_PrecacheOther("item_teleporter");
+	UTIL_PrecacheOther("item_glowstick");
 }
 
 bool CToolgun::GetItemInfo(ItemInfo *p)
@@ -181,7 +350,8 @@ void CToolgun::PrimaryAttack()
 
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
+	Vector vecSrc = m_pPlayer->GetGunPosition( );
+	Vector vecSrcBalls = m_pPlayer->pev->origin;
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
@@ -218,11 +388,9 @@ void CToolgun::PrimaryAttack()
 
 			CBaseEntity* pTeleport = NULL;
 
-			Vector vector_Src = m_pPlayer->pev->origin;
-
 			while ((pTeleport = UTIL_FindEntityInSphere(pTeleport, m_pPlayer->pev->origin, 4096)) != NULL)
 			{
-				if (FClassnameIs(pTeleport->pev, "teleporter"))
+				if (FClassnameIs(pTeleport->pev, "item_teleporter"))
 				{
 					v_Src = pTeleport->pev->origin;
 
@@ -242,12 +410,12 @@ void CToolgun::PrimaryAttack()
 						}
 						else
 						{
-							MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vector_Src);
+							MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecSrcBalls);
 							WRITE_BYTE(TE_SPRITE);
-							WRITE_COORD(vector_Src.x);
+							WRITE_COORD(vecSrcBalls.x);
 							// pos
-							WRITE_COORD(vector_Src.y);
-							WRITE_COORD(vector_Src.z);
+							WRITE_COORD(vecSrcBalls.y);
+							WRITE_COORD(vecSrcBalls.z);
 							WRITE_SHORT(m_iTeleport); // model
 							WRITE_BYTE(23);			  // size * 10
 							WRITE_BYTE(128);		  // brightness
@@ -264,6 +432,13 @@ void CToolgun::PrimaryAttack()
 				}
 			}
 		}
+	}
+	else if (m_pPlayer->m_iToolMode == 13)
+	{
+		Vector vecThrow = gpGlobals->v_forward * 274 + m_pPlayer->pev->velocity;
+
+		CBaseEntity* pSatchel = Create("item_glowstick", vecSrcBalls, Vector(0, 0, 0), m_pPlayer->edict());
+		pSatchel->pev->velocity = vecThrow;
 	}
 	else
 		vecDir = m_pPlayer->FireBulletsToolGun(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
@@ -306,6 +481,24 @@ void CToolgun::SecondaryAttack()
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, false);
 #endif
+	}
+	else if (m_pPlayer->m_iToolMode == 13)
+	{
+		edict_t* pPlayer = m_pPlayer->edict();
+		CBaseEntity* pGlowstick = NULL;
+
+		while ((pGlowstick = UTIL_FindEntityInSphere(pGlowstick, m_pPlayer->pev->origin, 4096)) != NULL)
+		{
+			if (FClassnameIs(pGlowstick->pev, "item_glowstick"))
+			{
+				if (pGlowstick->pev->owner == pPlayer)
+				{
+					pGlowstick->Use(m_pPlayer, m_pPlayer, USE_ON, 0);
+				}
+			}
+		}
+
+		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowsticks_Removed");
 	}
 	else
 		vecDir = m_pPlayer->FireBulletsToolGunAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);

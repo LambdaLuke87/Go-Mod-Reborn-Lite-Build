@@ -194,7 +194,8 @@ tgunmodes_helper_t gToolgunModes[] =
 		{"button_tool_take_damage", 9, "NPC TakeDamage"},
 		{"button_tool_blood_color", 10, "NPC Blood Color"},
 		{"button_tool_frame_set", 11, "NPC Frame Editor"},
-		{"button_tool_teleporter", 12, "Teleporter"}};
+		{"button_tool_teleporter", 12, "Teleporter"},
+		{"button_tool_glowsticks", 13, "Glowsticks"}};
 
 
 // Render Tool: Render Mode
