@@ -19,6 +19,7 @@
 #include "skill.h"
 #include "soundent.h"
 #include "decals.h"
+#include "game.h"
 
 #include "CSpore.h"
 
@@ -143,7 +144,8 @@ void CSpore::IgniteThink()
 		pev->origin, pev->origin + vecDir * (m_SporeType == SporeType::GRENADE ? 64 : 32),
 		dont_ignore_monsters, edict(), &tr);
 
-	UTIL_DecalTrace(&tr, DECAL_SPR_SPLT1 + RANDOM_LONG(0, 2));
+	if (bigdecals_control.value <= 0)
+		UTIL_DecalTrace(&tr, DECAL_SPR_SPLT1 + RANDOM_LONG(0, 2));
 
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
 	WRITE_BYTE(TE_SPRITE_SPRAY);

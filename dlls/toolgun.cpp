@@ -360,7 +360,7 @@ void CToolgun::ThrowTP()
 	CBaseEntity* pEnt = CTeleporter::ShootTeleporter(m_pPlayer->pev, vecSrc, vecThrow);
 	CTeleporter* pTeleport = (CTeleporter*)pEnt;
 
-	EMIT_SOUND(ENT(pTeleport->pev), CHAN_WEAPON, "x/x_shoot1.wav", 0.5, ATTN_NORM);
+	//EMIT_SOUND(ENT(pTeleport->pev), CHAN_WEAPON, "x/x_shoot1.wav", 0.5, ATTN_NORM);
 
 	not_out = 1;
 }

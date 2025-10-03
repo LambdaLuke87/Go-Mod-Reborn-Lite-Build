@@ -102,13 +102,16 @@ void CGrenade::Explode(TraceResult* pTrace, int bitsDamageType)
 	if (explosion_control.value != 2)
 		RadiusDamage(origin, pev, pevOwner, pev->dmg, CLASS_NONE, bitsDamageType);
 
-	if (RANDOM_FLOAT(0, 1) < 0.5)
+	if (bigdecals_control.value <= 0)
 	{
-		UTIL_DecalTrace(pTrace, DECAL_SCORCH1);
-	}
-	else
-	{
-		UTIL_DecalTrace(pTrace, DECAL_SCORCH2);
+		if (RANDOM_FLOAT(0, 1) < 0.5)
+		{
+			UTIL_DecalTrace(pTrace, DECAL_SCORCH1);
+		}
+		else
+		{
+			UTIL_DecalTrace(pTrace, DECAL_SCORCH2);
+		}
 	}
 
 	flRndSound = RANDOM_FLOAT(0, 1);

@@ -20,6 +20,7 @@
 #include "skill.h"
 #include "decals.h"
 #include "gamerules.h"
+#include "game.h"
 
 #include "CShockBeam.h"
 
@@ -192,7 +193,8 @@ void CShockBeam::BallTouch(CBaseEntity* pOther)
 		TraceResult tr;
 		UTIL_TraceLine(pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, edict(), &tr);
 
-		UTIL_DecalTrace(&tr, DECAL_OFSCORCH1 + RANDOM_LONG(0, 2));
+		if (bigdecals_control.value <= 0)
+			UTIL_DecalTrace(&tr, DECAL_OFSCORCH1 + RANDOM_LONG(0, 2));
 
 		MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);
 		g_engfuncs.pfnWriteByte(TE_SPARKS);
