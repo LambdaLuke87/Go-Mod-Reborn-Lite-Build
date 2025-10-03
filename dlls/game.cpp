@@ -51,6 +51,7 @@ cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
 // Go-Mod Reborn cvars Stuff
 cvar_t current_gamemode = {"mp_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
+cvar_t mpweapons_skills = {"mp_weapons_skills", "1", FCVAR_SERVER};
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
@@ -61,7 +62,6 @@ cvar_t allow_player_jump_sfx = {"gm_allow_player_jump_sfx", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
 cvar_t bigdecals_control = {"gm_big_decals_control", "0", FCVAR_SERVER};
-cvar_t allow_dm_weapons_skills = {"gm_weapons_deathmatch_skills", "1", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "0", FCVAR_SERVER};
@@ -693,12 +693,12 @@ void GameDLLInit()
 
 	// Cvar register for Go-Mod Reborn stuff
 	CVAR_REGISTER(&current_gamemode);
+	CVAR_REGISTER(&mpweapons_skills);
 	CVAR_REGISTER(&allow_camera);
 	CVAR_REGISTER(&allow_props);
 	CVAR_REGISTER(&allow_noclip);
 	CVAR_REGISTER(&allow_healthmodify);
 	CVAR_REGISTER(&allow_gaussfly);
-	CVAR_REGISTER(&allow_dm_weapons_skills);
 	CVAR_REGISTER(&allow_spawn_bosses);
 	CVAR_REGISTER(&allow_player_jump_sfx);
 	CVAR_REGISTER(&explosion_control);

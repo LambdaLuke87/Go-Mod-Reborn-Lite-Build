@@ -420,7 +420,6 @@ protected:
 class CMultiplaySandbox : public CHalfLifeMultiplay
 {
 public:
-	void RefreshSkillData();
 	void PlayerSpawn(CBasePlayer* pPlayer);
 
 	int WeaponShouldRespawn(CBasePlayerItem* pWeapon);

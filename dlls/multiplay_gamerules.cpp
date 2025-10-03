@@ -114,22 +114,43 @@ void CHalfLifeMultiplay::RefreshSkillData()
 	// load all default values
 	CGameRules::RefreshSkillData();
 
-	// override some values for multiplay.
-	gSkillData.suitchargerCapacity = 30;  // suitcharger
-	gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
-	gSkillData.plrDmg9MM = 12;			  // Glock Round
-	gSkillData.plrDmg357 = 50;			  // 357 Round
-	gSkillData.plrDmgMP5 = 12;			  // MP5 Round
-	gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
-	gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
-	gSkillData.plrDmgCrossbowClient = 20; // Crossbow
-	gSkillData.plrDmgRPG = 120;			  // RPG
-	gSkillData.plrDmgEgonWide = 20;		  // Egon Wide
-	gSkillData.plrDmgEgonNarrow = 10;	  // Egon Narrow
-	gSkillData.plrDmgHandGrenade = 100;	  // Hand Grendade
-	gSkillData.plrDmgSatchel = 120;		  // Satchel Charge
-	gSkillData.plrDmgTripmine = 150;	  // Tripmine
-	gSkillData.plrDmgHornet = 10;		  // hornet
+	if (mpweapons_skills.value == 1) // Deathmatch Weapons skills
+	{
+		// override some values for multiplay.
+		gSkillData.suitchargerCapacity = 30;  // suitcharger
+		gSkillData.plrDmgCrowbar = 25;		  // Crowbar whack
+		gSkillData.plrDmg9MM = 12;			  // Glock Round
+		gSkillData.plrDmg357 = 50;			  // 357 Round
+		gSkillData.plrDmgMP5 = 12;			  // MP5 Round
+		gSkillData.plrDmgM203Grenade = 100;	  // M203 grenade
+		gSkillData.plrDmgBuckshot = 20;		  // Shotgun buckshot - fewer pellets in deathmatch
+		gSkillData.plrDmgCrossbowClient = 20; // Crossbow
+		gSkillData.plrDmgRPG = 120;			  // RPG
+		gSkillData.plrDmgEgonWide = 20;		  // Egon Wide
+		gSkillData.plrDmgEgonNarrow = 10;	  // Egon Narrow
+		gSkillData.plrDmgHandGrenade = 100;	  // Hand Grendade
+		gSkillData.plrDmgSatchel = 120;		  // Satchel Charge
+		gSkillData.plrDmgTripmine = 150;	  // Tripmine
+		gSkillData.plrDmgHornet = 10;		  // hornet
+	}
+	else if (mpweapons_skills.value == 2) // Buffed
+	{
+		gSkillData.suitchargerCapacity = 100;
+		gSkillData.plrDmgCrowbar = 200;
+		gSkillData.plrDmg9MM = 250;
+		gSkillData.plrDmg357 = 500;
+		gSkillData.plrDmgMP5 = 250;
+		gSkillData.plrDmgM203Grenade = 1250;
+		gSkillData.plrDmgBuckshot = 600;
+		gSkillData.plrDmgCrossbowClient = 800;
+		gSkillData.plrDmgRPG = 1250;
+		gSkillData.plrDmgEgonWide = 500;
+		gSkillData.plrDmgEgonNarrow = 250;
+		gSkillData.plrDmgHandGrenade = 1250;
+		gSkillData.plrDmgSatchel = 1500;
+		gSkillData.plrDmgTripmine = 1500;
+		gSkillData.plrDmgHornet = 250;
+	}
 }
 
 //=========================================================
@@ -2108,17 +2129,6 @@ void CMultiplayBusters::SetPlayerModel(CBasePlayer* pPlayer)
 bool IsSandBox()
 {
 	return current_gamemode.value == 1;
-}
-
-void CMultiplaySandbox::RefreshSkillData()
-{
-	// TODO: this has an bug and need be fixed
-	int SkillWeaponsLevel = allow_dm_weapons_skills.value;
-
-	if (SkillWeaponsLevel == 1)
-		CHalfLifeMultiplay::RefreshSkillData(); // use deathmatch values
-	else
-		CGameRules::RefreshSkillData(); // load all default values
 }
 
 void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
