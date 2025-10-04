@@ -164,7 +164,20 @@ void CGlowstick::Spawn()
 	pev->solid = SOLID_BBOX;
 
 	SET_MODEL(ENT(pev), "models/gomod/glowstick.mdl");
-	pev->skin = RANDOM_LONG(0, 6);
+
+	int colormatic = glowstick_colors.value;
+
+	switch (colormatic)
+	{
+	default: pev->skin = RANDOM_LONG(0, 6); break;
+	case 1: pev->skin = 0; break;
+	case 2: pev->skin = 1; break;
+	case 3: pev->skin = 2; break;
+	case 4: pev->skin = 3; break;
+	case 5: pev->skin = 4; break;
+	case 6: pev->skin = 5; break;
+	case 7: pev->skin = 6; break;
+	}
 
 	// UTIL_SetSize(pev, Vector( -16, -16, -4), Vector(16, 16, 32));	// Old box -- size of headcrab monsters/players get blocked by this
 	UTIL_SetSize(pev, Vector(-4, -4, -4), Vector(4, 4, 4)); // Uses point-sized, and can be stepped over

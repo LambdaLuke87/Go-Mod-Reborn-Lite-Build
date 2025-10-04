@@ -91,6 +91,7 @@ int DLLEXPORT HUD_AddEntity(int type, struct cl_entity_s* ent, const char* model
 				dl->color.g = 255;
 				dl->color.b = 255;
 			}
+			break;
 			case 6: // Purple
 			{
 				dl->radius = 150;
