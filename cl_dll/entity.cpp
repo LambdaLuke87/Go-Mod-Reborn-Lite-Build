@@ -41,10 +41,65 @@ int DLLEXPORT HUD_AddEntity(int type, struct cl_entity_s* ent, const char* model
 		{
 			dlight_t* dl = gEngfuncs.pEfxAPI->CL_AllocDlight(ent->index);
 			VectorCopy(ent->curstate.origin, dl->origin);
-			dl->radius = 100;
-			dl->color.r = 0;
-			dl->color.g = 255;
-			dl->color.b = 255;
+
+			switch (ent->curstate.skin)
+			{
+			default: // White
+			{
+				dl->radius = 150;
+				dl->color.r = 255;
+				dl->color.g = 255;
+				dl->color.b = 255;
+			}
+			break;
+			case 1: // Red
+			{
+				dl->radius = 150;
+				dl->color.r = 255;
+				dl->color.g = 0;
+				dl->color.b = 0;
+			}
+			break;
+			case 2: // Green
+			{
+				dl->radius = 150;
+				dl->color.r = 0;
+				dl->color.g = 255;
+				dl->color.b = 0;
+			}
+			break;
+			case 3: // Blue
+			{
+				dl->radius = 150;
+				dl->color.r = 0;
+				dl->color.g = 0;
+				dl->color.b = 255;
+			}
+			break;
+			case 4: // Yellow
+			{
+				dl->radius = 150;
+				dl->color.r = 255;
+				dl->color.g = 255;
+				dl->color.b = 0;
+			}
+			break;
+			case 5: // Cyan - original color
+			{
+				dl->radius = 150;
+				dl->color.r = 0;
+				dl->color.g = 255;
+				dl->color.b = 255;
+			}
+			case 6: // Purple
+			{
+				dl->radius = 150;
+				dl->color.r = 255;
+				dl->color.g = 0;
+				dl->color.b = 255;
+			}
+			break;
+			}
 			dl->decay = 255;
 			dl->die = gHUD.m_flTimeDelta + 0.1f + gHUD.m_flTime;
 		}
