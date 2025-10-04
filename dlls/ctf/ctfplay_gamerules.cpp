@@ -153,7 +153,7 @@ static void SendFlagIcon(CBasePlayer* player, bool isActive, const char* flagNam
 	}
 	else
 	{
-		UnpackRGB(r, g, b, RGB_HUD_COLOR);
+		UnpackRGB(r, g, b, RGB_GREENISH);
 	}
 
 	g_engfuncs.pfnWriteByte(r);

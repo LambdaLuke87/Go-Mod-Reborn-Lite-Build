@@ -133,8 +133,8 @@ class CGlowstick : public CBaseEntity
 	void Precache();
 	void BounceSound();
 
-	void EXPORT FlareSlide(CBaseEntity* pOther);
-	void EXPORT FlareThink();
+	void EXPORT GlowstickSlide(CBaseEntity* pOther);
+	void EXPORT GlowstickThink();
 	void EXPORT GlowstickUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	int ObjectCaps() override { return CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE; }
 
@@ -168,8 +168,8 @@ void CGlowstick::Spawn()
 	UTIL_SetSize(pev, Vector(-4, -4, -4), Vector(4, 4, 4)); // Uses point-sized, and can be stepped over
 	UTIL_SetOrigin(pev, pev->origin);
 
-	SetTouch(&CGlowstick::FlareSlide);
-	SetThink(&CGlowstick::FlareThink);
+	SetTouch(&CGlowstick::GlowstickSlide);
+	SetThink(&CGlowstick::GlowstickThink);
 	SetUse(&CGlowstick::GlowstickUse);
 	pev->nextthink = gpGlobals->time + 0.001;
 
@@ -180,7 +180,7 @@ void CGlowstick::Spawn()
 	pev->sequence = 1;
 }
 
-void CGlowstick::FlareSlide(CBaseEntity* pOther)
+void CGlowstick::GlowstickSlide(CBaseEntity* pOther)
 {
 	entvars_t* pevOther = pOther->pev;
 
@@ -209,26 +209,15 @@ void CGlowstick::FlareSlide(CBaseEntity* pOther)
 
 	if (pOther->IsPlayer())
 	{
-		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(pOther);
-
-		if (pPlayer->HasNamedPlayerItem("weapon_flare"))
-			return;
-
 		Vector src = pOther->pev->origin;
 		Vector ang = pOther->pev->angles;
-
-		// CBaseEntity* flare;
-		// flare = CFlareItem::Create("weapon_flare", src, ang);
-		// flare->pev->effects |= EF_NODRAW;
-
-		pPlayer->GiveNamedItem("weapon_flare");
 
 		pev->solid = SOLID_NOT;
 		UTIL_Remove(this);
 	}
 }
 
-void CGlowstick::FlareThink()
+void CGlowstick::GlowstickThink()
 {
 	pev->nextthink = gpGlobals->time + 0.001;
 
