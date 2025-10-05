@@ -1337,7 +1337,7 @@ class CToolbow : public CBasePlayerWeapon
 public:
 	void Spawn() override;
 	void Precache() override;
-	int iItemSlot() override { return 2; }
+	int iItemSlot() override { return 1; }
 	bool GetItemInfo(ItemInfo* p);
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;

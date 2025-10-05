@@ -332,7 +332,7 @@ bool CToolbow::GetItemInfo(ItemInfo* p)
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = WEAPON_NOCLIP;
-	p->iSlot = 1;
+	p->iSlot = 0;
 	p->iPosition = 3;
 	p->iId = m_iId = WEAPON_TOOLBOW;
 	p->iWeight = GLOCK_WEIGHT;

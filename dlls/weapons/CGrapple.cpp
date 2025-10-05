@@ -552,7 +552,7 @@ void CGrapple::DestroyEffect()
 
 int CGrapple::iItemSlot()
 {
-	return 1;
+	return 4;
 }
 
 bool CGrapple::GetItemInfo(ItemInfo* p)
@@ -563,8 +563,8 @@ bool CGrapple::GetItemInfo(ItemInfo* p)
 	p->pszAmmo2 = nullptr;
 	p->iMaxAmmo2 = WEAPON_NOCLIP;
 	p->iMaxClip = WEAPON_NOCLIP;
-	p->iSlot = 0;
-	p->iPosition = 3;
+	p->iSlot = 6;
+	p->iPosition = 2;
 	p->iId = m_iId = WEAPON_GRAPPLE;
 	p->iFlags = 0;
 	p->iWeight = 21;
