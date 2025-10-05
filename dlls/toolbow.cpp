@@ -67,7 +67,7 @@ CTeleporter* CTeleporter::ShootTeleporter(entvars_t* pevOwner, Vector vecStart, 
 }
 
 
-void CTeleporter ::TeleportThink(void)
+void CTeleporter ::TeleportThink()
 {
 	StudioFrameAdvance();
 	pev->nextthink = gpGlobals->time + 0.1;
@@ -121,7 +121,7 @@ void CTeleporter ::BounceSound()
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/bounce.wav", 1, ATTN_NORM);
 }
 
-LINK_ENTITY_TO_CLASS(weapon_toolgun, CToolgun);
+LINK_ENTITY_TO_CLASS(weapon_toolbow, CToolbow);
 
 #ifndef CLIENT_DLL
 //=====================================================================
@@ -297,34 +297,34 @@ void CGlowstick::BounceSound()
 }
 #endif // ! CLIENT_DLL
 
-void CToolgun::Spawn()
+void CToolbow::Spawn()
 {
 	Precache( );
 	SET_MODEL(ENT(pev), MyWModel());
-	m_iId = WEAPON_TOOLGUN;
+	m_iId = WEAPON_TOOLBOW;
 
 	m_iDefaultAmmo = -1;
 
 	FallInit();// get ready to fall down.
 }
 
-void CToolgun::Precache()
+void CToolbow::Precache()
 {
-	PRECACHE_MODEL("models/v_removetool.mdl");
+	PRECACHE_MODEL("models/v_toolbow.mdl");
 	PRECACHE_MODEL(MyWModel());
-	PRECACHE_MODEL("models/p_removetool.mdl");         
+	PRECACHE_MODEL("models/p_toolbow.mdl");         
 
 	PRECACHE_SOUND ("weapons/tg_shot1.wav");
 	PRECACHE_SOUND ("weapons/tg_shot2.wav");
 
 	m_iTeleport = PRECACHE_MODEL("sprites/blast.spr");
-	m_usToolGun = PRECACHE_EVENT(1, "events/toolgun.sc");
+	m_usToolBow = PRECACHE_EVENT(1, "events/toolbow.sc");
 
 	UTIL_PrecacheOther("item_teleporter");
 	UTIL_PrecacheOther("item_glowstick");
 }
 
-bool CToolgun::GetItemInfo(ItemInfo *p)
+bool CToolbow::GetItemInfo(ItemInfo* p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = NULL;
@@ -334,18 +334,18 @@ bool CToolgun::GetItemInfo(ItemInfo *p)
 	p->iMaxClip = WEAPON_NOCLIP;
 	p->iSlot = 1;
 	p->iPosition = 3;
-	p->iId = m_iId = WEAPON_TOOLGUN;
+	p->iId = m_iId = WEAPON_TOOLBOW;
 	p->iWeight = GLOCK_WEIGHT;
 
 	return true;
 }
 
-bool CToolgun::Deploy()
+bool CToolbow::Deploy()
 {
-	return DefaultDeploy( "models/v_removetool.mdl", "models/p_removetool.mdl", REMOVETOOL_DRAW, "mp5" );
+	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "mp5");
 }
 
-void CToolgun::PrimaryAttack()
+void CToolbow::PrimaryAttack()
 {
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
@@ -445,7 +445,7 @@ void CToolgun::PrimaryAttack()
 		pSatchel->pev->velocity = vecThrow;
 	}
 	else
-		vecDir = m_pPlayer->FireBulletsToolGun(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
+		vecDir = m_pPlayer->FireBulletsToolBow(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
 
   int flags;
@@ -455,7 +455,7 @@ void CToolgun::PrimaryAttack()
 	flags = 0;
 #endif
 	
-	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolGun, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolBow, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
 
@@ -465,7 +465,7 @@ void CToolgun::PrimaryAttack()
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
-void CToolgun::SecondaryAttack()
+void CToolbow::SecondaryAttack()
 {
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
@@ -505,7 +505,7 @@ void CToolgun::SecondaryAttack()
 		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowsticks_Removed");
 	}
 	else
-		vecDir = m_pPlayer->FireBulletsToolGunAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
+		vecDir = m_pPlayer->FireBulletsToolBowAlt(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
 
   int flags;
 #if defined( CLIENT_WEAPONS )
@@ -514,7 +514,7 @@ void CToolgun::SecondaryAttack()
 	flags = 0;
 #endif
 	
-	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolGun, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usToolBow, 0.0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0);
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 
@@ -524,7 +524,7 @@ void CToolgun::SecondaryAttack()
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
-void CToolgun::WeaponIdle( void )
+void CToolbow::WeaponIdle()
 {
 	ResetEmptySound( );
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
@@ -536,12 +536,12 @@ void CToolgun::WeaponIdle( void )
 	switch ( RANDOM_LONG( 0, 1 ) )
 	{
 	case 0:	
-		iAnim = REMOVETOOL_IDLE;	
+		iAnim = TOOLBOW_IDLE;	
 		break;
 	
 	default:
 	case 1:
-		iAnim = REMOVETOOL_IDLE2;
+		iAnim = TOOLBOW_IDLE2;
 		break;
 	}
 
@@ -549,7 +549,7 @@ void CToolgun::WeaponIdle( void )
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
 }
 
-void CToolgun::ThrowTP()
+void CToolbow::ThrowTP()
 {
 	Vector vecSrc = m_pPlayer->GetGunPosition() + gpGlobals->v_up * -2 + gpGlobals->v_right * 2;
 	Vector vecThrow = gpGlobals->v_forward * 650 + m_pPlayer->pev->velocity;

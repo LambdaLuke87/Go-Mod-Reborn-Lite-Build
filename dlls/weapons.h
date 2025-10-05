@@ -1317,22 +1317,22 @@ private:
 
 //****************************
 //
-//		Toolgun
+//		Toolbow
 //
 //****************************
 
-enum removetool_e
+enum toolbow_e
 {
-	REMOVETOOL_IDLE,
-	REMOVETOOL_IDLE2,
-	REMOVETOOL_RELOAD,
-	REMOVETOOL_SHOOT,
-	REMOVETOOL_SHOOT2,
-	REMOVETOOL_DRAW,
+	TOOLBOW_IDLE,
+	TOOLBOW_IDLE2,
+	TOOLBOW_RELOAD,
+	TOOLBOW_SHOOT,
+	TOOLBOW_SHOOT2,
+	TOOLBOW_DRAW,
 
 };
 
-class CToolgun : public CBasePlayerWeapon
+class CToolbow : public CBasePlayerWeapon
 {
 public:
 	void Spawn() override;
@@ -1353,7 +1353,7 @@ public:
 
 	Vector v_Src;
 
-	virtual bool UseDecrement(void)
+	virtual bool UseDecrement()
 	{
 #if defined(CLIENT_WEAPONS)
 		return true;
@@ -1362,10 +1362,10 @@ public:
 #endif
 	}
 
-	const char* MyWModel() { return "models/w_removetool.mdl"; }
+	const char* MyWModel() { return "models/w_toolbow.mdl"; }
 
 private:
-	unsigned short m_usToolGun;
+	unsigned short m_usToolBow;
 };
 
 class CTeleporter : public CGrenade

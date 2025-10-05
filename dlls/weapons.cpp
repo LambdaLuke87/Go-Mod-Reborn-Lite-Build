@@ -370,7 +370,7 @@ void W_Precache()
 	UTIL_PrecacheOtherWeapon("weapon_penguin");
 
 	UTIL_PrecacheOtherWeapon("weapon_physgun");
-	UTIL_PrecacheOtherWeapon("weapon_toolgun");
+	UTIL_PrecacheOtherWeapon("weapon_toolbow");
 
 	PRECACHE_SOUND("weapons/spore_hit1.wav");
 	PRECACHE_SOUND("weapons/spore_hit2.wav");

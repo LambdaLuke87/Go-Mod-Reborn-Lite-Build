@@ -1775,7 +1775,7 @@ CBaseEntity* FindEntityForwardNew(CBaseEntity* pMe)
 	return NULL;
 }
 
-Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	static int tracerCount;
 	TraceResult tr;
@@ -2004,7 +2004,7 @@ Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vecto
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }
 
-Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	static int tracerCount;
 	TraceResult tr;

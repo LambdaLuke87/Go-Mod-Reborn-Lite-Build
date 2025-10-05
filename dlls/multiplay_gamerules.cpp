@@ -2160,7 +2160,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 
 		if (WeaponSetup == 4)
 		{
-			pPlayer->GiveNamedItem("weapon_toolgun");
+			pPlayer->GiveNamedItem("weapon_toolbow");
 			pPlayer->GiveNamedItem("weapon_physgun");
 		}
 		else if (WeaponSetup >= 1)
@@ -2217,7 +2217,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					// pPlayer->GiveAmmo(SHOCKRIFLE_MAX_CLIP, "shock", SHOCKRIFLE_MAX_CLIP);
 				}
 
-				pPlayer->GiveNamedItem("weapon_toolgun");
+				pPlayer->GiveNamedItem("weapon_toolbow");
 				pPlayer->GiveNamedItem("weapon_physgun");
 			}
 		}

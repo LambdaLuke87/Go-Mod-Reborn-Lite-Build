@@ -91,7 +91,7 @@ CSniperRifle g_SniperRifle;
 CKnife g_Knife;
 CPenguin g_Penguin;
 CPhysgun g_PhysGun;
-CToolgun g_ToolGun;
+CToolbow g_ToolBow;
 
 
 /*
@@ -304,12 +304,12 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 }
 
-Vector CBaseEntity::FireBulletsToolGun(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
 }
 
-Vector CBaseEntity::FireBulletsToolGunAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
+Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
 	return FireBulletsPlayer(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker, shared_rand);
 }
@@ -533,7 +533,7 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity(&g_Knife, &player);
 	HUD_PrepEntity(&g_Penguin, &player);
 	HUD_PrepEntity(&g_PhysGun, &player);
-	HUD_PrepEntity(&g_ToolGun, &player);
+	HUD_PrepEntity(&g_ToolBow, &player);
 }
 
 /*
@@ -631,8 +631,8 @@ CBasePlayerWeapon* GetLocalWeapon(int id)
 		return &g_Penguin;
 	case WEAPON_PHYSGUN:
 		return &g_PhysGun;
-	case WEAPON_TOOLGUN:
-		return &g_ToolGun;
+	case WEAPON_TOOLBOW:
+		return &g_ToolBow;
 
 	default:
 		return nullptr;

@@ -582,7 +582,7 @@
     <ClCompile Include="..\..\public\interface.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\toolgun.cpp">
+    <ClCompile Include="..\..\dlls\toolbow.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\vehicle.cpp">

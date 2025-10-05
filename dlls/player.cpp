@@ -4125,7 +4125,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 		{
 			GiveNamedItem("weapon_physgun");
-			GiveNamedItem("weapon_toolgun");
+			GiveNamedItem("weapon_toolbow");
 			GiveNamedItem("weapon_penguin");
 		}
 		//TODO: not given

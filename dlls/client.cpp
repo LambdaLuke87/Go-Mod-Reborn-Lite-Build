@@ -132,7 +132,7 @@ weapon_t gWeapons[] =
 	{
 		{"weapon_crowbar"},
 		{"weapon_physgun"},
-		{"weapon_toolgun"},
+		{"weapon_toolbow"},
 		{"weapon_9mmhandgun"},
 		{"weapon_357"},
 		{"weapon_9mmAR"},
@@ -179,8 +179,8 @@ struct tgunmodes_helper_t
 	char* toolprintname;
 };
 
-// Toolgun Modes
-tgunmodes_helper_t gToolgunModes[] =
+// Toolbow Modes
+tgunmodes_helper_t gToolbowModes[] =
 	{
 		{"button_tool_none", 0, "None"},
 		{"button_tool_duplicator", 1, "Duplicator"},
@@ -844,14 +844,14 @@ void ClientCommand(edict_t* pEntity)
 				}
 			}
 
-			// ToolGun Tools
-			for (int i = 0; i < ARRAYSIZE(gToolgunModes); i++)
+			// ToolBow Tools
+			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
 			{
-				tgunmodes_helper_t ToolGunModesinfo = gToolgunModes[i];
-				if (FStrEq(pcmd, ToolGunModesinfo.commandname))
+				tgunmodes_helper_t ToolBowModesinfo = gToolbowModes[i];
+				if (FStrEq(pcmd, ToolBowModesinfo.commandname))
 				{
-					pPlayer->m_iToolMode = ToolGunModesinfo.id;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolGunModesinfo.toolprintname));
+					pPlayer->m_iToolMode = ToolBowModesinfo.id;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolBowModesinfo.toolprintname));
 				}
 			}
 

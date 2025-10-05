@@ -184,7 +184,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/singleplay_gamerules.o \
 	$(HLDLL_OBJ_DIR)/tempmonster.o \
 	$(HLDLL_OBJ_DIR)/tentacle.o \
-	$(HLDLL_OBJ_DIR)/toolgun.o \
+	$(HLDLL_OBJ_DIR)/toolbow.o \
 	$(HLDLL_OBJ_DIR)/triggers.o \
 	$(HLDLL_OBJ_DIR)/tripmine.o \
 	$(HLDLL_OBJ_DIR)/turret.o \

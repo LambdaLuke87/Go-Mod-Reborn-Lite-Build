@@ -2177,11 +2177,11 @@ void EV_PhysGun(event_args_t* args)
 //======================
 
 //======================
-//	    TOOLGUN START
-//	     ( .toolgun )
+//	    TOOLBOW START
+//	     ( .toolbow )
 //======================
 
-void EV_ToolGun(event_args_t* args)
+void EV_ToolBow(event_args_t* args)
 {
 	int idx;
 	Vector origin;
@@ -2193,7 +2193,7 @@ void EV_ToolGun(event_args_t* args)
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(REMOVETOOL_SHOOT + gEngfuncs.pfnRandomLong(0, 0), 0);
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(TOOLBOW_SHOOT + gEngfuncs.pfnRandomLong(0, 0), 0);
 
 		V_PunchAxis(0, gEngfuncs.pfnRandomFloat(-0, 0));
 	}
