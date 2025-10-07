@@ -199,7 +199,7 @@ void CGlowstick::GlowstickSlide(CBaseEntity* pOther)
 {
 	entvars_t* pevOther = pOther->pev;
 
-	// don't hit the guy that launched this grenade
+	// don't hit the guy that launched this glowstick
 	if (pOther->edict() == pev->owner)
 		return;
 
@@ -220,15 +220,6 @@ void CGlowstick::GlowstickSlide(CBaseEntity* pOther)
 	if (!(pev->flags & FL_ONGROUND) && pev->velocity.Length2D() > 10)
 	{
 		BounceSound();
-	}
-
-	if (pOther->IsPlayer())
-	{
-		Vector src = pOther->pev->origin;
-		Vector ang = pOther->pev->angles;
-
-		pev->solid = SOLID_NOT;
-		UTIL_Remove(this);
 	}
 }
 
