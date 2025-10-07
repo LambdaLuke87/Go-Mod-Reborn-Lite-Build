@@ -351,13 +351,13 @@ void CToolbow::PrimaryAttack()
 	Vector vecDir;
 
 	// some specific tools are defined here
-	if (m_pPlayer->m_iToolMode == 3)
+	if (m_pPlayer->m_iToolMode == 4)
 	{
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, true);
 #endif
 	}
-	else if (m_pPlayer->m_iToolMode == 5)
+	else if (m_pPlayer->m_iToolMode == 6)
 	{
 #ifndef CLIENT_DLL
 		if (allow_camera.value)
@@ -369,7 +369,7 @@ void CToolbow::PrimaryAttack()
 			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Camera_NotAllowed");
 #endif
 	}
-	else if (m_pPlayer->m_iToolMode == 12)
+	else if (m_pPlayer->m_iToolMode == 13)
 	{
 		if (not_out == 0)
 		{
@@ -428,7 +428,7 @@ void CToolbow::PrimaryAttack()
 			}
 		}
 	}
-	else if (m_pPlayer->m_iToolMode == 13)
+	else if (m_pPlayer->m_iToolMode == 14)
 	{
 		Vector vecThrow = gpGlobals->v_forward * 274 + m_pPlayer->pev->velocity;
 
@@ -471,13 +471,13 @@ void CToolbow::SecondaryAttack()
 	Vector vecDir;
 
 	// some specific tools are defined here
-	if (m_pPlayer->m_iToolMode == 3)
+	if (m_pPlayer->m_iToolMode == 4)
 	{
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, false);
 #endif
 	}
-	else if (m_pPlayer->m_iToolMode == 13)
+	else if (m_pPlayer->m_iToolMode == 14)
 	{
 		edict_t* pPlayer = m_pPlayer->edict();
 		CBaseEntity* pGlowstick = NULL;

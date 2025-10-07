@@ -182,20 +182,20 @@ struct tgunmodes_helper_t
 // Toolbow Modes
 tgunmodes_helper_t gToolbowModes[] =
 	{
-		{"button_tool_none", 0, "None"},
-		{"button_tool_duplicator", 1, "Duplicator"},
-		{"button_tool_remover", 2, "Remover"},
-		{"button_tool_gib", 3, "Gib Spawner"},
-		{"button_tool_poser", 4, "Poser"},
-		{"button_tool_camera", 5, "Camera Spawn"},
-		{"button_tool_render", 6, "Render"},
-		{"button_tool_health_set", 7, "NPC HP Modify"},
-		{"button_tool_no_colide", 8, "NPC No Colide"},
-		{"button_tool_take_damage", 9, "NPC TakeDamage"},
-		{"button_tool_blood_color", 10, "NPC Blood Color"},
-		{"button_tool_frame_set", 11, "NPC Frame Editor"},
-		{"button_tool_teleporter", 12, "Teleporter"},
-		{"button_tool_glowsticks", 13, "Glowsticks"}};
+		{"button_tool_none", 1, "None"},
+		{"button_tool_duplicator", 2, "Duplicator"},
+		{"button_tool_remover", 3, "Remover"},
+		{"button_tool_gib", 4, "Gib Spawner"},
+		{"button_tool_poser", 5, "Poser"},
+		{"button_tool_camera", 6, "Camera Spawn"},
+		{"button_tool_render", 7, "Render"},
+		{"button_tool_health_set", 8, "NPC HP Modify"},
+		{"button_tool_no_colide", 9, "NPC No Colide"},
+		{"button_tool_take_damage", 10, "NPC TakeDamage"},
+		{"button_tool_blood_color", 11, "NPC Blood Color"},
+		{"button_tool_frame_set", 12, "NPC Frame Editor"},
+		{"button_tool_teleporter", 13, "Teleporter"},
+		{"button_tool_glowsticks", 14, "Glowsticks"}};
 
 
 // Render Tool: Render Mode
@@ -852,6 +852,11 @@ void ClientCommand(edict_t* pEntity)
 				{
 					pPlayer->m_iToolMode = ToolBowModesinfo.id;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolBowModesinfo.toolprintname));
+				
+					// Change ToolBow Skin
+					MESSAGE_BEGIN(MSG_ONE, gmsgToolBowSkin, NULL, pPlayer->edict());
+					WRITE_SHORT(pPlayer->m_iToolMode);
+					MESSAGE_END();
 				}
 			}
 

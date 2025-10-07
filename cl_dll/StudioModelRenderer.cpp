@@ -26,6 +26,7 @@ extern cvar_t* tfc_newmodels;
 cvar_t* cl_hands;
 cvar_t* cl_hands_skin;
 cvar_t* cl_pred_physgun;
+int g_iToolBowSkin; // ToolBow modes in relation with model screen
 
 extern extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1];
 
@@ -116,6 +117,28 @@ void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
 			StudioCalcAttachments();
 
 			*m_pCurrentEntity = saveent;
+		}
+	}
+}
+
+/*
+====================
+StudioRenderToolBowSkin
+"cl_toolbow_skin" system, to change skin in the toolbow screen.
+====================
+*/
+
+void CStudioModelRenderer::StudioRenderToolBowSkin()
+{
+	if (m_pCurrentEntity == gEngfuncs.GetViewModel())
+	{
+		cl_entity_t saveent = *m_pCurrentEntity;
+
+		model_t* handmodel = IEngineStudio.Mod_ForName("models/v_toolbow.mdl", 1); // load model
+
+		if (g_iToolBowSkin != 0)
+		{
+			m_pCurrentEntity->curstate.skin = g_iToolBowSkin - 1;
 		}
 	}
 }
@@ -1286,6 +1309,7 @@ bool CStudioModelRenderer::StudioDrawModel(int flags)
 		StudioRenderModel();
 
 		StudioRenderHands(dir, lighting);
+		StudioRenderToolBowSkin();
 	}
 
 	return true;

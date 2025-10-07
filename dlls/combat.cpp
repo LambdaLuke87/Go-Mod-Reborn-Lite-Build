@@ -1793,7 +1793,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-	if (pPlayer->m_iToolMode == 1)
+	if (pPlayer->m_iToolMode == 2)
 	{
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
 		{
@@ -1815,7 +1815,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			CBaseEntity::CreateCustom(MonsterInfo::GetName(monster_type - 1), tr.vecEndPos, Vector(0, pev->angles.y + 180, 0), pPlayer->m_fUseAlliedMode);
 		}
 	}
-	else if (pPlayer->m_iToolMode == 2)
+	else if (pPlayer->m_iToolMode == 3)
 	{
 		if (pEntity)
 		{
@@ -1834,7 +1834,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			}
 		}
 	}
-	else if (pPlayer->m_iToolMode == 4)
+	else if (pPlayer->m_iToolMode == 5)
 	{
 		int frame = 0;
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
@@ -1847,7 +1847,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			}
 		}
 	}
-	else if (pPlayer->m_iToolMode == 6)
+	else if (pPlayer->m_iToolMode == 7)
 	{
 		if (pEntity)
 		{
@@ -1942,38 +1942,38 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
 		}
 	}
-	else if (pPlayer->m_iToolMode >= 7)
+	else if (pPlayer->m_iToolMode >= 8)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			if (pPlayer->m_iToolMode == 7)
+			if (pPlayer->m_iToolMode == 8)
 			{
 				int Set_TheHP = custom_npc_health.value;
 				pMonster->pev->health = Set_TheHP;
 				pMonster->pev->max_health = Set_TheHP;
 			}
-			else if (pPlayer->m_iToolMode == 8)
+			else if (pPlayer->m_iToolMode == 9)
 			{
 				pMonster->pev->solid = SOLID_NOT;
 			}
-			else if (pPlayer->m_iToolMode == 9)
+			else if (pPlayer->m_iToolMode == 10)
 			{
 				if (0 != pMonster->pev->takedamage)
 					pMonster->pev->takedamage = DAMAGE_NO;
 				else
 					pMonster->pev->takedamage = DAMAGE_YES;
 			}
-			else if (pPlayer->m_iToolMode == 10)
+			else if (pPlayer->m_iToolMode == 11)
 			{
 				if (BLOOD_COLOR_RED != pMonster->m_bloodColor)
 					pMonster->m_bloodColor = BLOOD_COLOR_RED;
 				else
 					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
 			}
-			else if (pPlayer->m_iToolMode == 11)
+			else if (pPlayer->m_iToolMode == 12)
 			{
 				switch (pMonster->m_CustomFrame)
 				{
@@ -2022,7 +2022,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-	if (pPlayer->m_iToolMode == 1)
+	if (pPlayer->m_iToolMode == 2)
 	{
 		pEntity = FindEntityForwardNew(this);
 		if (pEntity)
@@ -2031,7 +2031,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			monster_type = MonsterInfo::GetId(STRING(pEntity->pev->classname));
 		}
 	}
-	else if (pPlayer->m_iToolMode == 4)
+	else if (pPlayer->m_iToolMode == 5)
 	{
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
 		{
@@ -2042,7 +2042,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			}
 		}
 	}
-	else if (pPlayer->m_iToolMode == 6)
+	else if (pPlayer->m_iToolMode == 7)
 	{
 		if (pEntity)
 		{
@@ -2137,16 +2137,16 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode >= 10)
+	else if (pPlayer->m_iToolMode >= 11)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			if (pPlayer->m_iToolMode == 10)
+			if (pPlayer->m_iToolMode == 11)
 				pMonster->m_bloodColor = DONT_BLEED;
-			else if (pPlayer->m_iToolMode == 11)
+			else if (pPlayer->m_iToolMode == 12)
 			{
 				switch (pMonster->m_CustomFrame)
 				{

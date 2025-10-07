@@ -65,6 +65,7 @@ void LinkUserMessages()
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 
 	gmsgWeapons = REG_USER_MSG("Weapons", 8);
+	gmsgToolBowSkin = REG_USER_MSG("ToolBowSkin", -1);
 
 	gmsgSpectator = g_engfuncs.pfnRegUserMsg("Spectator", 2);
 	gmsgStatusIcon = g_engfuncs.pfnRegUserMsg("StatusIcon", -1);

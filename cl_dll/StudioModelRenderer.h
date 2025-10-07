@@ -44,6 +44,9 @@ public:
 	// Bacontsu's c_hands definition
 	virtual void StudioRenderHands(Vector dir, alight_t lighting);
 
+	// LambdaLuke87's toolbow skin
+	virtual void StudioRenderToolBowSkin();
+
 	// Find final attachment points
 	virtual void StudioCalcAttachments();
 

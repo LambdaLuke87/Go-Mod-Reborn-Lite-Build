@@ -353,6 +353,12 @@ int __MsgFunc_TeamInfo(const char *pszName, int iSize, void *pbuf)
 }
 */
 
+int __MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf)
+{
+	gHUD.MsgFunc_ToolBowSkin(pszName, iSize, pbuf);
+	return 1;
+}
+
 int __MsgFunc_Spectator(const char* pszName, int iSize, void* pbuf)
 {
 	if (gViewPort)
@@ -427,6 +433,7 @@ void CHud::Init()
 	HOOK_MESSAGE(HudColor);
 	HOOK_MESSAGE(OldWeapon);
 	HOOK_MESSAGE(Weapons);
+	HOOK_MESSAGE(ToolBowSkin);
 
 	// TFFree CommandMenu
 	HOOK_COMMAND("+commandmenu", OpenCommandMenu);

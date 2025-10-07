@@ -28,6 +28,7 @@
 extern IParticleMan* g_pParticleMan;
 
 extern int giTeamplay;
+extern int g_iToolBowSkin;
 
 extern BEAM* pBeam;
 extern BEAM* pBeam2;
@@ -170,4 +171,12 @@ bool CHud::MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf)
 	m_iWeaponBits = (lowerBits & 0XFFFFFFFF) | ((upperBits & 0XFFFFFFFF) << 32ULL);
 
 	return true;
+}
+
+int CHud::MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	g_iToolBowSkin = READ_SHORT();
+
+	return 1;
 }
