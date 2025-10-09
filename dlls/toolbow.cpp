@@ -426,7 +426,7 @@ void CToolbow::PrimaryAttack()
 							WRITE_BYTE(128);		  // brightness
 							MESSAGE_END();
 
-							EMIT_SOUND(ENT(pTeleport->pev), CHAN_WEAPON, "weapons/displacer_teleport.wav", 1.0, ATTN_NORM);
+							EMIT_SOUND(ENT(pTeleport->pev), CHAN_WEAPON, "weapons/displacer_impact.wav", 1.0, ATTN_NORM);
 
 							m_pPlayer->pev->origin = pTeleport->pev->origin;
 							m_pPlayer->pev->origin.z += 54;

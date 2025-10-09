@@ -1960,12 +1960,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				pMonster->pev->solid = SOLID_NOT;
 			}
 			else if (pPlayer->m_iToolMode == 10)
-			{
-				if (0 != pMonster->pev->takedamage)
-					pMonster->pev->takedamage = DAMAGE_NO;
-				else
-					pMonster->pev->takedamage = DAMAGE_YES;
-			}
+				pMonster->pev->takedamage = DAMAGE_NO;
 			else if (pPlayer->m_iToolMode == 11)
 			{
 				if (BLOOD_COLOR_RED != pMonster->m_bloodColor)
@@ -2137,14 +2132,16 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode >= 11)
+	else if (pPlayer->m_iToolMode >= 10)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			if (pPlayer->m_iToolMode == 11)
+			if (pPlayer->m_iToolMode == 10)
+				pMonster->pev->takedamage = DAMAGE_YES;
+			else if (pPlayer->m_iToolMode == 11)
 				pMonster->m_bloodColor = DONT_BLEED;
 			else if (pPlayer->m_iToolMode == 12)
 			{
