@@ -70,13 +70,13 @@ bool CPhysgun::Deploy()
 	pev->fixangle = 0;
 	pev->v_angle = g_vecZero;
 
-	return DefaultDeploy("models/v_physgun.mdl", "models/p_physgun.mdl", PHYSGUN_DRAW, "gauss");
+	return DefaultDeploy("models/v_physgun.mdl", "models/p_physgun.mdl", PHYSGUN_DRAW, "physgun");
 }
 
 void CPhysgun::Holster()
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	SendWeaponAnim(PHYSGUN_HOLSTER);
+	//SendWeaponAnim(PHYSGUN_HOLSTER);
 
 	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
 
@@ -108,7 +108,7 @@ void CPhysgun::PrimaryAttack()
 		bool isBspModel = m_pCurrentEntity->IsBSPModel();
 
 		m_pCurrentEntity->pev->origin[2] += 0.2f;
-		SendWeaponAnim(PHYSGUN_SPIN);
+		SendWeaponAnim(PHYSGUN_FIRE);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
 
 		if (m_pCurrentEntity->m_movetype == MOVETYPE_NONE)
@@ -381,7 +381,7 @@ void CPhysgun::WeaponIdle()
 	}
 	else
 	{
-		iAnim = PHYSGUN_IDLE2;
+		iAnim = PHYSGUN_IDLE_ALT;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
 	}
 

@@ -113,12 +113,16 @@ void CTeleporter::TeleportSlide(CBaseEntity* pOther)
 void CTeleporter ::Precache()
 {
 	PRECACHE_MODEL("models/grenade.mdl");
-	PRECACHE_SOUND("weapons/bounce.wav");
 }
 
 void CTeleporter ::BounceSound()
 {
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/bounce.wav", 1, ATTN_NORM);
+	switch (RANDOM_LONG(0, 2))
+	{
+	case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce1.wav", 1, ATTN_NORM); break;
+	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce2.wav", 1, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce3.wav", 1, ATTN_NORM); break;
+	}
 }
 
 LINK_ENTITY_TO_CLASS(weapon_toolbow, CToolbow);
@@ -281,9 +285,15 @@ void CGlowstick::BounceSound()
 {
 	switch (RANDOM_LONG(0, 2))
 	{
-	case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce1.wav", 1, ATTN_NORM); break;
-	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce2.wav", 1, ATTN_NORM); break;
-	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/g_bounce3.wav", 1, ATTN_NORM); break;
+	case 0:
+		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/grenade_hit1.wav", 0.25, ATTN_NORM, 0, PITCH_HIGH);
+		break;
+	case 1:
+		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/grenade_hit2.wav", 0.25, ATTN_NORM, 0, PITCH_HIGH);
+		break;
+	case 2:
+		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "weapons/grenade_hit3.wav", 0.25, ATTN_NORM, 0, PITCH_HIGH);
+		break;
 	}
 }
 #endif // ! CLIENT_DLL
@@ -333,7 +343,7 @@ bool CToolbow::GetItemInfo(ItemInfo* p)
 
 bool CToolbow::Deploy()
 {
-	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "mp5");
+	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "toolbow");
 }
 
 void CToolbow::PrimaryAttack()

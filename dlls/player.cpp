@@ -1795,25 +1795,6 @@ void CBasePlayer::Jump()
 	Vector vecSpot;
 	TraceResult tr;
 
-	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_player_jump_sfx.value)
-	{
-		char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
-		if (!pmove->waterlevel && !pmove->onground)
-		{
-			if (FBitSet(m_afButtonPressed, IN_JUMP))
-			{
-				if (0 == strcmp(PlayerSFXString, "dmc"))
-				{
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_JUMPDMC", 1, ATTN_NORM);
-				}
-				else if (0 == strcmp(PlayerSFXString, "hlalpha"))
-				{
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_JUMPHLALPHA", 1, ATTN_NORM);
-				}
-			}
-		}
-	}
-
 	if (FBitSet(pev->flags, FL_WATERJUMP))
 		return;
 
