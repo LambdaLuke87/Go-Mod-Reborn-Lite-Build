@@ -128,6 +128,34 @@ void CTeleporter ::BounceSound()
 LINK_ENTITY_TO_CLASS(weapon_toolbow, CToolbow);
 
 #ifndef CLIENT_DLL
+
+TYPEDESCRIPTION CToolbow::m_SaveData[] =
+	{
+		DEFINE_FIELD(CToolbow, m_bSpotVisible, FIELD_BOOLEAN),
+		DEFINE_FIELD(CToolbow, m_bLaserActive, FIELD_BOOLEAN),
+};
+
+IMPLEMENT_SAVERESTORE(CToolbow, CToolbow::BaseClass);
+
+//=========================================================
+// ToolBow Laser - an bit more small than Deagle Laser
+//=========================================================
+
+LINK_ENTITY_TO_CLASS(toolbow_laser, CToolbowLaser);
+
+CToolbowLaser* CToolbowLaser::CreateSpot()
+{
+	auto pSpot = GetClassPtr(reinterpret_cast<CToolbowLaser*>(VARS(CREATE_NAMED_ENTITY(MAKE_STRING("toolbow_laser")))));
+	pSpot->Spawn();
+
+	// FUN FACT: ToolBow Laser Family: DEagle Laser - Father, RPG Laser - Grandpa
+	pSpot->pev->scale = 0.4;
+
+	pSpot->pev->classname = MAKE_STRING("toolbow_laser");
+
+	return pSpot;
+}
+
 //=====================================================================
 // Bacontsu: Glowstick (originally it was a flare) - world item
 //=====================================================================
@@ -343,7 +371,26 @@ bool CToolbow::GetItemInfo(ItemInfo* p)
 
 bool CToolbow::Deploy()
 {
+	m_bSpotVisible = true;
+	m_bLaserActive = true;
+
 	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "toolbow");
+}
+
+void CToolbow::Holster()
+{
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->Killed(nullptr, GIB_NEVER);
+		m_pLaser = nullptr;
+		m_bSpotVisible = false;
+	}
+#endif
+
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+
+	m_flTimeWeaponIdle = UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10.0, 15.0);
 }
 
 void CToolbow::PrimaryAttack()
@@ -464,6 +511,10 @@ void CToolbow::PrimaryAttack()
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+
+#ifndef CLIENT_DLL
+	ResetLaserAttack();
+#endif
 }
 
 void CToolbow::SecondaryAttack()
@@ -523,10 +574,18 @@ void CToolbow::SecondaryAttack()
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.1;
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+
+#ifndef CLIENT_DLL
+	ResetLaserAttack();
+#endif
 }
 
 void CToolbow::WeaponIdle()
 {
+#ifndef CLIENT_DLL
+	UpdateLaser();
+#endif
+
 	ResetEmptySound( );
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
@@ -550,6 +609,47 @@ void CToolbow::WeaponIdle()
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
 }
 
+void CToolbow::ResetLaserAttack()
+{
+#ifndef CLIENT_DLL
+	if (m_pLaser && m_bLaserActive)
+	{
+		m_pLaser->pev->effects |= EF_NODRAW;
+		m_pLaser->SetThink(&CToolbowLaser::Revive);
+		m_pLaser->pev->nextthink = gpGlobals->time + 0.6;
+	}
+
+	UpdateLaser();
+#endif
+}
+
+void CToolbow::UpdateLaser()
+{
+#ifndef CLIENT_DLL
+	if (m_bLaserActive && m_bSpotVisible)
+	{
+		if (!m_pLaser)
+		{
+			m_pLaser = CToolbowLaser::CreateSpot();
+
+			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/desert_eagle_sight.wav", VOL_NORM, ATTN_NORM, 0, PITCH_HIGH);
+		}
+
+		UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+
+		Vector vecSrc = m_pPlayer->GetGunPosition();
+
+		Vector vecEnd = vecSrc + gpGlobals->v_forward * 8192.0;
+
+		TraceResult tr;
+
+		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
+
+		UTIL_SetOrigin(m_pLaser->pev, tr.vecEndPos);
+	}
+#endif
+}
+
 void CToolbow::ThrowTP()
 {
 	Vector vecSrc = m_pPlayer->GetGunPosition() + gpGlobals->v_up * -2 + gpGlobals->v_right * 2;
@@ -561,4 +661,18 @@ void CToolbow::ThrowTP()
 	//EMIT_SOUND(ENT(pTeleport->pev), CHAN_WEAPON, "x/x_shoot1.wav", 0.5, ATTN_NORM);
 
 	not_out = 1;
+}
+
+void CToolbow::GetWeaponData(weapon_data_t& data)
+{
+	BaseClass::GetWeaponData(data);
+
+	data.iuser1 = static_cast<int>(m_bLaserActive);
+}
+
+void CToolbow::SetWeaponData(const weapon_data_t& data)
+{
+	BaseClass::SetWeaponData(data);
+
+	m_bLaserActive = data.iuser1 != 0;
 }

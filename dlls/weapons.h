@@ -1321,6 +1321,14 @@ private:
 //
 //****************************
 
+class CToolbowLaser : public CLaserSpot
+{
+public:
+	using BaseClass = CLaserSpot;
+
+	static CToolbowLaser* CreateSpot();
+};
+
 enum toolbow_e
 {
 	TOOLBOW_IDLE,
@@ -1334,6 +1342,15 @@ enum toolbow_e
 class CToolbow : public CBasePlayerWeapon
 {
 public:
+	using BaseClass = CBasePlayerWeapon;
+
+#ifndef CLIENT_DLL
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn() override;
 	void Precache() override;
 	int iItemSlot() override { return 1; }
@@ -1341,8 +1358,12 @@ public:
 	void PrimaryAttack() override;
 	void SecondaryAttack() override;
 	bool Deploy() override;
+	void Holster() override;
 	void WeaponIdle() override;
 	void ThrowTP();
+
+	void GetWeaponData(weapon_data_t& data) override;
+	void SetWeaponData(const weapon_data_t& data) override;
 
 	float m_flSoundDelay;
 
@@ -1364,7 +1385,14 @@ public:
 	const char* MyWModel() { return "models/w_toolbow.mdl"; }
 
 private:
+	void ResetLaserAttack();
+	void UpdateLaser();
+
 	unsigned short m_usToolBow;
+
+	bool m_bSpotVisible;
+	bool m_bLaserActive;
+	CToolbowLaser* m_pLaser;
 };
 
 class CTeleporter : public CGrenade
