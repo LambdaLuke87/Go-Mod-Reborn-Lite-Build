@@ -70,7 +70,7 @@ bool CPhysgun::Deploy()
 	pev->fixangle = 0;
 	pev->v_angle = g_vecZero;
 
-	return DefaultDeploy("models/v_physgun.mdl", "models/p_physgun.mdl", PHYSGUN_DRAW, "physgun");
+	return DefaultDeploy("models/v_physgun.mdl", "models/p_physgun.mdl", PHYSGUN_DRAW, "egon");
 }
 
 void CPhysgun::Holster()

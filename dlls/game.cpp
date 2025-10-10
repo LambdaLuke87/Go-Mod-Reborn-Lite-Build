@@ -58,6 +58,7 @@ cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 cvar_t allow_spawn_bosses = {"gm_allow_spawn_bosses", "0", FCVAR_SERVER};
 cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
 cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
@@ -696,6 +697,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&mpweapons_skills);
 	CVAR_REGISTER(&allow_camera);
 	CVAR_REGISTER(&allow_props);
+	CVAR_REGISTER(&allow_voices);
 	CVAR_REGISTER(&allow_noclip);
 	CVAR_REGISTER(&allow_healthmodify);
 	CVAR_REGISTER(&allow_gaussfly);

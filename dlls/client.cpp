@@ -172,7 +172,7 @@ weapon_t gWeapons[] =
 		{"ammo_762"}};
 
 
-struct tgunmodes_helper_t
+struct tbow_helper_t
 {
 	const char* commandname;
 	int id;
@@ -180,7 +180,7 @@ struct tgunmodes_helper_t
 };
 
 // Toolbow Modes
-tgunmodes_helper_t gToolbowModes[] =
+tbow_helper_t gToolbowModes[] =
 	{
 		{"button_tool_none", 1, "None"},
 		{"button_tool_duplicator", 2, "Duplicator"},
@@ -199,7 +199,7 @@ tgunmodes_helper_t gToolbowModes[] =
 
 
 // Render Tool: Render Mode
-tgunmodes_helper_t gRenderModeType[] =
+tbow_helper_t gRenderModeType[] =
 	{
 		{"button_rendermode_normal", 0, "Normal"},
 		{"button_rendermode_color", 1, "Color"},
@@ -209,7 +209,7 @@ tgunmodes_helper_t gRenderModeType[] =
 		{"button_rendermode_additive", 5, "Additive"}};
 
 // Render Tool: Render FX
-tgunmodes_helper_t gRenderFXType[] =
+tbow_helper_t gRenderFXType[] =
 	{
 		{"button_renderfx_normal", 0, "Normal"},
 		{"button_renderfx_slow_pulse", 1, "Slow Pulse"},
@@ -230,6 +230,38 @@ tgunmodes_helper_t gRenderFXType[] =
 		{"button_renderfx_hologram", 16, "Hologram"},
 		{"button_renderfx_explode", 17, "Explode"},
 		{"button_renderfx_glow_shell", 18, "Glow Shell"}};
+
+
+struct voices_t
+{
+	const char* voicecommand;
+	const char* voicesentence;
+};
+
+// Voices List
+voices_t gVoices[] =
+	{
+		{"voice_say1", "!PL_VOICEFRST0"},
+		{"voice_say2", "!PL_VOICEFRST1"},
+		{"voice_say3", "!PL_VOICEFRST2"},
+		{"voice_say4", "!PL_VOICEFRST3"},
+		{"voice_say5", "!PL_VOICEFRST4"},
+		{"voice_say6", "!PL_VOICEFRST5"},
+		{"voice_say7", "!PL_VOICEFRST6"},
+		{"voice_say8", "!PL_VOICEFRST7"},
+		{"voice_say9", "!PL_VOICEFRST8"},
+		{"voice_say10", "!PL_VOICEFRST9"},
+		{"voice_say11", "!PL_VOICEFRST10"},
+		{"voice_say12", "!PL_VOICEFRST11"},
+		{"voice_say13", "!PL_VOICEFRST12"},
+		{"voice_say14", "!PL_VOICEFRST13"},
+		{"voice_say15", "!PL_VOICEFRST14"},
+		{"voice_say16", "!PL_VOICEFRST15"},
+		{"voice_say17", "!PL_VOICEFRST16"},
+		{"voice_say18", "!PL_VOICEFRST17"},
+		{"voice_say19", "!PL_VOICEFRST18"},
+		{"voice_say20", "!PL_VOICEFRST19"},
+		{"voice_say21", "!PL_VOICEFRST20"}};
 
 // GM6 Spawn Monster Trace
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
@@ -847,7 +879,7 @@ void ClientCommand(edict_t* pEntity)
 			// ToolBow Tools
 			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
 			{
-				tgunmodes_helper_t ToolBowModesinfo = gToolbowModes[i];
+				tbow_helper_t ToolBowModesinfo = gToolbowModes[i];
 				if (FStrEq(pcmd, ToolBowModesinfo.commandname))
 				{
 					pPlayer->m_iToolMode = ToolBowModesinfo.id;
@@ -863,7 +895,7 @@ void ClientCommand(edict_t* pEntity)
 		    // Render Tool: Render Mode
 			for (int i = 0; i < ARRAYSIZE(gRenderModeType); i++)
 			{
-				tgunmodes_helper_t rendertextureInfo = gRenderModeType[i];
+				tbow_helper_t rendertextureInfo = gRenderModeType[i];
 				if (FStrEq(pcmd, rendertextureInfo.commandname))
 				{
 					pPlayer->m_iToolRenderMode = rendertextureInfo.id;
@@ -874,7 +906,7 @@ void ClientCommand(edict_t* pEntity)
 			// Render Tool: Render FX
 			for (int i = 0; i < ARRAYSIZE(gRenderFXType); i++)
 			{
-				tgunmodes_helper_t renderInfo = gRenderFXType[i];
+				tbow_helper_t renderInfo = gRenderFXType[i];
 				if (FStrEq(pcmd, renderInfo.commandname))
 				{
 					pPlayer->m_iToolRenderFX = renderInfo.id;
@@ -978,6 +1010,22 @@ void ClientCommand(edict_t* pEntity)
 				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Bosses Disabled - gm_allow_spawn_bosses required\n");
 			}
 		}
+	}
+	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
+	{
+		if (allow_voices.value)
+		{
+			for (int i = 0; i < ARRAYSIZE(gVoices); i++)
+			{
+				voices_t voiceInfo = gVoices[i];
+				if (FStrEq(pcmd, voiceInfo.voicecommand))
+				{
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, voiceInfo.voicesentence, VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+				}
+			}
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTTALK, "Voices Disabled - gm_allow_voices required\n");
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
 	{

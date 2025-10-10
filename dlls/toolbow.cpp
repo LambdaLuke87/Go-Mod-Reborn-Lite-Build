@@ -374,7 +374,7 @@ bool CToolbow::Deploy()
 	m_bSpotVisible = true;
 	m_bLaserActive = true;
 
-	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "toolbow");
+	return DefaultDeploy("models/v_toolbow.mdl", "models/p_toolbow.mdl", TOOLBOW_DRAW, "bow");
 }
 
 void CToolbow::Holster()
