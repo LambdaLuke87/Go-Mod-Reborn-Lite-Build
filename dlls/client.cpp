@@ -1729,8 +1729,8 @@ void ClientPrecache()
 	PRECACHE_SOUND("common/wpn_denyselect.wav");
 
 
-	// geiger sounds
-	/* Six Unnecesary sound Precaches >:(
+	// geiger sounds - now are sentences
+	/* Six Unnecesary Precaches >:(
 	PRECACHE_SOUND("player/geiger6.wav");
 	PRECACHE_SOUND("player/geiger5.wav");
 	PRECACHE_SOUND("player/geiger4.wav");
