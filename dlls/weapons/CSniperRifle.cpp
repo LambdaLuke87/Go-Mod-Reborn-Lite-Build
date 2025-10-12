@@ -50,7 +50,7 @@ void CSniperRifle::Precache()
 	PRECACHE_SOUND("weapons/sniper_zoom.wav");
 	PRECACHE_SOUND("weapons/sniper_reload_first_seq.wav");
 	PRECACHE_SOUND("weapons/sniper_reload_second_seq.wav");
-	PRECACHE_SOUND("weapons/sniper_miss.wav");
+	//PRECACHE_SOUND("weapons/sniper_miss.wav"); UNUSED: Precache Optimization
 	PRECACHE_SOUND("weapons/sniper_bolt1.wav");
 	PRECACHE_SOUND("weapons/sniper_bolt2.wav");
 

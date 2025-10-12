@@ -261,7 +261,8 @@ voices_t gVoices[] =
 		{"voice_say18", "!PL_VOICEFRST17"},
 		{"voice_say19", "!PL_VOICEFRST18"},
 		{"voice_say20", "!PL_VOICEFRST19"},
-		{"voice_say21", "!PL_VOICEFRST20"}};
+		{"voice_say21", "!PL_VOICEFRST20"},
+		{"voice_say22", "!PL_VOICEFRST21"}};
 
 // GM6 Spawn Monster Trace
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)

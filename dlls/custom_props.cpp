@@ -53,7 +53,6 @@ void CChikenAnimal::Spawn()
 void CChikenAnimal::Precache()
 {
 	PRECACHE_MODEL("models/gomod/chiken_animal.mdl");
-	PRECACHE_SOUND("misc/killChicken.wav");
 	m_iChikenGibs = PRECACHE_MODEL("models/fleshgibs.mdl");
 }
 
@@ -75,7 +74,7 @@ int CChikenAnimal::Classify()
 void CChikenAnimal::Killed(entvars_t* pevAttacker, int iGib)
 {
     GibMonster();
-    EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "misc/killChicken.wav", 1.0, ATTN_NORM, 0, PITCH_NORM);
+    EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "!PL_VOICEFRST21", 1.0, ATTN_NORM, 0, PITCH_NORM);
 }
 
 void CChikenAnimal::GibMonster()

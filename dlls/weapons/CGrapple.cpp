@@ -57,7 +57,7 @@ void CGrapple::Precache()
 	PRECACHE_SOUND("weapons/bgrapple_fire.wav");
 	PRECACHE_SOUND("weapons/bgrapple_cough.wav");
 	PRECACHE_SOUND("weapons/bgrapple_pull.wav");
-	PRECACHE_SOUND("weapons/bgrapple_wait.wav");
+	//PRECACHE_SOUND("weapons/bgrapple_wait.wav"); UNUSED: Precache Optimization
 	PRECACHE_SOUND("weapons/alienweap_draw.wav");
 	PRECACHE_SOUND("barnacle/bcl_chew1.wav");
 	PRECACHE_SOUND("barnacle/bcl_chew2.wav");
