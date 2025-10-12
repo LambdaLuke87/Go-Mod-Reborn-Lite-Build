@@ -117,7 +117,7 @@ monster_t gProps[] =
 		{"xen_spore_medium"},
 		{"xen_spore_large"},
 		{"prop_chiken"},
-		{"prop_colored_chummy"},
+		{"prop_chumtoad"},
 		{"prop_c4"}};
 
 

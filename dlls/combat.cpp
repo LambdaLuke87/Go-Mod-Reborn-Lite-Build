@@ -88,7 +88,17 @@ const MonsterInfo gMonsterInfos[] =
 		{34, "monster_alien_babyvoltigore"},
 		{35, "monster_human_grunt_ally"},
 		{36, "monster_human_medic_ally"},
-		{37, "monster_human_torch_ally"}};
+		{37, "monster_human_torch_ally"},
+		{38, "xen_hair"},
+		{39, "xen_tree"},
+		{40, "xen_plantlight"},
+		{41, "xen_spore_small"},
+		{42, "xen_spore_medium"},
+		{43, "xen_spore_large"},
+		{44, "prop_chiken"},
+		{45, "prop_chumtoad"},
+		{46, "prop_c4"},
+		{47, "prop_waspcamera"}};
 
 int MonsterInfo::GetId(const char* name)
 {
