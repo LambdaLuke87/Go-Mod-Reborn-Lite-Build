@@ -318,6 +318,11 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 	{
 		if (pEntity->IsBSPModel())
 		{
+			// verify if is water or another liquid
+			int contents = POINT_CONTENTS(tr.vecEndPos);
+			if (contents == CONTENTS_WATER || contents == CONTENTS_SLIME || contents == CONTENTS_LAVA)
+				return nullptr; // then ignore
+
 			if (pEntity->edict() != INDEXENT(0) && pEntity->pev->movetype == MOVETYPE_PUSHSTEP)
 				return pEntity;
 		}
