@@ -453,6 +453,12 @@ public:
 	bool m_fGiveItemMode;
 	bool m_fUseFrontSpawn;
 
+	// Physgun Stuff
+	CBaseEntity* m_pPhysgunEnt;
+	float m_flPhysgunDist;
+	float m_flPhysgunHor;
+	float m_flPhysgunVert;
+
 public:
 	void PhysGunHandler(int mode);
 };

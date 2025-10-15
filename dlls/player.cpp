@@ -151,6 +151,11 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorR, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorG, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorB, FIELD_INTEGER),
+
+		DEFINE_FIELD(CBasePlayer, m_pPhysgunEnt, FIELD_CLASSPTR),
+		DEFINE_FIELD(CBasePlayer, m_flPhysgunDist, FIELD_FLOAT),
+		DEFINE_FIELD(CBasePlayer, m_flPhysgunHor, FIELD_FLOAT),
+		DEFINE_FIELD(CBasePlayer, m_flPhysgunVert, FIELD_FLOAT),
 };
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer);
@@ -3350,6 +3355,12 @@ void CBasePlayer::Spawn()
 	m_bitsDamageType = 0;
 	m_afPhysicsFlags = 0;
 	m_fLongJump = false; // no longjump module.
+
+	// physgun
+	m_pPhysgunEnt = NULL;
+	m_flPhysgunDist = 150.0f;
+	m_flPhysgunHor = 0.0f;
+	m_flPhysgunVert = 0.0f;
 
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "slj", "0");
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
