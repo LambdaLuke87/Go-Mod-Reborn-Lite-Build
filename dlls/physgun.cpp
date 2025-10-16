@@ -250,6 +250,12 @@ void CPhysgun::ItemThink()
 				angleadd.y = gpGlobals->frametime * 300.0f;
 			}
 
+			// ignore func_pushables: BSP Models should not be rotated
+			if (FClassnameIs(m_pPlayer->m_pPhysgunEnt->pev, "func_pushable"))
+			{
+				angleadd = g_vecZero;
+			}
+
 			m_pPlayer->m_pPhysgunEnt->pev->angles = m_pPlayer->m_pPhysgunEnt->pev->angles + angleadd;
 
 			if (m_pPlayer->pev->button & IN_RELOAD)
@@ -319,12 +325,21 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 		if (pEntity->IsBSPModel())
 		{
 			// verify if is water or another liquid
-			int contents = POINT_CONTENTS(tr.vecEndPos);
+			/*int contents = POINT_CONTENTS(tr.vecEndPos);
 			if (contents == CONTENTS_WATER || contents == CONTENTS_SLIME || contents == CONTENTS_LAVA)
 				return nullptr; // then ignore
 
 			if (pEntity->edict() != INDEXENT(0) && pEntity->pev->movetype == MOVETYPE_PUSHSTEP)
+				return pEntity;*/
+
+			// only func_pushable can be used
+			if (FClassnameIs(pEntity->pev, "func_pushable"))
+			{
 				return pEntity;
+			}
+
+			// ignore the rest
+			return nullptr;
 		}
 		else
 			return pEntity;
