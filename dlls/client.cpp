@@ -175,61 +175,60 @@ weapon_t gWeapons[] =
 struct tbow_helper_t
 {
 	const char* commandname;
-	int id;
-	char* toolprintname;
+	const char* toolprintname;
 };
 
 // Toolbow Modes
 tbow_helper_t gToolbowModes[] =
 	{
-		{"button_tool_none", 1, "None"},
-		{"button_tool_duplicator", 2, "Duplicator"},
-		{"button_tool_remover", 3, "Remover"},
-		{"button_tool_gib", 4, "Gibber"},
-		{"button_tool_poser", 5, "Poser"},
-		{"button_tool_camera", 6, "Camera"},
-		{"button_tool_render", 7, "Render"},
-		{"button_tool_health_set", 8, "Health Modify"},
-		{"button_tool_no_collide", 9, "No Collide"},
-		{"button_tool_take_damage", 10, "Take Damage"},
-		{"button_tool_blood_color", 11, "Blood Color"},
-		{"button_tool_frame_set", 12, "Frame Editor"},
-		{"button_tool_teleporter", 13, "Teleporter"},
-		{"button_tool_glowsticks", 14, "Glowsticks"}};
+		{"button_tool_none", "None"},
+		{"button_tool_duplicator", "Duplicator"},
+		{"button_tool_remover", "Remover"},
+		{"button_tool_gib", "Gibber"},
+		{"button_tool_poser", "Poser"},
+		{"button_tool_camera", "Camera"},
+		{"button_tool_render", "Render"},
+		{"button_tool_health_set", "Health Modify"},
+		{"button_tool_no_collide", "No Collide"},
+		{"button_tool_take_damage", "Take Damage"},
+		{"button_tool_blood_color", "Blood Color"},
+		{"button_tool_frame_set", "Frame Editor"},
+		{"button_tool_teleporter", "Teleporter"},
+		{"button_tool_glowsticks", "Glowsticks"}};
 
 
 // Render Tool: Render Mode
 tbow_helper_t gRenderModeType[] =
 	{
-		{"button_rendermode_normal", 0, "Normal"},
-		{"button_rendermode_color", 1, "Color"},
-		{"button_rendermode_texture", 2, "Texture"},
-		{"button_rendermode_glow", 3, "Glow"},
-		{"button_rendermode_solid", 4, "Solid"},
-		{"button_rendermode_additive", 5, "Additive"}};
+		{"button_rendermode_normal", "Normal"},
+		{"button_rendermode_color", "Color"},
+		{"button_rendermode_texture", "Texture"},
+		{"button_rendermode_glow", "Glow"},
+		{"button_rendermode_solid", "Solid"},
+		{"button_rendermode_additive", "Additive"}};
 
 // Render Tool: Render FX
 tbow_helper_t gRenderFXType[] =
 	{
-		{"button_renderfx_normal", 0, "Normal"},
-		{"button_renderfx_slow_pulse", 1, "Slow Pulse"},
-		{"button_renderfx_fast_pulse", 2, "Fast Pulse"},
-		{"button_renderfx_slow_wide_pulse", 3, "Slow Wide Pulse"},
-		{"button_renderfx_fast_wide_pulse", 4, "Fast Wide Pulse"},
-		{"button_renderfx_slow_fade_away", 5, "Slow Fade Away"},
-		{"button_renderfx_fast_fade_away", 6, "Fast Fade Away"},
-		{"button_renderfx_slow_become_solid", 7, "Slow Become Solid"},
-		{"button_renderfx_fast_become_solid", 8, "Fast Become Solid"},
-		{"button_renderfx_slow_strobe", 9, "Slow Strobe"},
-		{"button_renderfx_fast_strobe", 10, "Fast Strobe"},
-		{"button_renderfx_faster_strobe", 11, "Faster Strobe"},
-		{"button_renderfx_slow_flicker", 12, "Slow Flicker"},
-		{"button_renderfx_fast_flicker", 13, "Fast Flicker"},
-		{"button_renderfx_constant_glow", 14, "Constant Glow"},
-		{"button_renderfx_distort", 15, "Distort"},
-		{"button_renderfx_hologram", 16, "Hologram"},
-		{"button_renderfx_explode", 17, "Explode"},
-		{"button_renderfx_glow_shell", 18, "Glow Shell"}};
+		{"button_renderfx_normal", "Normal"},
+		{"button_renderfx_slow_pulse", "Slow Pulse"},
+		{"button_renderfx_fast_pulse", "Fast Pulse"},
+		{"button_renderfx_slow_wide_pulse", "Slow Wide Pulse"},
+		{"button_renderfx_fast_wide_pulse", "Fast Wide Pulse"},
+		{"button_renderfx_slow_fade_away", "Slow Fade Away"},
+		{"button_renderfx_fast_fade_away", "Fast Fade Away"},
+		{"button_renderfx_slow_become_solid", "Slow Become Solid"},
+		{"button_renderfx_fast_become_solid", "Fast Become Solid"},
+		{"button_renderfx_slow_strobe", "Slow Strobe"},
+		{"button_renderfx_fast_strobe", "Fast Strobe"},
+		{"button_renderfx_faster_strobe", "Faster Strobe"},
+		{"button_renderfx_slow_flicker", "Slow Flicker"},
+		{"button_renderfx_fast_flicker", "Fast Flicker"},
+		{"button_renderfx_constant_glow", "Constant Glow"},
+		{"button_renderfx_distort", "Distort"},
+		{"button_renderfx_hologram", "Hologram"},
+		{"button_renderfx_explode", "Explode"},
+		{"button_renderfx_glow_shell", "Glow Shell"}};
 
 
 struct voices_t
@@ -296,6 +295,26 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 		CBaseEntity* pItem = CBasePlayer::Create(sClassname, tr.vecEndPos, vAngle);
 		pItem->pev->spawnflags |= SF_NORESPAWN;
 	}
+}
+
+// HELPER: Render color and amount simplified
+void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char* name, int& var, int argc, const char* argv1)
+{
+	bool canChange = (!UTIL_IsMultiplayer() || (UTIL_IsMultiplayer() && IsSandBox() && argc > 1));
+
+	if (canChange)
+	{
+		var = atoi(argv1);
+
+		if (var > 255)
+			var = 255;
+		if (var < 0)
+			var = 0;
+
+		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed %s\" to \"%d\"\n", name, var));
+	}
+	else
+		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"%s\" is \"%d\"\n", name, var));
 }
 
 void LinkUserMessages();
@@ -880,10 +899,10 @@ void ClientCommand(edict_t* pEntity)
 			// ToolBow Tools
 			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
 			{
-				tbow_helper_t ToolBowModesinfo = gToolbowModes[i];
+				const tbow_helper_t& ToolBowModesinfo = gToolbowModes[i];
 				if (FStrEq(pcmd, ToolBowModesinfo.commandname))
 				{
-					pPlayer->m_iToolMode = ToolBowModesinfo.id;
+					pPlayer->m_iToolMode = i + 1;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolBowModesinfo.toolprintname));
 				
 					// Change ToolBow Skin
@@ -896,10 +915,10 @@ void ClientCommand(edict_t* pEntity)
 		    // Render Tool: Render Mode
 			for (int i = 0; i < ARRAYSIZE(gRenderModeType); i++)
 			{
-				tbow_helper_t rendertextureInfo = gRenderModeType[i];
+				const tbow_helper_t& rendertextureInfo = gRenderModeType[i];
 				if (FStrEq(pcmd, rendertextureInfo.commandname))
 				{
-					pPlayer->m_iToolRenderMode = rendertextureInfo.id;
+					pPlayer->m_iToolRenderMode = i;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render Mode to [%s]\n", rendertextureInfo.toolprintname));
 				}
 			}
@@ -907,10 +926,10 @@ void ClientCommand(edict_t* pEntity)
 			// Render Tool: Render FX
 			for (int i = 0; i < ARRAYSIZE(gRenderFXType); i++)
 			{
-				tbow_helper_t renderInfo = gRenderFXType[i];
+				const tbow_helper_t& renderInfo = gRenderFXType[i];
 				if (FStrEq(pcmd, renderInfo.commandname))
 				{
-					pPlayer->m_iToolRenderFX = renderInfo.id;
+					pPlayer->m_iToolRenderFX = i;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render FX to [%s]\n", renderInfo.toolprintname));
 				}
 			}
@@ -1030,99 +1049,19 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
-		{
-			player->m_iToolRenderColorR = atoi(CMD_ARGV(1));
-
-			if (player->m_iToolRenderColorR > 255)
-			{
-				player->m_iToolRenderColorR = 255;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
-			}
-			else if (player->m_iToolRenderColorR < 0)
-			{
-				player->m_iToolRenderColorR = 0;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
-			}
-			else
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed red render color\" to \"%d\"\n", (int)player->m_iToolRenderColorR));
-		}
-		else
-		{
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"red render color\" is \"%d\"\n", (int)player->m_iToolRenderColorR));
-		}
+		GoMod_SetToolRenderValue(player, pEntity, "red render color", player->m_iToolRenderColorR, CMD_ARGC(), CMD_ARGV(1));
 	}
 	else if (FStrEq(pcmd, "render_color_green"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
-		{
-			player->m_iToolRenderColorG = atoi(CMD_ARGV(1));
-
-			if (player->m_iToolRenderColorG > 255)
-			{
-				player->m_iToolRenderColorG = 255;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
-			}
-			else if (player->m_iToolRenderColorG < 0)
-			{
-				player->m_iToolRenderColorG = 0;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
-			}
-			else
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed green render color\" to \"%d\"\n", (int)player->m_iToolRenderColorG));
-		}
-		else
-		{
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"green render color\" is \"%d\"\n", (int)player->m_iToolRenderColorG));
-		}
+		GoMod_SetToolRenderValue(player, pEntity, "green render color", player->m_iToolRenderColorG, CMD_ARGC(), CMD_ARGV(1));
 	}
 	else if (FStrEq(pcmd, "render_color_blue"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
-		{
-			player->m_iToolRenderColorB = atoi(CMD_ARGV(1));
-
-			if (player->m_iToolRenderColorB > 255)
-			{
-				player->m_iToolRenderColorB = 255;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
-			}
-			else if (player->m_iToolRenderColorB < 0)
-			{
-				player->m_iToolRenderColorB = 0;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
-			}
-			else
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed blue render color\" to \"%d\"\n", (int)player->m_iToolRenderColorB));
-		}
-		else
-		{
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"blue render color\" is \"%d\"\n", (int)player->m_iToolRenderColorB));
-		}
+		GoMod_SetToolRenderValue(player, pEntity, "blue render color", player->m_iToolRenderColorB, CMD_ARGC(), CMD_ARGV(1));
 	}
 	else if (FStrEq(pcmd, "render_amount"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && CMD_ARGC() > 1)
-		{
-			player->m_iToolRenderAMT = atoi(CMD_ARGV(1));
-
-			if (player->m_iToolRenderAMT > 255)
-			{
-				player->m_iToolRenderAMT = 255;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"maximun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
-			}
-			else if (player->m_iToolRenderAMT < 0)
-			{
-				player->m_iToolRenderAMT = 0;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"minimun render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
-			}
-			else
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed render amount\" to \"%d\"\n", (int)player->m_iToolRenderAMT));
-		}
-		else
-		{
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"render amount\" is \"%d\"\n", (int)player->m_iToolRenderAMT));
-		}
+		GoMod_SetToolRenderValue(player, pEntity, "render amount", player->m_iToolRenderAMT, CMD_ARGC(), CMD_ARGV(1));
 	}
 
 	//In Opposing Force this is handled only by the CTF gamerules

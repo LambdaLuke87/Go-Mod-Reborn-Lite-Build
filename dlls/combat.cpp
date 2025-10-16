@@ -43,7 +43,6 @@ char* monster_name;
 
 struct MonsterInfo
 {
-	int id;
 	const char* classname;
 
 	static int GetId(const char* name);
@@ -52,62 +51,60 @@ struct MonsterInfo
 
 const MonsterInfo gMonsterInfos[] =
 	{
-		{1, "monster_alien_slave"},
-		{2, "monster_bullchicken"},
-		{3, "monster_headcrab"},
-		{4, "monster_babycrab"},
-		{5, "monster_houndeye"},
-		{6, "monster_alien_grunt"},
-		{7, "monster_alien_controller"},
-		{8, "monster_zombie"},
-		{9, "monster_zombie_barney"},
-		{10, "monster_zombie_soldier"},
-		{11, "monster_gargantua"},
-		{12, "monster_bigmomma"},
-		{13, "monster_ichthyosaur"},
-		{14, "monster_scientist"},
-		{15, "monster_cleansuit_scientist"},
-		{16, "monster_human_grunt"},
-		{17, "monster_barney"},
-		{18, "monster_otis"},
-		{19, "monster_male_assassin"},
-		{20, "monster_human_assassin"},
-		{21, "monster_apache"},
-		{22, "monster_sentry"},
-		{23, "monster_rat"},
-		{24, "monster_cockroach"},
-		{25, "monster_barnacle"},
-		{26, "monster_leech"},
-		{27, "monster_flyer"},
-		{28, "monster_gman"},
-		{29, "monster_gonome"},
-		{30, "monster_shocktrooper"},
-		{31, "monster_shockroach"},
-		{32, "monster_pitdrone"},
-		{33, "monster_alien_voltigore"},
-		{34, "monster_alien_babyvoltigore"},
-		{35, "monster_human_grunt_ally"},
-		{36, "monster_human_medic_ally"},
-		{37, "monster_human_torch_ally"},
-		{38, "xen_hair"},
-		{39, "xen_tree"},
-		{40, "xen_plantlight"},
-		{41, "xen_spore_small"},
-		{42, "xen_spore_medium"},
-		{43, "xen_spore_large"},
-		{44, "prop_chiken"},
-		{45, "prop_chumtoad"},
-		{46, "prop_c4"},
-		{47, "prop_waspcamera"}};
+		{"monster_alien_slave"},
+		{"monster_bullchicken"},
+		{"monster_headcrab"},
+		{"monster_babycrab"},
+		{"monster_houndeye"},
+		{"monster_alien_grunt"},
+		{"monster_alien_controller"},
+		{"monster_zombie"},
+		{"monster_zombie_barney"},
+		{"monster_zombie_soldier"},
+		{"monster_gargantua"},
+		{"monster_bigmomma"},
+		{"monster_ichthyosaur"},
+		{"monster_scientist"},
+		{"monster_cleansuit_scientist"},
+		{"monster_human_grunt"},
+		{"monster_barney"},
+		{"monster_otis"},
+		{"monster_male_assassin"},
+		{"monster_human_assassin"},
+		{"monster_apache"},
+		{"monster_sentry"},
+		{"monster_rat"},
+		{"monster_cockroach"},
+		{"monster_barnacle"},
+		{"monster_leech"},
+		{"monster_flyer"},
+		{"monster_gman"},
+		{"monster_gonome"},
+		{"monster_shocktrooper"},
+		{"monster_shockroach"},
+		{"monster_pitdrone"},
+		{"monster_alien_voltigore"},
+		{"monster_alien_babyvoltigore"},
+		{"monster_human_grunt_ally"},
+		{"monster_human_medic_ally"},
+		{"monster_human_torch_ally"},
+		{"xen_hair"},
+		{"xen_tree"},
+		{"xen_plantlight"},
+		{"xen_spore_small"},
+		{"xen_spore_medium"},
+		{"xen_spore_large"},
+		{"prop_chiken"},
+		{"prop_chumtoad"},
+		{"prop_c4"},
+		{"prop_waspcamera"}};
 
 int MonsterInfo::GetId(const char* name)
 {
-	for (const auto& mi : gMonsterInfos)
+	for (int i = 0; i < ARRAYSIZE(gMonsterInfos); i++)
 	{
-		if (FStrEq(mi.classname, name))
-		{
-			return mi.id;
-		}
+		if (FStrEq(gMonsterInfos[i].classname, name))
+			return i + 1;
 	}
 	return -1;
 }
