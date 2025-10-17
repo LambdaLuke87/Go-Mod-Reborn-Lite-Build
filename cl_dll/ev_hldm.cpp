@@ -1547,7 +1547,7 @@ void EV_TripmineFire(event_args_t* args)
 
 	//Hit something solid
 	if (tr.fraction < 1.0)
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(PHYSGUN_FIRE, 0);
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(TRIPMINE_DRAW, 0);
 
 	gEngfuncs.pEventAPI->EV_PopPMStates();
 }
