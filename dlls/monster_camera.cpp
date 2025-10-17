@@ -4,7 +4,7 @@
  *		     2009-2010 Ranger366 & FITAMOD (HLMODER)		          *
  *                                                                    *
  *           Updated and improved for Go-Mod: Reborn                  *
- *                  2023-2024 LambdaLuke87                            *
+ *                  2023-2025 LambdaLuke87                            *
  *														              *
  ********************************************************************/
 
@@ -16,8 +16,6 @@
 #include "schedule.h"
 #include "player.h"
 #include "weapons.h"
-
-CBasePlayer* camera_owner; // TODO: This system for defining the owner is pretty bad.
 
 class CCamera : public CBaseMonster
 {
@@ -61,18 +59,36 @@ bool CCamera ::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float
 
 CBaseEntity* CBaseEntity::CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner)
 {
-	edict_t* pent;
-	CBaseEntity* pEntity;
+	if (!pOwner)
+		return nullptr;
 
-	pent = CREATE_NAMED_ENTITY(MAKE_STRING("monster_camera"));
+	// delete previous cameras from the same owner
+	CBaseEntity* pEnt = nullptr;
+	while ((pEnt = UTIL_FindEntityByClassname(pEnt, "monster_camera")) != nullptr)
+	{
+		CCamera* pCam = dynamic_cast<CCamera*>(pEnt);
+		if (pCam && pCam->m_hPlayer == pOwner)
+		{
+			UTIL_Remove(pCam);
+			break; // only one camera per player
+		}
+	}
 
-	pEntity = Instance(pent);
-	pEntity->pev->origin = vecOrigin;
-	pEntity->pev->angles = vecAngles;
-	camera_owner = pOwner;
+	// create new Camera
+	edict_t* pent = CREATE_NAMED_ENTITY(MAKE_STRING("monster_camera"));
+	if (!pent)
+		return nullptr;
 
-	DispatchSpawn(pEntity->edict());
-	return pEntity;
+	CCamera* pCamera = static_cast<CCamera*>(Instance(pent));
+	if (!pCamera)
+		return nullptr;
+
+	pCamera->pev->origin = vecOrigin;
+	pCamera->pev->angles = vecAngles;
+	pCamera->m_hPlayer = pOwner; // assign owner directly
+
+	DispatchSpawn(pCamera->edict());
+	return pCamera;
 }
 
 //=========================================================
@@ -82,8 +98,11 @@ void CCamera::Spawn()
 {
 	Precache();
 
-	if (camera_owner == NULL) // if an owner was not defined, then remove it
+	if (!m_hPlayer)
+	{
 		UTIL_Remove(this);
+		return;
+	}
 
 	SET_MODEL(ENT(pev), "models/gomod/camera.mdl");
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
@@ -97,7 +116,6 @@ void CCamera::Spawn()
 	pev->takedamage = DAMAGE_NO;
 	pev->flags |= FL_MONSTER;
 
-	m_hPlayer = camera_owner;
 	MonsterInit();
 
 	pev->origin.z += 25;
