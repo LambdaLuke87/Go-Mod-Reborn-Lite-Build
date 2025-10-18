@@ -20,6 +20,8 @@
 #include "gamerules.h"
 #ifndef CLIENT_DLL
 #include "game.h"
+
+extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 #endif
 
 //=====================================================================
@@ -402,8 +404,8 @@ void CToolbow::PrimaryAttack()
 
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	Vector vecSrc = m_pPlayer->GetGunPosition( );
-	Vector vecSrcBalls = m_pPlayer->pev->origin;
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecPlayerOrigin = m_pPlayer->pev->origin;
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
@@ -462,12 +464,12 @@ void CToolbow::PrimaryAttack()
 						}
 						else
 						{
-							MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecSrcBalls);
+							MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecPlayerOrigin);
 							WRITE_BYTE(TE_SPRITE);
-							WRITE_COORD(vecSrcBalls.x);
+							WRITE_COORD(vecPlayerOrigin.x);
 							// pos
-							WRITE_COORD(vecSrcBalls.y);
-							WRITE_COORD(vecSrcBalls.z);
+							WRITE_COORD(vecPlayerOrigin.y);
+							WRITE_COORD(vecPlayerOrigin.z);
 							WRITE_SHORT(m_iTeleport); // model
 							WRITE_BYTE(23);			  // size * 10
 							WRITE_BYTE(128);		  // brightness
@@ -489,7 +491,7 @@ void CToolbow::PrimaryAttack()
 	{
 		Vector vecThrow = gpGlobals->v_forward * 274 + m_pPlayer->pev->velocity;
 
-		CBaseEntity* pSatchel = Create("item_glowstick", vecSrcBalls, Vector(0, 0, 0), m_pPlayer->edict());
+		CBaseEntity* pSatchel = Create("item_glowstick", vecPlayerOrigin, Vector(0, 0, 0), m_pPlayer->edict());
 		pSatchel->pev->velocity = vecThrow;
 	}
 	else
@@ -527,7 +529,8 @@ void CToolbow::SecondaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecPlayerOrigin = m_pPlayer->pev->origin;
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
 
@@ -537,6 +540,39 @@ void CToolbow::SecondaryAttack()
 #ifndef CLIENT_DLL
 		CGib::SpawnRandomGibs(pev, 1, false);
 #endif
+	}
+	else if (m_pPlayer->m_iToolMode == 13)
+	{
+		MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecPlayerOrigin);
+		WRITE_BYTE(TE_SPRITE);
+		WRITE_COORD(vecPlayerOrigin.x);
+		// pos
+		WRITE_COORD(vecPlayerOrigin.y);
+		WRITE_COORD(vecPlayerOrigin.z);
+		WRITE_SHORT(m_iTeleport); // model
+		WRITE_BYTE(23);			  // size * 10
+		WRITE_BYTE(128);		  // brightness
+		MESSAGE_END();
+
+#ifndef CLIENT_DLL
+		CBaseEntity* pDestination;
+
+		pDestination = GET_PRIVATE<CBaseEntity>(EntSelectSpawnPoint(m_pPlayer));
+
+		if (!pDestination)
+			pDestination = g_pLastSpawn;
+
+		Vector vecEnd = pDestination->pev->origin;
+
+		vecEnd.z -= 100;
+
+		TraceResult tr;
+
+		UTIL_TraceLine(pDestination->pev->origin, vecEnd, ignore_monsters, edict(), &tr);
+
+		UTIL_SetOrigin(m_pPlayer->pev, tr.vecEndPos + Vector(0, 0, 37));
+#endif
+		EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/displacer_impact.wav", 1.0, ATTN_NORM);
 	}
 	else if (m_pPlayer->m_iToolMode == 14)
 	{
