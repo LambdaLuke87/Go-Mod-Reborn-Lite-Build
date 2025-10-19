@@ -843,57 +843,25 @@ void ClientCommand(edict_t* pEntity)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-			if (FStrEq(pcmd, "button_allied_set"))
+			if (FStrEq(pcmd, "button_ai_set"))
 			{
-				if (pPlayer->m_fUseAlliedMode)
-				{
-					pPlayer->m_fUseAlliedMode = false;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "NPC classify to default\n");
-				}
-				else
-				{
-					pPlayer->m_fUseAlliedMode = true;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "NPC classify to alternate/allieds\n");
-				}
+				CVAR_SET_FLOAT("gm_ai_disable", !npc_noai.value);
+				UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s changed NPC AI: %s\n", STRING((CBasePlayer*)pPlayer->pev->netname), !npc_noai.value ? "ENABLED" : "DISABLED"));
 			}
-			else if (FStrEq(pcmd, "button_ai_set"))
+			else if (FStrEq(pcmd, "button_allied_set"))
 			{
-				if (npc_noai.value)
-				{
-					CVAR_SET_FLOAT("gm_ai_disable", 0);
-					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s enabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
-				}
-				else
-				{
-					CVAR_SET_FLOAT("gm_ai_disable", 1);
-					UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s disabled NPC AI\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
-				}
+				pPlayer->m_fUseAlliedMode = !pPlayer->m_fUseAlliedMode;
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("NPC classify to: %s\n", pPlayer->m_fUseAlliedMode ? "ALTERNATE/ALLIEDS" : "DEFAULT"));
 			}
 			else if (FStrEq(pcmd, "button_self_pickup"))
 			{
-				if (pPlayer->m_fGiveItemMode)
-				{
-					pPlayer->m_fGiveItemMode = false;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Give Mode\n");
-				}
-				else
-				{
-					pPlayer->m_fGiveItemMode = true;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Give Mode\n");
-				}
+				pPlayer->m_fGiveItemMode = !pPlayer->m_fGiveItemMode;
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("Give Mode: %s\n", pPlayer->m_fGiveItemMode ? "ENABLED" : "DISABLED"));
 			}
 			else if (FStrEq(pcmd, "button_front_spawn"))
 			{
-				if (pPlayer->m_fUseFrontSpawn)
-				{
-					pPlayer->m_fUseFrontSpawn = false;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Disabled Front Spawn\n");
-				}
-				else
-				{
-					pPlayer->m_fUseFrontSpawn = true;
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Enabled Front Spawn\n");
-				}
+				pPlayer->m_fUseFrontSpawn = !pPlayer->m_fUseFrontSpawn;
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("Front Spawn Mode: %s\n", pPlayer->m_fUseFrontSpawn ? "ENABLED" : "DISABLED"));
 			}
 
 			// ToolBow Tools
@@ -1026,9 +994,7 @@ void ClientCommand(edict_t* pEntity)
 			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
 
 			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle") && !allow_spawn_bosses.value)
-			{
 				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Bosses Disabled - gm_allow_spawn_bosses required\n");
-			}
 		}
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
