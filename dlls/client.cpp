@@ -947,18 +947,25 @@ void ClientCommand(edict_t* pEntity)
 				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 			}
-			else if (allow_spawn_bosses.value)
+			else if (FStrEq(pcmd, "button_monster_nihilanth"))
 			{
-				if (FStrEq(pcmd, "button_monster_nihilanth"))
+				if (allow_nihilant.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 					CBaseEntity::Create("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 				}
-				else if (FStrEq(pcmd, "button_monster_tentacle"))
+				else
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Nihilant Disabled - gm_allow_nihilant required\n");
+			}
+			else if (FStrEq(pcmd, "button_monster_tentacle"))
+			{
+				if (allow_tentacle.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
 				}
+				else
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Tentacle Disabled - gm_allow_tentacle required\n");
 			}
 
 			// Weapons/items Spawn
@@ -996,9 +1003,6 @@ void ClientCommand(edict_t* pEntity)
 
 			// TODO: This sound should be played on the clientside.
 			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
-
-			if (FStrEq(pcmd, "button_monster_nihilanth") || FStrEq(pcmd, "button_monster_tentacle") && !allow_spawn_bosses.value)
-				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Bosses Disabled - gm_allow_spawn_bosses required\n");
 		}
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
@@ -1683,9 +1687,12 @@ void ClientPrecache()
 			PRECACHE_MODEL("models/fungus(large).mdl");
 		}
 
-		if (allow_spawn_bosses.value)
+		if (allow_nihilant.value)
 		{
 			UTIL_PrecacheOther("monster_nihilanth");
+		}
+		if (allow_tentacle.value)
+		{
 			UTIL_PrecacheOther("monster_tentacle");
 		}
 	}
