@@ -374,6 +374,7 @@ public:
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
 	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
+	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
 	virtual bool FBecomeProne() { return false; }
@@ -410,6 +411,7 @@ public:
 	int m_fireState;
 
 	bool m_AltClass; // alternate classify, used for allied npcs mode
+	bool m_MenuCreated; // mark as an menu spawned entity
 
 	// Used by physgun
 	int m_movetype = 0;

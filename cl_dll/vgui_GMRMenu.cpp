@@ -254,6 +254,8 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 
 	ButtonHelper("#Gomod_MenuButton_NoAI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper("#Gomod_MenuButton_Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_MenuButton_undo", "button_npc_undo", iXPos + XRES(144), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper("#Gomod_MenuButton_remove", "button_npc_remove_all", iXPos + XRES(208), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 }
 
 CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)

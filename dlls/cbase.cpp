@@ -783,6 +783,45 @@ CBaseEntity* CBaseEntity::CreateCustom(const char* szName, const Vector& vecOrig
 	pEntity->pev->origin = vecOrigin;
 	pEntity->pev->angles = vecAngles;
 	pEntity->m_AltClass = IsAllied; // Allied/Alt Classify
+	pEntity->m_MenuCreated = true; // Menu Created
 	DispatchSpawn(pEntity->edict());
 	return pEntity;
+}
+
+CBaseEntity* CBaseEntity::RemoveCustom(bool isAll)
+{
+	CBaseEntity* pEnt = nullptr;
+	
+	if (!isAll)
+	{
+		while ((pEnt = UTIL_FindEntityInSphere(pEnt, g_vecZero, 99999)) != nullptr)
+		{
+			CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
+			if (pMonster && pMonster->m_MenuCreated)
+			{
+				UTIL_Remove(pMonster);
+				break;
+			}
+		}
+	}
+	else
+	{
+		while ((pEnt = UTIL_FindEntityInSphere(pEnt, g_vecZero, 99999)) != nullptr)
+		{
+			if (pEnt->pev && pEnt->pev->classname)
+			{
+				// verify if the class start with "monster_"
+				if (!strncmp(STRING(pEnt->pev->classname), "monster_", 8))
+				{
+					CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
+					if (pMonster && pMonster->m_MenuCreated)
+					{
+						UTIL_Remove(pMonster);
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
 }

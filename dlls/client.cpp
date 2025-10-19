@@ -863,6 +863,10 @@ void ClientCommand(edict_t* pEntity)
 				pPlayer->m_fUseFrontSpawn = !pPlayer->m_fUseFrontSpawn;
 				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("Front Spawn Mode: %s\n", pPlayer->m_fUseFrontSpawn ? "ENABLED" : "DISABLED"));
 			}
+			else if (FStrEq(pcmd, "button_npc_undo"))
+				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(false);
+			else if (FStrEq(pcmd, "button_npc_remove_all"))
+				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(true);
 
 			// ToolBow Tools
 			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
