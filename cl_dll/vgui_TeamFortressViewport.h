@@ -1645,13 +1645,13 @@ public:
 //============================================================
 class CGMMenuBase : public CMenuPanel
 {
-private:
-	CTransparentPanel* m_pPanel;
-
 public:
 	CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 	void ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall);
+	void ButtonHelperWithID(CommandButton*& newbutton, const char* text, const char* command, int x, int y, int wide, int tall);
+	void ButtonOptionHelper(const char* text, int option, int x, int y, int wide, int tall);
 
+	CTransparentPanel* m_pPanel;
 	CommandButton* m_pButtonLinkMenu;
 	CommandButton* m_pButtonSweepMenu;
 	CommandButton* m_pButtonItemsMenu;
@@ -1687,6 +1687,56 @@ class CMonstersMenu : public CGMMenuBase
 {
 public:
 	CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	void SetActiveInfo(int iShowText);
+
+	// Military Aliens
+	CommandButton* ButtonAlienController;
+	CommandButton* ButtonAlienGrunt;
+	CommandButton* ButtonAlienSlave;
+	CommandButton* ButtonGargantua;
+	CommandButton* ButtonShockTrooper;
+	CommandButton* ButtonVoltigore;
+	CommandButton* ButtonNihilant;
+
+	// Wildlife Aliens and Zombies
+	CommandButton* ButtonHeadcrab;
+	CommandButton* ButtonBabycrab;
+	CommandButton* ButtonShockRoach;
+	CommandButton* ButtonBabyVoltigore;
+	CommandButton* ButtonHoundeye;
+	CommandButton* ButtonBullsquid;
+	CommandButton* ButtonPitdrone;
+	CommandButton* ButtonBigMomma;
+	CommandButton* ButtonIchthyosaur;
+	CommandButton* ButtonZombie;
+	CommandButton* ButtonZombieBarney;
+	CommandButton* ButtonZombieSoldier;
+	CommandButton* ButtonGonome;
+	CommandButton* ButtonBarnacle;
+
+	// Friendly Humans
+	CommandButton* ButtonScientist;
+	CommandButton* ButtonClScientist;
+	CommandButton* ButtonBarney;
+	CommandButton* ButtonOtis;
+	CommandButton* ButtonAllyHgrunt;
+	CommandButton* ButtonMedicHgrunt;
+	CommandButton* ButtonTorchHgrunt;
+
+	// Enemy Humans and Machines
+	CommandButton* ButtonHGrunt;
+	CommandButton* ButtonMassassin;
+	CommandButton* ButtonFassassin;
+	CommandButton* ButtonApache;
+	CommandButton* ButtonSentry;
+
+	// Misc Monsters
+	CommandButton* ButtonBoid;
+	CommandButton* ButtonLeech;
+	CommandButton* ButtonCockRoach;
+	CommandButton* ButtonRat;
+	CommandButton* ButtonGman;
+	CommandButton* ButtonTentacle;
 };
 
 class CToolsMenu : public CGMMenuBase

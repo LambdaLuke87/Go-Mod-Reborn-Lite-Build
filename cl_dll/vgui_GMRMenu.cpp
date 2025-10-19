@@ -69,6 +69,27 @@ void CGMMenuBase::ButtonHelper(const char* text, const char* command, int x, int
 	EasyButton->setParent(this);
 }
 
+void CGMMenuBase::ButtonHelperWithID(CommandButton*& newbutton, const char* text, const char* command, int x, int y, int wide, int tall)
+{
+	newbutton = new CommandButton("", x, y, wide, tall);
+	newbutton->setVisible(false);
+	newbutton->m_bNoMarginSpace = true;
+	newbutton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
+	newbutton->addActionSignal(new CMenuHandler_StringCommand(command));
+	newbutton->setParent(this);
+}
+
+void CGMMenuBase::ButtonOptionHelper(const char* text, int option, int x, int y, int wide, int tall)
+{
+	CommandButton* ButtonCategories;
+
+	ButtonCategories = new CommandButton("", x, y, wide, tall);
+	ButtonCategories->m_bNoMarginSpace = true;
+	ButtonCategories->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
+	ButtonCategories->addInputSignal(new CHandler_MenuButtonOver(this, option));
+	ButtonCategories->setParent(this);
+}
+
 CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall)
 {
 	return new CLinkMenu(szMOTD, iTrans, iRemoveMe, x, y, wide, tall);
@@ -206,56 +227,144 @@ CMonstersMenu::CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, 
 	m_pButtonNPCMenu->setVisible(false);
 	m_pButtonAimMode->setVisible(true);
 
-	ButtonHelper("#Gomod_NPC_AlienController", "button_monster_alien_controller", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_AlienGrunt", "button_monster_alien_grunt", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_AlienSlave", "button_monster_alien_slave", iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Gargantua", "button_monster_gargantua", iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_ShockTrooper", "button_monster_shocktrooper", iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_ShockRoach", "button_monster_shockroach", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonOptionHelper("#Gomod_NPC_TAB1", 0, iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonOptionHelper("#Gomod_NPC_TAB2", 1, iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonOptionHelper("#Gomod_NPC_TAB3", 2, iXPos + XRES(144), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonOptionHelper("#Gomod_NPC_TAB4", 3, iXPos + XRES(208), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonOptionHelper("#Gomod_NPC_TAB5", 4, iXPos + XRES(272), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
-	ButtonHelper("#Gomod_NPC_Voltigore", "button_monster_alien_voltigore", iXPos + XRES(16), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_BabyVoltigore", "button_monster_alien_babyvoltigore", iXPos + XRES(80), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Pitdrone", "button_monster_pitdrone", iXPos + XRES(144), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Houndeye", "button_monster_houndeye", iXPos + XRES(208), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Bullsquid", "button_monster_bullchicken", iXPos + XRES(272), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Headcrab", "button_monster_headcrab", iXPos + XRES(336), iYPos + iYSize - YRES(198) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-
-	ButtonHelper("#Gomod_NPC_BabyCrab", "button_monster_babycrab", iXPos + XRES(16), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_BigMomma", "button_monster_bigmomma", iXPos + XRES(80), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Tentacle", "button_monster_tentacle", iXPos + XRES(144), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Leech", "button_monster_leech", iXPos + XRES(208), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Boid", "button_monster_flyer", iXPos + XRES(272), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Ichthyosaur", "button_monster_ichthyosaur", iXPos + XRES(336), iYPos + iYSize - YRES(172) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	// Military Aliens
+	ButtonHelperWithID(ButtonAlienSlave, "#Gomod_NPC_AlienSlave", "button_monster_alien_slave", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonAlienGrunt, "#Gomod_NPC_AlienGrunt", "button_monster_alien_grunt", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonAlienController, "#Gomod_NPC_AlienController", "button_monster_alien_controller", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonGargantua, "#Gomod_NPC_Gargantua", "button_monster_gargantua", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonShockTrooper, "#Gomod_NPC_ShockTrooper", "button_monster_shocktrooper", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonVoltigore, "#Gomod_NPC_Voltigore", "button_monster_alien_voltigore", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	
-	ButtonHelper("#Gomod_NPC_Gonome", "button_monster_gonome", iXPos + XRES(16), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Zombie", "button_monster_zombie", iXPos + XRES(80), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_ZombieBarney", "button_monster_zombie_barney", iXPos + XRES(144), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_ZombieSoldier", "button_monster_zombie_soldier", iXPos + XRES(208), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Barnacle", "button_monster_barnacle", iXPos + XRES(272), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Rat", "button_monster_rat", iXPos + XRES(336), iYPos + iYSize - YRES(146) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelperWithID(ButtonNihilant, "#Gomod_NPC_Nihilanth", "button_monster_nihilanth", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	
+	// Wildlife Aliens and Zombies
+	ButtonHelperWithID(ButtonHeadcrab, "#Gomod_NPC_Headcrab", "button_monster_headcrab", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBabycrab, "#Gomod_NPC_BabyCrab", "button_monster_babycrab", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonShockRoach, "#Gomod_NPC_ShockRoach", "button_monster_shockroach", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBabyVoltigore, "#Gomod_NPC_BabyVoltigore", "button_monster_alien_babyvoltigore", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonHoundeye, "#Gomod_NPC_Houndeye", "button_monster_houndeye", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBullsquid, "#Gomod_NPC_Bullsquid", "button_monster_bullchicken", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	
+	ButtonHelperWithID(ButtonPitdrone, "#Gomod_NPC_Pitdrone", "button_monster_pitdrone", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBigMomma, "#Gomod_NPC_BigMomma", "button_monster_bigmomma", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonZombie, "#Gomod_NPC_Zombie", "button_monster_zombie", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonZombieBarney, "#Gomod_NPC_ZombieBarney", "button_monster_zombie_barney", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonZombieSoldier, "#Gomod_NPC_ZombieSoldier", "button_monster_zombie_soldier", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonGonome, "#Gomod_NPC_Gonome", "button_monster_gonome", iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	
+	ButtonHelperWithID(ButtonIchthyosaur, "#Gomod_NPC_Ichthyosaur", "button_monster_ichthyosaur", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBarnacle, "#Gomod_NPC_Barnacle", "button_monster_barnacle", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("#Gomod_NPC_CockRoach", "button_monster_cockroach", iXPos + XRES(16), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Scientist", "button_monster_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_ClScientist", "button_monster_cleansuit_scientist", iXPos + XRES(144), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Barney", "button_monster_barney", iXPos + XRES(208), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Otis", "button_monster_otis", iXPos + XRES(272), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_AllyHgrunt", "button_monster_human_grunt_ally", iXPos + XRES(336), iYPos + iYSize - YRES(120) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	// Friendly Humans
+	ButtonHelperWithID(ButtonScientist, "#Gomod_NPC_Scientist", "button_monster_scientist", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonClScientist, "#Gomod_NPC_ClScientist", "button_monster_cleansuit_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonBarney, "#Gomod_NPC_Barney", "button_monster_barney", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonOtis, "#Gomod_NPC_Otis", "button_monster_otis", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonAllyHgrunt, "#Gomod_NPC_AllyHgrunt", "button_monster_human_grunt_ally", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonMedicHgrunt, "#Gomod_NPC_MedicHgrunt", "button_monster_human_medic_ally", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	
+	ButtonHelperWithID(ButtonTorchHgrunt, "#Gomod_NPC_TorchHgrunt", "button_monster_human_torch_ally", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	
+	// Enemy Humans and Machines
+	ButtonHelperWithID(ButtonHGrunt, "#Gomod_NPC_HGrunt", "button_monster_human_grunt", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonMassassin, "#Gomod_NPC_MAssassin", "button_monster_male_assassin", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonFassassin, "#Gomod_NPC_FAssassin", "button_monster_human_assassin", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonApache, "#Gomod_NPC_Apache", "button_monster_apache", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonSentry, "#Gomod_NPC_Sentry", "button_monster_sentry", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper("#Gomod_NPC_MedicHgrunt", "button_monster_human_medic_ally", iXPos + XRES(16), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_TorchHgrunt", "button_monster_human_torch_ally", iXPos + XRES(80), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_HGrunt", "button_monster_human_grunt", iXPos + XRES(144), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_MAssassin", "button_monster_male_assassin", iXPos + XRES(208), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_FAssassin", "button_monster_human_assassin", iXPos + XRES(272), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Apache", "button_monster_apache", iXPos + XRES(336), iYPos + iYSize - YRES(94) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-
-	ButtonHelper("#Gomod_NPC_Sentry", "button_monster_sentry", iXPos + XRES(16), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Gman", "button_monster_gman", iXPos + XRES(80), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper("#Gomod_NPC_Nihilanth", "button_monster_nihilanth", iXPos + XRES(144), iYPos + iYSize - YRES(68) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	// Misc Monsters
+	ButtonHelperWithID(ButtonBoid, "#Gomod_NPC_Boid", "button_monster_flyer", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonLeech, "#Gomod_NPC_Leech", "button_monster_leech", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonCockRoach, "#Gomod_NPC_CockRoach", "button_monster_cockroach", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonRat, "#Gomod_NPC_Rat", "button_monster_rat", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonGman, "#Gomod_NPC_Gman", "button_monster_gman", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelperWithID(ButtonTentacle, "#Gomod_NPC_Tentacle", "button_monster_tentacle", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	ButtonHelper("#Gomod_MenuButton_NoAI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper("#Gomod_MenuButton_Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper("#Gomod_MenuButton_undo", "button_npc_undo", iXPos + XRES(144), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper("#Gomod_MenuButton_remove", "button_npc_remove_all", iXPos + XRES(208), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+}
+
+void CMonstersMenu::SetActiveInfo(int iShowText)
+{
+	// Hide All
+	CommandButton* allButtons[] = {
+		ButtonAlienSlave, ButtonBullsquid, ButtonHeadcrab, ButtonBabycrab, ButtonHoundeye,
+		ButtonAlienGrunt, ButtonAlienController, ButtonZombie, ButtonZombieBarney, ButtonZombieSoldier,
+		ButtonGargantua, ButtonBigMomma, ButtonIchthyosaur, ButtonScientist, ButtonClScientist,
+		ButtonHGrunt, ButtonBarney, ButtonOtis, ButtonMassassin, ButtonFassassin,
+		ButtonApache, ButtonSentry, ButtonRat, ButtonCockRoach, ButtonBarnacle,
+		ButtonLeech, ButtonBoid, ButtonGman, ButtonGonome, ButtonShockTrooper,
+		ButtonShockRoach, ButtonPitdrone, ButtonVoltigore, ButtonBabyVoltigore, ButtonAllyHgrunt,
+		ButtonMedicHgrunt, ButtonTorchHgrunt, ButtonNihilant, ButtonTentacle};
+
+	for (int i = 0; i < ARRAYSIZE(allButtons); i++)
+	{
+		if (allButtons[i])
+			allButtons[i]->setVisible(false);
+	}
+
+	if (iShowText == 0) // Military Aliens
+	{
+		ButtonAlienSlave->setVisible(true);
+		ButtonAlienGrunt->setVisible(true);
+		ButtonAlienController->setVisible(true);
+		ButtonGargantua->setVisible(true);
+		ButtonShockTrooper->setVisible(true);
+		ButtonVoltigore->setVisible(true);
+		ButtonNihilant->setVisible(true);
+	}
+	else if (iShowText == 1) // Wildlife Aliens and Zombies
+	{
+		ButtonHeadcrab->setVisible(true);
+		ButtonBabycrab->setVisible(true);
+		ButtonShockRoach->setVisible(true);
+		ButtonBabyVoltigore->setVisible(true);
+		ButtonHoundeye->setVisible(true);
+		ButtonBullsquid->setVisible(true);
+		ButtonPitdrone->setVisible(true);
+		ButtonBigMomma->setVisible(true);
+		ButtonZombie->setVisible(true);
+		ButtonZombieBarney->setVisible(true);
+		ButtonZombieSoldier->setVisible(true);
+		ButtonGonome->setVisible(true);
+		ButtonIchthyosaur->setVisible(true);
+		ButtonBarnacle->setVisible(true);
+	}
+	else if (iShowText == 2) // Friendly Humans
+	{
+		ButtonScientist->setVisible(true);
+		ButtonClScientist->setVisible(true);
+		ButtonBarney->setVisible(true);
+		ButtonOtis->setVisible(true);
+		ButtonAllyHgrunt->setVisible(true);
+		ButtonMedicHgrunt->setVisible(true);
+		ButtonTorchHgrunt->setVisible(true);
+	}
+	else if (iShowText == 3) // Enemy Humans and Machines
+	{
+		ButtonHGrunt->setVisible(true);
+		ButtonMassassin->setVisible(true);
+		ButtonFassassin->setVisible(true);
+		ButtonApache->setVisible(true);
+		ButtonSentry->setVisible(true);
+	}
+	else if (iShowText == 4) // Misc Monsters
+	{
+		ButtonBoid->setVisible(true);
+		ButtonLeech->setVisible(true);
+		ButtonCockRoach->setVisible(true);
+		ButtonRat->setVisible(true);
+		ButtonGman->setVisible(true);
+		ButtonTentacle->setVisible(true);
+	}
 }
 
 CToolsMenu::CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
