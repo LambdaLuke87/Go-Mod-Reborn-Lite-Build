@@ -62,6 +62,7 @@ cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
 cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
 cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
+cvar_t spawn_limit = {"gm_spawn_limit", "1200", FCVAR_SERVER};
 cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
 cvar_t bigdecals_control = {"gm_big_decals_control", "0", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
@@ -705,6 +706,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_nihilant);
 	CVAR_REGISTER(&allow_tentacle);
 	CVAR_REGISTER(&glowstick_colors);
+	CVAR_REGISTER(&spawn_limit);
 	CVAR_REGISTER(&explosion_control);
 	CVAR_REGISTER(&bigdecals_control);
 	CVAR_REGISTER(&worlditems_respawn);

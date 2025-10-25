@@ -33,6 +33,8 @@
 #include "game.h"
 #include "UserMessages.h"
 
+extern bool IsSandBox();
+
 float UTIL_WeaponTimeBase()
 {
 #if defined(CLIENT_WEAPONS)
@@ -2582,4 +2584,9 @@ bool UTIL_IsMultiplayer()
 bool UTIL_IsCTF()
 {
 	return g_pGameRules->IsCTF();
+}
+
+bool UTIL_IsSandbox()
+{
+	return !UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox();
 }

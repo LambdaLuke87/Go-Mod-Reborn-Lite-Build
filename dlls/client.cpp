@@ -59,9 +59,6 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 
-extern bool IsSandBox();
-
-
 struct monster_t
 {
 	const char* classname;
@@ -181,54 +178,54 @@ struct tbow_helper_t
 // Toolbow Modes
 tbow_helper_t gToolbowModes[] =
 	{
-		{"button_tool_none", "None"},
-		{"button_tool_duplicator", "Duplicator"},
-		{"button_tool_remover", "Remover"},
-		{"button_tool_gib", "Gibber"},
-		{"button_tool_poser", "Poser"},
-		{"button_tool_camera", "Camera"},
-		{"button_tool_render", "Render"},
-		{"button_tool_health_set", "Health Modify"},
-		{"button_tool_no_collide", "No Collide"},
-		{"button_tool_take_damage", "Take Damage"},
-		{"button_tool_blood_color", "Blood Color"},
-		{"button_tool_frame_set", "Frame Editor"},
-		{"button_tool_teleporter", "Teleporter"},
-		{"button_tool_glowsticks", "Glowsticks"}};
+		{"none", "None"},
+		{"duplicator", "Duplicator"},
+		{"remover", "Remover"},
+		{"gibber", "Gibber"},
+		{"poser", "Poser"},
+		{"camera", "Camera"},
+		{"render", "Render"},
+		{"health_set", "Health Modify"},
+		{"no_collide", "No Collide"},
+		{"take_damage", "Take Damage"},
+		{"blood_color", "Blood Color"},
+		{"frame_set", "Frame Editor"},
+		{"teleporter", "Teleporter"},
+		{"glowsticks", "Glowsticks"}};
 
 
 // Render Tool: Render Mode
 tbow_helper_t gRenderModeType[] =
 	{
-		{"button_rendermode_normal", "Normal"},
-		{"button_rendermode_color", "Color"},
-		{"button_rendermode_texture", "Texture"},
-		{"button_rendermode_glow", "Glow"},
-		{"button_rendermode_solid", "Solid"},
-		{"button_rendermode_additive", "Additive"}};
+		{"normal", "Normal"},
+		{"color", "Color"},
+		{"texture", "Texture"},
+		{"glow", "Glow"},
+		{"solid", "Solid"},
+		{"additive", "Additive"}};
 
 // Render Tool: Render FX
 tbow_helper_t gRenderFXType[] =
 	{
-		{"button_renderfx_normal", "Normal"},
-		{"button_renderfx_slow_pulse", "Slow Pulse"},
-		{"button_renderfx_fast_pulse", "Fast Pulse"},
-		{"button_renderfx_slow_wide_pulse", "Slow Wide Pulse"},
-		{"button_renderfx_fast_wide_pulse", "Fast Wide Pulse"},
-		{"button_renderfx_slow_fade_away", "Slow Fade Away"},
-		{"button_renderfx_fast_fade_away", "Fast Fade Away"},
-		{"button_renderfx_slow_become_solid", "Slow Become Solid"},
-		{"button_renderfx_fast_become_solid", "Fast Become Solid"},
-		{"button_renderfx_slow_strobe", "Slow Strobe"},
-		{"button_renderfx_fast_strobe", "Fast Strobe"},
-		{"button_renderfx_faster_strobe", "Faster Strobe"},
-		{"button_renderfx_slow_flicker", "Slow Flicker"},
-		{"button_renderfx_fast_flicker", "Fast Flicker"},
-		{"button_renderfx_constant_glow", "Constant Glow"},
-		{"button_renderfx_distort", "Distort"},
-		{"button_renderfx_hologram", "Hologram"},
-		{"button_renderfx_explode", "Explode"},
-		{"button_renderfx_glow_shell", "Glow Shell"}};
+		{"normal", "Normal"},
+		{"slow_pulse", "Slow Pulse"},
+		{"fast_pulse", "Fast Pulse"},
+		{"slow_wide_pulse", "Slow Wide Pulse"},
+		{"fast_wide_pulse", "Fast Wide Pulse"},
+		{"slow_fade_away", "Slow Fade Away"},
+		{"fast_fade_away", "Fast Fade Away"},
+		{"slow_become_solid", "Slow Become Solid"},
+		{"fast_become_solid", "Fast Become Solid"},
+		{"slow_strobe", "Slow Strobe"},
+		{"fast_strobe", "Fast Strobe"},
+		{"faster_strobe", "Faster Strobe"},
+		{"slow_flicker", "Slow Flicker"},
+		{"fast_flicker", "Fast Flicker"},
+		{"constant_glow", "Constant Glow"},
+		{"distort", "Distort"},
+		{"hologram", "Hologram"},
+		{"explode", "Explode"},
+		{"glow_shell", "Glow Shell"}};
 
 
 struct voices_t
@@ -300,7 +297,7 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 // HELPER: Render color and amount simplified
 void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char* name, int& var, int argc, const char* argv1)
 {
-	bool canChange = (!UTIL_IsMultiplayer() || (UTIL_IsMultiplayer() && IsSandBox() && argc > 1));
+	bool canChange = (UTIL_IsSandbox() && argc > 1);
 
 	if (canChange)
 	{
@@ -787,6 +784,10 @@ void ClientCommand(edict_t* pEntity)
 
 	auto player = GetClassPtr<CBasePlayer>(reinterpret_cast<CBasePlayer*>(&pEntity->v));
 
+	const char* combinetoprefix = CMD_ARGV(1);
+
+	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
 	if (FStrEq(pcmd, "say"))
 	{
 		Host_Say(pEntity, false);
@@ -837,9 +838,167 @@ void ClientCommand(edict_t* pEntity)
 		player->SelectLastItem();
 	}
 	// Go-Mod Reborn Sandbox Mode Commands
+	else if (FStrEq(pcmd, "summon")) // Summon Entities
+	{
+		if (UTIL_IsSandbox())
+		{
+			// Spawn Monsters
+			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
+			{
+				monster_t monsterInfo = gMonsters[i];
+				if (FStrEq(combinetoprefix, monsterInfo.classname))
+				{
+					if (pPlayer->m_fUseFrontSpawn)
+					{
+						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
+					}
+					else
+						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
+				}
+			}
+
+			// Spawn Props
+			for (int i = 0; i < ARRAYSIZE(gProps); i++)
+			{
+				monster_t xenpropInfo = gProps[i];
+				if (FStrEq(combinetoprefix, xenpropInfo.classname))
+				{
+					if (allow_props.value)
+						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
+					else
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
+				}
+			}
+
+			// No listed Spawns
+			if (FStrEq(combinetoprefix, "monster_apache"))
+			{
+				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+			}
+			else if (FStrEq(combinetoprefix, "monster_nihilanth"))
+			{
+				if (allow_nihilant.value)
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+					CBaseEntity::Create("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				}
+				else
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Nihilant Disabled - gm_allow_nihilant required\n");
+			}
+			else if (FStrEq(combinetoprefix, "monster_tentacle"))
+			{
+				if (allow_tentacle.value)
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				}
+				else
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Tentacle Disabled - gm_allow_tentacle required\n");
+			}
+
+			// Weapons/items Spawn
+			for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
+			{
+				weapon_t weaponInfo = gWeapons[i];
+				if (FStrEq(combinetoprefix, weaponInfo.classname))
+				{
+					if (pPlayer->m_fGiveItemMode)
+						pPlayer->GiveCurrentItem(weaponInfo.classname);
+					else if (pPlayer->m_fUseFrontSpawn)
+					{
+						edict_t* pent;
+						int istr = MAKE_STRING(weaponInfo.classname);
+
+						pent = CREATE_NAMED_ENTITY(istr);
+						VARS(pent)->origin = pev->origin;
+						pent->v.spawnflags |= SF_NORESPAWN;
+
+						DispatchSpawn(pent);
+						DispatchTouch(pent, ENT(pev));
+					}
+					else
+						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
+				}
+			}
+
+			// not listed ammo_spore
+			// because it is generated in the air
+			if (FStrEq(combinetoprefix, "ammo_spore"))
+				GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+	}
+	else if (FStrEq(pcmd, "tool")) // ToolBow Tools - Select Tool
+	{
+		if (UTIL_IsSandbox())
+		{
+			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
+			{
+				const tbow_helper_t& ToolBowModesinfo = gToolbowModes[i];
+				if (FStrEq(combinetoprefix, ToolBowModesinfo.commandname))
+				{
+					pPlayer->m_iToolMode = i + 1;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolBowModesinfo.toolprintname));
+
+					// Change ToolBow Skin
+					MESSAGE_BEGIN(MSG_ONE, gmsgToolBowSkin, NULL, pPlayer->edict());
+					WRITE_SHORT(pPlayer->m_iToolMode);
+					MESSAGE_END();
+
+					// TODO: This sound should be played on the clientside.
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
+				}
+			}
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+	}
+	else if (FStrEq(pcmd, "rendermode")) // Render Tool Mode - Select Render Mode
+	{
+		if (UTIL_IsSandbox())
+		{
+			for (int i = 0; i < ARRAYSIZE(gRenderModeType); i++)
+			{
+				const tbow_helper_t& rendertextureInfo = gRenderModeType[i];
+				if (FStrEq(combinetoprefix, rendertextureInfo.commandname))
+				{
+					pPlayer->m_iToolRenderMode = i;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render Mode to [%s]\n", rendertextureInfo.toolprintname));
+
+					// TODO: This sound should be played on the clientside.
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
+				}
+			}
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+	}
+	else if (FStrEq(pcmd, "renderfx")) // Render Tool FX - Select Render FX
+	{
+		if (UTIL_IsSandbox())
+		{
+			for (int i = 0; i < ARRAYSIZE(gRenderFXType); i++)
+			{
+				const tbow_helper_t& renderInfo = gRenderFXType[i];
+				if (FStrEq(combinetoprefix, renderInfo.commandname))
+				{
+					pPlayer->m_iToolRenderFX = i;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render FX to [%s]\n", renderInfo.toolprintname));
+				
+					// TODO: This sound should be played on the clientside.
+					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
+				}
+			}
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+	}
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox()) // is sandbox mode?
+		if (UTIL_IsSandbox())
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
@@ -868,141 +1027,8 @@ void ClientCommand(edict_t* pEntity)
 			else if (FStrEq(pcmd, "button_npc_remove_all"))
 				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(true);
 
-			// ToolBow Tools
-			for (int i = 0; i < ARRAYSIZE(gToolbowModes); i++)
-			{
-				const tbow_helper_t& ToolBowModesinfo = gToolbowModes[i];
-				if (FStrEq(pcmd, ToolBowModesinfo.commandname))
-				{
-					pPlayer->m_iToolMode = i + 1;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed tool to [%s]\n", ToolBowModesinfo.toolprintname));
-				
-					// Change ToolBow Skin
-					MESSAGE_BEGIN(MSG_ONE, gmsgToolBowSkin, NULL, pPlayer->edict());
-					WRITE_SHORT(pPlayer->m_iToolMode);
-					MESSAGE_END();
-				}
-			}
-
-		    // Render Tool: Render Mode
-			for (int i = 0; i < ARRAYSIZE(gRenderModeType); i++)
-			{
-				const tbow_helper_t& rendertextureInfo = gRenderModeType[i];
-				if (FStrEq(pcmd, rendertextureInfo.commandname))
-				{
-					pPlayer->m_iToolRenderMode = i;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render Mode to [%s]\n", rendertextureInfo.toolprintname));
-				}
-			}
-
-			// Render Tool: Render FX
-			for (int i = 0; i < ARRAYSIZE(gRenderFXType); i++)
-			{
-				const tbow_helper_t& renderInfo = gRenderFXType[i];
-				if (FStrEq(pcmd, renderInfo.commandname))
-				{
-					pPlayer->m_iToolRenderFX = i;
-					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render FX to [%s]\n", renderInfo.toolprintname));
-				}
-			}
-
-			// Spawn Monsters
-			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
-			{
-				monster_t monsterInfo = gMonsters[i];
-				char combinetoprefix[512];
-				strcpy(combinetoprefix, "button_");
-				strcat(combinetoprefix, monsterInfo.classname);
-				if (FStrEq(pcmd, combinetoprefix))
-				{
-					if (pPlayer->m_fUseFrontSpawn)
-					{
-						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
-					}
-					else
-						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
-				}
-			}
-
-			// Spawn Props
-			for (int i = 0; i < ARRAYSIZE(gProps); i++)
-			{
-				monster_t xenpropInfo = gProps[i];
-				char combinetoprefix[512];
-				strcpy(combinetoprefix, "button_");
-				strcat(combinetoprefix, xenpropInfo.classname);
-				if (FStrEq(pcmd, combinetoprefix))
-				{
-					if (allow_props.value)
-						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
-					else
-						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
-				}
-			}
-
-			// No listed Spawns
-			if (FStrEq(pcmd, "button_monster_apache"))
-			{
-				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
-			}
-			else if (FStrEq(pcmd, "button_monster_nihilanth"))
-			{
-				if (allow_nihilant.value)
-				{
-					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::Create("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
-				}
-				else
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Nihilant Disabled - gm_allow_nihilant required\n");
-			}
-			else if (FStrEq(pcmd, "button_monster_tentacle"))
-			{
-				if (allow_tentacle.value)
-				{
-					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
-				}
-				else
-					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Tentacle Disabled - gm_allow_tentacle required\n");
-			}
-
-			// Weapons/items Spawn
-			for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
-			{
-				weapon_t weaponInfo = gWeapons[i];
-				char combinetoprefix[512];
-				strcpy(combinetoprefix, "button_");
-				strcat(combinetoprefix, weaponInfo.classname);
-				if (FStrEq(pcmd, combinetoprefix))
-				{
-					if (pPlayer->m_fGiveItemMode)
-						pPlayer->GiveCurrentItem(weaponInfo.classname);
-					else if (pPlayer->m_fUseFrontSpawn)
-					{
-						edict_t* pent;
-						int istr = MAKE_STRING(weaponInfo.classname);
-
-						pent = CREATE_NAMED_ENTITY(istr);
-						VARS(pent)->origin = pev->origin;
-						pent->v.spawnflags |= SF_NORESPAWN;
-
-						DispatchSpawn(pent);
-						DispatchTouch(pent, ENT(pev));
-					}
-					else
-						GoMod_SpawnItemTrace(weaponInfo.classname, pev, pEntity);
-				}
-			}
-
-			// not listed ammo_spore
-			// because it is generated in the air
-			if (FStrEq(pcmd, "button_ammo_spore"))
-				GoMod_SpawnItemTrace("ammo_spore", pev, pEntity);
-
 			// TODO: This sound should be played on the clientside.
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "common/wpn_select.wav", 0.94, ATTN_NORM, 0, 110);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC5", 0.94, ATTN_NORM, 0, PITCH_NORM);
 		}
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
@@ -1073,7 +1099,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "buddha"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_healthmodify.value)
+		if (UTIL_IsSandbox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (pPlayer->m_buddha)
@@ -1090,7 +1116,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "zeus"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_healthmodify.value)
+		if (UTIL_IsSandbox() && allow_healthmodify.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			if (0 != pPlayer->pev->takedamage)
@@ -1107,7 +1133,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "+noclip"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_noclip.value)
+		if (UTIL_IsSandbox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
@@ -1116,7 +1142,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (FStrEq(pcmd, "-noclip"))
 	{
-		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox() && allow_noclip.value)
+		if (UTIL_IsSandbox() && allow_noclip.value)
 		{
 			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 			pPlayer->pev->movetype = MOVETYPE_WALK;
@@ -1658,8 +1684,7 @@ void ClientPrecache()
 	if (giPrecacheGrunt)
 		UTIL_PrecacheOther("monster_human_grunt");
 
-	// check if sandbox is allowed before precaching everything below
-	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
+	if (UTIL_IsSandbox())
 	{
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)

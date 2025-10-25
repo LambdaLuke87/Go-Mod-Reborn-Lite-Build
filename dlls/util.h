@@ -375,6 +375,8 @@ extern void SetMovedir(entvars_t* pev);
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 extern int BuildChangeList(LEVELLIST* pLevelList, int maxList);
 
+extern bool UTIL_IsSandbox();
+
 //
 // How did I ever live without ASSERT?
 //

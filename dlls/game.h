@@ -77,6 +77,7 @@ extern cvar_t allow_tentacle;
 extern cvar_t allow_props;
 extern cvar_t allow_voices;
 extern cvar_t glowstick_colors;
+extern cvar_t spawn_limit;
 extern cvar_t explosion_control;
 extern cvar_t bigdecals_control;
 extern cvar_t worlditems_respawn;
