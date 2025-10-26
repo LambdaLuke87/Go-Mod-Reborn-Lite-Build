@@ -119,9 +119,9 @@ void CHornet::Precache()
 {
 	PRECACHE_MODEL("models/hornet.mdl");
 
-	PRECACHE_SOUND("agrunt/ag_fire1.wav");
-	PRECACHE_SOUND("agrunt/ag_fire2.wav");
-	PRECACHE_SOUND("agrunt/ag_fire3.wav");
+	//PRECACHE_SOUND("agrunt/ag_fire1.wav");
+	//PRECACHE_SOUND("agrunt/ag_fire2.wav");
+	//PRECACHE_SOUND("agrunt/ag_fire3.wav");
 
 	PRECACHE_SOUND("hornet/ag_buzz1.wav");
 	PRECACHE_SOUND("hornet/ag_buzz2.wav");

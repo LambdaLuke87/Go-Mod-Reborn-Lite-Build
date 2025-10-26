@@ -344,9 +344,9 @@ void CMiniTurret::Precache()
 {
 	CBaseTurret::Precache();
 	PRECACHE_MODEL("models/miniturret.mdl");
-	PRECACHE_SOUND("weapons/hks1.wav");
-	PRECACHE_SOUND("weapons/hks2.wav");
-	PRECACHE_SOUND("weapons/hks3.wav");
+	//PRECACHE_SOUND("weapons/hks1.wav");
+	//PRECACHE_SOUND("weapons/hks2.wav");
+	//PRECACHE_SOUND("weapons/hks3.wav");
 }
 
 void CBaseTurret::Initialize()
@@ -630,13 +630,13 @@ void CMiniTurret::Shoot(Vector& vecSrc, Vector& vecDirToEnemy)
 	switch (RANDOM_LONG(0, 2))
 	{
 	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE3", 1, ATTN_NORM);
 		break;
 	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE4", 1, ATTN_NORM);
 		break;
 	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE5", 1, ATTN_NORM);
 		break;
 	}
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
@@ -1199,13 +1199,13 @@ void CSentry::Shoot(Vector& vecSrc, Vector& vecDirToEnemy)
 	switch (RANDOM_LONG(0, 2))
 	{
 	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE3", 1, ATTN_NORM);
 		break;
 	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE4", 1, ATTN_NORM);
 		break;
 	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE5", 1, ATTN_NORM);
 		break;
 	}
 	pev->effects = pev->effects | EF_MUZZLEFLASH;

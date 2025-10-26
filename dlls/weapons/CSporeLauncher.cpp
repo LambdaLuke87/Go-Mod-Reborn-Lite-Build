@@ -42,7 +42,7 @@ void CSporeLauncher::Precache()
 	PRECACHE_MODEL("models/v_spore_launcher.mdl");
 	PRECACHE_MODEL("models/p_spore_launcher.mdl");
 
-	PRECACHE_SOUND("weapons/splauncher_fire.wav");
+	//PRECACHE_SOUND("weapons/splauncher_fire.wav");
 	//PRECACHE_SOUND("weapons/splauncher_altfire.wav"); UNUSED: Precache Optimization
 	PRECACHE_SOUND("weapons/splauncher_bounce.wav");
 	PRECACHE_SOUND("weapons/splauncher_reload.wav");

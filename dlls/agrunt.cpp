@@ -440,13 +440,13 @@ void CAGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 		switch (RANDOM_LONG(0, 2))
 		{
 		case 0:
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "agrunt/ag_fire1.wav", 1.0, ATTN_NORM, 0, 100);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE22", 1.0, ATTN_NORM, 0, 100);
 			break;
 		case 1:
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "agrunt/ag_fire2.wav", 1.0, ATTN_NORM, 0, 100);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE23", 1.0, ATTN_NORM, 0, 100);
 			break;
 		case 2:
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "agrunt/ag_fire3.wav", 1.0, ATTN_NORM, 0, 100);
+			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE24", 1.0, ATTN_NORM, 0, 100);
 			break;
 		}
 

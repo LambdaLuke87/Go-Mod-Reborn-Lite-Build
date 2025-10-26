@@ -897,7 +897,7 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case HGRUNT_AE_GREN_LAUNCH:
 	{
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/glauncher.wav", 0.8, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE14", 0.8, ATTN_NORM);
 		CGrenade::ShootContact(pev, GetGunPosition(), m_vecTossVelocity);
 		m_fThrowGrenade = false;
 		if (g_iSkillLevel == SKILL_HARD)
@@ -923,18 +923,18 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 			// the first round of the three round burst plays the sound and puts a sound in the world sound list.
 			if (RANDOM_LONG(0, 1))
 			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun1.wav", 1, ATTN_NORM);
+				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE27", 1, ATTN_NORM);
 			}
 			else
 			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun2.wav", 1, ATTN_NORM);
+				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE28", 1, ATTN_NORM);
 			}
 		}
 		else
 		{
 			Shotgun();
 
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/sbarrel1.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE7", 1, ATTN_NORM);
 		}
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
@@ -1064,8 +1064,8 @@ void CHGrunt::Precache()
 {
 	PRECACHE_MODEL("models/hgrunt.mdl");
 
-	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
-	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
 	/* Less Precache :)
 	PRECACHE_SOUND("hgrunt/gr_die1.wav");
@@ -1080,9 +1080,9 @@ void CHGrunt::Precache()
 
 	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
-	PRECACHE_SOUND("weapons/glauncher.wav");
+	//PRECACHE_SOUND("weapons/glauncher.wav");
 
-	PRECACHE_SOUND("weapons/sbarrel1.wav");
+	//PRECACHE_SOUND("weapons/sbarrel1.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 

@@ -389,7 +389,7 @@ void COtis::OtisFirePistol()
 		pitchShift = 0;
 	else
 		pitchShift -= 5;
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "weapons/de_shot1.wav", 1, ATTN_NORM, 0, 100 + pitchShift);
+	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE25", 1, ATTN_NORM, 0, 100 + pitchShift);
 
 	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 
@@ -484,10 +484,10 @@ void COtis::Precache()
 {
 	PRECACHE_MODEL("models/otis.mdl");
 
-	PRECACHE_SOUND("barney/ba_attack1.wav");
-	PRECACHE_SOUND("barney/ba_attack2.wav");
+	//PRECACHE_SOUND("barney/ba_attack1.wav");
+	//PRECACHE_SOUND("barney/ba_attack2.wav");
 
-	PRECACHE_SOUND("weapons/de_shot1.wav");
+	//PRECACHE_SOUND("weapons/de_shot1.wav");
 
 	PRECACHE_SOUND("barney/ba_pain1.wav");
 	PRECACHE_SOUND("barney/ba_pain2.wav");

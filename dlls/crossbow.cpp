@@ -240,7 +240,7 @@ void CCrossbow::Precache()
 	PRECACHE_MODEL("models/v_crossbow.mdl");
 	PRECACHE_MODEL("models/p_crossbow.mdl");
 
-	PRECACHE_SOUND("weapons/xbow_fire1.wav");
+	//PRECACHE_SOUND("weapons/xbow_fire1.wav");
 	PRECACHE_SOUND("weapons/xbow_reload1.wav");
 
 	UTIL_PrecacheOther("crossbow_bolt");

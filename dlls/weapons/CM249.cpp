@@ -52,7 +52,7 @@ void CM249::Precache()
 
 	PRECACHE_SOUND("weapons/saw_reload.wav");
 	PRECACHE_SOUND("weapons/saw_reload2.wav");
-	PRECACHE_SOUND("weapons/saw_fire1.wav");
+	//PRECACHE_SOUND("weapons/saw_fire1.wav");
 
 	m_usFireM249 = PRECACHE_EVENT(1, "events/m249.sc");
 }

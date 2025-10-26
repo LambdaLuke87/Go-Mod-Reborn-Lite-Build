@@ -927,7 +927,7 @@ void COFTorchAlly::Shoot()
 
 	const auto pitch = random <= 10 ? random + 95 : 100;
 
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/desert_eagle_fire.wav", VOL_NORM, ATTN_NORM, 0, pitch);
+	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNFIRE10", VOL_NORM, ATTN_NORM, 0, pitch);
 
 	pev->effects |= EF_MUZZLEFLASH;
 
@@ -1186,10 +1186,10 @@ void COFTorchAlly::Precache()
 
 	TalkInit();
 
-	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
-	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
-	PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
 	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event

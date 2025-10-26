@@ -391,8 +391,8 @@ void CRpg::Precache()
 	UTIL_PrecacheOther("laser_spot");
 	UTIL_PrecacheOther("rpg_rocket");
 
-	PRECACHE_SOUND("weapons/rocketfire1.wav");
-	PRECACHE_SOUND("weapons/glauncher.wav"); // alternative fire sound
+	//PRECACHE_SOUND("weapons/rocketfire1.wav");
+	//PRECACHE_SOUND("weapons/glauncher.wav"); // alternative fire sound
 
 	m_usRpg = PRECACHE_EVENT(1, "events/rpg.sc");
 }

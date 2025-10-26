@@ -65,7 +65,7 @@ void CGauss::Precache()
 
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("weapons/gauss2.wav");
+	//PRECACHE_SOUND("weapons/gauss2.wav");
 	PRECACHE_SOUND("weapons/electro4.wav");
 	PRECACHE_SOUND("weapons/electro5.wav");
 	PRECACHE_SOUND("weapons/electro6.wav");

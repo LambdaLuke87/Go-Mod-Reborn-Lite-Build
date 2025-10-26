@@ -219,10 +219,10 @@ void CHAssassin::Shoot()
 	switch (RANDOM_LONG(0, 1))
 	{
 	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/pl_gun1.wav", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE0", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
 		break;
 	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/pl_gun2.wav", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE1", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
 		break;
 	}
 
@@ -310,8 +310,8 @@ void CHAssassin::Precache()
 {
 	PRECACHE_MODEL("models/hassassin.mdl");
 
-	PRECACHE_SOUND("weapons/pl_gun1.wav");
-	PRECACHE_SOUND("weapons/pl_gun2.wav");
+	//PRECACHE_SOUND("weapons/pl_gun1.wav");
+	//PRECACHE_SOUND("weapons/pl_gun2.wav");
 
 	PRECACHE_SOUND("debris/beamstart1.wav");
 

@@ -59,7 +59,7 @@ void CMortarShell::Precache()
 {
 	PRECACHE_MODEL("models/mortarshell.mdl");
 	m_iTrail = PRECACHE_MODEL("sprites/wep_smoke_01.spr");
-	PRECACHE_SOUND("weapons/gauss2.wav");
+	//PRECACHE_SOUND("weapons/gauss2.wav");
 	PRECACHE_SOUND("weapons/ofmortar.wav");
 }
 

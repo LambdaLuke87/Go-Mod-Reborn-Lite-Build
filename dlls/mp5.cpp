@@ -60,12 +60,12 @@ void CMP5::Precache()
 	PRECACHE_SOUND("items/clipinsert1.wav");
 	PRECACHE_SOUND("items/cliprelease1.wav");
 
-	PRECACHE_SOUND("weapons/hks1.wav"); // H to the K
-	PRECACHE_SOUND("weapons/hks2.wav"); // H to the K
-	PRECACHE_SOUND("weapons/hks3.wav"); // H to the K
+	//PRECACHE_SOUND("weapons/hks1.wav"); // H to the K
+	//PRECACHE_SOUND("weapons/hks2.wav"); // H to the K
+	//PRECACHE_SOUND("weapons/hks3.wav"); // H to the K
 
-	PRECACHE_SOUND("weapons/glauncher.wav");
-	PRECACHE_SOUND("weapons/glauncher2.wav");
+	//PRECACHE_SOUND("weapons/glauncher.wav");
+	//PRECACHE_SOUND("weapons/glauncher2.wav");
 
 	PRECACHE_SOUND("weapons/357_cock1.wav");
 

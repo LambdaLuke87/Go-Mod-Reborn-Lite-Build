@@ -960,12 +960,12 @@ void COFMedicAlly::Shoot()
 	if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
 	{
 		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM); // shoot +-5 degrees
-		pszSoundName = "weapons/pl_gun3.wav";
+		pszSoundName = "!WP_GUNFIRE2";
 	}
 	else if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
 	{
 		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_PLAYER_357); // shoot +-5 degrees
-		pszSoundName = "weapons/desert_eagle_fire.wav";
+		pszSoundName = "!WP_GUNFIRE10";
 	}
 
 	const auto random = RANDOM_LONG(0, 20);
@@ -1229,14 +1229,14 @@ void COFMedicAlly::Precache()
 
 	TalkInit();
 
-	PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
-	PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
 	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
-	PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
 	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
-	PRECACHE_SOUND("weapons/sbarrel1.wav");
+	//PRECACHE_SOUND("weapons/sbarrel1.wav");
 
 	PRECACHE_SOUND("fgrunt/medic_give_shot.wav");
 	PRECACHE_SOUND("fgrunt/medical.wav");

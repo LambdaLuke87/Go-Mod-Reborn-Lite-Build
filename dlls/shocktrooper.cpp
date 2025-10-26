@@ -887,7 +887,7 @@ void CShockTrooper::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		Shoot();
 
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/shock_fire.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE21", 1, ATTN_NORM);
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 	}
@@ -978,7 +978,7 @@ void CShockTrooper::Precache()
 	PRECACHE_MODEL("models/strooper.mdl");
 	PRECACHE_MODEL("models/strooper_gibs.mdl");
 
-	PRECACHE_SOUND("weapons/shock_fire.wav");
+	//PRECACHE_SOUND("weapons/shock_fire.wav");
 
 	PRECACHE_SOUND("shocktrooper/shock_trooper_attack.wav");
 	PRECACHE_SOUND("shocktrooper/shock_trooper_die1.wav");
