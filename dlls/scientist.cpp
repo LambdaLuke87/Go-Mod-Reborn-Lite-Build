@@ -30,7 +30,7 @@
 
 
 #define NUM_SCIENTIST_HEADS 4			 // four heads available for scientist model
-const int NUM_SCIENTIST_HEADS_TOTAL = 6; //Opposing Force has 2 special heads for specific characters
+//const int NUM_SCIENTIST_HEADS_TOTAL = 6; //Opposing Force has 2 special heads for specific characters
 enum
 {
 	HEAD_GLASSES = 0,
@@ -650,13 +650,13 @@ void CScientist::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case SCIENTIST_AE_NEEDLEON:
 	{
 		int oldBody = pev->body;
-		pev->body = (oldBody % NUM_SCIENTIST_HEADS_TOTAL) + NUM_SCIENTIST_HEADS_TOTAL * 1;
+		pev->body = (oldBody % NUM_SCIENTIST_HEADS) + NUM_SCIENTIST_HEADS * 1;
 	}
 	break;
 	case SCIENTIST_AE_NEEDLEOFF:
 	{
 		int oldBody = pev->body;
-		pev->body = (oldBody % NUM_SCIENTIST_HEADS_TOTAL) + NUM_SCIENTIST_HEADS_TOTAL * 0;
+		pev->body = (oldBody % NUM_SCIENTIST_HEADS) + NUM_SCIENTIST_HEADS * 0;
 	}
 	break;
 
@@ -671,7 +671,7 @@ void CScientist::HandleAnimEvent(MonsterEvent_t* pEvent)
 void CScientist::Spawn()
 {
 	int body_variation = monster_variation.value;
-	if (pev->body == -1 || 0 != body_variation)
+	if (pev->body == -1 || m_MenuCreated && 0 != body_variation)
 	{														 // -1 chooses a random head
 		pev->body = RANDOM_LONG(0, NUM_SCIENTIST_HEADS - 1); // pick a head, any head
 	}

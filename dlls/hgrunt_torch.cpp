@@ -1135,7 +1135,7 @@ void COFTorchAlly::Spawn()
 	}
 
 	int body_variation = monster_variation.value;
-	if (0 != body_variation)
+	if (m_MenuCreated && 0 != body_variation)
 	{
 		switch (RANDOM_LONG(0, 1))
 		{

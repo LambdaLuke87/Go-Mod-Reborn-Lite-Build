@@ -305,7 +305,7 @@ void CApache::DyingThink()
 	}
 	else
 	{
-		if (explosion_control.value)
+		if (!explosion_control.value)
 		{
 			Vector vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
 
