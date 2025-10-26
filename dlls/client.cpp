@@ -1695,9 +1695,6 @@ void ClientPrecache()
 
 		UTIL_PrecacheOther("monster_apache");
 
-		if (allow_camera.value)
-			UTIL_PrecacheOther("monster_camera");
-
 		if (allow_props.value)
 		{
 			for (int i = 0; i < ARRAYSIZE(gProps); i++)

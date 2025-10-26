@@ -353,6 +353,7 @@ void CToolbow::Precache()
 
 	UTIL_PrecacheOther("item_teleporter");
 	UTIL_PrecacheOther("item_glowstick");
+	UTIL_PrecacheOther("monster_camera");
 }
 
 bool CToolbow::GetItemInfo(ItemInfo* p)
