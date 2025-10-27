@@ -522,14 +522,6 @@ private:
 	void CreateStatsMenu();
 
 	CMenuPanel* ShowLinkMenu(void);
-	void CreateWeaponsMenu(void);
-	CMenuPanel* ShowWeaponsMenu(void);
-	void CreateItemsMenu(void);
-	CMenuPanel* ShowItemsMenu(void);
-	void CreateMonstersMenu(void);
-	CMenuPanel* ShowMonstersMenu(void);
-	void CreateToolsMenu(void);
-	CMenuPanel* ShowToolsMenu(void);
 	void CreateRenderToolMenu(void);
 	CMenuPanel* ShowRenderToolMenu(void);
 	
@@ -667,10 +659,6 @@ public:
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
 	CLinkMenu* m_pLinkMenu; // Link Menu
-	CWeaponsMenu* m_pWeaponsMenu; // Weapons Menu
-	CItemsMenu* m_pItemsMenu; // Items Menu
-	CMonstersMenu* m_pMonstersMenu; // Npcs Menu
-	CToolsMenu* m_pToolsMenu; // Tools Menu
 	CRenderToolMenu* m_pRenderToolMenu; // Render Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
@@ -1649,7 +1637,7 @@ public:
 	CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 	void ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall);
 	void ButtonHelperWithID(CommandButton*& newbutton, const char* text, const char* command, int x, int y, int wide, int tall);
-	void ButtonOptionHelper(const char* text, int option, int x, int y, int wide, int tall);
+	void ButtonOptionHelper(CommandButton*& newbutton, const char* text, bool visible, int option, int x, int y, int wide, int tall);
 
 	CTransparentPanel* m_pPanel;
 
@@ -1668,70 +1656,70 @@ public:
 	TextPanel* pText;
 
 	// Header Buttons
-	CommandButton* m_pButtonLinkMenu;
-	CommandButton* m_pButtonSweepMenu;
-	CommandButton* m_pButtonItemsMenu;
-	CommandButton* m_pButtonNPCMenu;
-	CommandButton* m_pButtonToolsMenu;
-	CommandButton* m_pButtonAimMode;
+	CommandButton* ButtonLinkMenu;
+	CommandButton* ButtonSweepMenu;
+	CommandButton* ButtonItemsMenu;
+	CommandButton* ButtonNPCMenu;
+	CommandButton* ButtonToolsMenu;
 
 	// SubHeaders Weapons
-	CommandButton* m_pButtonHLSweeps;
-	CommandButton* m_pButtonOp4Sweeps;
+	CommandButton* ButtonHLSweeps;
+	CommandButton* ButtonOp4Sweeps;
 
 	// SubHeaders NPCs
-	CommandButton* m_pButtonMilAliens;
-	CommandButton* m_pButtonWildAliens;
-	CommandButton* m_pButtonFriendHumans;
-	CommandButton* m_pButtonMilUnits;
-	CommandButton* m_pButtonMiscNPCS;
+	CommandButton* ButtonMilAliens;
+	CommandButton* ButtonWildAliens;
+	CommandButton* ButtonFriendHumans;
+	CommandButton* ButtonMilUnits;
+	CommandButton* ButtonMiscNPCS;
+	CommandButton* ButtonProps;
 
 	// HL Weapons
-	CommandButton* m_pButtonCrowbar;
-	CommandButton* m_pButtonPhysgun;
-	CommandButton* m_pButtonToolbow;
-	CommandButton* m_pButtonGlock;
-	CommandButton* m_pButtonPython;
-	CommandButton* m_pButtonMP5;
-	CommandButton* m_pButtonShotgun;
-	CommandButton* m_pButtonCrossbow;
-	CommandButton* m_pButtonRPG;
-	CommandButton* m_pButtonGauss;
-	CommandButton* m_pButtonEgon;
-	CommandButton* m_pButtonHiveHand;
-	CommandButton* m_pButtonGrenade;
-	CommandButton* m_pButtonSatchel;
-	CommandButton* m_pButtonTripmine;
-	CommandButton* m_pButtonSnark;
+	CommandButton* ButtonCrowbar;
+	CommandButton* ButtonPhysgun;
+	CommandButton* ButtonToolbow;
+	CommandButton* ButtonGlock;
+	CommandButton* ButtonPython;
+	CommandButton* ButtonMP5;
+	CommandButton* ButtonShotgun;
+	CommandButton* ButtonCrossbow;
+	CommandButton* ButtonRPG;
+	CommandButton* ButtonGauss;
+	CommandButton* ButtonEgon;
+	CommandButton* ButtonHiveHand;
+	CommandButton* ButtonGrenade;
+	CommandButton* ButtonSatchel;
+	CommandButton* ButtonTripmine;
+	CommandButton* ButtonSnark;
 
 	// OP4 Weapons
-	CommandButton* m_pButtonKnife;
-	CommandButton* m_pButtonPipeWrench;
-	CommandButton* m_pButtonGrapple;
-	CommandButton* m_pButtonDEagle;
-	CommandButton* m_pButtonM249;
-	CommandButton* m_pButtonSniperRifle;
-	CommandButton* m_pButtonDisplacer;
-	CommandButton* m_pButtonShockRifle;
-	CommandButton* m_pButtonSporeLauncher;
-	CommandButton* m_pButtonPenguin;
+	CommandButton* ButtonKnife;
+	CommandButton* ButtonPipeWrench;
+	CommandButton* ButtonGrapple;
+	CommandButton* ButtonDEagle;
+	CommandButton* ButtonM249;
+	CommandButton* ButtonSniperRifle;
+	CommandButton* ButtonDisplacer;
+	CommandButton* ButtonShockRifle;
+	CommandButton* ButtonSporeLauncher;
+	CommandButton* ButtonPenguin;
 
-	// ITEMS AND AMMO
-	CommandButton* m_pButtonHealthKit;
-	CommandButton* m_pButtonBattery;
-	CommandButton* m_pButtonLongJump;
-	CommandButton* m_pButtonHEV;
-	CommandButton* m_pButtonGlockAmmo;
-	CommandButton* m_pButtonMP5Ammo;
-	CommandButton* m_pButtonARGrenades;
-	CommandButton* m_pButtonArrows;
-	CommandButton* m_pButtonUranium;
-	CommandButton* m_pButtonRockets;
-	CommandButton* m_pButtonBuckshot;
-	CommandButton* m_pButton357Ammo;
-	CommandButton* m_pButton556Ammo;
-	CommandButton* m_pButtonSpores;
-	CommandButton* m_pButton762Ammo;
+	// Items and Ammo
+	CommandButton* ButtonHealthKit;
+	CommandButton* ButtonBattery;
+	CommandButton* ButtonLongJump;
+	CommandButton* ButtonHEV;
+	CommandButton* ButtonGlockAmmo;
+	CommandButton* ButtonMP5Ammo;
+	CommandButton* ButtonARGrenades;
+	CommandButton* ButtonArrows;
+	CommandButton* ButtonUranium;
+	CommandButton* ButtonRockets;
+	CommandButton* ButtonBuckshot;
+	CommandButton* Button357Ammo;
+	CommandButton* Button556Ammo;
+	CommandButton* ButtonSpores;
+	CommandButton* Button762Ammo;
 
 	// Military Aliens
 	CommandButton* ButtonAlienController;
@@ -1781,30 +1769,41 @@ public:
 	CommandButton* ButtonRat;
 	CommandButton* ButtonGman;
 	CommandButton* ButtonTentacle;
-};
 
-class CWeaponsMenu : public CGMMenuBase
-{
-public:
-	CWeaponsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
-};
+	// Props
+	CommandButton* ButtonXenHair;
+	CommandButton* ButtonXenTree;
+	CommandButton* ButtonXenPlantL;
+	CommandButton* ButtonXenSporeXS;
+	CommandButton* ButtonXenSporeL;
+	CommandButton* ButtonXenSporeXL;
+	CommandButton* ButtonChiken;
+	CommandButton* ButtonChumtoad;
+	CommandButton* ButtonPropC4;
 
-class CItemsMenu : public CGMMenuBase
-{
-public:
-	CItemsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
-};
+	// Tools
+	CommandButton* ButtonDuplicator;
+	CommandButton* ButtonRemover;
+	CommandButton* ButtonGibber;
+	CommandButton* ButtonPoser;
+	CommandButton* ButtonCamera;
+	CommandButton* ButtonHPModify;
+	CommandButton* ButtonNoCollide;
+	CommandButton* ButtonTakeDamage;
+	CommandButton* ButtonBloodColor;
+	CommandButton* ButtonFramedit;
+	CommandButton* ButtonTeleporter;
+	CommandButton* ButtonGlowsticks;
+	CommandButton* ButtonNoTools;
+	CommandButton* ButtonRender;
 
-class CMonstersMenu : public CGMMenuBase
-{
-public:
-	CMonstersMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
-};
-
-class CToolsMenu : public CGMMenuBase
-{
-public:
-	CToolsMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	// Options Per Menu
+	CommandButton* ButtonAimMode;
+	CommandButton* ButtonGiveMode;
+	CommandButton* ButtonNoAI;
+	CommandButton* ButtonAllieds;
+	CommandButton* ButtonUndoNPC;
+	CommandButton* ButtonDeleteALlNpcs;
 };
 
 class CRenderToolMenu : public CGMMenuBase

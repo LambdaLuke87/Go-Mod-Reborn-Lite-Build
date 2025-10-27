@@ -542,10 +542,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
 	m_pLinkMenu = NULL;	// Link Menu
-	m_pWeaponsMenu = NULL; // Weapons Menu
-	m_pItemsMenu = NULL; // Items Menu
-	m_pMonstersMenu = NULL; // Npcs Menu
-	m_pToolsMenu = NULL; // Tools Menu
 	m_pRenderToolMenu = NULL; // Render Menu
 
 	Initialize();
@@ -607,10 +603,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	CreateStatsMenu();
 
 	// Go-Mod: Reborn
-	CreateWeaponsMenu(); // Weapons Menu
-	CreateItemsMenu(); // Items Menu
-	CreateMonstersMenu(); // Npcs Menu
-	CreateToolsMenu(); // Tools Menu
 	CreateRenderToolMenu(); // Render Menu
 
 	//CreateScoreBoard();
@@ -670,18 +662,6 @@ void TeamFortressViewport::Initialize()
 	// Go-Mod Menus
 	if (m_pLinkMenu)
 		m_pLinkMenu->setVisible(false);
-
-	if (m_pWeaponsMenu)
-		m_pWeaponsMenu->setVisible(false);
-
-	if (m_pItemsMenu)
-		m_pItemsMenu->setVisible(false);
-
-	if (m_pMonstersMenu)
-		m_pMonstersMenu->setVisible(false);
-
-	if (m_pToolsMenu)
-		m_pToolsMenu->setVisible(false);
 
 	if (m_pRenderToolMenu)
 		m_pRenderToolMenu->setVisible(false);
@@ -1531,78 +1511,6 @@ CMenuPanel* TeamFortressViewport::ShowLinkMenu()
 	return pMOTDPanel;
 }
 
-CMenuPanel* TeamFortressViewport::ShowWeaponsMenu()
-{
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pWeaponsMenu->Reset();
-	return m_pWeaponsMenu;
-}
-
-void TeamFortressViewport::CreateWeaponsMenu()
-{
-	// Create the panel
-	m_pWeaponsMenu = new CWeaponsMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pWeaponsMenu->setParent(this);
-	m_pWeaponsMenu->setVisible(false);
-}
-
-CMenuPanel* TeamFortressViewport::ShowItemsMenu()
-{
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pItemsMenu->Reset();
-	return m_pItemsMenu;
-}
-
-void TeamFortressViewport::CreateItemsMenu()
-{
-	// Create the panel
-	m_pItemsMenu = new CItemsMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pItemsMenu->setParent(this);
-	m_pItemsMenu->setVisible(false);
-}
-
-CMenuPanel* TeamFortressViewport::ShowMonstersMenu()
-{
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pMonstersMenu->Reset();
-	return m_pMonstersMenu;
-}
-
-void TeamFortressViewport::CreateMonstersMenu()
-{
-	// Create the panel
-	m_pMonstersMenu = new CMonstersMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pMonstersMenu->setParent(this);
-	m_pMonstersMenu->setVisible(false);
-}
-
-CMenuPanel* TeamFortressViewport::ShowToolsMenu()
-{
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pToolsMenu->Reset();
-	return m_pToolsMenu;
-}
-
-void TeamFortressViewport::CreateToolsMenu()
-{
-	// Create the panel
-	m_pToolsMenu = new CToolsMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pToolsMenu->setParent(this);
-	m_pToolsMenu->setVisible(false);
-}
-
 CMenuPanel* TeamFortressViewport::ShowRenderToolMenu()
 {
 	// Don't open menus in demo playback
@@ -1779,22 +1687,6 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 
 	case MENU_LINKMENU:
 		pNewMenu = ShowLinkMenu();
-		break;
-
-	case MENU_WEAPONSMENU:
-		pNewMenu = ShowWeaponsMenu();
-		break;
-
-	case MENU_ITEMSMENU:
-		pNewMenu = ShowItemsMenu();
-		break;
-
-	case MENU_MONSTERSMENU:
-		pNewMenu = ShowMonstersMenu();
-		break;
-
-	case MENU_TOOLSMENU:
-		pNewMenu = ShowToolsMenu();
 		break;
 
 	case MENU_RENDERMENU:
