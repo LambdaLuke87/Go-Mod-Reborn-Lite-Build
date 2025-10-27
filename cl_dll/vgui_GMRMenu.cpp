@@ -8,8 +8,62 @@
 #include "cl_util.h"
 #include "vgui_TeamFortressViewport.h"
 #include "VGUI_TextImage.h"
+#include "vgui_DefaultInputSignal.h"
+#include "vgui_int.h"
 #include <map>
 #include <vector>
+
+//-----------------------------------------------------------------------------
+// Handler that executes an action when a menu button is clicked
+//-----------------------------------------------------------------------------
+class CHandler_MenuButtonClick : public InputSignal
+{
+public:
+	CHandler_MenuButtonClick(Panel* pOwner, int iOption);
+
+	// Mouse Events
+	void cursorMoved(int x, int y, Panel* panel) override {}
+	void cursorEntered(Panel* panel) override {}
+	void cursorExited(Panel* panel) override {}
+	void mousePressed(MouseCode code, Panel* panel) override;
+	void mouseReleased(MouseCode code, Panel* panel) override {}
+	void mouseDoublePressed(MouseCode code, Panel* panel) override {}
+	void mouseWheeled(int delta, Panel* panel) override {}
+
+	void keyPressed(KeyCode code, Panel* panel) override {}
+	void keyTyped(KeyCode code, Panel* panel) override {}
+	void keyReleased(KeyCode code, Panel* panel) override {}
+	void keyFocusTicked(Panel* panel) override {}
+
+private:
+	Panel* m_pOwner;
+	int m_iOption;
+};
+
+//-----------------------------------------------------------------------------
+// Constructor
+//-----------------------------------------------------------------------------
+CHandler_MenuButtonClick::CHandler_MenuButtonClick(Panel* pOwner, int iOption)
+{
+	m_pOwner = pOwner;
+	m_iOption = iOption;
+}
+
+//-----------------------------------------------------------------------------
+// Event: Mouse Click
+//-----------------------------------------------------------------------------
+void CHandler_MenuButtonClick::mousePressed(MouseCode code, Panel* panel)
+{
+	if (code != MOUSE_LEFT || !m_pOwner)
+		return;
+
+	auto pMenu = dynamic_cast<CGMMenuBase*>(m_pOwner);
+	if (pMenu)
+	{
+		pMenu->SetActiveInfo(m_iOption);
+		gEngfuncs.pfnPlaySoundByName("!MI_SENTENC5", 1.0f);
+	}
+}
 
 #define LINKMENU_TITLE_X XRES(16)
 #define LINKMENU_TITLE_Y YRES(16)
@@ -55,7 +109,7 @@ void CGMMenuBase::ButtonOptionHelper(CommandButton*& newbutton, const char* text
 	newbutton->setVisible(visible);
 	newbutton->m_bNoMarginSpace = true;
 	newbutton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
-	newbutton->addInputSignal(new CHandler_MenuButtonOver(this, option));
+	newbutton->addInputSignal(new CHandler_MenuButtonClick(this, option));
 	newbutton->setParent(this);
 }
 
@@ -407,6 +461,9 @@ void CLinkMenu::SetActiveInfo(int iShowText)
 	// Hide the main button of the active section
 	switch (iShowText)
 	{
+	case 0: // Main
+		ButtonLinkMenu->setVisible(false);
+		break;
 	case 1: // Weapons
 	case 5: // HL Weapons
 	case 6: // OP4 Weapons
