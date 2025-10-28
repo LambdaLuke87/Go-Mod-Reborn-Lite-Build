@@ -68,6 +68,28 @@ void CHandler_MenuButtonClick::mousePressed(MouseCode code, Panel* panel)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Custom CMenuHandler_StringCommand for play sounds
+//-----------------------------------------------------------------------------
+class CMenuHandler_StringCommandSound : public ActionSignal
+{
+protected:
+	char m_pszCommand[MAX_COMMAND_SIZE];
+
+public:
+	CMenuHandler_StringCommandSound(const char* pszCommand)
+	{
+		strncpy(m_pszCommand, pszCommand, MAX_COMMAND_SIZE);
+		m_pszCommand[MAX_COMMAND_SIZE - 1] = '\0';
+	}
+
+	virtual void actionPerformed(Panel* panel)
+	{
+		gEngfuncs.pfnClientCmd(m_pszCommand);
+		gEngfuncs.pfnPlaySoundByName("!MI_SENTENC6", 1.0f);
+	}
+};
+
 CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CMenuPanel(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	m_pPanel = new CTransparentPanel(200, GMENU_WINDOW_X, GMENU_WINDOW_Y, GMENU_WINDOW_SIZE_X, GMENU_WINDOW_SIZE_Y);
@@ -90,7 +112,7 @@ void CGMMenuBase::ButtonHelper(const char* text, const char* command, int x, int
 	EasyButton = new CommandButton("", x, y, wide, tall);
 	EasyButton->m_bNoMarginSpace = true;
 	EasyButton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
-	EasyButton->addActionSignal(new CMenuHandler_StringCommand(command));
+	EasyButton->addActionSignal(new CMenuHandler_StringCommandSound(command));
 	EasyButton->PickHudColor = true;
 	EasyButton->setParent(this);
 }
@@ -101,7 +123,7 @@ void CGMMenuBase::ButtonHelperWithID(CommandButton*& newbutton, const char* text
 	newbutton->setVisible(false);
 	newbutton->m_bNoMarginSpace = true;
 	newbutton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
-	newbutton->addActionSignal(new CMenuHandler_StringCommand(command));
+	newbutton->addActionSignal(new CMenuHandler_StringCommandSound(command));
 	newbutton->PickHudColor = true;
 	newbutton->setParent(this);
 }

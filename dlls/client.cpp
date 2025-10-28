@@ -947,9 +947,6 @@ void ClientCommand(edict_t* pEntity)
 					MESSAGE_BEGIN(MSG_ONE, gmsgToolBowSkin, NULL, pPlayer->edict());
 					WRITE_SHORT(pPlayer->m_iToolMode);
 					MESSAGE_END();
-
-					// TODO: This sound should be played on the clientside.
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
 				}
 			}
 		}
@@ -967,9 +964,6 @@ void ClientCommand(edict_t* pEntity)
 				{
 					pPlayer->m_iToolRenderMode = i;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render Mode to [%s]\n", rendertextureInfo.toolprintname));
-
-					// TODO: This sound should be played on the clientside.
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
 				}
 			}
 		}
@@ -987,9 +981,6 @@ void ClientCommand(edict_t* pEntity)
 				{
 					pPlayer->m_iToolRenderFX = i;
 					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Changed Render FX to [%s]\n", renderInfo.toolprintname));
-				
-					// TODO: This sound should be played on the clientside.
-					EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC6", 0.94, ATTN_NORM, 0, PITCH_NORM);
 				}
 			}
 		}
@@ -1026,9 +1017,6 @@ void ClientCommand(edict_t* pEntity)
 				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(false);
 			else if (FStrEq(pcmd, "button_npc_remove_all"))
 				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(true);
-
-			// TODO: This sound should be played on the clientside.
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!MI_SENTENC5", 0.94, ATTN_NORM, 0, PITCH_NORM);
 		}
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
