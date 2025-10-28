@@ -1835,8 +1835,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				// Dont remove players!
 				if (!pEntity->IsNetClient())
 				{
-					pEntity->SetThink(&CBaseEntity::SUB_Remove);
-					pEntity->pev->nextthink = gpGlobals->time;
+					UTIL_SafeRemoveMonster(pEntity);
 				}
 			}
 		}

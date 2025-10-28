@@ -802,7 +802,7 @@ CBaseEntity* CBaseEntity::RemoveCustom(bool isAll)
 			CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
 			if (pMonster && pMonster->m_MenuCreated)
 			{
-				UTIL_Remove(pMonster);
+				UTIL_SafeRemoveMonster(pMonster);
 				break;
 			}
 		}
@@ -819,7 +819,7 @@ CBaseEntity* CBaseEntity::RemoveCustom(bool isAll)
 					CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
 					if (pMonster && pMonster->m_MenuCreated)
 					{
-						UTIL_Remove(pMonster);
+						UTIL_SafeRemoveMonster(pMonster);
 					}
 				}
 			}

@@ -1593,6 +1593,29 @@ void UTIL_Remove(CBaseEntity* pEntity)
 	pEntity->pev->targetname = 0;
 }
 
+void UTIL_SafeRemoveMonster(CBaseEntity* pEntity)
+{
+	if (!pEntity)
+		return;
+
+	 CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEntity);
+
+	 if (!pMonster)
+	 {
+		 // not a monster, remove!
+		 UTIL_Remove(pEntity);
+		 return;
+	 }
+
+	 pMonster->pev->health = 0;
+	 pMonster->pev->deadflag = DEAD_DEAD;
+	 pMonster->pev->effects |= EF_NODRAW;
+
+	 // Kill and Never Gib
+	 pMonster->Killed(pMonster->pev, GIB_NEVER);
+
+	UTIL_Remove(pEntity);
+}
 
 bool UTIL_IsValidEntity(edict_t* pent)
 {
