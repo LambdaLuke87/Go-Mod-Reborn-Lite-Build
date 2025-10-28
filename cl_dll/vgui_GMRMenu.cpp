@@ -8,7 +8,6 @@
 #include "cl_util.h"
 #include "vgui_TeamFortressViewport.h"
 #include "VGUI_TextImage.h"
-#include "vgui_DefaultInputSignal.h"
 #include "vgui_int.h"
 #include <map>
 #include <vector>
