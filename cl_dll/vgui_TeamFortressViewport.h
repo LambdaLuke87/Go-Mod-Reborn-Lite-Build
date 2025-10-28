@@ -50,11 +50,6 @@ class CTeamMenuPanel;
 class TeamFortressViewport;
 class CStatsMenuPanel;
 class CLinkMenu; // Link Menu
-class CWeaponsMenu; // Weapons Menu
-class CItemsMenu; // Items Menu
-class CMonstersMenu; // Npcs Menu
-class CToolsMenu; // Tools Menu
-class CRenderToolMenu; // Render Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -523,9 +518,7 @@ private:
 	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
 
-	CMenuPanel* ShowLinkMenu(void);
-	void CreateRenderToolMenu(void);
-	CMenuPanel* ShowRenderToolMenu(void);
+	CMenuPanel* ShowLinkMenu( void );
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -661,7 +654,6 @@ public:
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
 	CLinkMenu* m_pLinkMenu; // Link Menu
-	CRenderToolMenu* m_pRenderToolMenu; // Render Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1637,8 +1629,7 @@ class CGMMenuBase : public CMenuPanel
 {
 public:
 	CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
-	void ButtonHelper(const char* text, const char* command, int x, int y, int wide, int tall);
-	void ButtonHelperWithID(CommandButton*& newbutton, const char* text, const char* command, int x, int y, int wide, int tall);
+	void ButtonHelper(CommandButton*& newbutton, const char* text, const char* command, int x, int y, int wide, int tall);
 	void ButtonOptionHelper(CommandButton*& newbutton, const char* text, bool visible, int option, int x, int y, int wide, int tall);
 
 	CTransparentPanel* m_pPanel;
@@ -1799,6 +1790,35 @@ public:
 	CommandButton* ButtonNoTools;
 	CommandButton* ButtonRender;
 
+	// Render Modes
+	CommandButton* ButtonRMNormal;
+	CommandButton* ButtonRMColor;
+	CommandButton* ButtonRMTexture;
+	CommandButton* ButtonRMGlow;
+	CommandButton* ButtonRMSolid;
+	CommandButton* ButtonRMAdditive;
+
+	// Render FX
+	CommandButton* ButtonFXNone;
+	CommandButton* ButtonFXSPulse;
+	CommandButton* ButtonFXFPulse;
+	CommandButton* ButtonFXSWPulse;
+	CommandButton* ButtonFXFWPulse;
+	CommandButton* ButtonFXSFadeAway;
+	CommandButton* ButtonFXFFadeAway;
+	CommandButton* ButtonFXSSolid;
+	CommandButton* ButtonFXFSolid;
+	CommandButton* ButtonFXSStrobe;
+	CommandButton* ButtonFXFStrobe;
+	CommandButton* ButtonFXFRStrobe;
+	CommandButton* ButtonFXSFlicker;
+	CommandButton* ButtonFXFFlicker;
+	CommandButton* ButtonFXConstantGlow;
+	CommandButton* ButtonFXDistort;
+	CommandButton* ButtonFXHologram;
+	CommandButton* ButtonFXExplode;
+	CommandButton* ButtonFXGlowShell;
+
 	// Options Per Menu
 	CommandButton* ButtonAimMode;
 	CommandButton* ButtonGiveMode;
@@ -1806,12 +1826,6 @@ public:
 	CommandButton* ButtonAllieds;
 	CommandButton* ButtonUndoNPC;
 	CommandButton* ButtonDeleteALlNpcs;
-};
-
-class CRenderToolMenu : public CGMMenuBase
-{
-public:
-	CRenderToolMenu(int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 };
 
 //================================================================

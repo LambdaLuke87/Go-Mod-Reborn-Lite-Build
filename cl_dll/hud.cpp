@@ -226,14 +226,6 @@ void __CmdFunc_OpenLinkMenu()
 	}
 }
 
-void __CmdFunc_OpenRenderToolMenu()
-{
-	if (gViewPort)
-	{
-		gViewPort->ShowVGUIMenu(MENU_RENDERMENU);
-	}
-}
-
 // TFFree Command Menu Message Handlers
 int __MsgFunc_ValClass(const char* pszName, int iSize, void* pbuf)
 {
@@ -412,7 +404,6 @@ void CHud::Init()
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
 	HOOK_COMMAND("toggleLinkMenu", OpenLinkMenu);
-	HOOK_COMMAND("toggleRenderMenu", OpenRenderToolMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);

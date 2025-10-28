@@ -542,7 +542,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
 	m_pLinkMenu = NULL;	// Link Menu
-	m_pRenderToolMenu = NULL; // Render Menu
 
 	Initialize();
 	addInputSignal(new CViewPortInputHandler);
@@ -602,9 +601,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	CreateSpectatorMenu();
 	CreateStatsMenu();
 
-	// Go-Mod: Reborn
-	CreateRenderToolMenu(); // Render Menu
-
 	//CreateScoreBoard();
 	// Init command menus
 	m_iNumMenus = 0;
@@ -662,9 +658,6 @@ void TeamFortressViewport::Initialize()
 	// Go-Mod Menus
 	if (m_pLinkMenu)
 		m_pLinkMenu->setVisible(false);
-
-	if (m_pRenderToolMenu)
-		m_pRenderToolMenu->setVisible(false);
 
 	// Make sure all menus are hidden
 	HideVGUIMenu();
@@ -1511,24 +1504,6 @@ CMenuPanel* TeamFortressViewport::ShowLinkMenu()
 	return pMOTDPanel;
 }
 
-CMenuPanel* TeamFortressViewport::ShowRenderToolMenu()
-{
-	// Don't open menus in demo playback
-	if (gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pRenderToolMenu->Reset();
-	return m_pRenderToolMenu;
-}
-
-void TeamFortressViewport::CreateRenderToolMenu()
-{
-	// Create the panel
-	m_pRenderToolMenu = new CRenderToolMenu(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pRenderToolMenu->setParent(this);
-	m_pRenderToolMenu->setVisible(false);
-}
-
 //======================================================================
 // Set the VGUI Menu
 void TeamFortressViewport::SetCurrentMenu(CMenuPanel* pMenu)
@@ -1687,10 +1662,6 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 
 	case MENU_LINKMENU:
 		pNewMenu = ShowLinkMenu();
-		break;
-
-	case MENU_RENDERMENU:
-		pNewMenu = ShowRenderToolMenu();
 		break;
 
 		/*
