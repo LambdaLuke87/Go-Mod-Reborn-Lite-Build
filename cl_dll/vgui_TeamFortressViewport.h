@@ -227,6 +227,8 @@ public:
 
 	void setBoundKey( char boundKey );
 	char getBoundKey( void );
+	
+	bool PickHudColor = false;
 };
 
 class ColorButton : public CommandButton

@@ -206,6 +206,7 @@ void CommandButton::paint()
 	}
 	else
 	{
+		// TODO: its problematic modify this
 		setFgColor(Scheme::sc_primary1);
 	}
 
@@ -214,12 +215,27 @@ void CommandButton::paint()
 
 void CommandButton::paintBackground()
 {
+	// Set text color to custom hud color
+	int r = giR;
+	int g = giG;
+	int b = giB;
+	int a;
+
 	if (m_bFlat)
 	{
 		if (isArmed())
 		{
-			// Orange Border
-			drawSetColor(Scheme::sc_secondary1);
+			if (PickHudColor)
+			{
+				// Use the custom user color
+				a = 15;
+				drawSetColor(r, g, b, a);
+			}
+			else
+			{
+				// Orange Border
+				drawSetColor(Scheme::sc_secondary1);
+			}
 			drawOutlinedRect(0, 0, _size[0], _size[1]);
 		}
 	}
@@ -227,13 +243,31 @@ void CommandButton::paintBackground()
 	{
 		if (isArmed())
 		{
-			// Orange highlight background
-			drawSetColor(Scheme::sc_primary2);
+			if (PickHudColor)
+			{
+				// Use the custom user color
+				a = 155;
+				drawSetColor(r, g, b, a);
+			}
+			else
+			{
+				// Orange highlight background
+				drawSetColor(Scheme::sc_primary2);
+			}
 			drawFilledRect(0, 0, _size[0], _size[1]);
 		}
 
-		// Orange Border
-		drawSetColor(Scheme::sc_secondary1);
+		if (PickHudColor)
+		{
+			// Use the custom user color
+			a = 15;
+			drawSetColor(r, g, b, a);
+		}
+		else
+		{
+			// Orange Border
+			drawSetColor(Scheme::sc_secondary1);
+		}
 		drawOutlinedRect(0, 0, _size[0], _size[1]);
 	}
 }

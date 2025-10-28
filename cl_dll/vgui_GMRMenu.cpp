@@ -13,6 +13,9 @@
 #include <map>
 #include <vector>
 
+#define LINKMENU_TITLE_X XRES(16)
+#define LINKMENU_TITLE_Y YRES(16)
+
 //-----------------------------------------------------------------------------
 // Handler that executes an action when a menu button is clicked
 //-----------------------------------------------------------------------------
@@ -65,14 +68,11 @@ void CHandler_MenuButtonClick::mousePressed(MouseCode code, Panel* panel)
 	}
 }
 
-#define LINKMENU_TITLE_X XRES(16)
-#define LINKMENU_TITLE_Y YRES(16)
-
 CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CMenuPanel(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	m_pPanel = new CTransparentPanel(200, GMENU_WINDOW_X, GMENU_WINDOW_Y, GMENU_WINDOW_SIZE_X, GMENU_WINDOW_SIZE_Y);
 	m_pPanel->setParent(this);
-	m_pPanel->setBorder(new LineBorder(Color(255, 255, 255, 0)));
+	m_pPanel->setBorder(new LineBorder(Color(giR, giG, giB, 0)));
 	m_pPanel->setVisible(true);
 
 	m_pPanel->getPos(iXPos, iYPos);
@@ -80,6 +80,7 @@ CGMMenuBase::CGMMenuBase(int iTrans, int iRemoveMe, int x, int y, int wide, int 
 
 	CommandButton* pButtonExit = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(410), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(149), BUTTON_SIZE_Y - YRES(16));
 	pButtonExit->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
+	pButtonExit->PickHudColor = true;
 	pButtonExit->setParent(this);
 }
 
@@ -90,6 +91,7 @@ void CGMMenuBase::ButtonHelper(const char* text, const char* command, int x, int
 	EasyButton->m_bNoMarginSpace = true;
 	EasyButton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
 	EasyButton->addActionSignal(new CMenuHandler_StringCommand(command));
+	EasyButton->PickHudColor = true;
 	EasyButton->setParent(this);
 }
 
@@ -100,6 +102,7 @@ void CGMMenuBase::ButtonHelperWithID(CommandButton*& newbutton, const char* text
 	newbutton->m_bNoMarginSpace = true;
 	newbutton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
 	newbutton->addActionSignal(new CMenuHandler_StringCommand(command));
+	newbutton->PickHudColor = true;
 	newbutton->setParent(this);
 }
 
@@ -110,6 +113,7 @@ void CGMMenuBase::ButtonOptionHelper(CommandButton*& newbutton, const char* text
 	newbutton->m_bNoMarginSpace = true;
 	newbutton->setText(gHUD.m_TextMessage.BufferedLocaliseTextString(text));
 	newbutton->addInputSignal(new CHandler_MenuButtonClick(this, option));
+	newbutton->PickHudColor = true;
 	newbutton->setParent(this);
 }
 
@@ -120,9 +124,6 @@ CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int
 
 CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
-	CSchemeManager* pSchemes = gViewPort->GetSchemeManager();
-	SchemeHandle_t hTitleScheme = pSchemes->getSchemeHandle("Title Font");
-
 	// Main Headers
 	ButtonOptionHelper(ButtonLinkMenu, "#Gomod_MenuTab_Main", false, 0, iXPos + XRES(16), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
 	ButtonOptionHelper(ButtonSweepMenu, "#Gomod_MenuTab_Weapons", true, 1, iXPos + XRES(82), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
@@ -282,6 +283,7 @@ CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y
 	ButtonRender->addActionSignal(new CMenuHandler_StringCommand("tool render"));
 	ButtonRender->addActionSignal(new CMenuHandler_StringCommand("toggleRenderMenu"));
 	ButtonRender->addActionSignal(new CMenuHandler_TextWindow(HIDE_TEXTWINDOW));
+	ButtonRender->PickHudColor = true;
 	ButtonRender->setVisible(false);
 	ButtonRender->setParent(this);
 
@@ -293,8 +295,11 @@ CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y
 	ButtonHelperWithID(ButtonUndoNPC, "#Gomod_MenuButton_undo", "button_npc_undo", iXPos + XRES(144), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelperWithID(ButtonDeleteALlNpcs, "#Gomod_MenuButton_remove", "button_npc_remove_all", iXPos + XRES(208), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
+	CSchemeManager* pSchemes = gViewPort->GetSchemeManager();
+	SchemeHandle_t hTitleScheme = pSchemes->getSchemeHandle("Briefing Text");
+
 	// color schemes
-	int r, g, b, a;
+	int a;
 
 	// Create the Scroll panel
 	pScrollPanel = new CTFScrollPanel(iXPos + XRES(16), iYPos + LINKMENU_TITLE_Y * 2 + YRES(16), iXSize - XRES(32), iYSize - (YRES(48) + BUTTON_SIZE_Y * 2));
@@ -311,10 +316,10 @@ CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y
 
 	// get the font and colors from the scheme
 	pText->setFont(pSchemes->getFont(hTitleScheme));
-	pSchemes->getFgColor(hTitleScheme, r, g, b, a);
-	pText->setFgColor(r, g, b, a);
-	pSchemes->getBgColor(hTitleScheme, r, g, b, a);
-	pText->setBgColor(r, g, b, a);
+	pSchemes->getFgColor(hTitleScheme, giR, giG, giB, a);
+	pText->setFgColor(giR, giG, giB, a);
+	pSchemes->getBgColor(hTitleScheme, giR, giG, giB, a);
+	pText->setBgColor(giR, giG, giB, a);
 	pText->setText(szMOTD);
 
 	// Get the total size of the MOTD text and resize the text panel
