@@ -983,6 +983,9 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity* pOther)
 		return;
 	}
 
+	if (IsPlayerBusting(pOther))
+		return;
+
 	if (AddAmmo(pOther))
 	{
 		if (g_pGameRules->AmmoShouldRespawn(this) == GR_AMMO_RESPAWN_YES)
