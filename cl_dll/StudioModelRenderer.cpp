@@ -132,14 +132,17 @@ void CStudioModelRenderer::StudioRenderToolBowSkin()
 {
 	if (m_pCurrentEntity == gEngfuncs.GetViewModel())
 	{
-		cl_entity_t saveent = *m_pCurrentEntity;
+		const char* pszModelName = m_pCurrentEntity->model ? m_pCurrentEntity->model->name : nullptr;
 
-		model_t* handmodel = IEngineStudio.Mod_ForName("models/v_toolbow.mdl", 1); // load model
-
-		if (g_iToolBowSkin != 0)
+		if (pszModelName && strstr(pszModelName, "v_toolbow.mdl"))
 		{
-			m_pCurrentEntity->curstate.skin = g_iToolBowSkin - 1;
+			if (g_iToolBowSkin != 0)
+			{
+				m_pCurrentEntity->curstate.skin = g_iToolBowSkin - 1;
+			}
 		}
+		else
+			m_pCurrentEntity->curstate.skin = 0;
 	}
 }
 
