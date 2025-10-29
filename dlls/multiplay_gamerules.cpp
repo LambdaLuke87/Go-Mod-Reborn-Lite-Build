@@ -2259,3 +2259,274 @@ bool CMultiplaySandbox::FAllowMonsters()
 {
 	return true;
 }
+
+//=========================================================
+//=========================================================
+// Reaper Gamerules
+//=========================================================
+//=========================================================
+
+//#define EGON_BUSTING_TIME 10
+
+bool IsReaperGame()
+{
+	return current_gamemode.value == 3;
+}
+
+bool IsPlayerReaper(CBaseEntity* pPlayer)
+{
+	if (!pPlayer || !pPlayer->IsPlayer() || !IsReaperGame())
+		return false;
+
+	return ((CBasePlayer*)pPlayer)->HasPlayerItemFromID(WEAPON_PIPEWRENCH);
+}
+
+//=========================================================
+CMultiplayReaper::CMultiplayReaper()
+{
+	m_flEgonBustingCheckTime = -1;
+}
+
+//=========================================================
+void CMultiplayReaper::Think()
+{
+	CheckForPipeWrenches();
+
+	CHalfLifeMultiplay::Think();
+}
+
+//=========================================================
+int CMultiplayReaper::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
+{
+	// If the attacker is busting, they get a point per kill
+	if (IsPlayerReaper(pAttacker))
+		return 1;
+
+	// If the victim is busting, then the attacker gets a point
+	if (IsPlayerReaper(pKilled))
+		return 2;
+
+	return 0;
+}
+
+//=========================================================
+void CMultiplayReaper::PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor)
+{
+	if (IsPlayerReaper(pVictim))
+	{
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "The Reaper is dead!!");
+
+		// Reset Pipe check time
+		m_flEgonBustingCheckTime = -1;
+
+		CBasePlayer* peKiller = NULL;
+		CBaseEntity* ktmp = CBaseEntity::Instance(pKiller);
+
+		if (ktmp && (ktmp->Classify() == CLASS_PLAYER))
+		{
+			peKiller = (CBasePlayer*)ktmp;
+		}
+		else if (ktmp && (ktmp->Classify() == CLASS_VEHICLE))
+		{
+			CBasePlayer* pDriver = ((CFuncVehicle*)ktmp)->m_pDriver;
+
+			if (pDriver != NULL)
+			{
+				peKiller = pDriver;
+				ktmp = pDriver;
+				pKiller = pDriver->pev;
+			}
+		}
+
+		if (peKiller)
+		{
+			UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s has has killed the Reaper!\n", STRING((CBasePlayer*)peKiller->pev->netname)));
+		}
+
+		pVictim->pev->renderfx = kRenderFxNone;
+		pVictim->pev->rendercolor = g_vecZero;
+		// pVictim->pev->effects &= ~EF_BRIGHTFIELD;
+	}
+
+	CHalfLifeMultiplay::PlayerKilled(pVictim, pKiller, pInflictor);
+}
+
+//=========================================================
+void CMultiplayReaper::DeathNotice(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pevInflictor)
+{
+	// Only death notices that the Buster was involved in in Busting game mode
+	if (!IsPlayerReaper(pVictim) && !IsPlayerReaper(CBaseEntity::Instance(pKiller)))
+		return;
+
+	CHalfLifeMultiplay::DeathNotice(pVictim, pKiller, pevInflictor);
+}
+
+//=========================================================
+int CMultiplayReaper::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
+{
+	if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+		return GR_WEAPON_RESPAWN_NO;
+
+	return CHalfLifeMultiplay::WeaponShouldRespawn(pWeapon);
+}
+
+void CMultiplayReaper::CheckForPipeWrenches()
+{
+	if (m_flEgonBustingCheckTime <= 0.0f)
+	{
+		m_flEgonBustingCheckTime = gpGlobals->time + EGON_BUSTING_TIME;
+		return;
+	}
+
+	if (m_flEgonBustingCheckTime <= gpGlobals->time)
+	{
+		m_flEgonBustingCheckTime = -1.0f;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
+
+			// Someone is busting, no need to continue
+			if (IsPlayerReaper(pPlayer))
+				return;
+		}
+
+		int bBestFrags = 9999;
+		CBasePlayer* pBestPlayer = NULL;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
+
+			if (pPlayer && pPlayer->pev->frags <= bBestFrags)
+			{
+				bBestFrags = pPlayer->pev->frags;
+				pBestPlayer = pPlayer;
+			}
+		}
+
+		if (pBestPlayer)
+		{
+			pBestPlayer->GiveNamedItem("weapon_pipewrench");
+
+			CBaseEntity* pEntity = NULL;
+
+			// Find a weaponbox that includes an Egon, then destroy it
+			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "weaponbox")) != NULL)
+			{
+				CWeaponBox* pWeaponBox = (CWeaponBox*)pEntity;
+
+				if (pWeaponBox)
+				{
+					CBasePlayerItem* pWeapon;
+
+					for (int i = 0; i < MAX_ITEM_TYPES; i++)
+					{
+						pWeapon = pWeaponBox->m_rgpPlayerItems[i];
+
+						while (pWeapon)
+						{
+							// There you are, bye box
+							if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+							{
+								pWeaponBox->Kill();
+								break;
+							}
+
+							pWeapon = pWeapon->m_pNext;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//=========================================================
+bool CMultiplayReaper::CanHavePlayerItem(CBasePlayer* pPlayer, CBasePlayerItem* pItem)
+{
+	// Buster cannot have more weapons nor ammo
+	if (BustingCanHaveItem(pPlayer, pItem) == false)
+	{
+		return false;
+	}
+
+	return CHalfLifeMultiplay::CanHavePlayerItem(pPlayer, pItem);
+}
+
+//=========================================================
+bool CMultiplayReaper::CanHaveItem(CBasePlayer* pPlayer, CItem* pItem)
+{
+	// Buster cannot have more weapons nor ammo
+	if (BustingCanHaveItem(pPlayer, pItem) == false)
+	{
+		return false;
+	}
+
+	return CHalfLifeMultiplay::CanHaveItem(pPlayer, pItem);
+}
+
+//=========================================================
+void CMultiplayReaper::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon)
+{
+	if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+	{
+		switch (RANDOM_LONG(1, 2))
+		{
+		case 1:
+			EMIT_SOUND_DYN(pPlayer->edict(), CHAN_VOICE, "!MI_SENTENC7", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+			break;
+		case 2:
+			EMIT_SOUND_DYN(pPlayer->edict(), CHAN_VOICE, "!MI_SENTENC8", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+			break;
+		}
+
+		pPlayer->RemoveAllItems(false);
+
+		UTIL_ClientPrintAll(HUD_PRINTCENTER, "The Reaper rises from the void!");
+		UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s is Hunting!\n", STRING((CBasePlayer*)pPlayer->pev->netname)));
+
+		SetPlayerModel(pPlayer);
+
+		pPlayer->pev->health = pPlayer->pev->max_health;
+		pPlayer->pev->armorvalue = 100;
+
+		pPlayer->pev->renderfx = kRenderFxGlowShell;
+		pPlayer->pev->renderamt = 25;
+		pPlayer->pev->rendercolor = Vector(255, 20, 42);
+		pPlayer->pev->gravity = 0.4;
+		//pPlayer->GiveNamedItem("item_longjump");
+		//pPlayer->pev->maxspeed = 820.0f;
+
+		pPlayer->m_fLongJump = true; // player now has longjump module
+		g_engfuncs.pfnSetPhysicsKeyValue(pPlayer->edict(), "slj", "1");
+
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
+	}
+}
+
+void CMultiplayReaper::ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer)
+{
+	SetPlayerModel(pPlayer);
+
+	// Set preferences
+	pPlayer->SetPrefsFromUserinfo(infobuffer);
+}
+
+void CMultiplayReaper::PlayerSpawn(CBasePlayer* pPlayer)
+{
+	CHalfLifeMultiplay::PlayerSpawn(pPlayer);
+	SetPlayerModel(pPlayer);
+}
+
+void CMultiplayReaper::SetPlayerModel(CBasePlayer* pPlayer)
+{
+	if (IsPlayerReaper(pPlayer))
+	{
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
+	}
+	else
+	{
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "gordon");
+	}
+}

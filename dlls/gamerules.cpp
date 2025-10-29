@@ -503,6 +503,11 @@ CGameRules* InstallGameRules(CBaseEntity* pWorld)
 		g_teamplay = false;
 		return new CMultiplayBusters;
 	}
+	else if (3 == current_gamemode.value)
+	{
+		g_teamplay = false;
+		return new CMultiplayReaper;
+	}
 	else if (0 == gpGlobals->deathmatch)
 	{
 		// generic half-life
