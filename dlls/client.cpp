@@ -314,6 +314,86 @@ void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char*
 		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"%s\" is \"%d\"\n", name, var));
 }
 
+void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
+{
+	if (onlyhoster_noclips.value) // Noclip Lock (gm_noclip_lock 1)
+	{
+		// Check if it is a dedicated server.
+		if (IS_DEDICATED_SERVER())
+		{
+			if (active)
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't noclip\n");
+			return;
+		}
+
+		// Verify if the player is the host (local player #1)
+		if (ENTINDEX(pEntity) != 1)
+		{
+			if (active)
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can noclip\n");
+			return;
+		}
+	}
+
+	if (active)
+	{
+		player->pev->movetype = MOVETYPE_NOCLIP;
+		player->pev->speed = 450;
+	}
+	else
+	{
+		player->pev->movetype = MOVETYPE_WALK;
+		player->pev->speed = 300;
+	}
+}
+
+void GoMod_ImmortalityHelper(CBasePlayer* player, edict_t* pEntity, bool zeus)
+{
+	if (onlyhoster_immortality.value) // Immortality Lock (gm_immortality_lock 1)
+	{
+		// Check if it is a dedicated server.
+		if (IS_DEDICATED_SERVER())
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - You can't use Immortalities\n");
+			return;
+		}
+
+		// Verify if the player is the host (local player #1)
+		if (ENTINDEX(pEntity) != 1)
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - Only the host can use Immortalities\n");
+			return;
+		}
+	}
+
+	if (zeus)
+	{
+		if (0 != player->pev->takedamage)
+		{
+			player->pev->takedamage = DAMAGE_NO;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Applied Zeus invulnerability\n");
+		}
+		else
+		{
+			player->pev->takedamage = DAMAGE_YES;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus invulnerability removed\n");
+		}
+	}
+	else
+	{
+		if (player->m_buddha)
+		{
+			player->m_buddha = false;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode off\n");
+		}
+		else
+		{
+			player->m_buddha = true;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode on\n");
+		}
+	}
+}
+
 void LinkUserMessages();
 
 /*
@@ -842,6 +922,24 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (UTIL_IsSandbox())
 		{
+
+			if (onlyhoster_spawns.value) // Spawn Lock (gm_spawn_lock 1)
+			{
+				// Check if it is a dedicated server.
+				if (IS_DEDICATED_SERVER())
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't spawn things\n");
+					return;
+				}
+
+				// Verify if the player is the host (local player #1)
+				if (ENTINDEX(pEntity) != 1)
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can spawn things\n");
+					return;
+				}
+			}
+
 			// Spawn Monsters
 			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 			{
@@ -991,10 +1089,25 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (UTIL_IsSandbox())
 		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-
 			if (FStrEq(pcmd, "button_ai_set"))
 			{
+				if (onlyhoster_changeAI.value) // Change AI Lock (gm_change_ai_lock 1)
+				{
+					// Check if it is a dedicated server.
+					if (IS_DEDICATED_SERVER())
+					{
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't disable/enable the AI\n");
+						return;
+					}
+
+					// Verify if the player is the host (local player #1)
+					if (ENTINDEX(pEntity) != 1)
+					{
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can disable/enable the AI\n");
+						return;
+					}
+				}
+
 				CVAR_SET_FLOAT("gm_ai_disable", !npc_noai.value);
 				UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s changed NPC AI: %s\n", STRING((CBasePlayer*)pPlayer->pev->netname), !npc_noai.value ? "ENABLED" : "DISABLED"));
 			}
@@ -1021,8 +1134,25 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
 	{
-		if (allow_voices.value)
+		if (allow_voices.value && UTIL_IsSandbox())
 		{
+			if (onlyhoster_voicesay.value) // Voice Say Lock (gm_spawn_lock 1)
+			{
+				// Check if it is a dedicated server.
+				if (IS_DEDICATED_SERVER())
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't use voice commands\n");
+					return;
+				}
+
+				// Verify if the player is the host (local player #1)
+				if (ENTINDEX(pEntity) != 1)
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can use voice commands\n");
+					return;
+				}
+			}
+
 			for (int i = 0; i < ARRAYSIZE(gVoices); i++)
 			{
 				voices_t voiceInfo = gVoices[i];
@@ -1088,54 +1218,22 @@ void ClientCommand(edict_t* pEntity)
 	else if (FStrEq(pcmd, "buddha"))
 	{
 		if (UTIL_IsSandbox() && allow_healthmodify.value)
-		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			if (pPlayer->m_buddha)
-			{
-				pPlayer->m_buddha = false;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode off\n");
-			}
-			else
-			{
-				pPlayer->m_buddha = true;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode on\n");
-			}
-		}
+			GoMod_ImmortalityHelper(pPlayer, pEntity, false);
 	}
 	else if (FStrEq(pcmd, "zeus"))
 	{
 		if (UTIL_IsSandbox() && allow_healthmodify.value)
-		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			if (0 != pPlayer->pev->takedamage)
-			{
-				pPlayer->pev->takedamage = DAMAGE_NO;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Applied Zeus invulnerability\n");
-			}
-			else
-			{
-				pPlayer->pev->takedamage = DAMAGE_YES;
-				ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus invulnerability removed\n");
-			}
-		}
+			GoMod_ImmortalityHelper(pPlayer, pEntity, true);
 	}
 	else if (FStrEq(pcmd, "+noclip"))
 	{
 		if (UTIL_IsSandbox() && allow_noclip.value)
-		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			pPlayer->pev->movetype = MOVETYPE_NOCLIP;
-			pPlayer->pev->speed = 450;
-		}
+			GoMod_NoclipHelper(pPlayer, pEntity, true);
 	}
 	else if (FStrEq(pcmd, "-noclip"))
 	{
 		if (UTIL_IsSandbox() && allow_noclip.value)
-		{
-			CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-			pPlayer->pev->movetype = MOVETYPE_WALK;
-			pPlayer->pev->speed = 300;
-		}
+			GoMod_NoclipHelper(pPlayer, pEntity, false);
 	}
 	else if (g_pGameRules->ClientCommand(player, pcmd))
 	{

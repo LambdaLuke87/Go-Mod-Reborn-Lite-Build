@@ -78,11 +78,19 @@ extern cvar_t allow_props;
 extern cvar_t allow_voices;
 extern cvar_t glowstick_colors;
 extern cvar_t spawn_limit;
-extern cvar_t explosion_control;
-extern cvar_t bigdecals_control;
 extern cvar_t worlditems_respawn;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;
 extern cvar_t monster_variation;
 extern cvar_t spawn_wpnsetup;
 extern cvar_t custom_npc_health;
+
+// Admin Locks and Griefing Control
+extern cvar_t explosion_control;
+extern cvar_t bigdecals_control;
+extern cvar_t onlyhoster_spawns;
+extern cvar_t onlyhoster_noclips;
+extern cvar_t onlyhoster_immortality;
+extern cvar_t onlyhoster_toolbow;
+extern cvar_t onlyhoster_changeAI;
+extern cvar_t onlyhoster_voicesay;

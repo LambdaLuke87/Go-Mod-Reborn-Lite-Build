@@ -63,14 +63,22 @@ cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
 cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t spawn_limit = {"gm_spawn_limit", "1200", FCVAR_SERVER};
-cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
-cvar_t bigdecals_control = {"gm_big_decals_control", "0", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
 cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
 cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
+
+// Admin Locks and Griefing Control
+cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
+cvar_t bigdecals_control = {"gm_big_decals_control", "0", FCVAR_SERVER};
+cvar_t onlyhoster_spawns = {"gm_spawn_lock", "0", FCVAR_SERVER};
+cvar_t onlyhoster_noclips = {"gm_noclip_lock", "0", FCVAR_SERVER};
+cvar_t onlyhoster_immortality = {"gm_immortality_lock", "0", FCVAR_SERVER};
+cvar_t onlyhoster_toolbow = {"gm_toolbow_lock", "0", FCVAR_SERVER};
+cvar_t onlyhoster_changeAI = {"gm_change_ai_lock", "0", FCVAR_SERVER};
+cvar_t onlyhoster_voicesay = {"gm_voicesay_lock", "0", FCVAR_SERVER};
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -707,8 +715,6 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_tentacle);
 	CVAR_REGISTER(&glowstick_colors);
 	CVAR_REGISTER(&spawn_limit);
-	CVAR_REGISTER(&explosion_control);
-	CVAR_REGISTER(&bigdecals_control);
 	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);
@@ -716,6 +722,16 @@ void GameDLLInit()
 	CVAR_REGISTER(&rule_infammo);
 	CVAR_REGISTER(&spawn_wpnsetup);
 	CVAR_REGISTER(&custom_npc_health);
+
+	// Admin Locks and Griefing Control
+	CVAR_REGISTER(&explosion_control);
+	CVAR_REGISTER(&bigdecals_control);
+	CVAR_REGISTER(&onlyhoster_spawns);
+	CVAR_REGISTER(&onlyhoster_noclips);
+	CVAR_REGISTER(&onlyhoster_immortality);
+	CVAR_REGISTER(&onlyhoster_toolbow);
+	CVAR_REGISTER(&onlyhoster_changeAI);
+	CVAR_REGISTER(&onlyhoster_voicesay);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt
