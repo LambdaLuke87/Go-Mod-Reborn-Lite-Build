@@ -49,36 +49,43 @@ cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 
 cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 
-// Go-Mod Reborn cvars Stuff
+//===============================
+// Go-Mod Reborn CVARS
+//===============================
+
+// Global CVARS
 cvar_t current_gamemode = {"mp_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
 cvar_t mpweapons_skills = {"mp_weapons_skills", "1", FCVAR_SERVER};
-cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
-cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
+cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
-cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
-cvar_t allow_tentacle = {"gm_allow_tentacle", "0", FCVAR_SERVER};
-cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
-cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
-cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
+
+// Sandbox Configs
+cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
 cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
-cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
-cvar_t spawn_limit = {"gm_spawn_limit", "1200", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
-cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
-cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
+cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
+
+// Allow Content that handle precaches
+cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
+cvar_t allow_tentacle = {"gm_allow_tentacle", "0", FCVAR_SERVER};
+
+// Allow Functions and Gameplay
+cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
+cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
+cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
+cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
 
 // Admin Locks and Griefing Control
+cvar_t spawn_limit = {"gm_spawn_limit", "1200", FCVAR_SERVER};
 cvar_t explosion_control = {"gm_explosion_control", "0", FCVAR_SERVER};
 cvar_t bigdecals_control = {"gm_big_decals_control", "0", FCVAR_SERVER};
 cvar_t onlyhoster_spawns = {"gm_spawn_lock", "0", FCVAR_SERVER};
-cvar_t onlyhoster_noclips = {"gm_noclip_lock", "0", FCVAR_SERVER};
-cvar_t onlyhoster_immortality = {"gm_immortality_lock", "0", FCVAR_SERVER};
 cvar_t onlyhoster_toolbow = {"gm_toolbow_lock", "0", FCVAR_SERVER};
 cvar_t onlyhoster_changeAI = {"gm_change_ai_lock", "0", FCVAR_SERVER};
-cvar_t onlyhoster_voicesay = {"gm_voicesay_lock", "0", FCVAR_SERVER};
 
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
@@ -702,36 +709,43 @@ void GameDLLInit()
 
 	CVAR_REGISTER(&sv_allowbunnyhopping);
 
-	// Cvar register for Go-Mod Reborn stuff
+	//===============================
+	// Go-Mod Reborn CVARS
+	//===============================
+
+	// Global CVARS
 	CVAR_REGISTER(&current_gamemode);
 	CVAR_REGISTER(&mpweapons_skills);
-	CVAR_REGISTER(&allow_camera);
-	CVAR_REGISTER(&allow_props);
-	CVAR_REGISTER(&allow_voices);
-	CVAR_REGISTER(&allow_noclip);
-	CVAR_REGISTER(&allow_healthmodify);
+	CVAR_REGISTER(&rule_infammo);
 	CVAR_REGISTER(&allow_gaussfly);
-	CVAR_REGISTER(&allow_nihilant);
-	CVAR_REGISTER(&allow_tentacle);
+
+	// Sandbox Configs
+	CVAR_REGISTER(&custom_npc_health);
 	CVAR_REGISTER(&glowstick_colors);
-	CVAR_REGISTER(&spawn_limit);
-	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_polem);
 	CVAR_REGISTER(&monster_variation);
-	CVAR_REGISTER(&rule_infammo);
 	CVAR_REGISTER(&spawn_wpnsetup);
-	CVAR_REGISTER(&custom_npc_health);
+	CVAR_REGISTER(&worlditems_respawn);
+
+	// Allow Content that handle precaches
+	CVAR_REGISTER(&allow_props);
+	CVAR_REGISTER(&allow_nihilant);
+	CVAR_REGISTER(&allow_tentacle);
 
 	// Admin Locks and Griefing Control
+	CVAR_REGISTER(&allow_camera);
+	CVAR_REGISTER(&allow_healthmodify);
+	CVAR_REGISTER(&allow_noclip);
+	CVAR_REGISTER(&allow_voices);
+
+	// Admin Locks and Griefing Control
+	CVAR_REGISTER(&spawn_limit);
 	CVAR_REGISTER(&explosion_control);
 	CVAR_REGISTER(&bigdecals_control);
 	CVAR_REGISTER(&onlyhoster_spawns);
-	CVAR_REGISTER(&onlyhoster_noclips);
-	CVAR_REGISTER(&onlyhoster_immortality);
 	CVAR_REGISTER(&onlyhoster_toolbow);
 	CVAR_REGISTER(&onlyhoster_changeAI);
-	CVAR_REGISTER(&onlyhoster_voicesay);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

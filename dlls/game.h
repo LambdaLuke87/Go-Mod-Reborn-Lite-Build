@@ -65,32 +65,39 @@ extern cvar_t mp_chattime;
 extern cvar_t pushablemode;
 extern cvar_t sv_pushable_fixed_tick_fudge;
 
-// Go-Mod Reborn Cvars
+//===============================
+// Go-Mod Reborn CVARS
+//===============================
+
+// Global CVARS
 extern cvar_t current_gamemode;
 extern cvar_t mpweapons_skills;
-extern cvar_t allow_camera;
-extern cvar_t allow_noclip;
-extern cvar_t allow_healthmodify;
 extern cvar_t allow_gaussfly;
-extern cvar_t allow_nihilant;
-extern cvar_t allow_tentacle;
-extern cvar_t allow_props;
-extern cvar_t allow_voices;
+
+// Sandbox Configs
+extern cvar_t custom_npc_health;
 extern cvar_t glowstick_colors;
-extern cvar_t spawn_limit;
-extern cvar_t worlditems_respawn;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;
 extern cvar_t monster_variation;
 extern cvar_t spawn_wpnsetup;
-extern cvar_t custom_npc_health;
+extern cvar_t worlditems_respawn;
+
+// Allow Content that handle precaches
+extern cvar_t allow_props;
+extern cvar_t allow_nihilant;
+extern cvar_t allow_tentacle;
+
+// Allow Functions and Gameplay
+extern cvar_t allow_camera;
+extern cvar_t allow_healthmodify;
+extern cvar_t allow_noclip;
+extern cvar_t allow_voices;
 
 // Admin Locks and Griefing Control
+extern cvar_t spawn_limit;
 extern cvar_t explosion_control;
 extern cvar_t bigdecals_control;
 extern cvar_t onlyhoster_spawns;
-extern cvar_t onlyhoster_noclips;
-extern cvar_t onlyhoster_immortality;
 extern cvar_t onlyhoster_toolbow;
 extern cvar_t onlyhoster_changeAI;
-extern cvar_t onlyhoster_voicesay;

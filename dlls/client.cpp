@@ -316,7 +316,7 @@ void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char*
 
 void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 {
-	if (onlyhoster_noclips.value) // Noclip Lock (gm_noclip_lock 1)
+	if (allow_noclip.value == 2) // Only Hoster
 	{
 		// Check if it is a dedicated server.
 		if (IS_DEDICATED_SERVER())
@@ -349,7 +349,7 @@ void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 
 void GoMod_ImmortalityHelper(CBasePlayer* player, edict_t* pEntity, bool zeus)
 {
-	if (onlyhoster_immortality.value) // Immortality Lock (gm_immortality_lock 1)
+	if (allow_healthmodify.value == 2) // Only Hoster
 	{
 		// Check if it is a dedicated server.
 		if (IS_DEDICATED_SERVER())
@@ -1136,7 +1136,7 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (allow_voices.value && UTIL_IsSandbox())
 		{
-			if (onlyhoster_voicesay.value) // Voice Say Lock (gm_spawn_lock 1)
+			if (allow_voices.value == 2) // Only Hoster
 			{
 				// Check if it is a dedicated server.
 				if (IS_DEDICATED_SERVER())
