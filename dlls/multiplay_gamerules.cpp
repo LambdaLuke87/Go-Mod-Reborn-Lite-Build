@@ -2175,6 +2175,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 				{
 					pPlayer->GiveNamedItem("weapon_knife");
 					pPlayer->GiveNamedItem("weapon_pipewrench");
+					pPlayer->GiveNamedItem("weapon_grapple");
 					pPlayer->GiveNamedItem("weapon_357");
 					pPlayer->GiveNamedItem("weapon_eagle");
 					pPlayer->GiveNamedItem("weapon_9mmAR");
@@ -2285,7 +2286,7 @@ bool IsPlayerReaper(CBaseEntity* pPlayer)
 	if (!pPlayer || !pPlayer->IsPlayer() || !IsReaperGame())
 		return false;
 
-	return ((CBasePlayer*)pPlayer)->HasPlayerItemFromID(WEAPON_PIPEWRENCH);
+	return ((CBasePlayer*)pPlayer)->HasPlayerItemFromID(WEAPON_KNIFE);
 }
 
 //=========================================================
@@ -2297,7 +2298,7 @@ CMultiplayReaper::CMultiplayReaper()
 //=========================================================
 void CMultiplayReaper::Think()
 {
-	CheckForPipeWrenches();
+	CheckForKnifes();
 
 	CHalfLifeMultiplay::Think();
 }
@@ -2371,13 +2372,13 @@ void CMultiplayReaper::DeathNotice(CBasePlayer* pVictim, entvars_t* pKiller, ent
 //=========================================================
 int CMultiplayReaper::WeaponShouldRespawn(CBasePlayerItem* pWeapon)
 {
-	if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+	if (pWeapon->m_iId == WEAPON_KNIFE)
 		return GR_WEAPON_RESPAWN_NO;
 
 	return CHalfLifeMultiplay::WeaponShouldRespawn(pWeapon);
 }
 
-void CMultiplayReaper::CheckForPipeWrenches()
+void CMultiplayReaper::CheckForKnifes()
 {
 	if (m_flEgonBustingCheckTime <= 0.0f)
 	{
@@ -2414,7 +2415,7 @@ void CMultiplayReaper::CheckForPipeWrenches()
 
 		if (pBestPlayer)
 		{
-			pBestPlayer->GiveNamedItem("weapon_pipewrench");
+			pBestPlayer->GiveNamedItem("weapon_knife");
 
 			CBaseEntity* pEntity = NULL;
 
@@ -2434,7 +2435,7 @@ void CMultiplayReaper::CheckForPipeWrenches()
 						while (pWeapon)
 						{
 							// There you are, bye box
-							if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+							if (pWeapon->m_iId == WEAPON_KNIFE)
 							{
 								pWeaponBox->Kill();
 								break;
@@ -2476,7 +2477,7 @@ bool CMultiplayReaper::CanHaveItem(CBasePlayer* pPlayer, CItem* pItem)
 //=========================================================
 void CMultiplayReaper::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon)
 {
-	if (pWeapon->m_iId == WEAPON_PIPEWRENCH)
+	if (pWeapon->m_iId == WEAPON_KNIFE)
 	{
 		switch (RANDOM_LONG(1, 2))
 		{
@@ -2536,4 +2537,11 @@ void CMultiplayReaper::SetPlayerModel(CBasePlayer* pPlayer)
 	{
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "gordon");
 	}
+}
+
+void CMultiplayReaper::UpdateGameMode(CBasePlayer* pPlayer)
+{
+	MESSAGE_BEGIN(MSG_ONE, gmsgGameMode, NULL, pPlayer->edict());
+	WRITE_BYTE(4);
+	MESSAGE_END();
 }

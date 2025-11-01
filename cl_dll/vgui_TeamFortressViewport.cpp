@@ -59,6 +59,7 @@
 #include "screenfade.h"
 
 extern bool g_iVisibleMouse;
+extern bool UTIL_IsMultiplayer();
 extern bool UTIL_IsSandbox();
 class CCommandMenu;
 int g_iPlayerClass;

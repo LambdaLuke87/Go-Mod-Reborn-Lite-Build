@@ -880,7 +880,7 @@ void CBasePlayer::PackDeadPlayerItems()
 	}
 	if (IsReaperGame())
 	{
-		if (HasNamedPlayerItem("weapon_pipewrench"))
+		if (HasNamedPlayerItem("weapon_knife"))
 		{
 			for (i = 0; i < MAX_ITEM_TYPES; i++)
 			{
@@ -888,11 +888,11 @@ void CBasePlayer::PackDeadPlayerItems()
 
 				if (pItem)
 				{
-					if (!strcmp("weapon_pipewrench", STRING(pItem->pev->classname)))
+					if (!strcmp("weapon_knife", STRING(pItem->pev->classname)))
 					{
 						pWeaponBox->PackWeapon(pItem);
 
-						SET_MODEL(ENT(pWeaponBox->pev), "models/w_pipe_wrench.mdl");
+						SET_MODEL(ENT(pWeaponBox->pev), "models/w_scythe.mdl");
 
 						pWeaponBox->pev->velocity = Vector(0, 0, 0);
 						pWeaponBox->pev->renderfx = kRenderFxGlowShell;

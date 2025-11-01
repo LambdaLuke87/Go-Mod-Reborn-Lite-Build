@@ -26,9 +26,6 @@
 #define PIPEWRENCH_WALLHIT_VOLUME 512
 
 #ifndef CLIENT_DLL
-
-extern bool IsReaperGame();
-
 TYPEDESCRIPTION CPipewrench::m_SaveData[] =
 	{
 		DEFINE_FIELD(CPipewrench, m_flBigSwingStart, FIELD_TIME),
@@ -90,18 +87,6 @@ void CPipewrench::Holster()
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim(PIPEWRENCH_HOLSTER);
-}
-
-bool CPipewrench::CanHolster()
-{
-#ifndef CLIENT_DLL
-	if (IsReaperGame())
-	{
-		return false;
-	}
-#endif
-
-	return true;
 }
 
 void CPipewrench::PrimaryAttack()
@@ -229,11 +214,7 @@ bool CPipewrench::Swing(const bool bFirst)
 		{
 			ClearMultiDamage();
 
-			if (IsReaperGame())
-			{
-				pEntity->TraceAttack(m_pPlayer->pev, 999, gpGlobals->v_forward, &tr, DMG_CLUB);
-			}
-			else if ((m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())
+			if ((m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())
 			{
 				// first swing does full damage
 				pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgPipewrench, gpGlobals->v_forward, &tr, DMG_CLUB);
@@ -386,11 +367,7 @@ void CPipewrench::BigSwing()
 			ClearMultiDamage();
 
 			float flDamage = (gpGlobals->time - m_flBigSwingStart) * gSkillData.plrDmgPipewrench + 25.0f;
-			if (IsReaperGame())
-			{
-				pEntity->TraceAttack(m_pPlayer->pev, 999, gpGlobals->v_forward, &tr, DMG_CLUB);
-			}
-			else if ((m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())
+			if ((m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())
 			{
 				// first swing does full damage
 				pEntity->TraceAttack(m_pPlayer->pev, flDamage, gpGlobals->v_forward, &tr, DMG_CLUB);

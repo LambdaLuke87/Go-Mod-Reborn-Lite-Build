@@ -454,9 +454,10 @@ public:
 
 	void SetPlayerModel(CBasePlayer* pPlayer);
 
+	void UpdateGameMode(CBasePlayer* pPlayer) override;
 protected:
 	float m_flEgonBustingCheckTime = -1.0f;
-	void CheckForPipeWrenches();
+	void CheckForKnifes();
 };
 
 inline DLL_GLOBAL CGameRules* g_pGameRules = nullptr;

@@ -1038,5 +1038,10 @@ bool UTIL_IsCTF()
 
 bool UTIL_IsSandbox()
 {
-	return giTeamplay == 3;
+	return !UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && giTeamplay == 3;
+}
+
+bool UTIL_IsReaperMode()
+{
+	return UTIL_IsMultiplayer() && giTeamplay == 4;
 }

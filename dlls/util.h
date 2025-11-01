@@ -377,6 +377,7 @@ extern Vector VecBModelOrigin(entvars_t* pevBModel);
 extern int BuildChangeList(LEVELLIST* pLevelList, int maxList);
 
 extern bool UTIL_IsSandbox();
+extern bool UTIL_IsReaperMode();
 
 //
 // How did I ever live without ASSERT?

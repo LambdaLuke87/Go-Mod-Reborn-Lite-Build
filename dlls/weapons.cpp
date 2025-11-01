@@ -515,7 +515,7 @@ void CBasePlayerItem::FallThink()
 	}
 	else if (IsReaperGame() && FNullEnt(pev->owner))
 	{
-		if (!strcmp("weapon_pipewrench", STRING(pev->classname)))
+		if (!strcmp("weapon_knife", STRING(pev->classname)))
 		{
 			UTIL_Remove(this);
 		}
