@@ -218,11 +218,11 @@ void __CmdFunc_OpenMapInfoMenu()
 	}
 }
 
-void __CmdFunc_OpenLinkMenu()
+void __CmdFunc_OpenSandboxMenu()
 {
 	if (gViewPort)
 	{
-		gViewPort->ShowVGUIMenu(MENU_LINKMENU);
+		gViewPort->ShowVGUIMenu(MENU_SANDBOXMENU);
 	}
 }
 
@@ -403,7 +403,7 @@ void CHud::Init()
 
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
-	HOOK_COMMAND("toggleLinkMenu", OpenLinkMenu);
+	HOOK_COMMAND("toggleSandboxMenu", OpenSandboxMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);

@@ -49,7 +49,7 @@ class CClassMenuPanel;
 class CTeamMenuPanel;
 class TeamFortressViewport;
 class CStatsMenuPanel;
-class CLinkMenu; // Link Menu
+class CSandboxMenu; // Sandbox Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -518,7 +518,7 @@ private:
 	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
 
-	CMenuPanel* ShowLinkMenu( void );
+	CMenuPanel* ShowSandboxMenu(void);
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -653,7 +653,7 @@ public:
 	CStatsMenuPanel* m_pStatsMenu;
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
-	CLinkMenu* m_pLinkMenu; // Link Menu
+	CSandboxMenu* m_pSandboxMenu; // Sandbox Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1640,10 +1640,10 @@ public:
 	int iYPos;
 };
 
-class CLinkMenu : public CGMMenuBase
+class CSandboxMenu : public CGMMenuBase
 {
 public:
-	CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
+	CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
 	void SetActiveInfo(int iShowText);
 	ScrollPanel* pScrollPanel;
 	TextPanel* pText;

@@ -2260,6 +2260,13 @@ bool CMultiplaySandbox::FAllowMonsters()
 	return true;
 }
 
+void CMultiplaySandbox::UpdateGameMode(CBasePlayer* pPlayer)
+{
+	MESSAGE_BEGIN(MSG_ONE, gmsgGameMode, NULL, pPlayer->edict());
+	WRITE_BYTE(3);
+	MESSAGE_END();
+}
+
 //=========================================================
 //=========================================================
 // Reaper Gamerules

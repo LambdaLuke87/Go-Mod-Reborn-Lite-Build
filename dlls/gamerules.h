@@ -428,6 +428,8 @@ public:
 
 	// Monsters
 	bool FAllowMonsters() override;
+
+	void UpdateGameMode(CBasePlayer* pPlayer) override;
 };
 
 //=========================================================

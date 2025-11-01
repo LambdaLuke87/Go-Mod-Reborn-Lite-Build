@@ -59,6 +59,7 @@
 #include "screenfade.h"
 
 extern bool g_iVisibleMouse;
+extern bool UTIL_IsSandbox();
 class CCommandMenu;
 int g_iPlayerClass;
 int g_iTeamNumber;
@@ -80,7 +81,7 @@ int g_iUser3 = 0;
 void IN_ResetMouse();
 void IN_ResetRelativeMouseState();
 extern CMenuPanel* CMessageWindowPanel_Create(const char* szMOTD, const char* szTitle, bool iShadeFullscreen, bool iRemoveMe, int x, int y, int wide, int tall);
-extern CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall);
+extern CMenuPanel* CSandboxMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall);
 extern float* GetClientColor(int clientIndex);
 
 using namespace vgui;
@@ -541,7 +542,7 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_pSpectatorPanel = NULL;
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
-	m_pLinkMenu = NULL;	// Link Menu
+	m_pSandboxMenu = NULL; // Sandbox Menu
 
 	Initialize();
 	addInputSignal(new CViewPortInputHandler);
@@ -656,8 +657,8 @@ void TeamFortressViewport::Initialize()
 	}
 
 	// Go-Mod Menus
-	if (m_pLinkMenu)
-		m_pLinkMenu->setVisible(false);
+	if (m_pSandboxMenu)
+		m_pSandboxMenu->setVisible(false);
 
 	// Make sure all menus are hidden
 	HideVGUIMenu();
@@ -1478,8 +1479,11 @@ void TeamFortressViewport::CreateScoreBoard()
 	m_pScoreBoard->setVisible(false);
 }
 
-CMenuPanel* TeamFortressViewport::ShowLinkMenu()
+CMenuPanel* TeamFortressViewport::ShowSandboxMenu()
 {
+	if (!UTIL_IsSandbox())
+		return NULL;
+
 	char sz[256];
 	const char* cText = "";
 	char* pfile = NULL;
@@ -1494,14 +1498,13 @@ CMenuPanel* TeamFortressViewport::ShowLinkMenu()
 
 	cText = pfile;
 
-	// if we're in the game (ie. have selected a class), flag the menu to be only grayed in the dialog box, instead of full screen
-	CMenuPanel* pMOTDPanel = CLinkMenu_Create(cText, 100, false, 0, 0, ScreenWidth, ScreenHeight);
-	pMOTDPanel->setParent(this);
+	CMenuPanel* pTextPanel = CSandboxMenu_Create(cText, 100, false, 0, 0, ScreenWidth, ScreenHeight);
+	pTextPanel->setParent(this);
 
 	if (pfile)
 		gEngfuncs.COM_FreeFile(pfile);
 
-	return pMOTDPanel;
+	return pTextPanel;
 }
 
 //======================================================================
@@ -1660,8 +1663,8 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 		pNewMenu = CreateTextWindow(SHOW_CLASSDESC);
 		break;
 
-	case MENU_LINKMENU:
-		pNewMenu = ShowLinkMenu();
+	case MENU_SANDBOXMENU:
+		pNewMenu = ShowSandboxMenu();
 		break;
 
 		/*

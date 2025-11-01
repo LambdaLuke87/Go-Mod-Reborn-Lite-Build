@@ -1035,3 +1035,8 @@ bool UTIL_IsCTF()
 {
 	return giTeamplay == 2;
 }
+
+bool UTIL_IsSandbox()
+{
+	return giTeamplay == 3;
+}

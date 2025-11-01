@@ -127,12 +127,12 @@ void CGMMenuBase::ButtonOptionHelper(CommandButton*& newbutton, const char* text
 	newbutton->setParent(this);
 }
 
-CMenuPanel* CLinkMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall)
+CMenuPanel* CSandboxMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall)
 {
-	return new CLinkMenu(szMOTD, iTrans, iRemoveMe, x, y, wide, tall);
+	return new CSandboxMenu(szMOTD, iTrans, iRemoveMe, x, y, wide, tall);
 }
 
-CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
+CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	// Main Headers
 	ButtonOptionHelper(ButtonLinkMenu, "#Gomod_MenuTab_Main", false, 0, iXPos + XRES(16), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(94), BUTTON_SIZE_Y);
@@ -383,7 +383,7 @@ CLinkMenu::CLinkMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y
 	pScrollPanel->validate();
 }
 
-void CLinkMenu::SetActiveInfo(int iShowText)
+void CSandboxMenu::SetActiveInfo(int iShowText)
 {
 	// Header Buttons, should always be displayed above
 	std::vector<CommandButton*> headerbuttons = {
