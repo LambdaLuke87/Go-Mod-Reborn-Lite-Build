@@ -297,9 +297,7 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 // HELPER: Render color and amount simplified
 void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char* name, int& var, int argc, const char* argv1)
 {
-	bool canChange = (UTIL_IsSandbox() && argc > 1);
-
-	if (canChange)
+	if (UTIL_IsSandbox())
 	{
 		var = atoi(argv1);
 
@@ -316,6 +314,9 @@ void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char*
 
 void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 {
+	if (!UTIL_IsSandbox() || !allow_noclip.value)
+		return;
+
 	if (allow_noclip.value == 2) // Only Hoster
 	{
 		// Check if it is a dedicated server.
@@ -349,6 +350,9 @@ void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 
 void GoMod_ImmortalityHelper(CBasePlayer* player, edict_t* pEntity, bool zeus)
 {
+	if (!UTIL_IsSandbox() || !allow_healthmodify.value)
+		return;
+
 	if (allow_healthmodify.value == 2) // Only Hoster
 	{
 		// Check if it is a dedicated server.
@@ -1166,21 +1170,21 @@ void ClientCommand(edict_t* pEntity)
 			ClientPrint(&pEntity->v, HUD_PRINTTALK, "Voices Disabled - gm_allow_voices required\n");
 	}
 	else if (FStrEq(pcmd, "render_color_red"))
-	{
 		GoMod_SetToolRenderValue(player, pEntity, "red render color", player->m_iToolRenderColorR, CMD_ARGC(), CMD_ARGV(1));
-	}
 	else if (FStrEq(pcmd, "render_color_green"))
-	{
 		GoMod_SetToolRenderValue(player, pEntity, "green render color", player->m_iToolRenderColorG, CMD_ARGC(), CMD_ARGV(1));
-	}
 	else if (FStrEq(pcmd, "render_color_blue"))
-	{
 		GoMod_SetToolRenderValue(player, pEntity, "blue render color", player->m_iToolRenderColorB, CMD_ARGC(), CMD_ARGV(1));
-	}
 	else if (FStrEq(pcmd, "render_amount"))
-	{
 		GoMod_SetToolRenderValue(player, pEntity, "render amount", player->m_iToolRenderAMT, CMD_ARGC(), CMD_ARGV(1));
-	}
+	else if (FStrEq(pcmd, "buddha"))
+		GoMod_ImmortalityHelper(pPlayer, pEntity, false);
+	else if (FStrEq(pcmd, "zeus"))
+		GoMod_ImmortalityHelper(pPlayer, pEntity, true);
+	else if (FStrEq(pcmd, "+noclip"))
+		GoMod_NoclipHelper(pPlayer, pEntity, true);
+	else if (FStrEq(pcmd, "-noclip"))
+		GoMod_NoclipHelper(pPlayer, pEntity, false);
 
 	//In Opposing Force this is handled only by the CTF gamerules
 #if false
@@ -1214,26 +1218,6 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (player->IsObserver())
 			player->Observer_FindNextPlayer(atoi(CMD_ARGV(1)) != 0);
-	}
-	else if (FStrEq(pcmd, "buddha"))
-	{
-		if (UTIL_IsSandbox() && allow_healthmodify.value)
-			GoMod_ImmortalityHelper(pPlayer, pEntity, false);
-	}
-	else if (FStrEq(pcmd, "zeus"))
-	{
-		if (UTIL_IsSandbox() && allow_healthmodify.value)
-			GoMod_ImmortalityHelper(pPlayer, pEntity, true);
-	}
-	else if (FStrEq(pcmd, "+noclip"))
-	{
-		if (UTIL_IsSandbox() && allow_noclip.value)
-			GoMod_NoclipHelper(pPlayer, pEntity, true);
-	}
-	else if (FStrEq(pcmd, "-noclip"))
-	{
-		if (UTIL_IsSandbox() && allow_noclip.value)
-			GoMod_NoclipHelper(pPlayer, pEntity, false);
 	}
 	else if (g_pGameRules->ClientCommand(player, pcmd))
 	{
