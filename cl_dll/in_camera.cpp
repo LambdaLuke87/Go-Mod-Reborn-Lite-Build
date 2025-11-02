@@ -21,6 +21,7 @@
 float CL_KeyState(kbutton_t* key);
 
 extern cl_enginefunc_t gEngfuncs;
+extern bool UTIL_IsSandbox();
 
 //-------------------------------------------------- Constants
 
@@ -429,13 +430,15 @@ void CAM_ToThirdPerson()
 {
 	Vector viewangles;
 
-#if !defined(_DEBUG)
-	if (gEngfuncs.GetMaxClients() > 1)
+
+	if (!UTIL_IsSandbox())
 	{
-		// no thirdperson in multiplayer.
-		return;
+		if (gEngfuncs.GetMaxClients() > 1)
+		{
+			// no thirdperson in multiplayer.
+			return;
+		}
 	}
-#endif
 
 	gEngfuncs.GetViewAngles((float*)viewangles);
 
