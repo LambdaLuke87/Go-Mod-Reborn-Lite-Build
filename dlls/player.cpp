@@ -450,7 +450,7 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 		{
 			flDamage *= 1.6;
 
-			EMIT_SOUND(edict(), CHAN_STATIC, "turret/tu_ping.wav", VOL_NORM, ATTN_NORM);
+			EMIT_SOUND(edict(), CHAN_STATIC, "!MI_SENTENC15", VOL_NORM, ATTN_NORM);
 		}
 		if (m_pFlag)
 		{

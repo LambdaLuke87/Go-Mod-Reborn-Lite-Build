@@ -204,6 +204,12 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(Button556Ammo, "#Gomod_Item_556Ammo", "summon ammo_556", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonSpores, "#Gomod_Item_Spores", "summon ammo_spore", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(Button762Ammo, "#Gomod_Item_762Ammo", "summon ammo_762", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonCTFAccrtor, "#Gomod_Item_CTFAccelerator", "summon item_ctfaccelerator", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonCTFBpack, "#Gomod_Item_CTFBackpack", "summon item_ctfbackpack", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonCTFLJump, "#Gomod_Item_CTFlongjump", "summon item_ctflongjump", iXPos + XRES(336), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+
+	ButtonHelper(ButtonCTFPHEV, "#Gomod_Item_CTFPortableHEV", "summon item_ctfportablehev", iXPos + XRES(16), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonCTFReg, "#Gomod_Item_CTFRegeneration", "summon item_ctfregeneration", iXPos + XRES(80), iYPos + iYSize - YRES(104) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	// Military Aliens
 	ButtonHelper(ButtonAlienSlave, "#Gomod_NPC_AlienSlave", "summon monster_alien_slave", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -426,16 +432,18 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		ButtonFXSPulse, ButtonFXFPulse, ButtonFXSWPulse, ButtonFXFWPulse, ButtonFXSFadeAway,
 		ButtonFXFFadeAway, ButtonFXSSolid, ButtonFXFSolid, ButtonFXSStrobe, ButtonFXFStrobe,
 		ButtonFXFRStrobe, ButtonFXSFlicker, ButtonFXFFlicker, ButtonFXConstantGlow, ButtonFXDistort,
-		ButtonFXHologram, ButtonFXExplode, ButtonFXGlowShell};
+		ButtonFXHologram, ButtonFXExplode, ButtonFXGlowShell, ButtonCTFAccrtor, ButtonCTFBpack,
+		ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg};
 
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
 		{0, {ButtonLinkMenu}},
 		{1, {ButtonHLSweeps, ButtonOp4Sweeps, ButtonAimMode, ButtonGiveMode}},
 		{2, {ButtonHealthKit, ButtonBattery, ButtonLongJump, ButtonHEV,
-				ButtonGlockAmmo, ButtonMP5Ammo, ButtonARGrenades, ButtonArrows,
-				ButtonUranium, ButtonRockets, ButtonBuckshot, Button357Ammo,
-				Button556Ammo, ButtonSpores, Button762Ammo, ButtonAimMode, ButtonGiveMode}},
+				ButtonGlockAmmo, ButtonMP5Ammo, ButtonARGrenades, ButtonArrows, ButtonCTFAccrtor,
+				ButtonUranium, ButtonRockets, ButtonBuckshot, Button357Ammo, ButtonCTFBpack, 
+				Button556Ammo, ButtonSpores, Button762Ammo, ButtonAimMode, ButtonGiveMode,
+				ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg}},
 		{3, {ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMilUnits,
 				ButtonMiscNPCS, ButtonProps, ButtonAimMode, ButtonNoAI,
 				ButtonAllieds, ButtonUndoNPC, ButtonDeleteALlNpcs}},

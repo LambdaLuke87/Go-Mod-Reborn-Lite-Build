@@ -309,7 +309,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingAChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_armor_charge.wav");
+					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
 					pPlayer->m_fPlayingAChargeSound = false;
 				}
 			}},
@@ -319,7 +319,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingHChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_health_charge.wav");
+					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
 					pPlayer->m_fPlayingHChargeSound = false;
 				}
 			}},

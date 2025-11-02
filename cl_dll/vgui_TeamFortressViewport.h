@@ -1713,6 +1713,11 @@ public:
 	CommandButton* Button556Ammo;
 	CommandButton* ButtonSpores;
 	CommandButton* Button762Ammo;
+	CommandButton* ButtonCTFAccrtor;
+	CommandButton* ButtonCTFBpack;
+	CommandButton* ButtonCTFLJump;
+	CommandButton* ButtonCTFPHEV;
+	CommandButton* ButtonCTFReg;
 
 	// Military Aliens
 	CommandButton* ButtonAlienController;

@@ -31,7 +31,7 @@ LINK_ENTITY_TO_CLASS(item_ctfregeneration, CItemRegenerationCTF);
 void CItemRegenerationCTF::Precache()
 {
 	g_engfuncs.pfnPrecacheModel("models/w_health.mdl");
-	g_engfuncs.pfnPrecacheSound("ctf/pow_health_charge.wav");
+	//g_engfuncs.pfnPrecacheSound("ctf/pow_health_charge.wav");
 }
 
 void CItemRegenerationCTF::RemoveEffect(CBasePlayer* pPlayer)
@@ -60,7 +60,7 @@ bool CItemRegenerationCTF::MyTouch(CBasePlayer* pPlayer)
 				g_engfuncs.pfnWriteString(STRING(pev->classname));
 				g_engfuncs.pfnMessageEnd();
 
-				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "items/ammopickup1.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!MI_SENTENC10", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
 				if (pPlayer->pev->health < 100.0)
 				{
@@ -81,8 +81,8 @@ void CItemRegenerationCTF::Spawn()
 	if (!FStringNull(pev->model))
 		g_engfuncs.pfnPrecacheModel((char*)STRING(pev->model));
 
-	g_engfuncs.pfnPrecacheSound("ctf/itemthrow.wav");
-	g_engfuncs.pfnPrecacheSound("items/ammopickup1.wav");
+	//g_engfuncs.pfnPrecacheSound("ctf/itemthrow.wav");
+	//g_engfuncs.pfnPrecacheSound("items/ammopickup1.wav");
 
 	Precache();
 

@@ -272,7 +272,7 @@ void CBaseTurret::Spawn()
 void CBaseTurret::Precache()
 {
 	PRECACHE_SOUND("turret/tu_fire1.wav");
-	PRECACHE_SOUND("turret/tu_ping.wav");
+	//PRECACHE_SOUND("turret/tu_ping.wav");
 	PRECACHE_SOUND("turret/tu_active2.wav");
 	PRECACHE_SOUND("turret/tu_die.wav");
 	PRECACHE_SOUND("turret/tu_die2.wav");
@@ -422,7 +422,7 @@ void CBaseTurret::Ping()
 	else if (m_flPingTime <= gpGlobals->time)
 	{
 		m_flPingTime = gpGlobals->time + 1;
-		EMIT_SOUND(ENT(pev), CHAN_ITEM, "turret/tu_ping.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_ITEM, "!MI_SENTENC15", 1, ATTN_NORM);
 		EyeOn();
 	}
 	else if (m_eyeBrightness > 0)

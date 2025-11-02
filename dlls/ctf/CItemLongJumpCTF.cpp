@@ -30,7 +30,7 @@ LINK_ENTITY_TO_CLASS(item_ctflongjump, CItemLongJumpCTF);
 void CItemLongJumpCTF::Precache()
 {
 	g_engfuncs.pfnPrecacheModel("models/w_jumppack.mdl");
-	g_engfuncs.pfnPrecacheSound("ctf/pow_big_jump.wav");
+	//g_engfuncs.pfnPrecacheSound("ctf/pow_big_jump.wav");
 }
 
 void CItemLongJumpCTF::RemoveEffect(CBasePlayer* pPlayer)
@@ -63,7 +63,7 @@ bool CItemLongJumpCTF::MyTouch(CBasePlayer* pPlayer)
 				g_engfuncs.pfnWriteString(STRING(pev->classname));
 				g_engfuncs.pfnMessageEnd();
 
-				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "items/ammopickup1.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!MI_SENTENC10", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
 				return true;
 			}
@@ -79,8 +79,8 @@ void CItemLongJumpCTF::Spawn()
 	if (!FStringNull(pev->model))
 		g_engfuncs.pfnPrecacheModel((char*)STRING(pev->model));
 
-	g_engfuncs.pfnPrecacheSound("ctf/itemthrow.wav");
-	g_engfuncs.pfnPrecacheSound("items/ammopickup1.wav");
+	//g_engfuncs.pfnPrecacheSound("ctf/itemthrow.wav");
+	//g_engfuncs.pfnPrecacheSound("items/ammopickup1.wav");
 
 	Precache();
 

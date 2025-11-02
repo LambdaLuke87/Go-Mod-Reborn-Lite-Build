@@ -27,7 +27,7 @@ void CItemAcceleratorCTF::Precache()
 	CItemCTF::Precache();
 
 	PRECACHE_MODEL("models/w_accelerator.mdl");
-	PRECACHE_SOUND("turret/tu_ping.wav");
+	//PRECACHE_SOUND("turret/tu_ping.wav");
 }
 
 void CItemAcceleratorCTF::Spawn()
@@ -70,7 +70,7 @@ bool CItemAcceleratorCTF::MyTouch(CBasePlayer* pPlayer)
 				MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->edict());
 				WRITE_STRING(STRING(pev->classname));
 				MESSAGE_END();
-				EMIT_SOUND(edict(), CHAN_VOICE, "items/ammopickup1.wav", VOL_NORM, ATTN_NORM);
+				EMIT_SOUND(edict(), CHAN_VOICE, "!MI_SENTENC10", VOL_NORM, ATTN_NORM);
 				return true;
 			}
 		}

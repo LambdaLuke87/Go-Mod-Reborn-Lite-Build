@@ -548,13 +548,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingAChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_armor_charge.wav", VOL_NORM, ATTN_NORM);
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC12", VOL_NORM, ATTN_NORM);
 					pPlayer->m_fPlayingAChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingAChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_armor_charge.wav");
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC12");
 				pPlayer->m_fPlayingAChargeSound = false;
 			}
 
@@ -577,13 +577,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingHChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_health_charge.wav", VOL_NORM, ATTN_NORM);
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11", VOL_NORM, ATTN_NORM);
 					pPlayer->m_fPlayingHChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingHChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "ctf/pow_health_charge.wav");
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
 				pPlayer->m_fPlayingHChargeSound = false;
 			}
 
@@ -2535,7 +2535,7 @@ void CMultiplayReaper::SetPlayerModel(CBasePlayer* pPlayer)
 	}
 	else
 	{
-		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "gordon");
+		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "cs_sas");
 	}
 }
 

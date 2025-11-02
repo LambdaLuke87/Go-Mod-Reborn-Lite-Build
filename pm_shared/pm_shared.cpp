@@ -2707,7 +2707,7 @@ void PM_Jump()
 
 			if (canjumppackjump)
 			{
-				pmove->PM_PlaySound(CHAN_STATIC, "ctf/pow_big_jump.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+				pmove->PM_PlaySound(CHAN_STATIC, "!MI_SENTENC13", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 			}
 		}
 		else

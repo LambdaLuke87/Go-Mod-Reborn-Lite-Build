@@ -43,8 +43,8 @@ void CItemCTF::Precache()
 	if (!FStringNull(pev->model))
 		PRECACHE_MODEL(const_cast<char*>(STRING(pev->model)));
 
-	PRECACHE_SOUND("ctf/itemthrow.wav");
-	PRECACHE_SOUND("items/ammopickup1.wav");
+	//PRECACHE_SOUND("ctf/itemthrow.wav");
+	//PRECACHE_SOUND("items/ammopickup1.wav");
 }
 
 void CItemCTF::Spawn()
@@ -387,7 +387,7 @@ void CItemCTF::ThrowItem(CBasePlayer* pPlayer)
 
 	UTIL_SetOrigin(pev, pev->origin);
 
-	EMIT_SOUND(edict(), CHAN_VOICE, "ctf/itemthrow.wav", VOL_NORM, ATTN_NORM);
+	EMIT_SOUND(edict(), CHAN_VOICE, "!MI_SENTENC9", VOL_NORM, ATTN_NORM);
 
 	pev->flags &= ~FL_ONGROUND;
 	pev->movetype = MOVETYPE_TOSS;

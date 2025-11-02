@@ -166,7 +166,12 @@ weapon_t gWeapons[] =
 		{"ammo_buckshot"},
 		{"ammo_357"},
 		{"ammo_556"},
-		{"ammo_762"}};
+		{"ammo_762"},
+		{"item_ctfaccelerator"},
+		{"item_ctfbackpack"},
+		{"item_ctflongjump"},
+		{"item_ctfportablehev"},
+		{"item_ctfregeneration"}};
 
 
 struct tbow_helper_t
@@ -1756,6 +1761,13 @@ void ClientPrecache()
 
 	if (UTIL_IsSandbox())
 	{
+		// CTF Items
+		UTIL_PrecacheOther("item_ctfaccelerator");
+		UTIL_PrecacheOther("item_ctfbackpack");
+		UTIL_PrecacheOther("item_ctflongjump");
+		UTIL_PrecacheOther("item_ctfportablehev");
+		UTIL_PrecacheOther("item_ctfregeneration");
+
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 		{
