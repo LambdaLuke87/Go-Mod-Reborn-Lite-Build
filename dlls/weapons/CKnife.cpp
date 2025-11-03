@@ -41,6 +41,13 @@ void CKnife::Precache()
 		PRECACHE_MODEL("models/p_scythe.mdl");
 		PRECACHE_MODEL("models/v_scythe.mdl");
 		PRECACHE_MODEL("models/w_scythe.mdl");
+		PRECACHE_SOUND("weapons/knife_hit1.wav");
+		PRECACHE_SOUND("weapons/knife_hit2.wav");
+		PRECACHE_SOUND("weapons/knife_hit3.wav");
+		PRECACHE_SOUND("weapons/knife_hit4.wav");
+		PRECACHE_SOUND("weapons/knife_hitwall1.wav");
+		PRECACHE_SOUND("weapons/knife_slash1.wav");
+		PRECACHE_SOUND("weapons/knife_slash2.wav");
 	}
 
 	PRECACHE_SOUND("weapons/knife1.wav");
@@ -115,7 +122,11 @@ bool CKnife::Swing(const bool bFirst)
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 	Vector vecSrc = m_pPlayer->GetGunPosition();
-	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
+	Vector vecEnd; 
+	if (UTIL_IsReaperMode())
+		vecEnd = vecSrc + gpGlobals->v_forward * 160;
+	else
+		vecEnd = vecSrc + gpGlobals->v_forward * 32;
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
 
@@ -232,15 +243,36 @@ bool CKnife::Swing(const bool bFirst)
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 			{
 				// play thwack or smack sound
-				switch (RANDOM_LONG(0, 1))
+				if (UTIL_IsReaperMode())
 				{
-				case 0:
-					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh1.wav", 1, ATTN_NORM);
-					break;
-				case 1:
-					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh2.wav", 1, ATTN_NORM);
-					break;
+					switch (RANDOM_LONG(0, 3))
+					{
+					case 0:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit1.wav", 1, ATTN_NORM);
+						break;
+					case 1:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit2.wav", 1, ATTN_NORM);
+						break;
+					case 2:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit3.wav", 1, ATTN_NORM);
+						break;
+					case 3:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit4.wav", 1, ATTN_NORM);
+						break;
+					}
 				}
+				else
+				{
+					switch (RANDOM_LONG(0, 1))
+					{
+					case 0:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh1.wav", 1, ATTN_NORM);
+						break;
+					case 1:
+						EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh2.wav", 1, ATTN_NORM);
+						break;
+					}
+			    }
 				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 				if (!pEntity->IsAlive())
 					return true;
@@ -267,14 +299,19 @@ bool CKnife::Swing(const bool bFirst)
 			}
 
 			// also play crowbar strike
-			switch (RANDOM_LONG(0, 1))
+			if (UTIL_IsReaperMode())
+				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hitwall1.wav", fvolbar, ATTN_NORM, 0, PITCH_LOW - 5);
+			else
 			{
-			case 0:
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
-			case 1:
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
+				switch (RANDOM_LONG(0, 1))
+				{
+				case 0:
+					EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
+					break;
+				case 1:
+					EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
+					break;
+				}
 			}
 
 			// delay the decal a bit

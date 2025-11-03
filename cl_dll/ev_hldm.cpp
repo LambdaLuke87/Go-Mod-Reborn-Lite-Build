@@ -52,6 +52,7 @@
 #include "com_model.h"
 
 extern engine_studio_api_t IEngineStudio;
+extern bool UTIL_IsReaperMode();
 
 static int tracerCount[MAX_PLAYERS];
 
@@ -1956,22 +1957,41 @@ void EV_Knife(event_args_t* args)
 
 	const char* pszSwingSound;
 
-	switch (g_iSwing)
+	if (UTIL_IsReaperMode())
 	{
-	default:
-	case 0:
-		pszSwingSound = "weapons/knife1.wav";
-		break;
-	case 1:
-		pszSwingSound = "weapons/knife2.wav";
-		break;
-	case 2:
-		pszSwingSound = "weapons/knife3.wav";
-		break;
-	}
+		switch (g_iSwing)
+		{
+		default:
+		case 0:
+			pszSwingSound = "weapons/knife_slash1.wav";
+			break;
+		case 1:
+			pszSwingSound = "weapons/knife_slash2.wav";
+			break;
+		}
 
-	//Play Swing sound
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, pszSwingSound, 1, ATTN_NORM, 0, PITCH_NORM);
+		// Play Swing sound
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, pszSwingSound, 1, ATTN_NORM, 0, PITCH_LOW - 5);
+	}
+	else
+	{
+		switch (g_iSwing)
+		{
+		default:
+		case 0:
+			pszSwingSound = "weapons/knife1.wav";
+			break;
+		case 1:
+			pszSwingSound = "weapons/knife2.wav";
+			break;
+		case 2:
+			pszSwingSound = "weapons/knife3.wav";
+			break;
+		}
+
+		// Play Swing sound
+		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, pszSwingSound, 1, ATTN_NORM, 0, PITCH_NORM);
+	}
 
 	if (EV_IsLocal(idx))
 	{

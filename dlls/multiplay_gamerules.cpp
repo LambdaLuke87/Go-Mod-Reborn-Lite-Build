@@ -37,6 +37,8 @@
 
 CVoiceGameMgr g_VoiceGameMgr;
 
+extern bool CheckForLevelEnd(int iMaxScore);
+
 class CMultiplayGameMgrHelper : public IVoiceGameMgrHelper
 {
 public:
@@ -2300,6 +2302,17 @@ void CMultiplayReaper::Think()
 {
 	CheckForKnifes();
 
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
+
+		if (pPlayer && pPlayer->pev->frags >= reaper_fraglimit.value)
+		{
+			GoToIntermission();
+			return;
+		}
+	}
+
 	CHalfLifeMultiplay::Think();
 }
 
@@ -2583,4 +2596,14 @@ void CMultiplayReaper::UpdateGameMode(CBasePlayer* pPlayer)
 	MESSAGE_BEGIN(MSG_ONE, gmsgGameMode, NULL, pPlayer->edict());
 	WRITE_BYTE(4);
 	MESSAGE_END();
+}
+
+bool CMultiplayReaper::FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker)
+{
+	if (pAttacker && PlayerRelationship(pPlayer, pAttacker) == GR_TEAMMATE)
+	{
+		return false;
+	}
+
+	return CHalfLifeMultiplay::FPlayerCanTakeDamage(pPlayer, pAttacker);
 }
