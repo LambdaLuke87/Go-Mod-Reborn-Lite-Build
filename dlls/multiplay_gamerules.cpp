@@ -2509,7 +2509,14 @@ void CMultiplayReaper::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pW
 		pPlayer->m_fLongJump = true; // player now has longjump module
 		g_engfuncs.pfnSetPhysicsKeyValue(pPlayer->edict(), "slj", "1");
 
+		strncpy(pPlayer->m_szTeamName, "skeleton", TEAM_NAME_LENGTH);
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
+
+		// Skeleton
+		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(pPlayer->entindex());
+		WRITE_STRING("skeleton");
+		MESSAGE_END();
 	}
 }
 
@@ -2527,14 +2534,46 @@ void CMultiplayReaper::PlayerSpawn(CBasePlayer* pPlayer)
 	SetPlayerModel(pPlayer);
 }
 
+void CMultiplayReaper::InitHUD(CBasePlayer* pPlayer)
+{
+	int i;
+	CHalfLifeMultiplay::InitHUD(pPlayer);
+
+	for (i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBaseEntity* plr = UTIL_PlayerByIndex(i);
+		if (plr && IsValidTeam(plr->TeamID()))
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, NULL, pPlayer->edict());
+			WRITE_BYTE(plr->entindex());
+			WRITE_STRING(plr->TeamID());
+			MESSAGE_END();
+		}
+	}
+}
+
 void CMultiplayReaper::SetPlayerModel(CBasePlayer* pPlayer)
 {
 	if (IsPlayerReaper(pPlayer))
 	{
+		// Skeleton
+		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(pPlayer->entindex());
+		WRITE_STRING("skeleton");
+		MESSAGE_END();
+
+		strncpy(pPlayer->m_szTeamName, "skeleton", TEAM_NAME_LENGTH);
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
 	}
 	else
 	{
+		// SAS
+		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(pPlayer->entindex());
+		WRITE_STRING("cs_sas");
+		MESSAGE_END();
+
+		strncpy(pPlayer->m_szTeamName, "cs_sas", TEAM_NAME_LENGTH);
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "cs_sas");
 	}
 }

@@ -454,6 +454,8 @@ public:
 
 	void SetPlayerModel(CBasePlayer* pPlayer);
 
+	void InitHUD(CBasePlayer* pl) override;
+
 	void UpdateGameMode(CBasePlayer* pPlayer) override;
 protected:
 	float m_flEgonBustingCheckTime = -1.0f;
