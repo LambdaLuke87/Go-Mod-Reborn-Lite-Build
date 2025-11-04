@@ -94,7 +94,7 @@ const MonsterInfo gMonsterInfos[] =
 		{"xen_spore_small"},
 		{"xen_spore_medium"},
 		{"xen_spore_large"},
-		{"prop_chiken"},
+		{"monster_chiken"},
 		{"prop_chumtoad"},
 		{"prop_c4"},
 		{"prop_waspcamera"}};
@@ -1957,9 +1957,8 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 		{
 			if (pPlayer->m_iToolMode == 8)
 			{
-				int Set_TheHP = custom_npc_health.value;
-				pMonster->pev->health = Set_TheHP;
-				pMonster->pev->max_health = Set_TheHP;
+				pMonster->pev->health = custom_npc_health.value;
+				pMonster->pev->max_health = custom_npc_health.value;
 			}
 			else if (pPlayer->m_iToolMode == 9)
 			{
@@ -2138,14 +2137,16 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode >= 10)
+	else if (pPlayer->m_iToolMode >= 8)
 	{
 		CBaseMonster* pMonster;
 		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
 
 		if (pMonster)
 		{
-			if (pPlayer->m_iToolMode == 10)
+			if (pPlayer->m_iToolMode == 8)
+				pMonster->pev->gravity = custom_npc_gravity.value;
+			else if (pPlayer->m_iToolMode == 10)
 				pMonster->pev->takedamage = DAMAGE_YES;
 			else if (pPlayer->m_iToolMode == 11)
 				pMonster->m_bloodColor = DONT_BLEED;

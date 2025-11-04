@@ -3296,7 +3296,7 @@ initammo(string) : "Initial Ammo" : "6"
 
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/recruit.mdl") = monster_recruit : "Recruit" []
 
-@PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/chiken_animal.mdl") = prop_chiken : "Chicken" []
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/chiken_animal.mdl") = monster_chiken : "Chicken" []
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/chumtoad.mdl") = prop_chumtoad : "Chumtoad" []
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/c4_bomb.mdl") = prop_c4 : "C4" []
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/wasp.mdl") = prop_waspcamera : "Wasp Camera (TS H&R)" []

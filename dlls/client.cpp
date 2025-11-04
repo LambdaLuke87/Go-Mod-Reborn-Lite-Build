@@ -103,7 +103,8 @@ monster_t gMonsters[] =
 		{"monster_alien_babyvoltigore"},
 		{"monster_human_grunt_ally"},
 		{"monster_human_medic_ally"},
-		{"monster_human_torch_ally"}};
+		{"monster_human_torch_ally"},
+		{"monster_chiken"}};
 
 monster_t gProps[] =
 	{
@@ -113,7 +114,6 @@ monster_t gProps[] =
 		{"xen_spore_small"},
 		{"xen_spore_medium"},
 		{"xen_spore_large"},
-		{"prop_chiken"},
 		{"prop_chumtoad"},
 		{"prop_c4"}};
 

@@ -76,6 +76,7 @@ extern cvar_t allow_gaussfly;
 
 // Sandbox Configs
 extern cvar_t custom_npc_health;
+extern cvar_t custom_npc_gravity;
 extern cvar_t glowstick_colors;
 extern cvar_t npc_noai;
 extern cvar_t monster_polem;

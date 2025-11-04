@@ -43,7 +43,8 @@ const char* const grapple_small[] =
 		"monster_flyer_flock",
 		"monster_headcrab",
 		"monster_leech",
-		"monster_penguin"};
+		"monster_penguin",
+		"monster_chiken"};
 
 const char* const grapple_medium[] =
 	{

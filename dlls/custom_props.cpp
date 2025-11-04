@@ -31,7 +31,7 @@ public:
     int m_iChikenGibs;
 };
 
-LINK_ENTITY_TO_CLASS(prop_chiken, CChikenAnimal);
+LINK_ENTITY_TO_CLASS(monster_chiken, CChikenAnimal);
 
 void CChikenAnimal::Spawn()
 {
@@ -73,8 +73,11 @@ int CChikenAnimal::Classify()
 
 void CChikenAnimal::Killed(entvars_t* pevAttacker, int iGib)
 {
-    GibMonster();
-    EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "!PL_VOICEFRST21", 1.0, ATTN_NORM, 0, PITCH_NORM);
+	if (iGib != GIB_NEVER)
+	{
+		GibMonster();
+		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "!PL_VOICEFRST21", 1.0, ATTN_NORM, 0, PITCH_NORM);
+	}
 }
 
 void CChikenAnimal::GibMonster()
@@ -111,6 +114,7 @@ void CChumtoad::Spawn()
     pev->movetype = MOVETYPE_STEP;
 	pev->solid = SOLID_SLIDEBOX;
     pev->takedamage = DAMAGE_NO;
+	m_bloodColor = BLOOD_COLOR_GREEN;
     pev->health = 10;
     pev->body = RANDOM_LONG(0, 5);
     m_MonsterState = MONSTERSTATE_NONE;
@@ -171,35 +175,38 @@ void CC4Prop::Killed(entvars_t* pevAttacker, int iGib)
 		CBaseMonster::Killed(pevAttacker, GIB_ALWAYS);
 	else
 	{
-		Detonate();
+		if (iGib != GIB_NEVER)
+		{
+			Detonate();
 
-		// blast circle
-		MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
-		WRITE_BYTE(TE_BEAMCYLINDER);
-		WRITE_COORD(pev->origin.x);
-		WRITE_COORD(pev->origin.y);
-		WRITE_COORD(pev->origin.z);
-		WRITE_COORD(pev->origin.x);
-		WRITE_COORD(pev->origin.y);
-		WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
-		WRITE_SHORT(m_iSpriteTexture);
-		WRITE_BYTE(0);	 // startframe
-		WRITE_BYTE(0);	 // framerate
-		WRITE_BYTE(4);	 // life
-		WRITE_BYTE(32);	 // width
-		WRITE_BYTE(0);	 // noise
-		WRITE_BYTE(255); // r, g, b
-		WRITE_BYTE(255); // r, g, b
-		WRITE_BYTE(192); // r, g, b
-		WRITE_BYTE(128); // brightness
-		WRITE_BYTE(0);	 // speed
-		MESSAGE_END();
+			// blast circle
+			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
+			WRITE_BYTE(TE_BEAMCYLINDER);
+			WRITE_COORD(pev->origin.x);
+			WRITE_COORD(pev->origin.y);
+			WRITE_COORD(pev->origin.z);
+			WRITE_COORD(pev->origin.x);
+			WRITE_COORD(pev->origin.y);
+			WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
+			WRITE_SHORT(m_iSpriteTexture);
+			WRITE_BYTE(0);	 // startframe
+			WRITE_BYTE(0);	 // framerate
+			WRITE_BYTE(4);	 // life
+			WRITE_BYTE(32);	 // width
+			WRITE_BYTE(0);	 // noise
+			WRITE_BYTE(255); // r, g, b
+			WRITE_BYTE(255); // r, g, b
+			WRITE_BYTE(192); // r, g, b
+			WRITE_BYTE(128); // brightness
+			WRITE_BYTE(0);	 // speed
+			MESSAGE_END();
 
-		EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
+			EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
 
-		UTIL_ScreenShake(pev->origin, 4.0, 3.0, 1.0, 750);
+			UTIL_ScreenShake(pev->origin, 4.0, 3.0, 1.0, 750);
 
-		::RadiusDamage(Center(), pev, pev, 950, 950, dont_ignore_monsters, DMG_BLAST);
+			::RadiusDamage(Center(), pev, pev, 950, 950, dont_ignore_monsters, DMG_BLAST);
+		}
 	}
 }
 

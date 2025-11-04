@@ -264,6 +264,8 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(ButtonGman, "#Gomod_NPC_Gman", "summon monster_gman", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonTentacle, "#Gomod_NPC_Tentacle", "summon monster_tentacle", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
+	ButtonHelper(ButtonChiken, "#Gomod_Prop_Chiken", "summon monster_chiken", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+
 	// Props
 	ButtonHelper(ButtonXenHair, "#Gomod_Prop_Xen_Hair", "summon xen_hair", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonXenTree, "#Gomod_Prop_Xen_Tree", "summon xen_tree", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -272,9 +274,8 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(ButtonXenSporeL, "#Gomod_Prop_Xen_SporeL", "summon xen_spore_medium", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonXenSporeXL, "#Gomod_Prop_Xen_SporeXL", "summon xen_spore_large", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
-	ButtonHelper(ButtonChiken, "#Gomod_Prop_Chiken", "summon prop_chiken", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper(ButtonChumtoad, "#Gomod_Prop_Chumtoads", "summon prop_chumtoad", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper(ButtonPropC4, "#Gomod_Prop_C4", "summon prop_c4", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonChumtoad, "#Gomod_Prop_Chumtoads", "summon prop_chumtoad", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonPropC4, "#Gomod_Prop_C4", "summon prop_c4", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	// Tools
 	ButtonHelper(ButtonDuplicator, "#Gomod_Tool_Duplicator", "tool duplicator", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -293,7 +294,7 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 
 	ButtonHelper(ButtonGlowsticks, "#Gomod_Tool_Glowsticks", "tool glowsticks", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonNoTools, "#Gomod_Tool_NoTools", "tool none", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-
+	
 	// Render Buttons
 	ButtonHelper(ButtonRMNormal, "#Gomod_RenderMode_Normal", "rendermode normal", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonRMColor, "#Gomod_RenderMode_Color", "rendermode color", iXPos + XRES(80), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
@@ -467,14 +468,14 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{10, {ButtonHGrunt, ButtonMassassin, ButtonFassassin, ButtonApache, ButtonSentry,
 				 ButtonAimMode, ButtonNoAI, ButtonAllieds, ButtonUndoNPC, ButtonDeleteALlNpcs, 
 				 ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMiscNPCS, ButtonProps}},
-		{11, {ButtonBoid, ButtonLeech, ButtonCockRoach, ButtonRat, ButtonGman, ButtonTentacle,
+		{11, {ButtonBoid, ButtonLeech, ButtonCockRoach, ButtonRat, ButtonGman,
 				 ButtonAimMode, ButtonNoAI, ButtonAllieds, ButtonUndoNPC, ButtonDeleteALlNpcs,
-				 ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMilUnits, ButtonProps}},
+				 ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMilUnits, ButtonProps,
+				 ButtonChiken, ButtonTentacle}},
 		{12, {ButtonXenHair, ButtonXenTree, ButtonXenPlantL, ButtonXenSporeXS,
-				 ButtonXenSporeL, ButtonXenSporeXL, ButtonChiken, ButtonChumtoad,
+				 ButtonXenSporeL, ButtonXenSporeXL, ButtonChumtoad, ButtonMiscNPCS,
 				 ButtonPropC4, ButtonAimMode, ButtonNoAI, ButtonAllieds, ButtonUndoNPC,
-				 ButtonDeleteALlNpcs, ButtonMilAliens, ButtonWildAliens, ButtonMilUnits, ButtonFriendHumans, 
-				 ButtonMiscNPCS}},
+				 ButtonDeleteALlNpcs, ButtonMilAliens, ButtonWildAliens, ButtonMilUnits, ButtonFriendHumans}},
 		{13, {ButtonRMNormal, ButtonRMColor,
 				 ButtonRMTexture, ButtonRMGlow, ButtonRMSolid, ButtonRMAdditive, ButtonFXNone,
 				 ButtonFXSPulse, ButtonFXFPulse, ButtonFXSWPulse, ButtonFXFWPulse, ButtonFXSFadeAway,
