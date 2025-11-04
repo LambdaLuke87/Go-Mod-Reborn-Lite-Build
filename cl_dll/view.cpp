@@ -1706,8 +1706,13 @@ void V_CalcSpectatorRefdef(struct ref_params_s* pparams)
 
 extern cvar_t* cl_pred_physgun;
 
+extern void RenderFog();
+extern int g_iWaterLevel;
+
 void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 {
+	RenderFog();
+	g_iWaterLevel = pparams->waterlevel;
 	//	RecClCalcRefdef(pparams);
 
 	// intermission / finale rendering

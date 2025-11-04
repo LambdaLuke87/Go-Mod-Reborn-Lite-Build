@@ -377,6 +377,8 @@ public:
 	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
+	virtual void SendMessages(CBaseEntity* pClient) {}
+
 	virtual bool FBecomeProne() { return false; }
 	edict_t* edict() { return ENT(pev); }
 	int entindex() { return ENTINDEX(edict()); }

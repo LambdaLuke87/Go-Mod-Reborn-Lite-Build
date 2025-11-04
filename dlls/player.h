@@ -65,6 +65,8 @@ class CRope;
 
 #define TEAM_NAME_LENGTH 16
 
+extern bool g_PlayerFullyInitialized[32];
+
 typedef enum
 {
 	PLAYER_IDLE,
@@ -438,6 +440,8 @@ private:
 
 public:
 	//True if the player is currently spawning.
+	bool m_bSentVisibilityMessages;
+
 	bool m_bIsSpawning = false;
 	bool m_buddha;
 

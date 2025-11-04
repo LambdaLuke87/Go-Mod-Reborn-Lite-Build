@@ -39,6 +39,8 @@
 
 #define HUDELEM_ACTIVE 1
 
+#define FOG_LIMIT 30000
+
 typedef struct
 {
 	int x, y;
@@ -502,6 +504,20 @@ private:
 	CHudStatusIcons::icon_sprite_t m_CustomList[MAX_CUSTOMSPRITES];
 };
 
+struct FogProperties
+{
+	short r, g, b;
+
+	float startDist;
+	float endDist;
+	float finalEndDist;
+	float fadeDuration;
+	bool affectSkybox;
+
+	float density;
+	short type;
+};
+
 //
 //-----------------------------------------------------
 //
@@ -744,6 +760,7 @@ public:
 	bool MsgFunc_SetFOV(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Concuss(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf);
+	bool MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf);
 	int MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf);
 
 	// Screen information
@@ -760,6 +777,7 @@ public:
 	void AddHudElem(CHudBase* p);
 
 	bool m_iHardwareMode;
+	FogProperties fog;
 
 	float GetSensitivity();
 

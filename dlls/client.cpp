@@ -483,6 +483,9 @@ void ClientDisconnect(edict_t* pEntity)
 		}
 	}
 
+	const int clientIndex = ENTINDEX(pEntity) - 1;
+	g_PlayerFullyInitialized[clientIndex] = false;
+
 	g_pGameRules->ClientDisconnected(pEntity);
 }
 
@@ -1198,6 +1201,53 @@ void ClientCommand(edict_t* pEntity)
 		GoMod_NoclipHelper(pPlayer, pEntity, true);
 	else if (FStrEq(pcmd, "-noclip"))
 		GoMod_NoclipHelper(pPlayer, pEntity, false);
+	else if (FStrEq(pcmd, "fog"))
+	{
+		if (CMD_ARGC() < 10)
+		{
+			CLIENT_PRINTF(pEntity, print_console, 
+				"Usage: fog <r> <g> <b> <fadetime> <startdist> <enddist> <density> <fogtype> <skyfog>\n");
+			return;
+		}
+
+		int r = atoi(CMD_ARGV(1));
+		int g = atoi(CMD_ARGV(2));
+		int b = atoi(CMD_ARGV(3));
+		int fadetime = atoi(CMD_ARGV(4));
+		int startdist = atoi(CMD_ARGV(5));
+		int enddist = atoi(CMD_ARGV(6));
+		int density = atoi(CMD_ARGV(7));
+		int fogtype = atoi(CMD_ARGV(8));
+		int skyfog = atoi(CMD_ARGV(9));
+
+		// Clamp values to valid byte/short/long ranges
+		r = V_min(V_max(r, 0), 255);
+		g = V_min(V_max(g, 0), 255);
+		b = V_min(V_max(b, 0), 255);
+		fadetime = V_min(V_max(fadetime, 0), 32767);
+		startdist = V_min(V_max(startdist, 0), 32767);
+		enddist = V_min(V_max(enddist, 0), 32767);
+		density = V_min(V_max(density, 0), 32767);
+		fogtype = V_min(V_max(fogtype, 0), 1);
+		skyfog = V_min(V_max(skyfog, 0), 1);
+
+		// Send the user message
+		MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->edict());
+		WRITE_BYTE(r);
+		WRITE_BYTE(g);
+		WRITE_BYTE(b);
+		WRITE_SHORT(fadetime);
+		WRITE_SHORT(startdist);
+		WRITE_SHORT(enddist);
+		WRITE_LONG(density);
+		WRITE_BYTE(fogtype);
+		WRITE_BYTE(skyfog);
+		MESSAGE_END();
+
+		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs(
+			"Fog set: RGB(%d,%d,%d), fadetime=%d, startdist=%d, enddist=%d, density=%d, fogtype=%d, skyfog=%d\n", 
+			r, g, b, fadetime, startdist, enddist, density, fogtype, skyfog));
+	}
 
 	//In Opposing Force this is handled only by the CTF gamerules
 #if false
@@ -1404,6 +1454,7 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 	g_pGameRules->ClientUserInfoChanged(player, infobuffer);
 }
 
+bool g_PlayerFullyInitialized[32];
 static int g_serveractive = 0;
 
 void ServerDeactivate()
@@ -1419,6 +1470,7 @@ void ServerDeactivate()
 
 	// Peform any shutdown operations here...
 	//
+	memset(g_PlayerFullyInitialized, 0, sizeof(g_PlayerFullyInitialized));
 }
 
 void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
@@ -1958,6 +2010,9 @@ void SetupVisibility(edict_t* pViewEntity, edict_t* pClient, unsigned char** pvs
 	{
 		pView = pViewEntity;
 	}
+
+	const int clientIndex = ENTINDEX(pClient) - 1;
+	g_PlayerFullyInitialized[clientIndex] = true;
 
 	if ((pClient->v.flags & FL_PROXY) != 0)
 	{

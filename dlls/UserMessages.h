@@ -54,6 +54,7 @@ inline int gmsgStatusText = 0;
 inline int gmsgStatusValue = 0;
 
 inline int gmsgWeapons = 0;
+inline int gmsgSetFog = 0;
 
 inline int gmsgSpectator = 0;
 inline int gmsgStatusIcon = 0;

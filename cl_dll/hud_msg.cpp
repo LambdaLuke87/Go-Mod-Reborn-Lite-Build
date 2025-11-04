@@ -90,6 +90,40 @@ void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 	pBeam = pBeam2 = NULL;
 }
 
+bool CHud::MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+
+	fog.r = READ_BYTE();
+	fog.g = READ_BYTE();
+	fog.b = READ_BYTE();
+
+	fog.fadeDuration = READ_SHORT();
+	fog.startDist = READ_SHORT();
+
+	if (fog.fadeDuration > 0)
+	{
+		//		// fading in
+		fog.finalEndDist = READ_SHORT();
+		fog.endDist = FOG_LIMIT;
+	}
+	else if (fog.fadeDuration < 0)
+	{
+		//		// fading out
+		fog.finalEndDist = fog.endDist = READ_SHORT();
+	}
+	else
+	{
+		fog.endDist = READ_SHORT();
+	}
+
+	fog.density = READ_LONG() / 10000.0f;
+	fog.type = READ_BYTE();
+	fog.affectSkybox = READ_BYTE() != 0;
+
+	return true;
+}
+
 
 bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 {

@@ -130,6 +130,12 @@ int __MsgFunc_Logo(const char* pszName, int iSize, void* pbuf)
 	return static_cast<int>(gHUD.MsgFunc_Logo(pszName, iSize, pbuf));
 }
 
+// LRC
+int __MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
+{
+	return static_cast<int>(gHUD.MsgFunc_SetFog(pszName, iSize, pbuf));
+}
+
 //DECLARE_MESSAGE(m_Logo, Logo)
 int __MsgFunc_ResetHUD(const char* pszName, int iSize, void* pbuf)
 {
@@ -393,6 +399,7 @@ void CHud::Init()
 	HOOK_MESSAGE(HudColor);
 	HOOK_MESSAGE(OldWeapon);
 	HOOK_MESSAGE(Weapons);
+	HOOK_MESSAGE(SetFog);
 	HOOK_MESSAGE(ToolBowSkin);
 
 	// TFFree CommandMenu
@@ -663,6 +670,7 @@ void CHud::VidInit()
 	GetClientVoiceMgr()->VidInit();
 
 	hudRenderer.VidInit();
+	memset(&fog, 0, sizeof(fog));
 }
 
 bool CHud::MsgFunc_Logo(const char* pszName, int iSize, void* pbuf)

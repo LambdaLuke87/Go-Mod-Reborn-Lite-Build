@@ -4907,6 +4907,27 @@ void CBasePlayer::UpdateClientData()
 		MESSAGE_END();
 	}
 
+	if (!m_bSentVisibilityMessages && g_PlayerFullyInitialized[ENTINDEX(edict()) - 1])
+	{
+		m_bSentVisibilityMessages = true;
+
+		const int startingIndex = 1;
+		edict_t* pEdict = g_engfuncs.pfnPEntityOfEntOffset(0) + startingIndex;
+		if (pEdict)
+		{
+			for (int i = startingIndex; i < gpGlobals->maxEntities; i++, pEdict++)
+			{
+				if (FNullEnt(pEdict) || pEdict->free || FBitSet(pEdict->v.flags, FL_CLIENT | FL_KILLME) || FStringNull(pEdict->v.classname))
+					continue;
+				CBaseEntity* pEntity = CBaseEntity::Instance(pEdict);
+				if (pEntity)
+				{
+					pEntity->SendMessages(this);
+				}
+			}
+		}
+	}
+
 	//Handled anything that needs resetting
 	m_bRestored = false;
 }

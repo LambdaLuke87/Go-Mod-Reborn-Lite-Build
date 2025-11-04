@@ -2265,3 +2265,241 @@ void CItemSoda::CanTouch(CBaseEntity* pOther)
 	SetThink(&CItemSoda::SUB_Remove);
 	pev->nextthink = gpGlobals->time;
 }
+
+//=========================================================
+// LRC - env_fog, extended a bit from the DMC version
+//=========================================================
+#define SF_FOG_ACTIVE 1
+#define SF_FOG_AFFECT_SKYBOX 2
+#define SF_FOG_FADING 0x8000
+
+class CEnvFog : public CPointEntity
+{
+public:
+	void Spawn() override;
+	void EXPORT ResumeThink();
+	void EXPORT TurnOn();
+	void EXPORT TurnOff();
+	void EXPORT FadeInDone();
+	void EXPORT FadeOutDone();
+	void SendMessages(CBaseEntity* pClient) override;
+	void SendData() { SendData(pev->rendercolor, 0, m_iStartDist, m_iEndDist, m_density); }
+	void SendDataDeactivate() { SendData(g_vecZero, 0, 0, 0, 0); }
+	void SendData(Vector col, int iFadeTime, int iStartDist, int iEndDist, float density);
+	void SendDataToOne(CBaseEntity* pClient, Vector col, int iFadeTime, int iStartDist, int iEndDist, float density);
+	bool KeyValue(KeyValueData* pkvd) override;
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+	int m_iStartDist;
+	int m_iEndDist;
+	float m_iFadeIn;
+	float m_iFadeOut;
+	float m_fHoldTime;
+	float m_fFadeStart; // if we're fading in/out, then when did the fade start?
+
+	float m_density;
+	short m_fogType;
+};
+
+TYPEDESCRIPTION CEnvFog::m_SaveData[] =
+	{
+		DEFINE_FIELD(CEnvFog, m_iStartDist, FIELD_INTEGER),
+		DEFINE_FIELD(CEnvFog, m_iEndDist, FIELD_INTEGER),
+		DEFINE_FIELD(CEnvFog, m_iFadeIn, FIELD_FLOAT),
+		DEFINE_FIELD(CEnvFog, m_iFadeOut, FIELD_FLOAT),
+		DEFINE_FIELD(CEnvFog, m_fHoldTime, FIELD_FLOAT),
+		DEFINE_FIELD(CEnvFog, m_fFadeStart, FIELD_TIME),
+		DEFINE_FIELD(CEnvFog, m_density, FIELD_FLOAT),
+		DEFINE_FIELD(CEnvFog, m_fogType, FIELD_SHORT),
+};
+
+IMPLEMENT_SAVERESTORE(CEnvFog, CBaseEntity)
+
+bool CEnvFog::KeyValue(KeyValueData* pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "startdist"))
+	{
+		m_iStartDist = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "enddist"))
+	{
+		m_iEndDist = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "fadein"))
+	{
+		m_iFadeIn = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "fadeout"))
+	{
+		m_iFadeOut = atoi(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "holdtime"))
+	{
+		m_fHoldTime = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "density"))
+	{
+		m_density = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "fogtype"))
+	{
+		m_fogType = (short)atoi(pkvd->szValue);
+		return true;
+	}
+
+	return CBaseEntity::KeyValue(pkvd);
+}
+
+void CEnvFog::Spawn()
+{
+	pev->effects |= EF_NODRAW;
+
+	if (pev->targetname == 0)
+		pev->spawnflags |= SF_FOG_ACTIVE;
+
+	if (pev->spawnflags & SF_FOG_ACTIVE)
+	{
+		SetThink(&CEnvFog ::TurnOn);
+	}
+
+	// things get messed up if we try to draw fog with a startdist
+	// or an enddist of 0, so we don't allow it.
+	if (m_iStartDist == 0)
+		m_iStartDist = 1;
+	if (m_iEndDist == 0)
+		m_iEndDist = 1;
+}
+
+extern int gmsgSetFog;
+
+void CEnvFog ::TurnOn()
+{
+	//	ALERT(at_console, "Fog turnon %f\n", gpGlobals->time);
+
+	pev->spawnflags |= SF_FOG_ACTIVE;
+
+	if (m_iFadeIn)
+	{
+		pev->spawnflags |= SF_FOG_FADING;
+		SendData(pev->rendercolor, m_iFadeIn, m_iStartDist, m_iEndDist, m_density);
+		pev->nextthink = gpGlobals->time + m_iFadeIn;
+		SetThink(&CEnvFog ::FadeInDone);
+	}
+	else
+	{
+		pev->spawnflags &= ~SF_FOG_FADING;
+		SendData();
+		if (m_fHoldTime)
+		{
+			pev->nextthink = gpGlobals->time + m_fHoldTime;
+			SetThink(&CEnvFog ::TurnOff);
+		}
+	}
+}
+
+void CEnvFog ::TurnOff()
+{
+	//	ALERT(at_console, "Fog turnoff\n");
+
+	pev->spawnflags &= ~SF_FOG_ACTIVE;
+
+	if (m_iFadeOut)
+	{
+		pev->spawnflags |= SF_FOG_FADING;
+		SendData(pev->rendercolor, -m_iFadeOut, m_iStartDist, m_iEndDist, m_density);
+		pev->nextthink = gpGlobals->time + m_iFadeOut;
+		SetThink(&CEnvFog ::FadeOutDone);
+	}
+	else
+	{
+		pev->spawnflags &= ~SF_FOG_FADING;
+		SendDataDeactivate();
+		// DontThink();
+	}
+}
+
+// yes, this intermediate think function is necessary.
+//  the engine seems to ignore the nextthink time when starting up.
+//  So this function gets called immediately after the precache finishes,
+//  regardless of what nextthink time is specified.
+void CEnvFog ::ResumeThink()
+{
+	//	ALERT(at_console, "Fog resume %f\n", gpGlobals->time);
+	SetThink(&CEnvFog ::FadeInDone);
+	pev->nextthink = gpGlobals->time;
+}
+
+void CEnvFog ::FadeInDone()
+{
+	pev->spawnflags &= ~SF_FOG_FADING;
+	SendData();
+
+	if (m_fHoldTime)
+	{
+		pev->nextthink = gpGlobals->time + m_fHoldTime;
+		SetThink(&CEnvFog ::TurnOff);
+	}
+}
+
+void CEnvFog ::FadeOutDone()
+{
+	pev->spawnflags &= ~SF_FOG_FADING;
+	SendDataDeactivate();
+}
+
+void CEnvFog ::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	if (ShouldToggle(useType, pev->spawnflags & SF_FOG_ACTIVE))
+	{
+		if (pev->spawnflags & SF_FOG_ACTIVE)
+			TurnOff();
+		else
+			TurnOn();
+	}
+}
+
+void CEnvFog::SendMessages(CBaseEntity* pClient)
+{
+	if (FBitSet(pev->spawnflags, SF_FOG_ACTIVE) && pClient)
+	{
+		SendDataToOne(pClient, pev->rendercolor, 0, m_iStartDist, m_iEndDist, m_density);
+	}
+}
+
+void CEnvFog::SendData(Vector col, int iFadeTime, int iStartDist, int iEndDist, float density)
+{
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBaseEntity* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+		{
+			SendDataToOne(pPlayer, col, iFadeTime, iStartDist, iEndDist, density);
+		}
+	}
+}
+
+void CEnvFog::SendDataToOne(CBaseEntity* pClient, Vector col, int iFadeTime, int iStartDist, int iEndDist, float density)
+{
+	MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pClient->pev);
+	WRITE_BYTE(col.x);
+	WRITE_BYTE(col.y);
+	WRITE_BYTE(col.z);
+	WRITE_SHORT(iFadeTime);
+	WRITE_SHORT(iStartDist);
+	WRITE_SHORT(iEndDist);
+	WRITE_LONG(density * 10000);
+	WRITE_BYTE(m_fogType);
+	WRITE_BYTE(FBitSet(pev->spawnflags, SF_FOG_AFFECT_SKYBOX));
+	MESSAGE_END();
+}
+
+LINK_ENTITY_TO_CLASS(env_fog, CEnvFog)
