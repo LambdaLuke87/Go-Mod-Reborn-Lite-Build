@@ -47,12 +47,12 @@ void CSniperRifle::Precache()
 	PRECACHE_MODEL("models/p_m40a1.mdl");
 
 	//PRECACHE_SOUND("weapons/sniper_fire.wav");
-	PRECACHE_SOUND("weapons/sniper_zoom.wav");
-	PRECACHE_SOUND("weapons/sniper_reload_first_seq.wav");
-	PRECACHE_SOUND("weapons/sniper_reload_second_seq.wav");
+	//PRECACHE_SOUND("weapons/sniper_zoom.wav");
+	//PRECACHE_SOUND("weapons/sniper_reload_first_seq.wav");
+	//PRECACHE_SOUND("weapons/sniper_reload_second_seq.wav");
 	//PRECACHE_SOUND("weapons/sniper_miss.wav"); UNUSED: Precache Optimization
-	PRECACHE_SOUND("weapons/sniper_bolt1.wav");
-	PRECACHE_SOUND("weapons/sniper_bolt2.wav");
+	//PRECACHE_SOUND("weapons/sniper_bolt1.wav");
+	//PRECACHE_SOUND("weapons/sniper_bolt2.wav");
 
 	m_usSniper = PRECACHE_EVENT(1, "events/sniper.sc");
 }
@@ -159,7 +159,7 @@ void CSniperRifle::PrimaryAttack()
 
 void CSniperRifle::SecondaryAttack()
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/sniper_zoom.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC11", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
 	ToggleZoom();
 

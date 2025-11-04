@@ -57,8 +57,8 @@ void CMP5::Precache()
 	PRECACHE_MODEL("models/w_9mmARclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("items/clipinsert1.wav");
-	PRECACHE_SOUND("items/cliprelease1.wav");
+	//PRECACHE_SOUND("items/clipinsert1.wav");
+	//PRECACHE_SOUND("items/cliprelease1.wav");
 
 	//PRECACHE_SOUND("weapons/hks1.wav"); // H to the K
 	//PRECACHE_SOUND("weapons/hks2.wav"); // H to the K
@@ -67,7 +67,7 @@ void CMP5::Precache()
 	//PRECACHE_SOUND("weapons/glauncher.wav");
 	//PRECACHE_SOUND("weapons/glauncher2.wav");
 
-	PRECACHE_SOUND("weapons/357_cock1.wav");
+	//PRECACHE_SOUND("weapons/357_cock1.wav");
 
 	m_usMP5 = PRECACHE_EVENT(1, "events/mp5.sc");
 	m_usMP52 = PRECACHE_EVENT(1, "events/mp52.sc");

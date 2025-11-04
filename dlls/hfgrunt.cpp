@@ -877,7 +877,7 @@ void CHFGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case HGRUNT_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
@@ -1062,7 +1062,7 @@ void CHFGrunt::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_pain4.wav");
 	//PRECACHE_SOUND("hgrunt/gr_pain5.wav");
 
-	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
 	//PRECACHE_SOUND("weapons/glauncher.wav");
 

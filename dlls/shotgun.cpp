@@ -53,14 +53,14 @@ void CShotgun::Precache()
 	//PRECACHE_SOUND("weapons/dbarrel1.wav"); //shotgun
 	//PRECACHE_SOUND("weapons/sbarrel1.wav"); //shotgun
 
-	PRECACHE_SOUND("weapons/reload1.wav"); // shotgun reload
-	PRECACHE_SOUND("weapons/reload3.wav"); // shotgun reload
+	//PRECACHE_SOUND("weapons/reload1.wav"); // shotgun reload
+	//PRECACHE_SOUND("weapons/reload3.wav"); // shotgun reload
 
 	//	PRECACHE_SOUND ("weapons/sshell1.wav");	// shotgun reload - played on client
 	//	PRECACHE_SOUND ("weapons/sshell3.wav");	// shotgun reload - played on client
 
-	PRECACHE_SOUND("weapons/357_cock1.wav"); // gun empty sound
-	PRECACHE_SOUND("weapons/scock1.wav");	 // cock gun
+	//PRECACHE_SOUND("weapons/357_cock1.wav"); // gun empty sound
+	//PRECACHE_SOUND("weapons/scock1.wav");	 // cock gun
 
 	m_usSingleFire = PRECACHE_EVENT(1, "events/shotgun1.sc");
 	m_usDoubleFire = PRECACHE_EVENT(1, "events/shotgun2.sc");
@@ -280,9 +280,9 @@ void CShotgun::Reload()
 		m_fInSpecialReload = 2;
 
 		if (RANDOM_LONG(0, 1))
-			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 0x1f));
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "!WP_GUNMISC5", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 0x1f));
 		else
-			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 0x1f));
+			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "!WP_GUNMISC6", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0, 0x1f));
 
 		SendWeaponAnim(SHOTGUN_RELOAD);
 
@@ -340,7 +340,7 @@ void CShotgun::WeaponIdle()
 				SendWeaponAnim(SHOTGUN_PUMP);
 
 				// play cocking sound
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0, 0x1f));
+				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "!WP_GUNMISC4", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0, 0x1f));
 				m_fInSpecialReload = 0;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
 			}
@@ -374,7 +374,7 @@ void CShotgun::ItemPostFrame()
 	if (0 != m_flPumpTime && m_flPumpTime < gpGlobals->time)
 	{
 		// play pumping sound
-		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0, 0x1f));
+		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "!WP_GUNMISC4", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0, 0x1f));
 		m_flPumpTime = 0;
 	}
 

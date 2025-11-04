@@ -91,8 +91,8 @@ IMPLEMENT_SAVERESTORE(CPitdroneSpike, CBaseEntity);
 void CPitdroneSpike::Precache()
 {
 	PRECACHE_MODEL("models/pit_drone_spike.mdl");
-	PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
-	PRECACHE_SOUND("weapons/xbow_hit1.wav");
+	//PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
+	//PRECACHE_SOUND("weapons/xbow_hit1.wav");
 
 	iSpikeTrail = PRECACHE_MODEL("sprites/spike_trail.spr");
 }
@@ -139,12 +139,12 @@ void CPitdroneSpike::SpikeTouch(CBaseEntity* pOther)
 
 	if (0 == pOther->pev->takedamage)
 	{
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "weapons/xbow_hit1.wav", VOL_NORM, ATTN_NORM, 0, iPitch);
+		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!WP_GUNMISC10", VOL_NORM, ATTN_NORM, 0, iPitch);
 	}
 	else
 	{
 		pOther->TakeDamage(pev, pev, gSkillData.pitdroneDmgSpit, DMG_GENERIC);
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "weapons/xbow_hitbod1.wav", VOL_NORM, ATTN_NORM, 0, iPitch);
+		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!WP_GUNMISC8", VOL_NORM, ATTN_NORM, 0, iPitch);
 	}
 
 	SetTouch(nullptr);

@@ -970,7 +970,7 @@ void COFTorchAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case TORCH_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/desert_eagle_reload.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC25", 1, ATTN_NORM);
 
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
@@ -1190,7 +1190,7 @@ void COFTorchAlly::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
 	//PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
-	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 

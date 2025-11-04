@@ -64,7 +64,7 @@ void CEgon::Precache()
 	PRECACHE_MODEL(EGON_BEAM_SPRITE);
 	PRECACHE_MODEL(EGON_FLARE_SPRITE);
 
-	PRECACHE_SOUND("weapons/357_cock1.wav");
+	//PRECACHE_SOUND("weapons/357_cock1.wav");
 
 	m_usEgonFire = PRECACHE_EVENT(1, "events/egon_fire.sc");
 	m_usEgonStop = PRECACHE_EVENT(1, "events/egon_stop.sc");

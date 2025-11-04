@@ -71,6 +71,7 @@ cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 
 // Allow Content that handle precaches
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+cvar_t allow_powerups = {"gm_allow_powerups", "0", FCVAR_SERVER};
 cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
 cvar_t allow_tentacle = {"gm_allow_tentacle", "0", FCVAR_SERVER};
 
@@ -732,6 +733,7 @@ void GameDLLInit()
 
 	// Allow Content that handle precaches
 	CVAR_REGISTER(&allow_props);
+	CVAR_REGISTER(&allow_powerups);
 	CVAR_REGISTER(&allow_nihilant);
 	CVAR_REGISTER(&allow_tentacle);
 

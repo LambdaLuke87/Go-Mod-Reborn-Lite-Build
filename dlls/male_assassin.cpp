@@ -862,7 +862,7 @@ void CMOFAssassin::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case MASSASSIN_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
@@ -1049,7 +1049,7 @@ void CMOFAssassin::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
 	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
-	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
 	//PRECACHE_SOUND("weapons/glauncher.wav");
 

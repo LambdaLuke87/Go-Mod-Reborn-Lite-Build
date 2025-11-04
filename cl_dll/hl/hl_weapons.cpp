@@ -233,7 +233,7 @@ bool CBasePlayerWeapon::PlayEmptySound()
 {
 	if (m_iPlayEmptySound)
 	{
-		HUD_PlaySound("weapons/357_cock1.wav", 0.8);
+		HUD_PlaySound("!WP_GUNMISC3", 0.8);
 		m_iPlayEmptySound = false;
 		return false;
 	}

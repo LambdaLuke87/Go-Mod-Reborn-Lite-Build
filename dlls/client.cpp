@@ -59,14 +59,14 @@ DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
 
-struct monster_t
+struct spawnlist_t
 {
 	const char* classname;
 	//const char* convar;
 };
 
 // Monsters List
-monster_t gMonsters[] =
+spawnlist_t gMonsters[] =
 	{
 		{"monster_alien_slave"},
 		{"monster_bullchicken"},
@@ -106,7 +106,7 @@ monster_t gMonsters[] =
 		{"monster_human_torch_ally"},
 		{"monster_chiken"}};
 
-monster_t gProps[] =
+spawnlist_t gProps[] =
 	{
 		{"xen_hair"},
 		{"xen_tree"},
@@ -117,15 +117,8 @@ monster_t gProps[] =
 		{"prop_chumtoad"},
 		{"prop_c4"}};
 
-
-struct weapon_t
-{
-	const char* classname;
-	//WeaponId convar;
-};
-
 // Weapons/Items List
-weapon_t gWeapons[] =
+spawnlist_t gWeapons[] =
 	{
 		{"weapon_crowbar"},
 		{"weapon_physgun"},
@@ -166,13 +159,15 @@ weapon_t gWeapons[] =
 		{"ammo_buckshot"},
 		{"ammo_357"},
 		{"ammo_556"},
-		{"ammo_762"},
+		{"ammo_762"}};
+
+spawnlist_t gPowerups[] =
+	{
 		{"item_ctfaccelerator"},
 		{"item_ctfbackpack"},
 		{"item_ctflongjump"},
 		{"item_ctfportablehev"},
 		{"item_ctfregeneration"}};
-
 
 struct tbow_helper_t
 {
@@ -952,7 +947,7 @@ void ClientCommand(edict_t* pEntity)
 			// Spawn Monsters
 			for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 			{
-				monster_t monsterInfo = gMonsters[i];
+				spawnlist_t monsterInfo = gMonsters[i];
 				if (FStrEq(combinetoprefix, monsterInfo.classname))
 				{
 					if (pPlayer->m_fUseFrontSpawn)
@@ -968,13 +963,26 @@ void ClientCommand(edict_t* pEntity)
 			// Spawn Props
 			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				monster_t xenpropInfo = gProps[i];
+				spawnlist_t xenpropInfo = gProps[i];
 				if (FStrEq(combinetoprefix, xenpropInfo.classname))
 				{
 					if (allow_props.value)
 						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
+				}
+			}
+
+			// CTF Powerups
+			for (int i = 0; i < ARRAYSIZE(gPowerups); i++)
+			{
+				spawnlist_t powerupInfo = gPowerups[i];
+				if (FStrEq(combinetoprefix, powerupInfo.classname))
+				{
+					if (allow_powerups.value)
+						GoMod_SpawnMonsterTrace(powerupInfo.classname, pev, pEntity, false);
+					else
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Powerups Disabled - gm_allow_powerups required\n");
 				}
 			}
 
@@ -1008,7 +1016,7 @@ void ClientCommand(edict_t* pEntity)
 			// Weapons/items Spawn
 			for (int i = 0; i < ARRAYSIZE(gWeapons); i++)
 			{
-				weapon_t weaponInfo = gWeapons[i];
+				spawnlist_t weaponInfo = gWeapons[i];
 				if (FStrEq(combinetoprefix, weaponInfo.classname))
 				{
 					if (pPlayer->m_fGiveItemMode)
@@ -1760,27 +1768,30 @@ void ClientPrecache()
 
 	if (UTIL_IsSandbox())
 	{
-		// CTF Items
-		UTIL_PrecacheOther("item_ctfaccelerator");
-		UTIL_PrecacheOther("item_ctfbackpack");
-		UTIL_PrecacheOther("item_ctflongjump");
-		UTIL_PrecacheOther("item_ctfportablehev");
-		UTIL_PrecacheOther("item_ctfregeneration");
-
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 		{
-			monster_t sMonster = gMonsters[i];
+			spawnlist_t sMonster = gMonsters[i];
 			UTIL_PrecacheOther(sMonster.classname);
 		}
 
 		UTIL_PrecacheOther("monster_apache");
 
+		// CTF Powerups
+		if (allow_powerups.value)
+		{
+			for (int i = 0; i < ARRAYSIZE(gPowerups); i++)
+			{
+				spawnlist_t sPowerups = gPowerups[i];
+				UTIL_PrecacheOther(sPowerups.classname);
+			}
+		}
+
 		if (allow_props.value)
 		{
 			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				monster_t sXenProps = gProps[i];
+				spawnlist_t sXenProps = gProps[i];
 				UTIL_PrecacheOther(sXenProps.classname);
 			}
 

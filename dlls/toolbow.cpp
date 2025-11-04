@@ -669,7 +669,7 @@ void CToolbow::UpdateLaser()
 		{
 			m_pLaser = CToolbowLaser::CreateSpot();
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/desert_eagle_sight.wav", VOL_NORM, ATTN_NORM, 0, PITCH_HIGH);
+			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC26", VOL_NORM, ATTN_NORM, 0, PITCH_HIGH);
 		}
 
 		UTIL_MakeVectors(m_pPlayer->pev->v_angle);

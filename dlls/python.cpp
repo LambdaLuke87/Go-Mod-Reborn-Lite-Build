@@ -72,8 +72,8 @@ void CPython::Precache()
 	PRECACHE_MODEL("models/w_357ammobox.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("weapons/357_reload1.wav");
-	PRECACHE_SOUND("weapons/357_cock1.wav");
+	//PRECACHE_SOUND("weapons/357_reload1.wav");
+	//PRECACHE_SOUND("weapons/357_cock1.wav");
 	//PRECACHE_SOUND("weapons/357_shot1.wav");
 	//PRECACHE_SOUND("weapons/357_shot2.wav");
 

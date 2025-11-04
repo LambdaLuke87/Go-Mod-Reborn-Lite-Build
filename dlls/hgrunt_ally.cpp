@@ -1036,10 +1036,10 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case HGRUNT_AE_RELOAD:
 		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/saw_reload.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC22", 1, ATTN_NORM);
 		}
 		else
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
 
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
@@ -1280,12 +1280,12 @@ void CHGruntAlly::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
 	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
-	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
 	//PRECACHE_SOUND("weapons/saw_fire1.wav");
 	//PRECACHE_SOUND("weapons/saw_fire2.wav");
 	//PRECACHE_SOUND("weapons/saw_fire3.wav");
-	PRECACHE_SOUND("weapons/saw_reload.wav");
+	//PRECACHE_SOUND("weapons/saw_reload.wav");
 
 	//PRECACHE_SOUND("weapons/glauncher.wav");
 

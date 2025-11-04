@@ -42,9 +42,9 @@ void CEagle::Precache()
 	PRECACHE_MODEL("models/p_desert_eagle.mdl");
 	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 	//PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
-	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
-	PRECACHE_SOUND("weapons/desert_eagle_sight.wav");
-	PRECACHE_SOUND("weapons/desert_eagle_sight2.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_sight.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_sight2.wav");
 	m_usFireEagle = PRECACHE_EVENT(1, "events/eagle.sc");
 }
 
@@ -254,7 +254,7 @@ void CEagle::SecondaryAttack()
 
 			m_pLaser = nullptr;
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/desert_eagle_sight2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC27", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 		}
 	}
 #endif
@@ -302,7 +302,7 @@ void CEagle::UpdateLaser()
 		{
 			m_pLaser = CEagleLaser::CreateSpot();
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "weapons/desert_eagle_sight.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC26", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 		}
 
 		UTIL_MakeVectors(m_pPlayer->pev->v_angle);

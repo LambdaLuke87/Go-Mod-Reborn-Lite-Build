@@ -1023,11 +1023,11 @@ void COFMedicAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/desert_eagle_reload.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC25", 1, ATTN_NORM);
 		}
 		else
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "hgrunt/gr_reload1.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
 		}
 
 		m_cAmmoLoaded = m_cClipSize;
@@ -1232,10 +1232,10 @@ void COFMedicAlly::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_mgun1.wav");
 	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
-	PRECACHE_SOUND("hgrunt/gr_reload1.wav");
+	//PRECACHE_SOUND("hgrunt/gr_reload1.wav");
 
 	//PRECACHE_SOUND("weapons/desert_eagle_fire.wav");
-	PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
+	//PRECACHE_SOUND("weapons/desert_eagle_reload.wav");
 	//PRECACHE_SOUND("weapons/sbarrel1.wav");
 
 	PRECACHE_SOUND("fgrunt/medic_give_shot.wav");

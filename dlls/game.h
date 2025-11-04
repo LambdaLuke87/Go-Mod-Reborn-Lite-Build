@@ -86,6 +86,7 @@ extern cvar_t worlditems_respawn;
 
 // Allow Content that handle precaches
 extern cvar_t allow_props;
+extern cvar_t allow_powerups;
 extern cvar_t allow_nihilant;
 extern cvar_t allow_tentacle;
 

@@ -44,9 +44,9 @@ void CSporeLauncher::Precache()
 
 	//PRECACHE_SOUND("weapons/splauncher_fire.wav");
 	//PRECACHE_SOUND("weapons/splauncher_altfire.wav"); UNUSED: Precache Optimization
-	PRECACHE_SOUND("weapons/splauncher_bounce.wav");
-	PRECACHE_SOUND("weapons/splauncher_reload.wav");
-	PRECACHE_SOUND("weapons/splauncher_pet.wav");
+	//PRECACHE_SOUND("weapons/splauncher_bounce.wav");
+	//PRECACHE_SOUND("weapons/splauncher_reload.wav");
+	//PRECACHE_SOUND("weapons/splauncher_pet.wav");
 
 	UTIL_PrecacheOther("spore");
 
@@ -144,7 +144,7 @@ void CSporeLauncher::WeaponIdle()
 				iAnim = SPLAUNCHER_FIDGET;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 4;
 
-				EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/splauncher_pet.wav", 0.7, ATTN_NORM);
+				EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC18", 0.7, ATTN_NORM);
 			}
 
 			SendWeaponAnim(iAnim);
@@ -288,7 +288,7 @@ void CSporeLauncher::Reload()
 		// was waiting for gun to move to side
 		m_ReloadState = ReloadState::RELOAD_ONE;
 
-		EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/splauncher_reload.wav", 0.7, ATTN_NORM);
+		EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC17", 0.7, ATTN_NORM);
 
 		SendWeaponAnim(SPLAUNCHER_RELOAD);
 
