@@ -287,21 +287,12 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(ButtonNoCollide, "#Gomod_Tool_NoCollide", "tool no_collide", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonTakeDamage, "#Gomod_Tool_TakeDamage", "tool take_damage", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonBloodColor, "#Gomod_Tool_BloodColor", "tool blood_color", iXPos + XRES(208), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonRender, "#Gomod_Tool_Render", "tool render", iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonFramedit, "#Gomod_Tool_FrameEditor", "tool frame_set", iXPos + XRES(272), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonTeleporter, "#Gomod_Tool_Teleporter", "tool teleporter", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	ButtonHelper(ButtonGlowsticks, "#Gomod_Tool_Glowsticks", "tool glowsticks", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonNoTools, "#Gomod_Tool_NoTools", "tool none", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-
-	ButtonRender = new CommandButton(CHudTextMessage::BufferedLocaliseTextString(""), iXPos + XRES(336), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonRender->m_bNoMarginSpace = true;
-	ButtonRender->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Gomod_Tool_Render"));
-	ButtonRender->addActionSignal(new CMenuHandler_StringCommand("tool render"));
-	ButtonRender->addActionSignal(new CMenuHandler_StringCommand("toggleRenderMenu"));
-	ButtonRender->addInputSignal(new CHandler_MenuButtonClick(this, 13));
-	ButtonRender->PickHudColor = true;
-	ButtonRender->setVisible(false);
-	ButtonRender->setParent(this);
 
 	// Render Buttons
 	ButtonHelper(ButtonRMNormal, "#Gomod_RenderMode_Normal", "rendermode normal", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
@@ -335,6 +326,7 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(ButtonFXGlowShell, "#Gomod_RenderFX_GlowShell", "renderfx glow_shell", iXPos + XRES(16), iYPos + iYSize - YRES(112) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
 	// Options per menu
+	ButtonOptionHelper(ButtonShowRenders, "#Gomod_Options_Render", false, 13, iXPos + XRES(16), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonAimMode, "#Gomod_MenuButton_FrontSpawn", "button_front_spawn", iXPos + XRES(336), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonGiveMode, "#Gomod_GiveItem_Mode", "button_self_pickup", iXPos + XRES(16), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonNoAI, "#Gomod_MenuButton_NoAI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
@@ -433,7 +425,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		ButtonFXFFadeAway, ButtonFXSSolid, ButtonFXFSolid, ButtonFXSStrobe, ButtonFXFStrobe,
 		ButtonFXFRStrobe, ButtonFXSFlicker, ButtonFXFFlicker, ButtonFXConstantGlow, ButtonFXDistort,
 		ButtonFXHologram, ButtonFXExplode, ButtonFXGlowShell, ButtonCTFAccrtor, ButtonCTFBpack,
-		ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg};
+		ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg, ButtonShowRenders};
 
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
@@ -450,7 +442,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{4, {ButtonDuplicator, ButtonRemover, ButtonGibber, ButtonPoser, ButtonCamera,
 				ButtonHPModify, ButtonNoCollide, ButtonTakeDamage, ButtonBloodColor,
 				ButtonFramedit, ButtonTeleporter, ButtonGlowsticks, ButtonNoTools,
-				ButtonRender}},
+				ButtonRender, ButtonShowRenders}},
 		{5, {ButtonCrowbar, ButtonPhysgun, ButtonToolbow, ButtonGlock, ButtonPython,
 				ButtonMP5, ButtonShotgun, ButtonCrossbow, ButtonRPG, ButtonGauss,
 				ButtonEgon, ButtonHiveHand, ButtonGrenade, ButtonSatchel, ButtonTripmine,

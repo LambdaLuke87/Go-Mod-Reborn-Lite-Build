@@ -87,9 +87,6 @@ cvar_t onlyhoster_spawns = {"gm_spawn_lock", "0", FCVAR_SERVER};
 cvar_t onlyhoster_toolbow = {"gm_toolbow_lock", "0", FCVAR_SERVER};
 cvar_t onlyhoster_changeAI = {"gm_change_ai_lock", "0", FCVAR_SERVER};
 
-// Misc
-cvar_t reaper_fraglimit = {"gm_reaper_fraglimit", "50", FCVAR_SERVER};
-
 // Engine Cvars
 cvar_t* g_psv_gravity = NULL;
 cvar_t* g_psv_aim = NULL;
@@ -749,9 +746,6 @@ void GameDLLInit()
 	CVAR_REGISTER(&onlyhoster_spawns);
 	CVAR_REGISTER(&onlyhoster_toolbow);
 	CVAR_REGISTER(&onlyhoster_changeAI);
-
-	// Misc
-	CVAR_REGISTER(&reaper_fraglimit);
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

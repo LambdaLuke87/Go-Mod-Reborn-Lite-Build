@@ -101,6 +101,3 @@ extern cvar_t bigdecals_control;
 extern cvar_t onlyhoster_spawns;
 extern cvar_t onlyhoster_toolbow;
 extern cvar_t onlyhoster_changeAI;
-
-// Misc
-extern cvar_t reaper_fraglimit;

@@ -2301,31 +2301,15 @@ CMultiplayReaper::CMultiplayReaper()
 void CMultiplayReaper::Think()
 {
 	CheckForKnifes();
-
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pPlayer = (CBasePlayer*)UTIL_PlayerByIndex(i);
-
-		if (pPlayer && pPlayer->pev->frags >= reaper_fraglimit.value)
-		{
-			GoToIntermission();
-			return;
-		}
-	}
-
 	CHalfLifeMultiplay::Think();
 }
 
 //=========================================================
 int CMultiplayReaper::IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled)
 {
-	// If the attacker is busting, they get a point per kill
+	// only reaper get frags
 	if (IsPlayerReaper(pAttacker))
 		return 1;
-
-	// If the victim is busting, then the attacker gets a point
-	if (IsPlayerReaper(pKilled))
-		return 2;
 
 	return 0;
 }

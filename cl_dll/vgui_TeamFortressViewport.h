@@ -1825,6 +1825,7 @@ public:
 	CommandButton* ButtonFXGlowShell;
 
 	// Options Per Menu
+	CommandButton* ButtonShowRenders;
 	CommandButton* ButtonAimMode;
 	CommandButton* ButtonGiveMode;
 	CommandButton* ButtonNoAI;
