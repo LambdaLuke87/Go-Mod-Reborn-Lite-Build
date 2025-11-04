@@ -73,7 +73,7 @@ int CChikenAnimal::Classify()
 
 void CChikenAnimal::Killed(entvars_t* pevAttacker, int iGib)
 {
-	if (iGib != GIB_NEVER)
+	if (!m_Beingremoved)
 	{
 		GibMonster();
 		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "!PL_VOICEFRST21", 1.0, ATTN_NORM, 0, PITCH_NORM);
@@ -175,7 +175,7 @@ void CC4Prop::Killed(entvars_t* pevAttacker, int iGib)
 		CBaseMonster::Killed(pevAttacker, GIB_ALWAYS);
 	else
 	{
-		if (iGib != GIB_NEVER)
+		if (!m_Beingremoved)
 		{
 			Detonate();
 

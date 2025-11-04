@@ -1611,6 +1611,7 @@ void UTIL_SafeRemoveMonster(CBaseEntity* pEntity)
 	 pMonster->pev->health = 0;
 	 pMonster->pev->deadflag = DEAD_DEAD;
 	 pMonster->pev->effects |= EF_NODRAW;
+	 pMonster->m_Beingremoved = true;
 
 	 // Kill and Never Gib
 	 pMonster->Killed(pMonster->pev, GIB_NEVER);

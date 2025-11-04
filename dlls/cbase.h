@@ -412,6 +412,7 @@ public:
 
 	bool m_AltClass; // alternate classify, used for allied npcs mode
 	bool m_MenuCreated; // mark as an menu spawned entity
+	bool m_Beingremoved; // this NPC is being removed
 
 	// Used by physgun
 	int m_movetype = 0;

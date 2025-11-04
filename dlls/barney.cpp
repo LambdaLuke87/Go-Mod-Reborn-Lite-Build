@@ -598,14 +598,17 @@ void CBarney::Killed(entvars_t* pevAttacker, int iGib)
 {
 	if (pev->body < BARNEY_BODY_GUNGONE)
 	{ // drop the gun!
-		Vector vecGunPos;
-		Vector vecGunAngles;
+		if (!m_Beingremoved)
+		{
+			Vector vecGunPos;
+			Vector vecGunAngles;
 
-		pev->body = BARNEY_BODY_GUNGONE;
+			pev->body = BARNEY_BODY_GUNGONE;
 
-		GetAttachment(0, vecGunPos, vecGunAngles);
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			CBaseEntity* pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+		}
 	}
 
 	SetUse(NULL);

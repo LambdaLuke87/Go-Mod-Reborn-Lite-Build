@@ -659,15 +659,18 @@ void COtis::Killed(entvars_t* pevAttacker, int iGib)
 {
 	if (GetBodygroup(OtisBodyGroup::Weapons) == OtisWeapon::DesertEagle)
 	{ // drop the gun!
-		Vector vecGunPos;
-		Vector vecGunAngles;
+		if (!m_Beingremoved)
+		{
+			Vector vecGunPos;
+			Vector vecGunAngles;
 
-		SetBodygroup(OtisBodyGroup::Weapons, OtisWeapon::None);
-		m_iOtisBody = OtisWeapon::None;
+			SetBodygroup(OtisBodyGroup::Weapons, OtisWeapon::None);
+			m_iOtisBody = OtisWeapon::None;
 
-		GetAttachment(0, vecGunPos, vecGunAngles);
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+		}
 	}
 
 	SetUse(NULL);
