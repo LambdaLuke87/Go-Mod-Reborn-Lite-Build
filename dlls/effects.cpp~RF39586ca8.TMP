@@ -22,7 +22,6 @@
 #include "decals.h"
 #include "func_break.h"
 #include "shake.h"
-#include "fx_flags.h"
 
 #define SF_GIBSHOOTER_REPEATABLE 1 // allows a gibshooter to be refired
 
@@ -2512,7 +2511,7 @@ class CBaseWeather : public CBaseEntity
 public:
 	void Spawn();
 	int ObjectCaps(void) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	bool KeyValue(KeyValueData* pkvd);
+	void KeyValue(KeyValueData* pkvd);
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	void SendMessages(CBaseEntity* pClient);
 
@@ -2533,8 +2532,8 @@ public:
 	virtual void SendWeather(CBaseEntity* pClient = nullptr) = 0;
 	virtual void SendClearWeather() = 0;
 
-	virtual bool Save(CSave& save);
-	virtual bool Restore(CRestore& restore);
+	virtual int Save(CSave& save);
+	virtual int Restore(CRestore& restore);
 	static TYPEDESCRIPTION m_SaveData[];
 
 protected:
@@ -2566,35 +2565,35 @@ void CBaseWeather::Spawn()
 		pev->spawnflags |= SF_WEATHER_ACTIVE;
 }
 
-bool CBaseWeather::KeyValue(KeyValueData* pkvd)
+void CBaseWeather::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "intensity"))
 	{
 		m_intensity = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "update_period"))
 	{
 		m_updatePeriod = atof(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "distance"))
 	{
 		m_distance = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "min_height"))
 	{
 		m_minHeight = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "max_height"))
 	{
 		m_maxHeight = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
-
-	return CBaseEntity::KeyValue(pkvd);
+	else
+		CBaseEntity::KeyValue(pkvd);
 }
 
 void CBaseWeather::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
@@ -2656,7 +2655,7 @@ void CBaseWeather::WriteBaseWeaterData(int flags)
 class CEnvRain : public CBaseWeather
 {
 public:
-	bool KeyValue(KeyValueData* pkvd);
+	void KeyValue(KeyValueData* pkvd);
 	void SendWeather(CBaseEntity* pClient = NULL);
 	void SendClearWeather();
 
@@ -2739,150 +2738,150 @@ TYPEDESCRIPTION CEnvRain::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE(CEnvRain, CBaseWeather)
 
-bool CEnvRain::KeyValue(KeyValueData* pkvd)
+void CEnvRain::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "raindrop_width"))
 	{
 		m_raindropWidth = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_height"))
 	{
 		m_raindropHeight = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_light_mode"))
 	{
 		m_raindropLightMode = (byte)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_min_speed"))
 	{
 		m_raindropMinSpeed = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_max_speed"))
 	{
 		m_raindropMaxSpeed = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_life"))
 	{
 		m_raindropLife = atof(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_min_size"))
 	{
 		m_windPuffMinSize = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_max_size"))
 	{
 		m_windPuffMaxSize = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_rendermode"))
 	{
 		m_windPuffRenderMode = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_renderamt"))
 	{
 		m_windPuffBrightness = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_rendercolor"))
 	{
 		UTIL_StringToVector(m_windPuffColor, pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_light_mode"))
 	{
 		m_windPuffLightMode = (byte)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_life"))
 	{
 		m_windPuffLife = atof(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_min_size"))
 	{
 		m_splashMinSize = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_max_size"))
 	{
 		m_splashMaxSize = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_rendermode"))
 	{
 		m_splashRenderMode = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_renderamt"))
 	{
 		m_splashBrightness = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_rendercolor"))
 	{
 		UTIL_StringToVector(m_splashColor, pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_light_mode"))
 	{
 		m_splashLightMode = (byte)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_size"))
 	{
 		m_rippleSize = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_rendermode"))
 	{
 		m_rippleRenderMode = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_renderamt"))
 	{
 		m_rippleBrightness = (short)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_rendercolor"))
 	{
 		UTIL_StringToVector(m_rippleColor, pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_light_mode"))
 	{
 		m_rippleLightMode = (byte)atoi(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "raindrop_sprite"))
 	{
 		m_raindropSprite = ALLOC_STRING(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "windpuff_sprite"))
 	{
 		m_windpuffSprite = ALLOC_STRING(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "splash_sprite"))
 	{
 		m_splashSprite = ALLOC_STRING(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "ripple_sprite"))
 	{
 		m_rippleSprite = ALLOC_STRING(pkvd->szValue);
-		return true;
+		pkvd->fHandled = TRUE;
 	}
-
-	return CBaseWeather::KeyValue(pkvd);
+	else
+		CBaseWeather::KeyValue(pkvd);
 }
 
 void CEnvRain::SendWeather(CBaseEntity* pClient)

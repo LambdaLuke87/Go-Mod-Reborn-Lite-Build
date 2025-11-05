@@ -376,39 +376,6 @@ void DBG_AssertFunction(
 }
 #endif // DEBUG
 
-// ripped this out of the engine
-float UTIL_AngleMod(float a)
-{
-	if (a < 0)
-	{
-		a = a + 360 * ((int)(a / 360) + 1);
-	}
-	else if (a >= 360)
-	{
-		a = a - 360 * ((int)(a / 360));
-	}
-	// a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
-	return a;
-}
-
-float UTIL_AngleDiff(float destAngle, float srcAngle)
-{
-	float delta;
-
-	delta = destAngle - srcAngle;
-	if (destAngle > srcAngle)
-	{
-		if (delta >= 180)
-			delta -= 360;
-	}
-	else
-	{
-		if (delta <= -180)
-			delta += 360;
-	}
-	return delta;
-}
-
 Vector UTIL_VecToAngles(const Vector& vec)
 {
 	float rgflVecOut[3];
@@ -1042,62 +1009,6 @@ void UTIL_ParticleEffect(const Vector& vecOrigin, const Vector& vecDirection, un
 {
 	PARTICLE_EFFECT(vecOrigin, vecDirection, (float)ulColor, (float)ulCount);
 }
-
-
-float UTIL_Approach(float target, float value, float speed)
-{
-	float delta = target - value;
-
-	if (delta > speed)
-		value += speed;
-	else if (delta < -speed)
-		value -= speed;
-	else
-		value = target;
-
-	return value;
-}
-
-
-float UTIL_ApproachAngle(float target, float value, float speed)
-{
-	target = UTIL_AngleMod(target);
-	value = UTIL_AngleMod(target);
-
-	float delta = target - value;
-
-	// Speed is assumed to be positive
-	if (speed < 0)
-		speed = -speed;
-
-	if (delta < -180)
-		delta += 360;
-	else if (delta > 180)
-		delta -= 360;
-
-	if (delta > speed)
-		value += speed;
-	else if (delta < -speed)
-		value -= speed;
-	else
-		value = target;
-
-	return value;
-}
-
-
-float UTIL_AngleDistance(float next, float cur)
-{
-	float delta = next - cur;
-
-	if (delta < -180)
-		delta += 360;
-	else if (delta > 180)
-		delta -= 360;
-
-	return delta;
-}
-
 
 float UTIL_SplineFraction(float value, float scale)
 {

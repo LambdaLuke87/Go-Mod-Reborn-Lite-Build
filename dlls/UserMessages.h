@@ -54,7 +54,11 @@ inline int gmsgStatusText = 0;
 inline int gmsgStatusValue = 0;
 
 inline int gmsgWeapons = 0;
+inline int gmsgToolBowSkin = 0;
+
 inline int gmsgSetFog = 0;
+inline int gmsgRain = 0;
+inline int gmsgSnow = 0;
 
 inline int gmsgSpectator = 0;
 inline int gmsgStatusIcon = 0;
@@ -72,6 +76,5 @@ inline int gmsgStatsPlayer = 0;
 inline int gmsgTeamFull = 0;
 inline int gmsgOldWeapon = 0;
 inline int gmsgCustomIcon = 0;
-inline int gmsgToolBowSkin = 0;
 
 void LinkUserMessages();

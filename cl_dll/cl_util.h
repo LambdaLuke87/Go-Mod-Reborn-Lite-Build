@@ -98,6 +98,8 @@ inline void SetCrosshair(HSPRITE hspr, Rect rc, int r, int g, int b)
 	gEngfuncs.pfnSetCrosshair(hspr, rc, r, g, b);
 }
 #define AngleVectors (*gEngfuncs.pfnAngleVectors)
+#define Com_RandomLong (*gEngfuncs.pfnRandomLong)
+#define Com_RandomFloat (*gEngfuncs.pfnRandomFloat)
 
 
 // Gets the height & width of a sprite,  at the specified frame
@@ -182,6 +184,8 @@ void VectorMA(const float* veca, float scale, const float* vecb, float* vecc);
 void VectorScale(const float* in, float scale, float* out);
 float VectorNormalize(float* v);
 void VectorInverse(float* v);
+
+float UTIL_ApproachAngle(float target, float value, float speed);
 
 // disable 'possible loss of data converting float to int' warning message
 #pragma warning(disable : 4244)

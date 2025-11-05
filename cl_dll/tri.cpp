@@ -19,6 +19,7 @@
 #include "Exports.h"
 
 #include "particleman.h"
+#include "environment.h"
 #include "tri.h"
 extern IParticleMan* g_pParticleMan;
 
@@ -114,5 +115,8 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 
 
 	if (g_pParticleMan)
+	{
 		g_pParticleMan->Update();
+		g_Environment.Update();
+	}
 }

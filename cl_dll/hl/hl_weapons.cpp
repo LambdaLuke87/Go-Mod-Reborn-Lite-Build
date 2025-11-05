@@ -59,6 +59,8 @@ static CBasePlayerWeapon* g_pWpns[MAX_WEAPONS];
 float g_flApplyVel = 0.0;
 bool g_irunninggausspred = false;
 
+Vector g_vPlayerVelocity;
+
 Vector previousorigin;
 
 int giTeamplay = 0;
@@ -780,6 +782,7 @@ void HUD_WeaponsPostThink(local_state_s* from, local_state_s* to, usercmd_t* cmd
 	player.ammo_spores = (int)from->client.vuser2.y;
 	player.ammo_762 = (int)from->client.vuser2.z;
 
+	g_vPlayerVelocity = player.pev->velocity;
 
 	// Point to current weapon object
 	if (WEAPON_NONE != from->client.m_iId)

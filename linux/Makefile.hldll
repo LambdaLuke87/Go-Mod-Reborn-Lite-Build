@@ -207,6 +207,7 @@ PM_OBJS = \
 
 GAME_SHARED_OBJS = \
 	$(GAME_SHARED_OBJ_DIR)/filesystem_utils.o \
+	$(GAME_SHARED_OBJ_DIR)/util_shared.o \
 	$(GAME_SHARED_OBJ_DIR)/voice_gamemgr.o
 
 PUBLIC_OBJS = \

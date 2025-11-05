@@ -22,6 +22,8 @@
 //
 #include "activity.h"
 #include "enginecallback.h"
+#include "hull_types.h"
+#include "util_shared.h"
 
 class CBaseEntity;
 
@@ -222,8 +224,6 @@ inline bool FClassnameIs(entvars_t* pev, const char* szClassname)
 extern void UTIL_SetSize(entvars_t* pev, const Vector& vecMin, const Vector& vecMax);
 extern float UTIL_VecToYaw(const Vector& vec);
 extern Vector UTIL_VecToAngles(const Vector& vec);
-extern float UTIL_AngleMod(float a);
-extern float UTIL_AngleDiff(float destAngle, float srcAngle);
 
 extern CBaseEntity* UTIL_FindEntityInSphere(CBaseEntity* pStartEntity, const Vector& vecCenter, float flRadius);
 extern CBaseEntity* UTIL_FindEntityByString(CBaseEntity* pStartEntity, const char* szKeyword, const char* szValue);
@@ -274,13 +274,7 @@ typedef enum
 } IGNORE_GLASS;
 extern void UTIL_TraceLine(const Vector& vecStart, const Vector& vecEnd, IGNORE_MONSTERS igmon, edict_t* pentIgnore, TraceResult* ptr);
 extern void UTIL_TraceLine(const Vector& vecStart, const Vector& vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t* pentIgnore, TraceResult* ptr);
-enum
-{
-	point_hull = 0,
-	human_hull = 1,
-	large_hull = 2,
-	head_hull = 3
-};
+
 extern void UTIL_TraceHull(const Vector& vecStart, const Vector& vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t* pentIgnore, TraceResult* ptr);
 extern TraceResult UTIL_GetGlobalTrace();
 extern void UTIL_TraceModel(const Vector& vecStart, const Vector& vecEnd, int hullNumber, edict_t* pentModel, TraceResult* ptr);
@@ -301,9 +295,6 @@ extern void UTIL_Ricochet(const Vector& position, float scale);
 extern void UTIL_StringToVector(float* pVector, const char* pString);
 extern void UTIL_StringToIntArray(int* pVector, int count, const char* pString);
 extern Vector UTIL_ClampVectorToBox(const Vector& input, const Vector& clampSize);
-extern float UTIL_Approach(float target, float value, float speed);
-extern float UTIL_ApproachAngle(float target, float value, float speed);
-extern float UTIL_AngleDistance(float next, float cur);
 
 extern char* UTIL_VarArgs(const char* format, ...);
 extern void UTIL_Remove(CBaseEntity* pEntity);

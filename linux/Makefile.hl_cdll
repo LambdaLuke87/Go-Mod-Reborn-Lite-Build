@@ -45,6 +45,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/death.o \
 	$(HL1_OBJ_DIR)/demo.o \
 	$(HL1_OBJ_DIR)/entity.o \
+	$(HL1_OBJ_DIR)/environment.o \
 	$(HL1_OBJ_DIR)/ev_common.o \
 	$(HL1_OBJ_DIR)/events.o \
 	$(HL1_OBJ_DIR)/flashlight.o \
@@ -133,6 +134,7 @@ COMMON_OBJS = \
 
 GAME_SHARED_OBJS = \
 	$(GAME_SHARED_OBJ_DIR)/filesystem_utils.o \
+	$(GAME_SHARED_OBJ_DIR)/util_shared.o \
 	$(GAME_SHARED_OBJ_DIR)/vgui_checkbutton2.o \
 	$(GAME_SHARED_OBJ_DIR)/vgui_grid.o \
 	$(GAME_SHARED_OBJ_DIR)/vgui_helpers.o \

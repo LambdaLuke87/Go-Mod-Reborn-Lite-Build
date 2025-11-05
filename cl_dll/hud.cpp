@@ -30,6 +30,8 @@
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
 
+#include "environment.h"
+
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
@@ -99,6 +101,8 @@ cvar_t* cl_sourcewpnlag = nullptr;
 cvar_t* hud_scale = NULL;
 cvar_t* hud_sprite_offset = NULL;
 
+cvar_t* cl_weather = NULL;
+
 void ShutdownInput();
 
 static cvar_t* CVAR_CREATE_INTVALUE(const char* name, int value, int flags)
@@ -134,6 +138,16 @@ int __MsgFunc_Logo(const char* pszName, int iSize, void* pbuf)
 int __MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
 {
 	return static_cast<int>(gHUD.MsgFunc_SetFog(pszName, iSize, pbuf));
+}
+
+int __MsgFunc_Rain(const char* pszName, int iSize, void* pbuf)
+{
+	return g_Environment.MsgFunc_Rain(pszName, iSize, pbuf);
+}
+
+int __MsgFunc_Snow(const char* pszName, int iSize, void* pbuf)
+{
+	return g_Environment.MsgFunc_Snow(pszName, iSize, pbuf);
 }
 
 //DECLARE_MESSAGE(m_Logo, Logo)
@@ -399,8 +413,10 @@ void CHud::Init()
 	HOOK_MESSAGE(HudColor);
 	HOOK_MESSAGE(OldWeapon);
 	HOOK_MESSAGE(Weapons);
-	HOOK_MESSAGE(SetFog);
 	HOOK_MESSAGE(ToolBowSkin);
+	HOOK_MESSAGE(SetFog);
+	HOOK_MESSAGE(Rain);
+	HOOK_MESSAGE(Snow);
 
 	// TFFree CommandMenu
 	HOOK_COMMAND("+commandmenu", OpenCommandMenu);
@@ -465,6 +481,8 @@ void CHud::Init()
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "1", FCVAR_ARCHIVE);
 	r_decals = gEngfuncs.pfnGetCvarPointer("r_decals");
 	cl_sourcewpnlag = CVAR_CREATE("cl_sourcewpnlag", "0", FCVAR_ARCHIVE);
+
+	cl_weather = CVAR_CREATE("cl_weather", "1", FCVAR_ARCHIVE);
 
 	// Player Sounds
 	CVAR_CREATE("cl_player_sfx_type", "hevsuit", FCVAR_ARCHIVE | FCVAR_USERINFO); // Custom Player sounds

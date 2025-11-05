@@ -597,6 +597,9 @@
     <ClCompile Include="..\..\dlls\custom_props.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\game_shared\util_shared.cpp">
+      <Filter>Source Files\pm_shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">

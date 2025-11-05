@@ -24,6 +24,7 @@
 #include "hud.h"
 #include "cl_util.h"
 #include <string.h>
+#include "util_shared.h"
 
 HSPRITE LoadSprite(const char* pszName)
 {

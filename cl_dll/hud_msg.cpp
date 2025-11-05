@@ -25,6 +25,8 @@
 #include "vgui_ScorePanel.h"
 
 #include "particleman.h"
+#include "environment.h"
+
 extern IParticleMan* g_pParticleMan;
 
 extern int giTeamplay;
@@ -84,10 +86,15 @@ void CHud::MsgFunc_InitHUD(const char* pszName, int iSize, void* pbuf)
 
 	//TODO: needs to be called on every map change, not just when starting a new game
 	if (g_pParticleMan)
+	{
 		g_pParticleMan->ResetParticles();
+		g_Environment.Reset();
+	}
 
 	//Probably not a good place to put this.
 	pBeam = pBeam2 = NULL;
+
+	g_Environment.Initialize();
 }
 
 bool CHud::MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf)
