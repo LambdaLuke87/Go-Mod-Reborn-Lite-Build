@@ -294,24 +294,6 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 	}
 }
 
-// HELPER: Render color and amount simplified
-void GoMod_SetToolRenderValue(CBasePlayer* player, edict_t* pEntity, const char* name, int& var, int argc, const char* argv1)
-{
-	if (UTIL_IsSandbox())
-	{
-		var = atoi(argv1);
-
-		if (var > 255)
-			var = 255;
-		if (var < 0)
-			var = 0;
-
-		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"changed %s\" to \"%d\"\n", name, var));
-	}
-	else
-		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("\"%s\" is \"%d\"\n", name, var));
-}
-
 void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 {
 	if (!UTIL_IsSandbox() || !allow_noclip.value)
@@ -1185,14 +1167,54 @@ void ClientCommand(edict_t* pEntity)
 		else
 			ClientPrint(&pEntity->v, HUD_PRINTTALK, "Voices Disabled - gm_allow_voices required\n");
 	}
-	else if (FStrEq(pcmd, "render_color_red"))
-		GoMod_SetToolRenderValue(player, pEntity, "red render color", player->m_iToolRenderColorR, CMD_ARGC(), CMD_ARGV(1));
-	else if (FStrEq(pcmd, "render_color_green"))
-		GoMod_SetToolRenderValue(player, pEntity, "green render color", player->m_iToolRenderColorG, CMD_ARGC(), CMD_ARGV(1));
-	else if (FStrEq(pcmd, "render_color_blue"))
-		GoMod_SetToolRenderValue(player, pEntity, "blue render color", player->m_iToolRenderColorB, CMD_ARGC(), CMD_ARGV(1));
+	else if (FStrEq(pcmd, "render_color"))
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (CMD_ARGC() < 4)
+			{
+				CLIENT_PRINTF(pEntity, print_console, "Usage: render_color RRR GGG BBB \n");
+				return;
+			}
+
+			int r = atoi(CMD_ARGV(1));
+			int g = atoi(CMD_ARGV(2));
+			int b = atoi(CMD_ARGV(3));
+
+			r = V_min(V_max(r, 0), 255);
+			g = V_min(V_max(g, 0), 255);
+			b = V_min(V_max(b, 0), 255);
+
+			player->m_iToolRenderColorR = r;
+			player->m_iToolRenderColorG = g;
+			player->m_iToolRenderColorB = b;
+
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Render Color to: RGB(%d,%d,%d)\n", r, g, b));
+		}
+		else
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot change the render color outside of the sandbox\n"));
+	}
 	else if (FStrEq(pcmd, "render_amount"))
-		GoMod_SetToolRenderValue(player, pEntity, "render amount", player->m_iToolRenderAMT, CMD_ARGC(), CMD_ARGV(1));
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (CMD_ARGC() < 2)
+			{
+				CLIENT_PRINTF(pEntity, print_console, "Usage: render_amount value \n");
+				return;
+			}
+
+			int amount = atoi(CMD_ARGV(1));
+
+			amount = V_min(V_max(amount, 0), 255);
+
+			player->m_iToolRenderAMT = amount;
+
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Render Amount to %d\n", amount));
+		}
+		else
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot change the render amount outside of the sandbox\n"));
+	}
 	else if (FStrEq(pcmd, "buddha"))
 		GoMod_ImmortalityHelper(pPlayer, pEntity, false);
 	else if (FStrEq(pcmd, "zeus"))
@@ -1203,50 +1225,49 @@ void ClientCommand(edict_t* pEntity)
 		GoMod_NoclipHelper(pPlayer, pEntity, false);
 	else if (FStrEq(pcmd, "fog"))
 	{
-		if (CMD_ARGC() < 10)
+		if (UTIL_IsSandbox())
 		{
-			CLIENT_PRINTF(pEntity, print_console, 
-				"Usage: fog <r> <g> <b> <fadetime> <startdist> <enddist> <density> <fogtype> <skyfog>\n");
-			return;
+			if (CMD_ARGC() < 8)
+			{
+				CLIENT_PRINTF(pEntity, print_console,
+					"Usage: fog <r> <g> <b> <fadetime> <density> <fogtype> <skyfog>\n");
+				return;
+			}
+
+			int r = atoi(CMD_ARGV(1));
+			int g = atoi(CMD_ARGV(2));
+			int b = atoi(CMD_ARGV(3));
+			int fadetime = atoi(CMD_ARGV(4));
+			int density = atoi(CMD_ARGV(5));
+			int fogtype = atoi(CMD_ARGV(6));
+			int skyfog = atoi(CMD_ARGV(7));
+
+			// Clamp values to valid byte/short/long ranges
+			r = V_min(V_max(r, 0), 255);
+			g = V_min(V_max(g, 0), 255);
+			b = V_min(V_max(b, 0), 255);
+			fadetime = V_min(V_max(fadetime, 0), 32767);
+			density = V_min(V_max(density, 0), 32767);
+			fogtype = V_min(V_max(fogtype, 0), 1);
+			skyfog = V_min(V_max(skyfog, 0), 1);
+
+			// Send the user message
+			MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->edict());
+			WRITE_BYTE(r);
+			WRITE_BYTE(g);
+			WRITE_BYTE(b);
+			WRITE_SHORT(fadetime);
+			WRITE_SHORT(0); // Start Dist, linear fog stuff
+			WRITE_SHORT(0); // End Dist, linear fog stuff
+			WRITE_LONG(density);
+			WRITE_BYTE(fogtype);
+			WRITE_BYTE(skyfog);
+			MESSAGE_END();
+
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Fog set: RGB(%d,%d,%d), fadetime=%d, density=%d, fogtype=%d, skyfog=%d\n", r, g, b, fadetime, density, fogtype, skyfog));
 		}
-
-		int r = atoi(CMD_ARGV(1));
-		int g = atoi(CMD_ARGV(2));
-		int b = atoi(CMD_ARGV(3));
-		int fadetime = atoi(CMD_ARGV(4));
-		int startdist = atoi(CMD_ARGV(5));
-		int enddist = atoi(CMD_ARGV(6));
-		int density = atoi(CMD_ARGV(7));
-		int fogtype = atoi(CMD_ARGV(8));
-		int skyfog = atoi(CMD_ARGV(9));
-
-		// Clamp values to valid byte/short/long ranges
-		r = V_min(V_max(r, 0), 255);
-		g = V_min(V_max(g, 0), 255);
-		b = V_min(V_max(b, 0), 255);
-		fadetime = V_min(V_max(fadetime, 0), 32767);
-		startdist = V_min(V_max(startdist, 0), 32767);
-		enddist = V_min(V_max(enddist, 0), 32767);
-		density = V_min(V_max(density, 0), 32767);
-		fogtype = V_min(V_max(fogtype, 0), 1);
-		skyfog = V_min(V_max(skyfog, 0), 1);
-
-		// Send the user message
-		MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->edict());
-		WRITE_BYTE(r);
-		WRITE_BYTE(g);
-		WRITE_BYTE(b);
-		WRITE_SHORT(fadetime);
-		WRITE_SHORT(startdist);
-		WRITE_SHORT(enddist);
-		WRITE_LONG(density);
-		WRITE_BYTE(fogtype);
-		WRITE_BYTE(skyfog);
-		MESSAGE_END();
-
-		CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs(
-			"Fog set: RGB(%d,%d,%d), fadetime=%d, startdist=%d, enddist=%d, density=%d, fogtype=%d, skyfog=%d\n", 
-			r, g, b, fadetime, startdist, enddist, density, fogtype, skyfog));
+		else
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
 	}
 
 	//In Opposing Force this is handled only by the CTF gamerules
