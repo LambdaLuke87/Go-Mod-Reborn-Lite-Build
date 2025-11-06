@@ -1794,6 +1794,7 @@ public:
 	CommandButton* ButtonGlowsticks;
 	CommandButton* ButtonNoTools;
 	CommandButton* ButtonRender;
+	CommandButton* ButtonSpawnertool;
 
 	// Render Modes
 	CommandButton* ButtonRMNormal;

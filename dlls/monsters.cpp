@@ -2022,6 +2022,11 @@ void CBaseMonster::MonsterInit()
 	pev->deadflag = DEAD_NO;
 	m_IdealMonsterState = MONSTERSTATE_IDLE; // Assume monster will be idle, until proven otherwise
 
+	// Save the spawn origin, angles and classname data
+	m_iszMonsterClassname = pev->classname;
+	m_vecSpawnOrigin = pev->origin;
+	m_vecSpawnAngles = pev->angles;
+
 	m_IdealActivity = ACT_IDLE;
 
 	SetBits(pev->flags, FL_MONSTER);

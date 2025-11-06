@@ -111,8 +111,6 @@ public:
 
 	bool m_AllowItemDropping = true;
 
-	int m_CustomFrame = 0;
-
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 
@@ -315,6 +313,8 @@ public:
 	virtual bool HasHumanGibs();
 	virtual bool HasAlienGibs();
 	virtual void FadeMonster(); // Called instead of GibMonster() when gibs are disabled
+
+	void MonsterRespawnThink();
 
 	Vector ShootAtEnemy(const Vector& shootOrigin);
 	Vector BodyTarget(const Vector& posSrc) override { return Center() * 0.75 + EyePosition() * 0.25; } // position to shoot at

@@ -191,7 +191,8 @@ tbow_helper_t gToolbowModes[] =
 		{"blood_color", "Blood Color"},
 		{"frame_set", "Frame Editor"},
 		{"teleporter", "Teleporter"},
-		{"glowsticks", "Glowsticks"}};
+		{"glowsticks", "Glowsticks"},
+		{"spawner", "Spawner"}};
 
 
 // Render Tool: Render Mode

@@ -374,6 +374,7 @@ public:
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
 	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
+	static CBaseEntity* CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, float respawntime, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, edict_t* pentOwner = NULL);
 	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
@@ -415,6 +416,12 @@ public:
 	bool m_AltClass; // alternate classify, used for allied npcs mode
 	bool m_MenuCreated; // mark as an menu spawned entity
 	bool m_Beingremoved; // this NPC is being removed
+	int m_CustomFrame; // frame tool values
+	bool m_bShouldRespawn; // this entity have applied the spawner tool
+	string_t m_iszMonsterClassname; // store the classname for respawn
+	Vector m_vecSpawnOrigin; // save the spawn origin
+	Vector m_vecSpawnAngles; // save the spawn angle
+	int m_respawntime = 3.0f; // The respawn time
 
 	// Used by physgun
 	int m_movetype = 0;

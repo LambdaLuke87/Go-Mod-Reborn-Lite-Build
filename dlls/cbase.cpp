@@ -767,6 +767,39 @@ CBaseEntity* CBaseEntity::Create(const char* szName, const Vector& vecOrigin, co
 	return pEntity;
 }
 
+CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, 
+	float respawntime, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, edict_t* pentOwner)
+{
+	edict_t* pent;
+	CBaseEntity* pEntity;
+
+	pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
+	if (FNullEnt(pent))
+	{
+		ALERT(at_console, "NULL Ent in Create!\n");
+		return NULL;
+	}
+	pEntity = Instance(pent);
+	pEntity->pev->owner = pentOwner;
+	pEntity->pev->origin = vecOrigin;
+	pEntity->pev->angles = vecAngles;
+	pEntity->m_bShouldRespawn = true; // Respawn
+	pEntity->m_MenuCreated = true;	// Menu Created
+	pEntity->m_respawntime = respawntime; // Respawn time
+	pEntity->m_CustomFrame = customframe; // Frame tool Support
+	// Renders Copy
+	pEntity->pev->rendermode = rendermode;
+	pEntity->pev->renderfx = renderfx;
+	pEntity->pev->rendercolor.x = rr;
+	pEntity->pev->rendercolor.y = rg;
+	pEntity->pev->rendercolor.z = rb;
+	DispatchSpawn(pEntity->edict());
+
+	EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);
+
+	return pEntity;
+}
+
 CBaseEntity* CBaseEntity::CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner)
 {
 	edict_t* pent;

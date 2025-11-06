@@ -700,6 +700,24 @@ void CBaseMonster::Killed(entvars_t* pevAttacker, int iGib)
 	unsigned int cCount = 0;
 	bool fDone = false;
 
+	if (m_bShouldRespawn)
+	{
+		// Used Leech logic
+		SetActivity(ACT_DIEFORWARD);
+
+		ClearShockEffect();
+
+		pev->movetype = MOVETYPE_TOSS;
+		pev->takedamage = DAMAGE_NO;
+
+		// Do the spawner action
+		SetThink(&CBaseMonster::MonsterRespawnThink);
+
+		// The timer (m_respawntime) is chosed by toolbow
+		pev->nextthink = gpGlobals->time + m_respawntime;
+		return;
+	}
+
 	if (HasMemory(bits_MEMORY_KILLED))
 	{
 		if (ShouldGibMonster(iGib))
@@ -744,6 +762,25 @@ void CBaseMonster::Killed(entvars_t* pevAttacker, int iGib)
 	m_IdealMonsterState = MONSTERSTATE_DEAD;
 
 	ClearShockEffect();
+}
+
+void CBaseMonster::MonsterRespawnThink()
+{
+	// Act the spawner function
+	CBaseEntity* pRespawned = CBaseEntity::CreateSpawner(
+		STRING(m_iszMonsterClassname),
+		m_vecSpawnOrigin,
+		m_vecSpawnAngles,
+		m_respawntime,
+		m_CustomFrame,
+		pev->rendermode,
+		pev->renderfx,
+		pev->rendercolor.x,
+		pev->rendercolor.y,
+		pev->rendercolor.z,
+		edict());
+
+	UTIL_Remove(this); // Remove it
 }
 
 //
@@ -1979,24 +2016,37 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				{
 				case 0:
 					pMonster->m_CustomFrame = 1;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
 					break;
 				case 1:
 					pMonster->m_CustomFrame = 2;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
 					break;
 				case 2:
 					pMonster->m_CustomFrame = 3;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
 					break;
 				case 3:
 					pMonster->m_CustomFrame = 4;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
 					break;
 				case 4:
 					pMonster->m_CustomFrame = 5;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
 					break;
 				case 5:
 					pMonster->m_CustomFrame = 0;
 					pMonster->pev->framerate = 1.0;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
 					break;
 				}
+			}
+			else if (pPlayer->m_iToolMode == 15)
+			{
+				if (pMonster->m_bShouldRespawn)
+					pMonster->m_bShouldRespawn = false;
+				else
+					pMonster->m_bShouldRespawn = true;
 			}
 		}
 	}
@@ -2156,23 +2206,62 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 				{
 				case 0:
 					pMonster->m_CustomFrame = 5;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
 					break;
 				case 1:
 					pMonster->m_CustomFrame = 0;
 					pMonster->pev->framerate = 1.0;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
 					break;
 				case 2:
 					pMonster->m_CustomFrame = 1;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
 					break;
 				case 3:
 					pMonster->m_CustomFrame = 2;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
 					break;
 				case 4:
 					pMonster->m_CustomFrame = 3;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
 					break;
 				case 5:
 					pMonster->m_CustomFrame = 4;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
 					break;
+				}
+			}
+			else if (pPlayer->m_iToolMode == 15)
+			{
+				if (pMonster->m_respawntime == 3.0f)
+				{
+					pMonster->m_respawntime = 6.0f;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
+				}
+				else if (pMonster->m_respawntime == 6.0f)
+				{
+					pMonster->m_respawntime = 10.0f;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
+				}
+				else if (pMonster->m_respawntime == 10.0f)
+				{
+					pMonster->m_respawntime = 15.0f;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
+				}
+				else if (pMonster->m_respawntime == 15.0f)
+				{
+					pMonster->m_respawntime = 30.0f;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+				}
+				else if (pMonster->m_respawntime == 30.0f)
+				{
+					pMonster->m_respawntime = 1.0f;
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
+				}
+				else if (pMonster->m_respawntime == 1.0f)
+				{
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
+					pMonster->m_respawntime = 3.0f;
 				}
 			}
 		}
