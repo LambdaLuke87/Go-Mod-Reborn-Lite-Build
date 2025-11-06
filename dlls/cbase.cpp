@@ -768,7 +768,7 @@ CBaseEntity* CBaseEntity::Create(const char* szName, const Vector& vecOrigin, co
 }
 
 CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, 
-	float respawntime, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, edict_t* pentOwner)
+	float respawntime, bool altclass, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, int ramt, edict_t* pentOwner)
 {
 	edict_t* pent;
 	CBaseEntity* pEntity;
@@ -785,6 +785,7 @@ CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOri
 	pEntity->pev->angles = vecAngles;
 	pEntity->m_bShouldRespawn = true; // Respawn
 	pEntity->m_MenuCreated = true;	// Menu Created
+	pEntity->m_AltClass = altclass; // Get alt class
 	pEntity->m_respawntime = respawntime; // Respawn time
 	pEntity->m_CustomFrame = customframe; // Frame tool Support
 	// Renders Copy
@@ -793,6 +794,7 @@ CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOri
 	pEntity->pev->rendercolor.x = rr;
 	pEntity->pev->rendercolor.y = rg;
 	pEntity->pev->rendercolor.z = rb;
+	pEntity->pev->renderamt = ramt;
 	DispatchSpawn(pEntity->edict());
 
 	EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);

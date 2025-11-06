@@ -772,12 +772,14 @@ void CBaseMonster::MonsterRespawnThink()
 		m_vecSpawnOrigin,
 		m_vecSpawnAngles,
 		m_respawntime,
+		m_AltClass,
 		m_CustomFrame,
 		pev->rendermode,
 		pev->renderfx,
 		pev->rendercolor.x,
 		pev->rendercolor.y,
 		pev->rendercolor.z,
+		pev->renderamt,
 		edict());
 
 	UTIL_Remove(this); // Remove it
@@ -2002,13 +2004,22 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				pMonster->pev->solid = SOLID_NOT;
 			}
 			else if (pPlayer->m_iToolMode == 10)
+			{
 				pMonster->pev->takedamage = DAMAGE_NO;
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became invulnerable\n");
+			}
 			else if (pPlayer->m_iToolMode == 11)
 			{
 				if (BLOOD_COLOR_RED != pMonster->m_bloodColor)
+				{
 					pMonster->m_bloodColor = BLOOD_COLOR_RED;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Red\n");
+				}
 				else
+				{
 					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Yellow\n");
+				}
 			}
 			else if (pPlayer->m_iToolMode == 12)
 			{
@@ -2016,37 +2027,43 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				{
 				case 0:
 					pMonster->m_CustomFrame = 1;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Fast\n");
 					break;
 				case 1:
 					pMonster->m_CustomFrame = 2;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Faster\n");
 					break;
 				case 2:
 					pMonster->m_CustomFrame = 3;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Turbo\n");
 					break;
 				case 3:
 					pMonster->m_CustomFrame = 4;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Ultra\n");
 					break;
 				case 4:
 					pMonster->m_CustomFrame = 5;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Slow\n");
 					break;
 				case 5:
 					pMonster->m_CustomFrame = 0;
 					pMonster->pev->framerate = 1.0;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Normal (Default)\n");
 					break;
 				}
 			}
 			else if (pPlayer->m_iToolMode == 15)
 			{
 				if (pMonster->m_bShouldRespawn)
+				{
 					pMonster->m_bShouldRespawn = false;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Spawner Mode\n");
+				}
 				else
+				{
 					pMonster->m_bShouldRespawn = true;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Added Spawner Mode\n");
+				}
 			}
 		}
 	}
@@ -2197,72 +2214,83 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			if (pPlayer->m_iToolMode == 8)
 				pMonster->pev->gravity = custom_npc_gravity.value;
 			else if (pPlayer->m_iToolMode == 10)
+			{
 				pMonster->pev->takedamage = DAMAGE_YES;
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became mortal\n");
+			}
 			else if (pPlayer->m_iToolMode == 11)
+			{
 				pMonster->m_bloodColor = DONT_BLEED;
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Blood (Dont Bleed)\n");
+			}
 			else if (pPlayer->m_iToolMode == 12)
 			{
 				switch (pMonster->m_CustomFrame)
 				{
 				case 0:
 					pMonster->m_CustomFrame = 5;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Slow\n");
 					break;
 				case 1:
 					pMonster->m_CustomFrame = 0;
 					pMonster->pev->framerate = 1.0;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Normal (Default)\n");
 					break;
 				case 2:
 					pMonster->m_CustomFrame = 1;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Fast\n");
 					break;
 				case 3:
 					pMonster->m_CustomFrame = 2;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Faster\n");
 					break;
 				case 4:
 					pMonster->m_CustomFrame = 3;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Turbo\n");
 					break;
 				case 5:
 					pMonster->m_CustomFrame = 4;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Ultra\n");
 					break;
 				}
 			}
 			else if (pPlayer->m_iToolMode == 15)
 			{
-				if (pMonster->m_respawntime == 3.0f)
+				if (pMonster->m_bShouldRespawn)
 				{
-					pMonster->m_respawntime = 6.0f;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 5);
+					if (pMonster->m_respawntime == 3.0f)
+					{
+						pMonster->m_respawntime = 6.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 6.0\n");
+					}
+					else if (pMonster->m_respawntime == 6.0f)
+					{
+						pMonster->m_respawntime = 10.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 10.0\n");
+					}
+					else if (pMonster->m_respawntime == 10.0f)
+					{
+						pMonster->m_respawntime = 15.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 15.0\n");
+					}
+					else if (pMonster->m_respawntime == 15.0f)
+					{
+						pMonster->m_respawntime = 30.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 30.0\n");
+					}
+					else if (pMonster->m_respawntime == 30.0f)
+					{
+						pMonster->m_respawntime = 1.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 1.0\n");
+					}
+					else if (pMonster->m_respawntime == 1.0f)
+					{
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 3.0\n");
+						pMonster->m_respawntime = 3.0f;
+					}
 				}
-				else if (pMonster->m_respawntime == 6.0f)
-				{
-					pMonster->m_respawntime = 10.0f;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 10);
-				}
-				else if (pMonster->m_respawntime == 10.0f)
-				{
-					pMonster->m_respawntime = 15.0f;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH - 15);
-				}
-				else if (pMonster->m_respawntime == 15.0f)
-				{
-					pMonster->m_respawntime = 30.0f;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
-				}
-				else if (pMonster->m_respawntime == 30.0f)
-				{
-					pMonster->m_respawntime = 1.0f;
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_NORM - 5);
-				}
-				else if (pMonster->m_respawntime == 1.0f)
-				{
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "common/wpn_hudon.wav", VOL_NORM, ATTN_NONE, 0, PITCH_HIGH);
-					pMonster->m_respawntime = 3.0f;
-				}
+				else
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Mode Needed\n");
 			}
 		}
 	}

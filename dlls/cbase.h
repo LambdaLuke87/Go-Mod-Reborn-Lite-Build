@@ -374,7 +374,7 @@ public:
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
 	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
-	static CBaseEntity* CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, float respawntime, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, edict_t* pentOwner = NULL);
+	static CBaseEntity* CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, float respawntime, bool altclass, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, int ramt, edict_t* pentOwner = NULL);
 	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
