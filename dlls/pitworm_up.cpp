@@ -333,6 +333,8 @@ void COFPitWormUp::Spawn()
 
 	UTIL_SetOrigin(pev, pev->origin);
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	pev->flags |= FL_MONSTER;
 	pev->takedamage = DAMAGE_AIM;
 

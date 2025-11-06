@@ -292,6 +292,8 @@ void CNihilanth::Spawn()
 	pev->health = gSkillData.nihilanthHealth;
 	pev->view_ofs = Vector(0, 0, 300);
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	m_flFieldOfView = -1; // 360 degrees
 
 	pev->sequence = 0;

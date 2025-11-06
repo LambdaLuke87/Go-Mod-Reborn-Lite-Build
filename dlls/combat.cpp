@@ -1839,6 +1839,10 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
+	// Ignore Players!
+	if (pEntity->IsNetClient())
+		return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+
 	if (pPlayer->m_iToolMode == 2)
 	{
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
@@ -1866,17 +1870,9 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 		if (pEntity)
 		{
 			if (pevAttacker == NULL)
-			{
 				pevAttacker = pev;
-			}
 			else
-			{
-				// Dont remove players!
-				if (!pEntity->IsNetClient())
-				{
-					UTIL_SafeRemoveMonster(pEntity);
-				}
-			}
+				UTIL_SafeRemoveMonster(pEntity);
 		}
 	}
 	else if (pPlayer->m_iToolMode == 5)
@@ -2054,7 +2050,9 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			}
 			else if (pPlayer->m_iToolMode == 15)
 			{
-				if (pMonster->m_bShouldRespawn)
+				if (pMonster->m_RespawnBlackList)
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You can't use it on this NPC\n");
+				else if (pMonster->m_bShouldRespawn)
 				{
 					pMonster->m_bShouldRespawn = false;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Spawner Mode\n");
@@ -2088,6 +2086,10 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
+
+	// Ignore Players!
+	if (pEntity->IsNetClient())
+		return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 
 	if (pPlayer->m_iToolMode == 2)
 	{

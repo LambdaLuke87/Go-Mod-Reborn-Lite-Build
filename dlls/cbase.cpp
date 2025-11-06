@@ -840,22 +840,27 @@ CBaseEntity* CBaseEntity::RemoveCustom(bool isAll)
 				UTIL_SafeRemoveMonster(pMonster);
 				break;
 			}
+			else if (pEnt->m_MenuCreated)
+			{
+				UTIL_Remove(pEnt);
+				break;
+			}
 		}
 	}
 	else
 	{
 		while ((pEnt = UTIL_FindEntityInSphere(pEnt, g_vecZero, 99999)) != nullptr)
 		{
-			if (pEnt->pev && pEnt->pev->classname)
+			if (pEnt && pEnt->pev)
 			{
-				// verify if the class start with "monster_"
-				if (!strncmp(STRING(pEnt->pev->classname), "monster_", 8))
+				CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
+				if (pMonster && pMonster->m_MenuCreated)
 				{
-					CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEnt);
-					if (pMonster && pMonster->m_MenuCreated)
-					{
-						UTIL_SafeRemoveMonster(pMonster);
-					}
+					UTIL_SafeRemoveMonster(pMonster);
+				}
+				else if (pEnt->m_MenuCreated)
+				{
+					UTIL_Remove(pEnt);
 				}
 			}
 		}

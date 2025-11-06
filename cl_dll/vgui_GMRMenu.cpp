@@ -333,8 +333,8 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(ButtonGiveMode, "#Gomod_GiveItem_Mode", "button_self_pickup", iXPos + XRES(16), iYPos + iYSize - YRES(10) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonNoAI, "#Gomod_MenuButton_NoAI", "button_ai_set", iXPos + XRES(144), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 	ButtonHelper(ButtonAllieds, "#Gomod_MenuButton_Ally", "button_allied_set", iXPos + XRES(208), iYPos + iYSize - YRES(30) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper(ButtonUndoNPC, "#Gomod_MenuButton_undo", "button_npc_undo", iXPos + XRES(144), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
-	ButtonHelper(ButtonDeleteALlNpcs, "#Gomod_MenuButton_remove", "button_npc_remove_all", iXPos + XRES(208), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper(ButtonUndoNPC, "#Gomod_MenuButton_undo", "remove_entity_undo", iXPos + XRES(144), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
+	ButtonHelper(ButtonDeleteALlNpcs, "#Gomod_MenuButton_remove", "remove_entities_all", iXPos + XRES(208), iYPos + iYSize - YRES(4) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
 
 	CSchemeManager* pSchemes = gViewPort->GetSchemeManager();
 	SchemeHandle_t hTitleScheme = pSchemes->getSchemeHandle("Briefing Text");
@@ -432,12 +432,14 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
 		{0, {ButtonLinkMenu}},
-		{1, {ButtonHLSweeps, ButtonOp4Sweeps, ButtonAimMode, ButtonGiveMode}},
+		{1, {ButtonHLSweeps, ButtonOp4Sweeps, ButtonAimMode, ButtonGiveMode, ButtonUndoNPC,
+				ButtonDeleteALlNpcs}},
 		{2, {ButtonHealthKit, ButtonBattery, ButtonLongJump, ButtonHEV,
 				ButtonGlockAmmo, ButtonMP5Ammo, ButtonARGrenades, ButtonArrows, ButtonCTFAccrtor,
 				ButtonUranium, ButtonRockets, ButtonBuckshot, Button357Ammo, ButtonCTFBpack, 
 				Button556Ammo, ButtonSpores, Button762Ammo, ButtonAimMode, ButtonGiveMode,
-				ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg}},
+				ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg, ButtonUndoNPC,
+				ButtonDeleteALlNpcs}},
 		{3, {ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMilUnits,
 				ButtonMiscNPCS, ButtonProps, ButtonAimMode, ButtonNoAI,
 				ButtonAllieds, ButtonUndoNPC, ButtonDeleteALlNpcs}},
@@ -448,10 +450,12 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{5, {ButtonCrowbar, ButtonPhysgun, ButtonToolbow, ButtonGlock, ButtonPython,
 				ButtonMP5, ButtonShotgun, ButtonCrossbow, ButtonRPG, ButtonGauss,
 				ButtonEgon, ButtonHiveHand, ButtonGrenade, ButtonSatchel, ButtonTripmine,
-				ButtonSnark, ButtonAimMode, ButtonGiveMode, ButtonOp4Sweeps}},
+				ButtonSnark, ButtonAimMode, ButtonGiveMode, ButtonOp4Sweeps, ButtonUndoNPC,
+				ButtonDeleteALlNpcs}},
 		{6, {ButtonKnife, ButtonPipeWrench, ButtonGrapple, ButtonDEagle, ButtonM249,
 				ButtonSniperRifle, ButtonDisplacer, ButtonShockRifle, ButtonSporeLauncher,
-				ButtonPenguin, ButtonAimMode, ButtonGiveMode, ButtonHLSweeps}},
+				ButtonPenguin, ButtonAimMode, ButtonGiveMode, ButtonHLSweeps, ButtonUndoNPC,
+				ButtonDeleteALlNpcs}},
 		{7, {ButtonAlienSlave, ButtonAlienGrunt, ButtonAlienController, ButtonGargantua,
 				ButtonShockTrooper, ButtonVoltigore, ButtonNihilant, ButtonAimMode,
 				ButtonNoAI, ButtonAllieds, ButtonUndoNPC, ButtonDeleteALlNpcs,

@@ -762,6 +762,8 @@ void COFGeneWorm::Spawn()
 	pev->flags |= FL_MONSTER;
 	pev->takedamage = DAMAGE_AIM;
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	pev->effects = 0;
 
 	pev->max_health = pev->health = gSkillData.geneWormHealth;

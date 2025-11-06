@@ -47,6 +47,8 @@ void CChikenAnimal::Spawn()
 	pev->health = 1;
 	m_MonsterState = MONSTERSTATE_NONE;
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	MonsterInit();
 }
 
@@ -119,6 +121,8 @@ void CChumtoad::Spawn()
     pev->body = RANDOM_LONG(0, 5);
     m_MonsterState = MONSTERSTATE_NONE;
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	MonsterInit();
 }
 
@@ -158,6 +162,8 @@ void CC4Prop::Spawn()
 	m_bloodColor = DONT_BLEED;
 	pev->health = 1;
 	m_MonsterState = MONSTERSTATE_NONE;
+
+	m_RespawnBlackList = true; // spawner tool not allowed
 
 	MonsterInit();
 }
@@ -239,6 +245,8 @@ void CWaspCamera::Spawn()
 	m_bloodColor = DONT_BLEED;
 	pev->health = 250;
 	m_MonsterState = MONSTERSTATE_NONE;
+
+	m_RespawnBlackList = true; // spawner tool not allowed
 
 	MonsterInit();
 }

@@ -278,6 +278,8 @@ void CTentacle::Spawn()
 
 	m_bloodColor = BLOOD_COLOR_GREEN;
 
+	m_RespawnBlackList = true; // spawner tool not allowed
+
 	SetThink(&CTentacle::Start);
 	SetTouch(&CTentacle::HitTouch);
 	SetUse(&CTentacle::CommandUse);

@@ -231,35 +231,13 @@ tbow_helper_t gRenderFXType[] =
 
 struct voices_t
 {
-	const char* voicecommand;
-	const char* voicesentence;
+	const char* commandPrefix;
+	const char* sentencePrefix;
+	int count;
 };
 
-// Voices List
-voices_t gVoices[] =
-	{
-		{"voice_say1", "!PL_VOICEFRST0"},
-		{"voice_say2", "!PL_VOICEFRST1"},
-		{"voice_say3", "!PL_VOICEFRST2"},
-		{"voice_say4", "!PL_VOICEFRST3"},
-		{"voice_say5", "!PL_VOICEFRST4"},
-		{"voice_say6", "!PL_VOICEFRST5"},
-		{"voice_say7", "!PL_VOICEFRST6"},
-		{"voice_say8", "!PL_VOICEFRST7"},
-		{"voice_say9", "!PL_VOICEFRST8"},
-		{"voice_say10", "!PL_VOICEFRST9"},
-		{"voice_say11", "!PL_VOICEFRST10"},
-		{"voice_say12", "!PL_VOICEFRST11"},
-		{"voice_say13", "!PL_VOICEFRST12"},
-		{"voice_say14", "!PL_VOICEFRST13"},
-		{"voice_say15", "!PL_VOICEFRST14"},
-		{"voice_say16", "!PL_VOICEFRST15"},
-		{"voice_say17", "!PL_VOICEFRST16"},
-		{"voice_say18", "!PL_VOICEFRST17"},
-		{"voice_say19", "!PL_VOICEFRST18"},
-		{"voice_say20", "!PL_VOICEFRST19"},
-		{"voice_say21", "!PL_VOICEFRST20"},
-		{"voice_say22", "!PL_VOICEFRST21"}};
+// Voices
+voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 22};
 
 // GM6 Spawn Monster Trace
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
@@ -290,7 +268,7 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 	if (tr.pHit)
 	{
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
-		CBaseEntity* pItem = CBasePlayer::Create(sClassname, tr.vecEndPos, vAngle);
+		CBaseEntity* pItem = CBasePlayer::CreateCustom(sClassname, tr.vecEndPos, vAngle, false);
 		pItem->pev->spawnflags |= SF_NORESPAWN;
 	}
 }
@@ -1088,6 +1066,35 @@ void ClientCommand(edict_t* pEntity)
 		else
 			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
 	}
+	else if (((pstr = strstr(pcmd, "remove_")) != NULL) && (pstr == pcmd))
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (onlyhoster_spawns.value) // Spawn Lock (gm_spawn_lock 1)
+			{
+				// Check if it is a dedicated server.
+				if (IS_DEDICATED_SERVER())
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't remove things\n");
+					return;
+				}
+
+				// Verify if the player is the host (local player #1)
+				if (ENTINDEX(pEntity) != 1)
+				{
+					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can remove things\n");
+					return;
+				}
+			}
+
+			if (FStrEq(pcmd, "remove_entity_undo"))
+				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(false);
+			else if (FStrEq(pcmd, "remove_entities_all"))
+				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(true);
+		}
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+	}
 	else if (((pstr = strstr(pcmd, "button_")) != NULL) && (pstr == pcmd))
 	{
 		if (UTIL_IsSandbox())
@@ -1129,10 +1136,6 @@ void ClientCommand(edict_t* pEntity)
 				pPlayer->m_fUseFrontSpawn = !pPlayer->m_fUseFrontSpawn;
 				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("Front Spawn Mode: %s\n", pPlayer->m_fUseFrontSpawn ? "ENABLED" : "DISABLED"));
 			}
-			else if (FStrEq(pcmd, "button_npc_undo"))
-				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(false);
-			else if (FStrEq(pcmd, "button_npc_remove_all"))
-				CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::RemoveCustom(true);
 		}
 	}
 	else if (((pstr = strstr(pcmd, "voice_say")) != NULL) && (pstr == pcmd))
@@ -1156,12 +1159,18 @@ void ClientCommand(edict_t* pEntity)
 				}
 			}
 
-			for (int i = 0; i < ARRAYSIZE(gVoices); i++)
+			for (int i = 1; i <= gVoices.count; i++)
 			{
-				voices_t voiceInfo = gVoices[i];
-				if (FStrEq(pcmd, voiceInfo.voicecommand))
+				char voiceCommand[32];
+				char voiceSentence[32];
+
+				sprintf(voiceCommand, "%s%d", gVoices.commandPrefix, i);
+				sprintf(voiceSentence, "%s%d", gVoices.sentencePrefix, i - 1);
+
+				if (FStrEq(pcmd, voiceCommand))
 				{
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, voiceInfo.voicesentence, VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, voiceSentence, VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+					break;
 				}
 			}
 		}
