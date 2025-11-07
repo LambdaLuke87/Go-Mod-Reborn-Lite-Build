@@ -454,9 +454,6 @@ public:
 
 	void SetPlayerModel(CBasePlayer* pPlayer);
 
-	bool FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker) override;
-	void InitHUD(CBasePlayer* pl) override;
-
 	void UpdateGameMode(CBasePlayer* pPlayer) override;
 protected:
 	float m_flEgonBustingCheckTime = -1.0f;

@@ -2500,8 +2500,6 @@ void CMultiplayReaper::PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pW
 		pPlayer->pev->renderamt = 25;
 		pPlayer->pev->rendercolor = Vector(255, 20, 42);
 		pPlayer->pev->gravity = 0.4;
-		//pPlayer->GiveNamedItem("item_longjump");
-		//pPlayer->pev->maxspeed = 820.0f;
 
 		pPlayer->m_fLongJump = true; // player now has longjump module
 		g_engfuncs.pfnSetPhysicsKeyValue(pPlayer->edict(), "slj", "1");
@@ -2531,48 +2529,12 @@ void CMultiplayReaper::PlayerSpawn(CBasePlayer* pPlayer)
 	SetPlayerModel(pPlayer);
 }
 
-void CMultiplayReaper::InitHUD(CBasePlayer* pPlayer)
-{
-	int i;
-	CHalfLifeMultiplay::InitHUD(pPlayer);
-
-	for (i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBaseEntity* plr = UTIL_PlayerByIndex(i);
-		if (plr && IsValidTeam(plr->TeamID()))
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, NULL, pPlayer->edict());
-			WRITE_BYTE(plr->entindex());
-			WRITE_STRING(plr->TeamID());
-			MESSAGE_END();
-		}
-	}
-}
-
 void CMultiplayReaper::SetPlayerModel(CBasePlayer* pPlayer)
 {
 	if (IsPlayerReaper(pPlayer))
-	{
-		// Skeleton
-		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-		WRITE_BYTE(pPlayer->entindex());
-		WRITE_STRING("skeleton");
-		MESSAGE_END();
-
-		strncpy(pPlayer->m_szTeamName, "skeleton", TEAM_NAME_LENGTH);
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "skeleton");
-	}
 	else
-	{
-		// SAS
-		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
-		WRITE_BYTE(pPlayer->entindex());
-		WRITE_STRING("cs_sas");
-		MESSAGE_END();
-
-		strncpy(pPlayer->m_szTeamName, "cs_sas", TEAM_NAME_LENGTH);
 		g_engfuncs.pfnSetClientKeyValue(pPlayer->entindex(), g_engfuncs.pfnGetInfoKeyBuffer(pPlayer->edict()), "model", "cs_sas");
-	}
 }
 
 void CMultiplayReaper::UpdateGameMode(CBasePlayer* pPlayer)
@@ -2580,14 +2542,4 @@ void CMultiplayReaper::UpdateGameMode(CBasePlayer* pPlayer)
 	MESSAGE_BEGIN(MSG_ONE, gmsgGameMode, NULL, pPlayer->edict());
 	WRITE_BYTE(4);
 	MESSAGE_END();
-}
-
-bool CMultiplayReaper::FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker)
-{
-	if (pAttacker && PlayerRelationship(pPlayer, pAttacker) == GR_TEAMMATE)
-	{
-		return false;
-	}
-
-	return CHalfLifeMultiplay::FPlayerCanTakeDamage(pPlayer, pAttacker);
 }
