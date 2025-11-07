@@ -1232,28 +1232,24 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (UTIL_IsSandbox())
 		{
-			if (CMD_ARGC() < 8)
+			if (CMD_ARGC() < 6)
 			{
 				CLIENT_PRINTF(pEntity, print_console,
-					"Usage: fog <r> <g> <b> <fadetime> <density> <fogtype> <skyfog>\n");
+					"Usage: fog <r> <g> <b> <density> <skyfog>\n");
 				return;
 			}
 
 			int r = atoi(CMD_ARGV(1));
 			int g = atoi(CMD_ARGV(2));
 			int b = atoi(CMD_ARGV(3));
-			int fadetime = atoi(CMD_ARGV(4));
-			int density = atoi(CMD_ARGV(5));
-			int fogtype = atoi(CMD_ARGV(6));
-			int skyfog = atoi(CMD_ARGV(7));
+			int density = atoi(CMD_ARGV(4));
+			int skyfog = atoi(CMD_ARGV(5));
 
 			// Clamp values to valid byte/short/long ranges
 			r = V_min(V_max(r, 0), 255);
 			g = V_min(V_max(g, 0), 255);
 			b = V_min(V_max(b, 0), 255);
-			fadetime = V_min(V_max(fadetime, 0), 32767);
 			density = V_min(V_max(density, 0), 32767);
-			fogtype = V_min(V_max(fogtype, 0), 1);
 			skyfog = V_min(V_max(skyfog, 0), 1);
 
 			// Send the user message
@@ -1261,15 +1257,15 @@ void ClientCommand(edict_t* pEntity)
 			WRITE_BYTE(r);
 			WRITE_BYTE(g);
 			WRITE_BYTE(b);
-			WRITE_SHORT(fadetime);
+			WRITE_SHORT(0); // Fade Time: irrelevant
 			WRITE_SHORT(0); // Start Dist, linear fog stuff
 			WRITE_SHORT(0); // End Dist, linear fog stuff
 			WRITE_LONG(density);
-			WRITE_BYTE(fogtype);
+			WRITE_BYTE(0); // Fog Type: irrelevant
 			WRITE_BYTE(skyfog);
 			MESSAGE_END();
 
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Fog set: RGB(%d,%d,%d), fadetime=%d, density=%d, fogtype=%d, skyfog=%d\n", r, g, b, fadetime, density, fogtype, skyfog));
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Fog set: RGB(%d,%d,%d), density=%d, skyfog=%d\n", r, g, b, density, skyfog));
 		}
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
