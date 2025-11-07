@@ -1204,6 +1204,84 @@ void ClientCommand(edict_t* pEntity)
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot change the render color outside of the sandbox\n"));
 	}
+	else if (((pstr = strstr(pcmd, "fog_")) != NULL) && (pstr == pcmd))
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (FStrEq(pcmd, "fog_color"))
+			{
+				if (CMD_ARGC() < 4)
+				{
+					CLIENT_PRINTF(pEntity, print_console, "Usage: fog_color RRR GGG BBB \n");
+					return;
+				}
+
+				int fog_r = atoi(CMD_ARGV(1));
+				int fog_g = atoi(CMD_ARGV(2));
+				int fog_b = atoi(CMD_ARGV(3));
+
+				fog_r = V_min(V_max(fog_r, 0), 255);
+				fog_g = V_min(V_max(fog_g, 0), 255);
+				fog_b = V_min(V_max(fog_b, 0), 255);
+
+				player->m_iFogRed = fog_r;
+				player->m_iFogGreen = fog_g;
+				player->m_iFogBlue = fog_b;
+
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Fog Color to: RGB(%d,%d,%d)\n", fog_r, fog_g, fog_b));
+			}
+			else if (FStrEq(pcmd, "fog_density"))
+			{
+				int fog_density = atoi(CMD_ARGV(1));
+
+				fog_density = V_min(V_max(fog_density, 0), 255);
+
+				player->m_iFogDensity = fog_density;
+
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Fog Density to %d\n", fog_density));
+			}
+			else if (FStrEq(pcmd, "fog_skybox"))
+			{
+				if (player->m_iFogSkyBox)
+				{
+					player->m_iFogSkyBox = 0;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Disabled Fog Skybox\n");
+				}
+				else
+				{
+					player->m_iFogSkyBox = 1;
+					ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Enabled Fog Skybox\n");
+				}
+			}
+			else if (FStrEq(pcmd, "fog_remove"))
+			{
+				player->m_iFogRed = 0;
+				player->m_iFogGreen = 0;
+				player->m_iFogBlue = 0;
+				player->m_iFogDensity = 0;
+				player->m_iFogSkyBox = 0;
+
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Fog Removed\n"));
+			}
+			else
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Invalid Fog Command, existing commands: fog_color, fog_density, fog_skybox\n"));
+
+			// Send the fog user message
+			MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->edict());
+			WRITE_BYTE(player->m_iFogRed);
+			WRITE_BYTE(player->m_iFogGreen);
+			WRITE_BYTE(player->m_iFogBlue);
+			WRITE_SHORT(0); // Fade Time: irrelevant
+			WRITE_SHORT(0); // Start Dist, linear fog stuff
+			WRITE_SHORT(0); // End Dist, linear fog stuff
+			WRITE_LONG(player->m_iFogDensity);
+			WRITE_BYTE(0); // Fog Type: irrelevant
+			WRITE_BYTE(player->m_iFogSkyBox);
+			MESSAGE_END();
+		}
+		else
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cant use fog commands outside of the sandbox\n"));
+	}
 	else if (FStrEq(pcmd, "render_amount"))
 	{
 		if (UTIL_IsSandbox())

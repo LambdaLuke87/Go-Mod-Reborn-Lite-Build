@@ -145,6 +145,13 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_fGiveItemMode, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseAlliedMode, FIELD_BOOLEAN),
 
+		// Save Fog Values
+		DEFINE_FIELD(CBasePlayer, m_iFogRed, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iFogGreen, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iFogBlue, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iFogDensity, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iFogSkyBox, FIELD_INTEGER),
+
 		DEFINE_FIELD(CBasePlayer, m_iToolMode, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderMode, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderFX, FIELD_INTEGER),

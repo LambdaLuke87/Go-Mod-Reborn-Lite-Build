@@ -457,6 +457,13 @@ public:
 	bool m_fGiveItemMode;
 	bool m_fUseFrontSpawn;
 
+	// Fog Values
+	int m_iFogRed = 155;
+	int m_iFogGreen = 155;
+	int m_iFogBlue = 155;
+	int m_iFogDensity = 4;
+	int m_iFogSkyBox = 1;
+
 	// Physgun Stuff
 	CBaseEntity* m_pPhysgunEnt;
 	float m_flPhysgunDist;
