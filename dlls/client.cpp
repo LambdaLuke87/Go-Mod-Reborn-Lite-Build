@@ -1208,19 +1208,14 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (UTIL_IsSandbox())
 		{
-			if (CMD_ARGC() < 2)
-			{
-				CLIENT_PRINTF(pEntity, print_console, "Usage: render_amount value \n");
-				return;
-			}
+			player->m_iToolRenderAMT = atoi(CMD_ARGV(1));
 
-			int amount = atoi(CMD_ARGV(1));
-
-			amount = V_min(V_max(amount, 0), 255);
-
-			player->m_iToolRenderAMT = amount;
-
-			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Render Amount to %d\n", amount));
+			if (player->m_iToolRenderAMT > 255)
+				player->m_iToolRenderAMT = 255;
+			else if (player->m_iToolRenderAMT < 0)
+				player->m_iToolRenderAMT = 0;
+			
+			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Render Amount to %d\n", (int)player->m_iToolRenderAMT));
 		}
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot change the render amount outside of the sandbox\n"));
