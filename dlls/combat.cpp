@@ -1839,10 +1839,6 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-	// Ignore Players!
-	if (pEntity->IsNetClient())
-		return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-
 	if (pPlayer->m_iToolMode == 2)
 	{
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
@@ -1872,7 +1868,10 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			if (pevAttacker == NULL)
 				pevAttacker = pev;
 			else
-				UTIL_SafeRemoveMonster(pEntity);
+			{
+				if (!pEntity->IsNetClient()) // Ignore Players!
+					UTIL_SafeRemoveMonster(pEntity);
+			}
 		}
 	}
 	else if (pPlayer->m_iToolMode == 5)
@@ -2086,10 +2085,6 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 
 	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
-
-	// Ignore Players!
-	if (pEntity->IsNetClient())
-		return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
 
 	if (pPlayer->m_iToolMode == 2)
 	{
