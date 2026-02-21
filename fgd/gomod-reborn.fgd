@@ -3498,6 +3498,12 @@ initammo(string) : "Initial Ammo" : "6"
 
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/recruit.mdl") = monster_recruit : "Recruit" []
 
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/archer.mdl") = monster_archer : "Archer" []
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/babygarg.mdl") = monster_babygarg : "Baby Gargantua" []
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/flybee.mdl") = monster_charger : "Charger" []
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/panthereye.mdl") = monster_panthereye : "Panthereye" []
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/islave.mdl") = monster_exp_alien_slave : "Magenta Vortigaunt" []
+
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/chiken_animal.mdl") = monster_chiken : "Chicken" []
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/chumtoad.mdl") = prop_chumtoad : "Chumtoad" []
 @PointClass base(Monster,TalkMonster, Sequence) studio("models/gomod/c4_bomb.mdl") = prop_c4 : "C4" []

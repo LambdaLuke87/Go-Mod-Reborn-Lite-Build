@@ -88,13 +88,18 @@ const MonsterInfo gMonsterInfos[] =
 		{"monster_human_grunt_ally"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"},
+		{"monster_exp_alien_slave"},
+		{"monster_chiken"},
+		{"monster_archer"},
+		{"monster_charger"},
+		{"monster_babygarg"},
+		{"monster_panthereye"},
 		{"xen_hair"},
 		{"xen_tree"},
 		{"xen_plantlight"},
 		{"xen_spore_small"},
 		{"xen_spore_medium"},
 		{"xen_spore_large"},
-		{"monster_chiken"},
 		{"prop_chumtoad"},
 		{"prop_c4"},
 		{"prop_waspcamera"}};
@@ -414,8 +419,17 @@ void CBaseMonster::GibMonster()
 
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);
 
+	if (m_ForcedGibType >= 1)
+	{
+		if (CVAR_GET_FLOAT("violence_hgibs") != 0)
+			if (m_ForcedGibType == 2)
+				CGib::SpawnRandomGibs(pev, 4, false);
+			else 
+				CGib::SpawnRandomGibs(pev, 4, true);
+		gibbed = true;
+	}
 	// only humans throw skulls !!!UNDONE - eventually monsters will have their own sets of gibs
-	if (HasHumanGibs())
+	else if (HasHumanGibs())
 	{
 		if (CVAR_GET_FLOAT("violence_hgibs") != 0) // Only the player will ever get here
 		{
@@ -2005,15 +2019,25 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			}
 			else if (pPlayer->m_iToolMode == 11)
 			{
-				if (BLOOD_COLOR_RED != pMonster->m_bloodColor)
-				{
-					pMonster->m_bloodColor = BLOOD_COLOR_RED;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Red\n");
-				}
-				else
+				if (pMonster->m_bloodColor == BLOOD_COLOR_RED)
 				{
 					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Yellow\n");
+				}
+				else if (pMonster->m_bloodColor == BLOOD_COLOR_YELLOW)
+				{
+					pMonster->m_bloodColor = BLOOD_COLOR_BLUE;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Blue\n");
+				}
+				else if (pMonster->m_bloodColor == BLOOD_COLOR_BLUE)
+				{
+					pMonster->m_bloodColor = BLOOD_COLOR_PURPLE;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Purple\n");
+				}
+				else
+				{
+					pMonster->m_bloodColor = BLOOD_COLOR_RED;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Red\n");
 				}
 			}
 			else if (pPlayer->m_iToolMode == 12)

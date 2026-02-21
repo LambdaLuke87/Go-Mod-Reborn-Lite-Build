@@ -120,6 +120,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\animating.cpp" />
     <ClCompile Include="..\..\dlls\animation.cpp" />
     <ClCompile Include="..\..\dlls\apache.cpp" />
+    <ClCompile Include="..\..\dlls\archer.cpp" />
     <ClCompile Include="..\..\dlls\baby_voltigore.cpp" />
     <ClCompile Include="..\..\dlls\barnacle.cpp" />
     <ClCompile Include="..\..\dlls\barney.cpp" />
@@ -133,6 +134,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\buttons.cpp" />
     <ClCompile Include="..\..\dlls\cbase.cpp" />
     <ClCompile Include="..\..\dlls\CDrillSergeant.cpp" />
+    <ClCompile Include="..\..\dlls\charger.cpp" />
     <ClCompile Include="..\..\dlls\cleansuit_scientist.cpp" />
     <ClCompile Include="..\..\dlls\client.cpp" />
     <ClCompile Include="..\..\dlls\COFAllyMonster.cpp" />
@@ -217,6 +219,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\op4mortar.cpp" />
     <ClCompile Include="..\..\dlls\osprey.cpp" />
     <ClCompile Include="..\..\dlls\otis.cpp" />
+    <ClCompile Include="..\..\dlls\panthereye.cpp" />
     <ClCompile Include="..\..\dlls\pathcorner.cpp" />
     <ClCompile Include="..\..\dlls\penguin_grenade.cpp" />
     <ClCompile Include="..\..\dlls\physgun.cpp" />

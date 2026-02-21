@@ -79,6 +79,7 @@ extern cvar_t custom_npc_health;
 extern cvar_t custom_npc_gravity;
 extern cvar_t glowstick_colors;
 extern cvar_t npc_noai;
+extern cvar_t monster_allied_skins;
 extern cvar_t monster_polem;
 extern cvar_t monster_variation;
 extern cvar_t spawn_wpnsetup;
@@ -86,6 +87,7 @@ extern cvar_t worlditems_respawn;
 
 // Allow Content that handle precaches
 extern cvar_t allow_props;
+extern cvar_t allow_extra_monsters;
 extern cvar_t allow_powerups;
 extern cvar_t allow_nihilant;
 extern cvar_t allow_tentacle;

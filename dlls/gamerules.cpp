@@ -376,6 +376,27 @@ void CGameRules::RefreshSkillData()
 	// Sentry Turret
 	gSkillData.sentryHealth = GetSkillCvar("sk_sentry_health");
 
+	// Archer
+	gSkillData.archerHealth = GetSkillCvar("sk_archer_health");
+	gSkillData.archerDmgBite = GetSkillCvar("sk_archer_dmg_bite");
+	gSkillData.archerDmgPlasma = GetSkillCvar("sk_archer_dmg_plasma");
+
+	// Baby Garg
+	gSkillData.babygargHealth = GetSkillCvar("sk_babygargantua_health");
+	gSkillData.babygargDmgSlash = GetSkillCvar("sk_babygargantua_dmg_slash");
+	gSkillData.babygargDmgFire = GetSkillCvar("sk_babygargantua_dmg_fire");
+	gSkillData.babygargDmgStomp = GetSkillCvar("sk_babygargantua_dmg_stomp");
+
+	// Charger
+	gSkillData.chargerHealth = GetSkillCvar("sk_charger_health");
+	gSkillData.chargerDmgProjectile = GetSkillCvar("sk_charger_dmg_proj");
+	gSkillData.chargerDmgMelee = GetSkillCvar("sk_charger_dmg_melee");
+
+	// Panthereye
+	gSkillData.panthereyeHealth = GetSkillCvar("sk_panthereye_health");
+	gSkillData.panthereyeDmgClaw = GetSkillCvar("sk_panthereye_dmg_claw");
+	gSkillData.panthereyeDmgLeap = GetSkillCvar("sk_panthereye_dmg_leap");
+
 	// PLAYER WEAPONS
 
 	// Crowbar whack

@@ -414,6 +414,7 @@ public:
 	int m_fireState;
 
 	bool m_AltClass; // alternate classify, used for allied npcs mode
+	int m_ForcedGibType; // force an gib type ignoring monster classify
 	bool m_MenuCreated; // mark as an menu spawned entity
 	bool m_Beingremoved; // this NPC is being removed
 	int m_CustomFrame; // frame tool values

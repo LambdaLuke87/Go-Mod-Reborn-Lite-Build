@@ -25,6 +25,7 @@
 #include "effects.h"
 #include "weapons.h"
 #include "soundent.h"
+#include "game.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -90,6 +91,7 @@ public:
 	static const char* pAttackMissSounds[];
 };
 LINK_ENTITY_TO_CLASS(monster_alien_slave, CISlave);
+LINK_ENTITY_TO_CLASS(monster_exp_alien_slave, CISlave) // Azure Sheep vortigaunt
 LINK_ENTITY_TO_CLASS(monster_vortigaunt, CISlave);
 
 
@@ -226,7 +228,7 @@ void CISlave::IdleSound()
 //=========================================================
 void CISlave::PainSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "SLV_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
+	SENTENCEG_PlayRndSz(ENT(pev), "SLV_PAIN", 1, ATTN_NORM, 0, m_voicePitch);
 }
 
 //=========================================================
@@ -235,7 +237,7 @@ void CISlave::PainSound()
 
 void CISlave::DeathSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "SLV_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
+	SENTENCEG_PlayRndSz(ENT(pev), "SLV_DEATH", 1, ATTN_NORM, 0, m_voicePitch);
 }
 
 
@@ -347,16 +349,23 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		if (m_iBeams == 0)
 		{
+			int r, g, b;
 			Vector vecSrc = pev->origin + gpGlobals->v_forward * 2;
+
+			if (FClassnameIs(pev, "monster_exp_alien_slave"))
+				r = 255, g = 128, b = 255;
+			else
+				r = 255, g = 180, b = 96;
+
 			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSrc);
 			WRITE_BYTE(TE_DLIGHT);
 			WRITE_COORD(vecSrc.x);			 // X
 			WRITE_COORD(vecSrc.y);			 // Y
 			WRITE_COORD(vecSrc.z);			 // Z
 			WRITE_BYTE(12);					 // radius * 0.1
-			WRITE_BYTE(255);				 // r
-			WRITE_BYTE(180);				 // g
-			WRITE_BYTE(96);					 // b
+			WRITE_BYTE(r);				 // r
+			WRITE_BYTE(g);				 // g
+			WRITE_BYTE(b);					 // b
 			WRITE_BYTE(20 / pev->framerate); // time * 10
 			WRITE_BYTE(0);					 // decay * 0.1
 			MESSAGE_END();
@@ -374,7 +383,7 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "debris/zap4.wav", 1, ATTN_NORM, 0, 100 + m_iBeams * 10);
-		pev->skin = m_iBeams / 2;
+		//pev->skin = m_iBeams / 2; UNUSED
 	}
 	break;
 
@@ -509,20 +518,34 @@ void CISlave::Spawn()
 {
 	Precache();
 
+	if (FClassnameIs(pev, "monster_exp_alien_slave"))
+	{
+		m_bloodColor = BLOOD_COLOR_RED;
+		m_voicePitch = RANDOM_LONG(110, 120);
+		pev->skin = 2;
+
+		m_ForcedGibType = 1;
+	}
+	else
+	{
+		m_bloodColor = BLOOD_COLOR_GREEN;
+		m_voicePitch = RANDOM_LONG(85, 110);
+
+		if (monster_allied_skins.value && m_AltClass)
+			pev->skin = 1;
+	}
+
 	SET_MODEL(ENT(pev), "models/islave.mdl");
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid = SOLID_SLIDEBOX;
 	pev->movetype = MOVETYPE_STEP;
-	m_bloodColor = BLOOD_COLOR_GREEN;
 	pev->effects = 0;
 	pev->health = gSkillData.slaveHealth;
 	pev->view_ofs = Vector(0, 0, 64);  // position of the eyes relative to monster's origin.
 	m_flFieldOfView = VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so npc will notice player and say hello
 	m_MonsterState = MONSTERSTATE_NONE;
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_RANGE_ATTACK2 | bits_CAP_DOORS_GROUP;
-
-	m_voicePitch = RANDOM_LONG(85, 110);
 
 	MonsterInit();
 }
@@ -692,6 +715,7 @@ Schedule_t* CISlave::GetScheduleOfType(int Type)
 void CISlave::ArmBeam(int side)
 {
 	TraceResult tr;
+	int r, g, b;
 	float flDist = 1.0;
 
 	if (m_iBeams >= ISLAVE_MAX_BEAMS)
@@ -725,7 +749,13 @@ void CISlave::ArmBeam(int side)
 	m_pBeam[m_iBeams]->PointEntInit(tr.vecEndPos, entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
 	// m_pBeam[m_iBeams]->SetColor( 180, 255, 96 );
-	m_pBeam[m_iBeams]->SetColor(96, 128, 16);
+
+	if (FClassnameIs(pev, "monster_exp_alien_slave"))
+		r = 255, g = 128, b = 255;
+	else
+		r = 96, g = 128, b = 16;
+
+	m_pBeam[m_iBeams]->SetColor(r, g, b);
 	m_pBeam[m_iBeams]->SetBrightness(64);
 	m_pBeam[m_iBeams]->SetNoise(80);
 	m_pBeam[m_iBeams]->pev->spawnflags |= SF_BEAM_TEMPORARY; // Flag these to be destroyed on save/restore or level transition
@@ -759,6 +789,7 @@ void CISlave::WackBeam(int side, CBaseEntity* pEntity)
 {
 	Vector vecDest;
 	float flDist = 1.0;
+	int r, g, b;
 
 	if (m_iBeams >= ISLAVE_MAX_BEAMS)
 		return;
@@ -772,7 +803,14 @@ void CISlave::WackBeam(int side, CBaseEntity* pEntity)
 
 	m_pBeam[m_iBeams]->PointEntInit(pEntity->Center(), entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
-	m_pBeam[m_iBeams]->SetColor(180, 255, 96);
+
+	if (FClassnameIs(pev, "monster_exp_alien_slave"))
+		r = 255, g = 128, b = 255;
+	else
+		r = 180, g = 255, b = 96;
+
+
+	m_pBeam[m_iBeams]->SetColor(r, g, b);
 	m_pBeam[m_iBeams]->SetBrightness(255);
 	m_pBeam[m_iBeams]->SetNoise(80);
 	m_pBeam[m_iBeams]->pev->spawnflags |= SF_BEAM_TEMPORARY; // Flag these to be destroyed on save/restore or level transition
@@ -785,6 +823,7 @@ void CISlave::WackBeam(int side, CBaseEntity* pEntity)
 void CISlave::ZapBeam(int side)
 {
 	Vector vecSrc, vecAim;
+	int r, g, b;
 	TraceResult tr;
 	CBaseEntity* pEntity;
 
@@ -803,7 +842,13 @@ void CISlave::ZapBeam(int side)
 
 	m_pBeam[m_iBeams]->PointEntInit(tr.vecEndPos, entindex());
 	m_pBeam[m_iBeams]->SetEndAttachment(side < 0 ? 2 : 1);
-	m_pBeam[m_iBeams]->SetColor(180, 255, 96);
+
+	if (FClassnameIs(pev, "monster_exp_alien_slave"))
+		r = 255, g = 128, b = 255;
+	else
+		r = 180, g = 255, b = 96;
+
+	m_pBeam[m_iBeams]->SetColor(r, g, b);
 	m_pBeam[m_iBeams]->SetBrightness(255);
 	m_pBeam[m_iBeams]->SetNoise(20);
 	m_pBeam[m_iBeams]->pev->spawnflags |= SF_BEAM_TEMPORARY; // Flag these to be destroyed on save/restore or level transition
@@ -832,7 +877,7 @@ void CISlave::ClearBeams()
 		}
 	}
 	m_iBeams = 0;
-	pev->skin = 0;
+	//pev->skin = 0; UNUSED
 
 	STOP_SOUND(ENT(pev), CHAN_WEAPON, "debris/zap4.wav");
 }

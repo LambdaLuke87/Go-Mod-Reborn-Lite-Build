@@ -184,15 +184,15 @@ void CBaseParticle::Draw()
 	}
 	else if ((m_iRenderFlags & LIGHT_COLOR) != 0)
 	{
-		resultColor.x = vColor.x / (m_vColor.x * 255);
-		resultColor.y = vColor.y / (m_vColor.y * 255);
-		resultColor.z = vColor.z / (m_vColor.z * 255);
+		resultColor.x = (vColor.x * m_vColor.x / 255.0f);
+		resultColor.y = (vColor.y * m_vColor.y / 255.0f);
+		resultColor.z = (vColor.z * m_vColor.z / 255.0f);
 	}
 	else if ((m_iRenderFlags & LIGHT_INTENSITY) != 0)
 	{
-		resultColor.x = intensity / (m_vColor.x * 255);
-		resultColor.y = intensity / (m_vColor.y * 255);
-		resultColor.z = intensity / (m_vColor.z * 255);
+		resultColor.x = (intensity * m_vColor.x / 255.0f);
+		resultColor.y = (intensity * m_vColor.y / 255.0f);
+		resultColor.z = (intensity * m_vColor.z / 255.0f);
 	}
 
 	resultColor.x = std::clamp(resultColor.x, 0.f, 255.f);

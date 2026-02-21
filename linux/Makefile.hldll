@@ -68,6 +68,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/animating.o \
 	$(HLDLL_OBJ_DIR)/animation.o \
 	$(HLDLL_OBJ_DIR)/apache.o \
+	$(HLDLL_OBJ_DIR)/archer.o \
 	$(HLDLL_OBJ_DIR)/baby_voltigore.o \
 	$(HLDLL_OBJ_DIR)/barnacle.o \
 	$(HLDLL_OBJ_DIR)/barney.o \
@@ -81,6 +82,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/buttons.o \
 	$(HLDLL_OBJ_DIR)/cbase.o \
 	$(HLDLL_OBJ_DIR)/CDrillSergeant.o \
+	$(HLDLL_OBJ_DIR)/charger.o \
 	$(HLDLL_OBJ_DIR)/cleansuit_scientist.o \
 	$(HLDLL_OBJ_DIR)/client.o \
 	$(HLDLL_OBJ_DIR)/COFAllyMonster.o \
@@ -151,6 +153,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/op4mortar.o \
 	$(HLDLL_OBJ_DIR)/osprey.o \
 	$(HLDLL_OBJ_DIR)/otis.o \
+	$(HLDLL_OBJ_DIR)/panthereye.o \
 	$(HLDLL_OBJ_DIR)/pathcorner.o \
 	$(HLDLL_OBJ_DIR)/penguin_grenade.o \
 	$(HLDLL_OBJ_DIR)/physgun.o \

@@ -1653,6 +1653,7 @@ public:
 	CommandButton* ButtonSweepMenu;
 	CommandButton* ButtonItemsMenu;
 	CommandButton* ButtonNPCMenu;
+	CommandButton* ButtonPropsMenu;
 	CommandButton* ButtonToolsMenu;
 
 	// SubHeaders Weapons

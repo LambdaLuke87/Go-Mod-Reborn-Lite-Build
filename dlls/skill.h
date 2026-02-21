@@ -157,6 +157,23 @@ struct skilldata_t
 	float miniturretHealth;
 	float sentryHealth;
 
+	float archerDmgPlasma;
+	float archerHealth;
+	float archerDmgBite;
+
+	float babygargHealth;
+	float babygargDmgSlash;
+	float babygargDmgFire;
+	float babygargDmgStomp;
+
+	float chargerDmgProjectile;
+	float chargerHealth;
+	float chargerDmgMelee;
+
+	float panthereyeHealth;
+	float panthereyeDmgClaw;
+	float panthereyeDmgLeap;
+
 
 	// Player Weapons
 	float plrDmgCrowbar;

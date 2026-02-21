@@ -96,6 +96,18 @@ DLL_DECALLIST gDecals[] = {
 	{"{ofsmscorch1", 0}, // DECAL_OFSMSCORCH1
 	{"{ofsmscorch2", 0}, // DECAL_OFSMSCORCH2
 	{"{ofsmscorch3", 0}, // DECAL_OFSMSCORCH3
+	{"{bblood1", 0},
+	{"{bblood2", 0},
+	{"{bblood3", 0},
+	{"{bblood4", 0},
+	{"{bblood5", 0},
+	{"{bblood6", 0},
+	{"{pblood1", 0},
+	{"{pblood2", 0},
+	{"{pblood3", 0},
+	{"{pblood4", 0},
+	{"{pblood5", 0},
+	{"{pblood6", 0},
 };
 
 /*

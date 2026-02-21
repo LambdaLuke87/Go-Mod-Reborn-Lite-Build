@@ -64,6 +64,7 @@ cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
 cvar_t custom_npc_gravity = {"gm_monster_custom_gravity", "0.4", FCVAR_SERVER};
 cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
+cvar_t monster_allied_skins = {"gm_allied_monsters_skins", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
@@ -71,6 +72,7 @@ cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 
 // Allow Content that handle precaches
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+cvar_t allow_extra_monsters = {"gm_allow_extra_npcs", "0", FCVAR_SERVER};
 cvar_t allow_powerups = {"gm_allow_powerups", "0", FCVAR_SERVER};
 cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
 cvar_t allow_tentacle = {"gm_allow_tentacle", "0", FCVAR_SERVER};
@@ -621,6 +623,41 @@ cvar_t sk_player_leg3 = {"sk_player_leg3", "1"};
 
 // END Cvars for Skill Level settings
 
+// BEGIN HL:E Cvars for Skill Level settings
+
+// Archer
+DECLARE_SKILL_CVARS(archer_health);
+DECLARE_SKILL_CVARS(archer_dmg_bite);
+DECLARE_SKILL_CVARS(archer_dmg_plasma);
+
+// Charger
+DECLARE_SKILL_CVARS(charger_health);
+DECLARE_SKILL_CVARS(charger_dmg_melee);
+DECLARE_SKILL_CVARS(charger_dmg_proj);
+
+// BabyGarg
+DECLARE_SKILL_CVARS(babygargantua_health);
+DECLARE_SKILL_CVARS(babygargantua_dmg_slash);
+DECLARE_SKILL_CVARS(babygargantua_dmg_fire);
+DECLARE_SKILL_CVARS(babygargantua_dmg_stomp);
+
+// Chumtoad
+//DECLARE_SKILL_CVARS(chum_health);
+
+// Hassault
+//DECLARE_SKILL_CVARS(hass_health);
+
+// Kingpin
+//DECLARE_SKILL_CVARS(kpin_health);
+//DECLARE_SKILL_CVARS(kpin_dmg_tele);
+
+// Panthereye
+DECLARE_SKILL_CVARS(panthereye_health);
+DECLARE_SKILL_CVARS(panthereye_dmg_claw);
+DECLARE_SKILL_CVARS(panthereye_dmg_leap);
+
+// END HL:E Cvars for Skill Level settings
+
 cvar_t sv_pushable_fixed_tick_fudge = {"sv_pushable_fixed_tick_fudge", "15"};
 
 //cvar_t sv_busters = {"sv_busters", "0", FCVAR_SERVER}; // moved to mp_gamemode 2
@@ -726,6 +763,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&custom_npc_gravity);
 	CVAR_REGISTER(&glowstick_colors);
 	CVAR_REGISTER(&npc_noai);
+	CVAR_REGISTER(&monster_allied_skins);
 	CVAR_REGISTER(&monster_polem);
 	CVAR_REGISTER(&monster_variation);
 	CVAR_REGISTER(&spawn_wpnsetup);
@@ -733,6 +771,7 @@ void GameDLLInit()
 
 	// Allow Content that handle precaches
 	CVAR_REGISTER(&allow_props);
+	CVAR_REGISTER(&allow_extra_monsters);
 	CVAR_REGISTER(&allow_powerups);
 	CVAR_REGISTER(&allow_nihilant);
 	CVAR_REGISTER(&allow_tentacle);
@@ -1062,6 +1101,26 @@ void GameDLLInit()
 	CVAR_REGISTER(&sk_sentry_health2); // {"sk_sentry_health2","0"};
 	CVAR_REGISTER(&sk_sentry_health3); // {"sk_sentry_health3","0"};
 
+	// Archer
+	REGISTER_SKILL_CVARS(archer_health);
+	REGISTER_SKILL_CVARS(archer_dmg_bite);
+	REGISTER_SKILL_CVARS(archer_dmg_plasma);
+
+	// Charger
+	REGISTER_SKILL_CVARS(charger_health);
+	REGISTER_SKILL_CVARS(charger_dmg_melee);
+	REGISTER_SKILL_CVARS(charger_dmg_proj);
+
+	// BabyGarg
+	REGISTER_SKILL_CVARS(babygargantua_health);
+	REGISTER_SKILL_CVARS(babygargantua_dmg_slash);
+	REGISTER_SKILL_CVARS(babygargantua_dmg_fire);
+	REGISTER_SKILL_CVARS(babygargantua_dmg_stomp);
+
+	// Panthereye
+	REGISTER_SKILL_CVARS(panthereye_health);
+	REGISTER_SKILL_CVARS(panthereye_dmg_claw);
+	REGISTER_SKILL_CVARS(panthereye_dmg_leap);
 
 	// PLAYER WEAPONS
 
@@ -1291,8 +1350,9 @@ void GameDLLInit()
 
 	InitMapLoadingUtils();
 
-	SERVER_COMMAND("exec skill.cfg\n");
-	SERVER_COMMAND("exec skillopfor.cfg\n");
+	SERVER_COMMAND("exec skills/vanilla.cfg\n");
+	SERVER_COMMAND("exec skills/opfor.cfg\n");
+	SERVER_COMMAND("exec skills/extras.cfg\n");
 }
 
 void GameDLLShutdown()

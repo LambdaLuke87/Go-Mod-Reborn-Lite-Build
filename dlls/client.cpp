@@ -104,6 +104,7 @@ spawnlist_t gMonsters[] =
 		{"monster_human_grunt_ally"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"},
+		{"monster_exp_alien_slave"},
 		{"monster_chiken"}};
 
 spawnlist_t gProps[] =
@@ -116,6 +117,13 @@ spawnlist_t gProps[] =
 		{"xen_spore_large"},
 		{"prop_chumtoad"},
 		{"prop_c4"}};
+
+spawnlist_t gExtraMonsters[] =
+	{
+		{"monster_archer"},
+		{"monster_babygarg"},
+		{"monster_charger"},
+		{"monster_panthereye"}};
 
 // Weapons/Items List
 spawnlist_t gWeapons[] =
@@ -934,6 +942,19 @@ void ClientCommand(edict_t* pEntity)
 						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
+				}
+			}
+
+			// Extra Npcs
+			for (int i = 0; i < ARRAYSIZE(gExtraMonsters); i++)
+			{
+				spawnlist_t extranpcsInfo = gExtraMonsters[i];
+				if (FStrEq(combinetoprefix, extranpcsInfo.classname))
+				{
+					if (allow_extra_monsters.value)
+						GoMod_SpawnMonsterTrace(extranpcsInfo.classname, pev, pEntity, false);
+					else
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Extra NPCs Disabled - gm_allow_extra_npcs required\n");
 				}
 			}
 
@@ -1928,6 +1949,16 @@ void ClientPrecache()
 		}
 
 		UTIL_PrecacheOther("monster_apache");
+
+		// Extra Monsters
+		if (allow_extra_monsters.value)
+		{
+			for (int i = 0; i < ARRAYSIZE(gExtraMonsters); i++)
+			{
+				spawnlist_t sExtraMonsters = gExtraMonsters[i];
+				UTIL_PrecacheOther(sExtraMonsters.classname);
+			}
+		}
 
 		// CTF Powerups
 		if (allow_powerups.value)
