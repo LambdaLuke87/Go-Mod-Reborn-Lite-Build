@@ -1666,7 +1666,13 @@ public:
 	CommandButton* ButtonFriendHumans;
 	CommandButton* ButtonMilUnits;
 	CommandButton* ButtonMiscNPCS;
-	CommandButton* ButtonProps;
+	CommandButton* ButtonExtraNPCS;
+
+	// SubHeaders Props
+	CommandButton* ButtonPropCorpses;
+	CommandButton* ButtonXenProps;
+	CommandButton* ButtonPropsExplosives;
+	CommandButton* ButtonPropsMISC;
 
 	// HL Weapons
 	CommandButton* ButtonCrowbar;
@@ -1768,17 +1774,38 @@ public:
 	CommandButton* ButtonRat;
 	CommandButton* ButtonGman;
 	CommandButton* ButtonTentacle;
+	CommandButton* ButtonChiken;
 
-	// Props
+	// Extra Monsters
+	CommandButton* ButtonMagentaASlave;
+
+	// Corpses
+	CommandButton* ButtonDeadScientist;
+	CommandButton* ButtonSittingScientist;
+	CommandButton* ButtonDeadBarney;
+	CommandButton* ButtonDeadOtis;
+	CommandButton* ButtonDeadClScientist;
+	CommandButton* ButtonDeadHgrunt;
+	CommandButton* ButtonDeadMassassin;
+	CommandButton* ButtonDeadAllyHgrunt;
+	CommandButton* ButtonDeadAlienSlave;
+	CommandButton* ButtonDeadShockTrooper;
+	CommandButton* ButtonDeadGonome;
+	CommandButton* ButtonDeadZombieSoldier;
+	
+	// Xen Decorations
 	CommandButton* ButtonXenHair;
 	CommandButton* ButtonXenTree;
 	CommandButton* ButtonXenPlantL;
 	CommandButton* ButtonXenSporeXS;
 	CommandButton* ButtonXenSporeL;
 	CommandButton* ButtonXenSporeXL;
-	CommandButton* ButtonChiken;
-	CommandButton* ButtonChumtoad;
+
+	// Explosives
 	CommandButton* ButtonPropC4;
+
+	// Misc Props
+	CommandButton* ButtonChumtoad;
 
 	// Tools
 	CommandButton* ButtonDuplicator;

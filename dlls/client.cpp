@@ -109,6 +109,21 @@ spawnlist_t gMonsters[] =
 
 spawnlist_t gProps[] =
 	{
+		{"monster_scientist_dead"},
+		{"monster_sitting_scientist"},
+		{"monster_barney_dead"},
+		{"monster_otis_dead"},
+		{"monster_cleansuit_scientist_dead"},
+		{"monster_hgrunt_dead"},
+		{"monster_massassin_dead"},
+		{"monster_human_grunt_ally_dead"},
+		{"monster_alien_slave_dead"},
+		{"monster_ShockTrooper_dead"},
+		{"monster_gonome_dead"},
+		{"monster_zombie_soldier_dead"}};
+
+spawnlist_t gMoreProps[] =
+	{
 		{"xen_hair"},
 		{"xen_tree"},
 		{"xen_plantlight"},
@@ -935,7 +950,14 @@ void ClientCommand(edict_t* pEntity)
 			// Spawn Props
 			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				spawnlist_t xenpropInfo = gProps[i];
+				spawnlist_t PropInfo = gProps[i];
+				if (FStrEq(combinetoprefix, PropInfo.classname))
+					GoMod_SpawnMonsterTrace(PropInfo.classname, pev, pEntity, false);
+			}
+
+			for (int i = 0; i < ARRAYSIZE(gMoreProps); i++)
+			{
+				spawnlist_t xenpropInfo = gMoreProps[i];
 				if (FStrEq(combinetoprefix, xenpropInfo.classname))
 				{
 					if (allow_props.value)
@@ -1972,9 +1994,9 @@ void ClientPrecache()
 
 		if (allow_props.value)
 		{
-			for (int i = 0; i < ARRAYSIZE(gProps); i++)
+			for (int i = 0; i < ARRAYSIZE(gMoreProps); i++)
 			{
-				spawnlist_t sXenProps = gProps[i];
+				spawnlist_t sXenProps = gMoreProps[i];
 				UTIL_PrecacheOther(sXenProps.classname);
 			}
 

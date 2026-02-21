@@ -109,7 +109,7 @@ void CCamera::Spawn()
 
 	pev->solid = SOLID_BBOX;
 	pev->movetype = MOVETYPE_FLY;
-	m_bloodColor = byte(209);
+	m_bloodColor = BLOOD_COLOR_BLUE;
 	pev->health = 999999;
 	m_MonsterState = MONSTERSTATE_NONE;
 
