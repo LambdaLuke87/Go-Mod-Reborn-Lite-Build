@@ -1718,7 +1718,7 @@ public:
 	CommandButton* ButtonBuckshot;
 	CommandButton* Button357Ammo;
 	CommandButton* Button556Ammo;
-	CommandButton* ButtonSpores;
+	CommandButton* ButtonSporeBalls;
 	CommandButton* Button762Ammo;
 	CommandButton* ButtonCTFAccrtor;
 	CommandButton* ButtonCTFBpack;
@@ -1781,7 +1781,6 @@ public:
 
 	// Corpses
 	CommandButton* ButtonDeadScientist;
-	CommandButton* ButtonSittingScientist;
 	CommandButton* ButtonDeadBarney;
 	CommandButton* ButtonDeadOtis;
 	CommandButton* ButtonDeadClScientist;
@@ -1806,6 +1805,8 @@ public:
 
 	// Misc Props
 	CommandButton* ButtonChumtoad;
+	CommandButton* ButtonSittingScientist;
+	CommandButton* ButtonSpores;
 
 	// Tools
 	CommandButton* ButtonDuplicator;

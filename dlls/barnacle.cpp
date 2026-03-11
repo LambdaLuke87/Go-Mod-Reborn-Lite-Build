@@ -75,6 +75,9 @@ IMPLEMENT_SAVERESTORE(CBarnacle, CBaseMonster);
 //=========================================================
 int CBarnacle::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 

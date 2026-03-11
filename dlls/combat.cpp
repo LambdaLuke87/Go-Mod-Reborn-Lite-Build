@@ -94,6 +94,7 @@ const MonsterInfo gMonsterInfos[] =
 		{"monster_charger"},
 		{"monster_babygarg"},
 		{"monster_panthereye"},
+		{"monster_robogrunt"},
 		{"xen_hair"},
 		{"xen_tree"},
 		{"xen_plantlight"},
@@ -422,10 +423,16 @@ void CBaseMonster::GibMonster()
 	if (m_ForcedGibType >= 1)
 	{
 		if (CVAR_GET_FLOAT("violence_hgibs") != 0)
-			if (m_ForcedGibType == 2)
+			if (m_ForcedGibType == 3)
 				CGib::SpawnRandomGibs(pev, 4, false);
-			else 
+			else
+			{
+				if (m_ForcedGibType == 2)
+					CGib::SpawnHeadGib(pev);
+
 				CGib::SpawnRandomGibs(pev, 4, true);
+			}
+
 		gibbed = true;
 	}
 	// only humans throw skulls !!!UNDONE - eventually monsters will have their own sets of gibs

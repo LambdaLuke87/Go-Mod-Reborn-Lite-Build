@@ -138,7 +138,8 @@ spawnlist_t gExtraMonsters[] =
 		{"monster_archer"},
 		{"monster_babygarg"},
 		{"monster_charger"},
-		{"monster_panthereye"}};
+		{"monster_panthereye"},
+		{"monster_robogrunt"}};
 
 // Weapons/Items List
 spawnlist_t gWeapons[] =
@@ -182,7 +183,8 @@ spawnlist_t gWeapons[] =
 		{"ammo_buckshot"},
 		{"ammo_357"},
 		{"ammo_556"},
-		{"ammo_762"}};
+		{"ammo_762"},
+		{"ammo_spore_ball"}};
 
 spawnlist_t gPowerups[] =
 	{
@@ -974,7 +976,7 @@ void ClientCommand(edict_t* pEntity)
 				if (FStrEq(combinetoprefix, extranpcsInfo.classname))
 				{
 					if (allow_extra_monsters.value)
-						GoMod_SpawnMonsterTrace(extranpcsInfo.classname, pev, pEntity, false);
+						GoMod_SpawnMonsterTrace(extranpcsInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Extra NPCs Disabled - gm_allow_extra_npcs required\n");
 				}

@@ -51,6 +51,10 @@ public:
 	void IdleSound() override;
 	void AttackSound();
 
+	static const char* pAttackSounds[];
+	static const char* pIdleSounds[];
+	static const char* pAlertSounds[];
+	static const char* pPainSounds[];
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
 
@@ -73,6 +77,33 @@ const char* CZombieBarney::pAttackMissSounds[] =
 	{
 		"zombie/claw_miss1.wav",
 		"zombie/claw_miss2.wav",
+};
+
+const char* CZombieBarney::pAttackSounds[] =
+	{
+		"zombie/zo_attack1.wav",
+		"zombie/zo_attack2.wav",
+};
+
+const char* CZombieBarney::pIdleSounds[] =
+	{
+		"zombie/zo_idle1.wav",
+		"zombie/zo_idle2.wav",
+		"zombie/zo_idle3.wav",
+		"zombie/zo_idle4.wav",
+};
+
+const char* CZombieBarney::pAlertSounds[] =
+	{
+		"zombie/zo_alert10.wav",
+		"zombie/zo_alert20.wav",
+		"zombie/zo_alert30.wav",
+};
+
+const char* CZombieBarney::pPainSounds[] =
+	{
+		"zombie/zo_pain1.wav",
+		"zombie/zo_pain2.wav",
 };
 
 //=========================================================
@@ -271,6 +302,18 @@ void CZombieBarney::Precache()
 
 	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
 		PRECACHE_SOUND((char*)pAttackMissSounds[i]);
+
+	for (i = 0; i < ARRAYSIZE(pAttackSounds); i++)
+		PRECACHE_SOUND((char*)pAttackSounds[i]);
+
+	for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
+		PRECACHE_SOUND((char*)pIdleSounds[i]);
+
+	for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
+		PRECACHE_SOUND((char*)pAlertSounds[i]);
+
+	for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
+		PRECACHE_SOUND((char*)pPainSounds[i]);
 }
 
 //=========================================================

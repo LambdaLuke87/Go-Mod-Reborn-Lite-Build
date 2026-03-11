@@ -78,7 +78,7 @@ cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
 cvar_t allow_tentacle = {"gm_allow_tentacle", "0", FCVAR_SERVER};
 
 // Allow Functions and Gameplay
-cvar_t allow_camera = {"gm_allow_camera", "0", FCVAR_SERVER};
+cvar_t allow_camera = {"gm_allow_camera", "1", FCVAR_SERVER};
 cvar_t allow_healthmodify = {"gm_allow_health_modifier", "0", FCVAR_SERVER};
 cvar_t allow_noclip = {"gm_allow_noclip", "1", FCVAR_SERVER};
 cvar_t allow_voices = {"gm_allow_voices", "1", FCVAR_SERVER};
@@ -330,6 +330,11 @@ cvar_t sk_nihilanth_health3 = {"sk_nihilanth_health3", "0"};
 cvar_t sk_nihilanth_zap1 = {"sk_nihilanth_zap1", "0"};
 cvar_t sk_nihilanth_zap2 = {"sk_nihilanth_zap2", "0"};
 cvar_t sk_nihilanth_zap3 = {"sk_nihilanth_zap3", "0"};
+
+// RoboGrunt
+cvar_t sk_rgrunt_explode1 = {"sk_rgrunt_explode1", "0"};
+cvar_t sk_rgrunt_explode2 = {"sk_rgrunt_explode2", "0"};
+cvar_t sk_rgrunt_explode3 = {"sk_rgrunt_explode3", "0"};
 
 // Scientist
 cvar_t sk_scientist_health1 = {"sk_scientist_health1", "0"};
@@ -775,6 +780,11 @@ void GameDLLInit()
 	CVAR_REGISTER(&allow_powerups);
 	CVAR_REGISTER(&allow_nihilant);
 	CVAR_REGISTER(&allow_tentacle);
+
+	// Robogrunt
+	CVAR_REGISTER(&sk_rgrunt_explode1);
+	CVAR_REGISTER(&sk_rgrunt_explode2);
+	CVAR_REGISTER(&sk_rgrunt_explode3);
 
 	// Admin Locks and Griefing Control
 	CVAR_REGISTER(&allow_camera);

@@ -209,7 +209,7 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	ButtonHelper(Button357Ammo, "#Gomod_Item_357Ammo", "summon ammo_357", iXPos + XRES(336), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	ButtonHelper(Button556Ammo, "#Gomod_Item_556Ammo", "summon ammo_556", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper(ButtonSpores, "#Gomod_Item_Spores", "summon ammo_spore", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonSporeBalls, "#Gomod_Item_Spores", "summon ammo_spore_ball", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(Button762Ammo, "#Gomod_Item_762Ammo", "summon ammo_762", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonCTFAccrtor, "#Gomod_Item_CTFAccelerator", "summon item_ctfaccelerator", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonCTFBpack, "#Gomod_Item_CTFBackpack", "summon item_ctfbackpack", iXPos + XRES(272), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -304,6 +304,7 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 	// Misc Props
 	ButtonHelper(ButtonChumtoad, "#Gomod_Prop_Chumtoads", "summon prop_chumtoad", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonSittingScientist, "#Gomod_Prop_SittingScientist", "summon monster_sitting_scientist", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonSpores, "#Gomod_Item_Spores", "summon ammo_spore", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	// Tools
 	ButtonHelper(ButtonDuplicator, "#Gomod_Tool_Duplicator", "tool duplicator", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -459,7 +460,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		ButtonMagentaASlave, ButtonPropCorpses, ButtonXenProps, ButtonPropsExplosives, ButtonPropsMISC,
 		ButtonDeadScientist, ButtonSittingScientist, ButtonDeadBarney, ButtonDeadOtis, ButtonDeadClScientist,
 		ButtonDeadHgrunt, ButtonDeadMassassin, ButtonDeadAllyHgrunt, ButtonDeadAlienSlave, ButtonDeadShockTrooper, 
-		ButtonDeadGonome, ButtonDeadZombieSoldier};
+		ButtonDeadGonome, ButtonDeadZombieSoldier, ButtonSporeBalls};
 
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
@@ -469,7 +470,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{2, {ButtonHealthKit, ButtonBattery, ButtonLongJump, ButtonHEV,
 				ButtonGlockAmmo, ButtonMP5Ammo, ButtonARGrenades, ButtonArrows, ButtonCTFAccrtor,
 				ButtonUranium, ButtonRockets, ButtonBuckshot, Button357Ammo, ButtonCTFBpack, 
-				Button556Ammo, ButtonSpores, Button762Ammo, ButtonAimMode, ButtonGiveMode,
+				Button556Ammo, ButtonSporeBalls, Button762Ammo, ButtonAimMode, ButtonGiveMode,
 				ButtonCTFLJump, ButtonCTFPHEV, ButtonCTFReg, ButtonUndoNPC,
 				ButtonDeleteALlNpcs}},
 		{3, {ButtonMilAliens, ButtonWildAliens, ButtonFriendHumans, ButtonMilUnits,
@@ -530,7 +531,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{17, {ButtonPropC4, ButtonPropCorpses, ButtonXenProps, ButtonPropsMISC, ButtonAimMode, 
 		         ButtonUndoNPC, ButtonDeleteALlNpcs}},
 		{18, {ButtonChumtoad, ButtonSittingScientist, ButtonPropCorpses, ButtonXenProps, ButtonPropsExplosives, 
-		         ButtonAimMode, ButtonUndoNPC, ButtonDeleteALlNpcs}},
+		         ButtonAimMode, ButtonUndoNPC, ButtonDeleteALlNpcs, ButtonSpores}},
 	};
 
 	// Make Headers Visible

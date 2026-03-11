@@ -23,6 +23,8 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
+extern bool UTIL_IsSandbox();
+
 static float GetRechargeTime()
 {
 	if (gpGlobals->maxClients > 1)
@@ -73,7 +75,10 @@ void CHgun::Precache()
 void CHgun::AddToPlayer(CBasePlayer* pPlayer)
 {
 #ifndef CLIENT_DLL
-	if (g_pGameRules->IsMultiplayer())
+	// Fix HiveHand and Shockrifle bug on Sandbox Player Spawn
+	if (UTIL_IsSandbox())
+		m_iDefaultAmmo = 7;
+	else if (g_pGameRules->IsMultiplayer())
 	{
 		// in multiplayer, all hivehands come full.
 		m_iDefaultAmmo = HORNET_MAX_CARRY;

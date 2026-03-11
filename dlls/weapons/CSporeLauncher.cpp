@@ -517,3 +517,26 @@ public:
 
 LINK_ENTITY_TO_CLASS(ammo_spore, CSporeAmmo);
 #endif
+
+class CSPoreAmmoBall : public CBasePlayerAmmo
+{
+	void Spawn() override
+	{
+		Precache();
+		SET_MODEL(ENT(pev), "models/spore.mdl");
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache() override
+	{
+		PRECACHE_MODEL("models/spore.mdl");
+	}
+	bool AddAmmo(CBaseEntity* pOther) override
+	{
+		if (pOther->GiveAmmo(AMMO_SPORE_GIVE, "spores", SPORELAUNCHER_MAX_CARRY) != -1)
+		{
+			EMIT_SOUND(edict(), CHAN_ITEM, "weapons/spore_ammo.wav", VOL_NORM, ATTN_NORM);
+		}
+			return true;
+	}
+};
+LINK_ENTITY_TO_CLASS(ammo_spore_ball, CSPoreAmmoBall);

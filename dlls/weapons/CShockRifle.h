@@ -62,6 +62,8 @@ public:
 
 	bool GetItemInfo(ItemInfo* p) override;
 
+	void AddToPlayer(CBasePlayer* pPlayer) override;
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)

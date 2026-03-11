@@ -36,6 +36,8 @@ TYPEDESCRIPTION CShockRifle::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CShockRifle, CShockRifle::BaseClass);
 #endif
 
+extern bool UTIL_IsSandbox();
+
 LINK_ENTITY_TO_CLASS(weapon_shockrifle, CShockRifle);
 LINK_ENTITY_TO_CLASS(weapon_shockroach, CShockRifle);
 
@@ -289,6 +291,22 @@ void CShockRifle::RechargeAmmo(bool bLoud)
 int CShockRifle::iItemSlot()
 {
 	return 4;
+}
+
+void CShockRifle::AddToPlayer(CBasePlayer* pPlayer)
+{
+#ifndef CLIENT_DLL
+	// Fix HiveHand and Shockrifle bug on Sandbox Player Spawn
+	if (UTIL_IsSandbox())
+		m_iDefaultAmmo = 9;
+	else if (g_pGameRules->IsMultiplayer())
+	{
+		// in multiplayer, all hivehands come full.
+		m_iDefaultAmmo = SHOCKRIFLE_MAX_CLIP;
+	}
+#endif
+
+	CBasePlayerWeapon::AddToPlayer(pPlayer);
 }
 
 bool CShockRifle::GetItemInfo(ItemInfo* p)

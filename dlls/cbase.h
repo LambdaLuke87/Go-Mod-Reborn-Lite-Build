@@ -421,6 +421,7 @@ public:
 	bool m_bShouldRespawn; // this entity have applied the spawner tool
 	bool m_RespawnBlackList; // this entity is problematic, cant use spawner tool
 	string_t m_iszMonsterClassname; // store the classname for respawn
+	string_t m_customsound; // only used for they hunger zombies
 	Vector m_vecSpawnOrigin; // save the spawn origin
 	Vector m_vecSpawnAngles; // save the spawn angle
 	int m_respawntime = 3.0f; // The respawn time, by default is 3.0f

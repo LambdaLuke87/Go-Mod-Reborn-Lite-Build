@@ -2195,10 +2195,8 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveNamedItem("weapon_displacer");
 					pPlayer->GiveNamedItem("weapon_sniperrifle");
 					pPlayer->GiveNamedItem("weapon_sporelauncher");
-
-					/* TODO: need be fixed, idk why is Buggy the hornetgun and the shockrifle >:(
 					pPlayer->GiveNamedItem("weapon_hornetgun");
-					pPlayer->GiveNamedItem("weapon_shockrifle"); */
+					pPlayer->GiveNamedItem("weapon_shockrifle");
 
 					// Give the maximum amount of ammunition for each weapon
 					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
@@ -2208,7 +2206,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveAmmo(BOLT_MAX_CARRY, "bolts", BOLT_MAX_CARRY);
 					pPlayer->GiveAmmo(ROCKET_MAX_CARRY, "rockets", ROCKET_MAX_CARRY);
 					pPlayer->GiveAmmo(URANIUM_MAX_CARRY, "uranium", URANIUM_MAX_CARRY);
-					// pPlayer->GiveAmmo(HORNET_MAX_CARRY, "Hornets", HORNET_MAX_CARRY);
+					pPlayer->GiveAmmo(1, "Hornets", HORNET_MAX_CARRY);
 					pPlayer->GiveAmmo(HANDGRENADE_MAX_CARRY, "Hand Grenade", HANDGRENADE_MAX_CARRY);
 					pPlayer->GiveAmmo(SATCHEL_MAX_CARRY, "Satchel Charge", SATCHEL_MAX_CARRY);
 					pPlayer->GiveAmmo(TRIPMINE_MAX_CARRY, "Trip Mine", TRIPMINE_MAX_CARRY);
@@ -2217,7 +2215,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveAmmo(M249_MAX_CARRY, "556", M249_MAX_CARRY);
 					pPlayer->GiveAmmo(SNIPERRIFLE_MAX_CARRY, "762", SNIPERRIFLE_MAX_CARRY);
 					pPlayer->GiveAmmo(SPORELAUNCHER_MAX_CARRY, "spores", SPORELAUNCHER_MAX_CARRY);
-					// pPlayer->GiveAmmo(SHOCKRIFLE_MAX_CLIP, "shock", SHOCKRIFLE_MAX_CLIP);
+					pPlayer->GiveAmmo(1, "shock", SHOCKRIFLE_MAX_CLIP);
 				}
 
 				pPlayer->GiveNamedItem("weapon_toolbow");

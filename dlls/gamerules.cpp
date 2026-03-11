@@ -316,6 +316,9 @@ void CGameRules::RefreshSkillData()
 	gSkillData.nihilanthHealth = GetSkillCvar("sk_nihilanth_health");
 	gSkillData.nihilanthZap = GetSkillCvar("sk_nihilanth_zap");
 
+	// Robogrunt
+	gSkillData.rgruntExplode = GetSkillCvar("sk_rgrunt_explode");
+
 	// Scientist
 	gSkillData.scientistHealth = GetSkillCvar("sk_scientist_health");
 
