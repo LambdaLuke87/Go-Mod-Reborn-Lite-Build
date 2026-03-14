@@ -301,7 +301,8 @@ int CMOFAssassin::IRelationship(CBaseEntity* pTarget)
 {
 	if (FClassnameIs(pTarget->pev, "monster_alien_grunt") || (FClassnameIs(pTarget->pev, "monster_gargantua")))
 	{
-		return R_NM;
+		if (!m_AltClass)
+			return R_NM;
 	}
 
 	return CSquadMonster::IRelationship(pTarget);

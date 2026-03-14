@@ -151,7 +151,7 @@ const char* CHeadCrab::pBiteSounds[] =
 //=========================================================
 int CHeadCrab::Classify()
 {
-	if (m_AltClass)
+	if (FClassnameIs(pev, "monster_babycrab_allied") || m_AltClass)
 		return CLASS_PLAYER_ALIEN_ALLY;
 
 	return CLASS_ALIEN_PREY;
@@ -492,6 +492,8 @@ public:
 	float GetSoundVolue() override { return 0.8; }
 };
 LINK_ENTITY_TO_CLASS(monster_babycrab, CBabyCrab);
+LINK_ENTITY_TO_CLASS(monster_babycrab_artificial, CBabyCrab);
+LINK_ENTITY_TO_CLASS(monster_babycrab_allied, CBabyCrab);
 
 void CBabyCrab::Spawn()
 {
@@ -502,6 +504,9 @@ void CBabyCrab::Spawn()
 	UTIL_SetSize(pev, Vector(-12, -12, 0), Vector(12, 12, 24));
 
 	pev->health = gSkillData.headcrabHealth * 0.25; // less health than full grown
+
+	if (FClassnameIs(pev, "monster_babycrab_artificial") || FClassnameIs(pev, "monster_babycrab_allied"))
+		m_MenuCreated = true;
 }
 
 void CBabyCrab::Precache()
