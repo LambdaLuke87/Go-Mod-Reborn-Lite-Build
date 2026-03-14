@@ -202,7 +202,7 @@ bool CKnife::Swing(const bool bFirst)
 				damage *= 100;
 				damageTypes |= DMG_NEVERGIB;
 			}
-			else if (g_pGameRules->IsMultiplayer())
+			else if (!UTIL_IsSandbox() && UTIL_IsMultiplayer())
 			{
 				//TODO: This code assumes the target is a player and not some NPC. Rework it to support NPC backstabbing.
 				UTIL_MakeVectors(pEntity->pev->v_angle);

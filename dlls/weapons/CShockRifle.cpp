@@ -96,7 +96,7 @@ bool CShockRifle::CanDeploy()
 
 bool CShockRifle::Deploy()
 {
-	if (UTIL_IsMultiplayer())
+	if (!UTIL_IsSandbox() && UTIL_IsMultiplayer())
 	{
 		m_flRechargeTime = gpGlobals->time + 0.25;
 	}
@@ -237,7 +237,7 @@ void CShockRifle::PrimaryAttack()
 	}
 #endif
 
-	if (UTIL_IsMultiplayer())
+	if (!UTIL_IsSandbox() && UTIL_IsMultiplayer())
 	{
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1;
 	}
@@ -277,7 +277,7 @@ void CShockRifle::RechargeAmmo(bool bLoud)
 			EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "!WP_GUNMISC20", VOL_NORM, ATTN_NORM);
 		}
 
-		if (UTIL_IsMultiplayer())
+		if (!UTIL_IsSandbox() && UTIL_IsMultiplayer())
 		{
 			m_flRechargeTime += 0.25;
 		}
