@@ -126,6 +126,7 @@ private:
 };
 
 LINK_ENTITY_TO_CLASS(monster_scientist, CScientist);
+LINK_ENTITY_TO_CLASS(monster_scientist_predisaster, CScientist);
 
 TYPEDESCRIPTION CScientist::m_SaveData[] =
 	{
@@ -692,6 +693,9 @@ void CScientist::Spawn()
 	//	m_flDistTooFar		= 256.0;
 
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_OPEN_DOORS | bits_CAP_AUTO_DOORS | bits_CAP_USE;
+
+	if (FClassnameIs(pev, "monster_scientist_predisaster"))
+		SetBits(pev->spawnflags, SF_MONSTER_PREDISASTER);
 
 	// White hands
 	pev->skin = 0;

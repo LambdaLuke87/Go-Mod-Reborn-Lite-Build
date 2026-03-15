@@ -91,6 +91,7 @@ public:
 	static const char* pAttackMissSounds[];
 };
 LINK_ENTITY_TO_CLASS(monster_alien_slave, CISlave);
+LINK_ENTITY_TO_CLASS(monster_alien_slave_melee, CISlave);
 LINK_ENTITY_TO_CLASS(monster_exp_alien_slave, CISlave) // Azure Sheep vortigaunt
 LINK_ENTITY_TO_CLASS(monster_vortigaunt, CISlave);
 
@@ -446,6 +447,9 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 //=========================================================
 bool CISlave::CheckRangeAttack1(float flDot, float flDist)
 {
+	if (FClassnameIs(pev, "monster_alien_slave_melee"))
+		return false;
+
 	if (m_flNextAttack > gpGlobals->time)
 	{
 		return false;

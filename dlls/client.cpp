@@ -68,44 +68,50 @@ struct spawnlist_t
 // Monsters List
 spawnlist_t gMonsters[] =
 	{
-		{"monster_alien_slave"},
-		{"monster_bullchicken"},
-		{"monster_headcrab"},
-		{"monster_babycrab"},
-		{"monster_houndeye"},
-		{"monster_alien_grunt"},
+		{"monster_alien_babyvoltigore"},
 		{"monster_alien_controller"},
-		{"monster_zombie"},
-		{"monster_zombie_barney"},
-		{"monster_zombie_soldier"},
-		{"monster_gargantua"},
-		{"monster_bigmomma"},
-		{"monster_ichthyosaur"},
-		{"monster_scientist"},
-		{"monster_cleansuit_scientist"},
-		{"monster_human_grunt"},
-		{"monster_barney"},
-		{"monster_otis"},
-		{"monster_male_assassin"},
-		{"monster_human_assassin"},
-		{"monster_sentry"},
-		{"monster_rat"},
-		{"monster_cockroach"},
+		{"monster_alien_grunt"},
+		{"monster_alien_grunt_melee"},
+		{"monster_alien_slave"},
+		{"monster_alien_slave_melee"},
+		{"monster_alien_voltigore"},
+		{"monster_babycrab"},
 		{"monster_barnacle"},
-		{"monster_leech"},
+		{"monster_barney"},
+		{"monster_barney_predisaster"},
+		{"monster_bigmomma"},
+		{"monster_bullchicken"},
+		{"monster_chiken"},
+		{"monster_cleansuit_scientist"},
+		{"monster_cockroach"},
+		{"monster_exp_alien_slave"},
 		{"monster_flyer"},
+		{"monster_gargantua"},
 		{"monster_gman"},
 		{"monster_gonome"},
-		{"monster_shocktrooper"},
-		{"monster_shockroach"},
-		{"monster_pitdrone"},
-		{"monster_alien_voltigore"},
-		{"monster_alien_babyvoltigore"},
+		{"monster_gonome_melee"},
+		{"monster_headcrab"},
+		{"monster_houndeye"},
+		{"monster_human_assassin"},
+		{"monster_human_grunt"},
 		{"monster_human_grunt_ally"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"},
-		{"monster_exp_alien_slave"},
-		{"monster_chiken"}};
+		{"monster_ichthyosaur"},
+		{"monster_leech"},
+		{"monster_male_assassin"},
+		{"monster_otis"},
+		{"monster_pitdrone"},
+		{"monster_pitdrone_melee"},
+		{"monster_rat"},
+		{"monster_scientist"},
+		{"monster_scientist_predisaster"},
+		{"monster_sentry"},
+		{"monster_shockroach"},
+		{"monster_shocktrooper"},
+		{"monster_zombie"},
+		{"monster_zombie_barney"},
+		{"monster_zombie_soldier"}};
 
 spawnlist_t gProps[] =
 	{
@@ -999,14 +1005,14 @@ void ClientCommand(edict_t* pEntity)
 			if (FStrEq(combinetoprefix, "monster_apache"))
 			{
 				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-				CBaseEntity::Create("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+				CBaseEntity::CreateCustom("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 			}
 			else if (FStrEq(combinetoprefix, "monster_nihilanth"))
 			{
 				if (allow_nihilant.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::Create("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+					CBaseEntity::CreateCustom("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 				}
 				else
 					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Nihilant Disabled - gm_allow_nihilant required\n");
@@ -1016,7 +1022,7 @@ void ClientCommand(edict_t* pEntity)
 				if (allow_tentacle.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::Create("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f));
+					CBaseEntity::CreateCustom("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
 				}
 				else
 					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Tentacle Disabled - gm_allow_tentacle required\n");

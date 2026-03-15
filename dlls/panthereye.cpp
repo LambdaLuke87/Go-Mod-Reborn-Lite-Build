@@ -296,7 +296,7 @@ bool CDiablo::CheckRangeAttack1(float flDot, float flDist)
 
 bool CDiablo::CheckMeleeAttack1(float flDot, float flDist)
 {
-	if (flDist <= 110 && flDot >= 0.7 )
+	if (flDist <= 84 && flDot >= 0.7 )
 	{
 		return true;
 	}

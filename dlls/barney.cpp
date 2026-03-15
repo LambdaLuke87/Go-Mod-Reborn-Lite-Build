@@ -27,6 +27,7 @@
 #include "scripted.h"
 #include "weapons.h"
 #include "soundent.h"
+#include "game.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -89,6 +90,7 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS(monster_barney, CBarney);
+LINK_ENTITY_TO_CLASS(monster_barney_predisaster, CBarney);
 
 TYPEDESCRIPTION CBarney::m_SaveData[] =
 	{
@@ -414,6 +416,12 @@ void CBarney::Spawn()
 	m_fGunDrawn = false;
 
 	m_afCapability = bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
+
+	if (monster_allied_skins.value && m_AltClass)
+		pev->skin = 1;
+
+	if (FClassnameIs(pev, "monster_barney_predisaster"))
+		SetBits(pev->spawnflags, SF_MONSTER_PREDISASTER);
 
 	MonsterInit();
 	SetUse(&CBarney::FollowerUse);

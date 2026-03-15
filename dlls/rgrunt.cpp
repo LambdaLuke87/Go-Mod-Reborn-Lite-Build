@@ -132,6 +132,9 @@ void CRGrunt::Spawn()
 
 	CTalkMonster::g_talkWaitTime = 0;
 
+	if (monster_allied_skins.value && m_AltClass)
+		pev->skin = 1;
+
 	MonsterInit();
 }
 

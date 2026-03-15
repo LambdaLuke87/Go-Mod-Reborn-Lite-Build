@@ -901,6 +901,9 @@ void CGargantua::Spawn()
 	m_flFieldOfView = -0.2; // width of forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
 
+	if (monster_allied_skins.value && m_AltClass)
+		pev->skin = 1;
+
 	MonsterInit();
 
 	m_pEyeGlow = CSprite::SpriteCreate(EyeSprite(), pev->origin, false);

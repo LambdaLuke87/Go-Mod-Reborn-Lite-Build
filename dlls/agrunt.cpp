@@ -25,6 +25,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "hornet.h"
+#include "game.h"
 
 //=========================================================
 // monster-specific schedule types
@@ -117,6 +118,7 @@ public:
 	int m_iLastWord;
 };
 LINK_ENTITY_TO_CLASS(monster_alien_grunt, CAGrunt);
+LINK_ENTITY_TO_CLASS(monster_alien_grunt_melee, CAGrunt);
 
 TYPEDESCRIPTION CAGrunt::m_SaveData[] =
 	{
@@ -575,6 +577,12 @@ void CAGrunt::Spawn()
 
 	m_flNextSpeakTime = m_flNextWordTime = gpGlobals->time + 10 + RANDOM_LONG(0, 10);
 
+	if (monster_allied_skins.value && m_AltClass)
+		pev->skin = 1;
+
+	if (FClassnameIs(pev, "monster_alien_grunt_melee"))
+		pev->body = 1;
+
 	MonsterInit();
 }
 
@@ -868,6 +876,9 @@ bool CAGrunt::CheckMeleeAttack1(float flDot, float flDist)
 //=========================================================
 bool CAGrunt::CheckRangeAttack1(float flDot, float flDist)
 {
+	if (FClassnameIs(pev, "monster_alien_grunt_melee"))
+		return false;
+
 	if (gpGlobals->time < m_flNextHornetAttackCheck)
 	{
 		return m_fCanHornetAttack;

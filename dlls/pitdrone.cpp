@@ -267,6 +267,7 @@ public:
 	float m_flNextEatTime;
 };
 LINK_ENTITY_TO_CLASS(monster_pitdrone, CPitdrone);
+LINK_ENTITY_TO_CLASS(monster_pitdrone_melee, CPitdrone);
 
 TYPEDESCRIPTION CPitdrone::m_SaveData[] =
 	{
@@ -309,6 +310,9 @@ int CPitdrone::IRelationship(CBaseEntity* pTarget)
 //=========================================================
 bool CPitdrone::CheckRangeAttack1(float flDot, float flDist)
 {
+	if (FClassnameIs(pev, "monster_pitdrone_melee"))
+		return false;
+
 	if (m_iInitialAmmo == -1 || GetBodygroup(PitdroneBodygroup::Weapons) == PitdroneWeapon::Empty || (IsMoving() && flDist >= 512))
 	{
 		// squid will far too far behind if he stops running to spit at this distance from the enemy.

@@ -264,6 +264,7 @@ IMPLEMENT_SAVERESTORE(CGonome, CBaseMonster)
 
 
 LINK_ENTITY_TO_CLASS(monster_gonome, CGonome)
+LINK_ENTITY_TO_CLASS(monster_gonome_melee, CGonome)
 
 
 /*const char* CGonome::pPainSounds[] = {
@@ -456,6 +457,9 @@ bool CGonome::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float 
 //=========================================================
 bool CGonome::CheckRangeAttack1(float flDot, float flDist)
 {
+	if (FClassnameIs(pev, "monster_gonome_melee"))
+		return false;
+
 	if (flDist < 256.0)
 		return false;
 

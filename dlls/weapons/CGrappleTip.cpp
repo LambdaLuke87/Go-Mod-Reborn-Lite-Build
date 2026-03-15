@@ -33,7 +33,10 @@ namespace
 //TODO: this should be handled differently. A method that returns an overall size, another whether it's fixed, etc. - Solokiller
 const char* const grapple_small[] =
 	{
+		"monster_archer",
 		"monster_bloater",
+		"monster_chiken",
+		"monster_charger",
 		"monster_snark",
 		"monster_shockroach",
 		"monster_rat",
@@ -43,14 +46,15 @@ const char* const grapple_small[] =
 		"monster_flyer_flock",
 		"monster_headcrab",
 		"monster_leech",
-		"monster_penguin",
-		"monster_chiken"};
+		"monster_penguin"};
 
 const char* const grapple_medium[] =
 	{
 		"monster_alien_controller",
 		"monster_alien_slave",
+		"monster_alien_slave_melee",
 		"monster_barney",
+		"monster_barney_predisaster"
 		"monster_bullchicken",
 		"monster_cleansuit_scientist",
 		"monster_houndeye",
@@ -62,7 +66,9 @@ const char* const grapple_medium[] =
 		"monster_male_assassin",
 		"monster_otis",
 		"monster_pitdrone",
+		"monster_pitdrone_melee",
 		"monster_scientist",
+		"monster_scientist_predisaster",
 		"monster_zombie",
 		"monster_zombie_barney",
 		"monster_zombie_soldier"};
@@ -70,16 +76,20 @@ const char* const grapple_medium[] =
 const char* const grapple_large[] =
 	{
 		"monster_alien_grunt",
+		"monster_alien_grunt_melee",
 		"monster_alien_voltigore",
 		"monster_assassin_repel",
 		"monster_grunt_ally_repel",
+		"monster_babygarg",
 		"monster_bigmomma",
 		"monster_gargantua",
 		"monster_geneworm",
 		"monster_gonome",
+		"monster_gonome_melee",
 		"monster_grunt_repel",
 		"monster_ichthyosaur",
 		"monster_nihilanth",
+		"monster_panthereye",
 		"monster_pitworm",
 		"monster_pitworm_up",
 		"monster_shocktrooper"};
