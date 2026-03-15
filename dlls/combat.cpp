@@ -724,7 +724,8 @@ void CBaseMonster::Killed(entvars_t* pevAttacker, int iGib)
 	if (m_bShouldRespawn)
 	{
 		// Used Leech logic
-		SetActivity(ACT_DIEFORWARD);
+		SetActivity(GetDeathActivity());
+		DeathSound();
 
 		ClearShockEffect();
 

@@ -69,6 +69,7 @@ cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
+cvar_t respawn_npc_sound = {"gm_respawn_npc_sound", "1", FCVAR_SERVER};
 
 // Allow Content that handle precaches
 cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
@@ -773,6 +774,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&monster_variation);
 	CVAR_REGISTER(&spawn_wpnsetup);
 	CVAR_REGISTER(&worlditems_respawn);
+	CVAR_REGISTER(&respawn_npc_sound);
 
 	// Allow Content that handle precaches
 	CVAR_REGISTER(&allow_props);

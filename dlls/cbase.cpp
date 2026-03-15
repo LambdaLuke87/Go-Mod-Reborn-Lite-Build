@@ -797,7 +797,8 @@ CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOri
 	pEntity->pev->renderamt = ramt;
 	DispatchSpawn(pEntity->edict());
 
-	EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);
+	if (respawn_npc_sound.value)
+		EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);
 
 	return pEntity;
 }

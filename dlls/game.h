@@ -84,6 +84,7 @@ extern cvar_t monster_polem;
 extern cvar_t monster_variation;
 extern cvar_t spawn_wpnsetup;
 extern cvar_t worlditems_respawn;
+extern cvar_t respawn_npc_sound;
 
 // Allow Content that handle precaches
 extern cvar_t allow_props;

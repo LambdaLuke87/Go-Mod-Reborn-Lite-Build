@@ -1733,6 +1733,7 @@ public:
 	CommandButton* ButtonGargantua;
 	CommandButton* ButtonShockTrooper;
 	CommandButton* ButtonVoltigore;
+	CommandButton* ButtonBabyGarg;
 	CommandButton* ButtonNihilant;
 
 	// Wildlife Aliens and Zombies
@@ -1750,6 +1751,9 @@ public:
 	CommandButton* ButtonZombieSoldier;
 	CommandButton* ButtonGonome;
 	CommandButton* ButtonBarnacle;
+	CommandButton* ButtonArcher;
+	CommandButton* ButtonPanthereye;
+	CommandButton* ButtonCharger;
 
 	// Friendly Humans
 	CommandButton* ButtonScientist;
@@ -1766,6 +1770,7 @@ public:
 	CommandButton* ButtonFassassin;
 	CommandButton* ButtonApache;
 	CommandButton* ButtonSentry;
+	CommandButton* ButtonRobogrunt;
 
 	// Misc Monsters
 	CommandButton* ButtonBoid;
@@ -1777,7 +1782,12 @@ public:
 	CommandButton* ButtonChiken;
 
 	// Extra Monsters
-	CommandButton* ButtonMagentaASlave;
+	CommandButton* ButtonAlienGruntMelee;
+	CommandButton* ButtonAlienSlaveMelee;
+	CommandButton* ButtonGonomeMelee;
+	CommandButton* ButtonPitdroneMelee;
+	CommandButton* ButtonScientistPreDisaster;
+	CommandButton* ButtonBarneyPreDisaster;
 
 	// Corpses
 	CommandButton* ButtonDeadScientist;
@@ -1788,8 +1798,6 @@ public:
 	CommandButton* ButtonDeadMassassin;
 	CommandButton* ButtonDeadAllyHgrunt;
 	CommandButton* ButtonDeadAlienSlave;
-	CommandButton* ButtonDeadShockTrooper;
-	CommandButton* ButtonDeadGonome;
 	CommandButton* ButtonDeadZombieSoldier;
 	
 	// Xen Decorations

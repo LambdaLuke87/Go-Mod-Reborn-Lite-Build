@@ -73,16 +73,19 @@ spawnlist_t gMonsters[] =
 		{"monster_alien_grunt"},
 		{"monster_alien_grunt_melee"},
 		{"monster_alien_slave"},
+		{"monster_alien_slave_dead"},
 		{"monster_alien_slave_melee"},
 		{"monster_alien_voltigore"},
 		{"monster_babycrab"},
 		{"monster_barnacle"},
 		{"monster_barney"},
+		{"monster_barney_dead"},
 		{"monster_barney_predisaster"},
 		{"monster_bigmomma"},
 		{"monster_bullchicken"},
 		{"monster_chiken"},
 		{"monster_cleansuit_scientist"},
+		{"monster_cleansuit_scientist_dead"},
 		{"monster_cockroach"},
 		{"monster_exp_alien_slave"},
 		{"monster_flyer"},
@@ -91,53 +94,45 @@ spawnlist_t gMonsters[] =
 		{"monster_gonome"},
 		{"monster_gonome_melee"},
 		{"monster_headcrab"},
+		{"monster_hgrunt_dead"},
 		{"monster_houndeye"},
 		{"monster_human_assassin"},
 		{"monster_human_grunt"},
 		{"monster_human_grunt_ally"},
+		{"monster_human_grunt_ally_dead"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"},
 		{"monster_ichthyosaur"},
 		{"monster_leech"},
 		{"monster_male_assassin"},
+		{"monster_massassin_dead"},
 		{"monster_otis"},
+		{"monster_otis_dead"},
 		{"monster_pitdrone"},
 		{"monster_pitdrone_melee"},
 		{"monster_rat"},
 		{"monster_scientist"},
+		{"monster_scientist_dead"},
 		{"monster_scientist_predisaster"},
 		{"monster_sentry"},
 		{"monster_shockroach"},
 		{"monster_shocktrooper"},
+		{"monster_sitting_scientist"},
 		{"monster_zombie"},
 		{"monster_zombie_barney"},
-		{"monster_zombie_soldier"}};
+		{"monster_zombie_soldier"},
+		{"monster_zombie_soldier_dead"}};
 
 spawnlist_t gProps[] =
 	{
-		{"monster_scientist_dead"},
-		{"monster_sitting_scientist"},
-		{"monster_barney_dead"},
-		{"monster_otis_dead"},
-		{"monster_cleansuit_scientist_dead"},
-		{"monster_hgrunt_dead"},
-		{"monster_massassin_dead"},
-		{"monster_human_grunt_ally_dead"},
-		{"monster_alien_slave_dead"},
-		{"monster_ShockTrooper_dead"},
-		{"monster_gonome_dead"},
-		{"monster_zombie_soldier_dead"}};
-
-spawnlist_t gMoreProps[] =
-	{
-		{"xen_hair"},
-		{"xen_tree"},
-		{"xen_plantlight"},
-		{"xen_spore_small"},
-		{"xen_spore_medium"},
-		{"xen_spore_large"},
+		{"prop_c4"},
 		{"prop_chumtoad"},
-		{"prop_c4"}};
+		{"xen_hair"},
+		{"xen_plantlight"},
+		{"xen_spore_large"},
+		{"xen_spore_medium"},
+		{"xen_spore_small"},
+		{"xen_tree"}};
 
 spawnlist_t gExtraMonsters[] =
 	{
@@ -958,14 +953,7 @@ void ClientCommand(edict_t* pEntity)
 			// Spawn Props
 			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				spawnlist_t PropInfo = gProps[i];
-				if (FStrEq(combinetoprefix, PropInfo.classname))
-					GoMod_SpawnMonsterTrace(PropInfo.classname, pev, pEntity, false);
-			}
-
-			for (int i = 0; i < ARRAYSIZE(gMoreProps); i++)
-			{
-				spawnlist_t xenpropInfo = gMoreProps[i];
+				spawnlist_t xenpropInfo = gProps[i];
 				if (FStrEq(combinetoprefix, xenpropInfo.classname))
 				{
 					if (allow_props.value)
@@ -2002,9 +1990,9 @@ void ClientPrecache()
 
 		if (allow_props.value)
 		{
-			for (int i = 0; i < ARRAYSIZE(gMoreProps); i++)
+			for (int i = 0; i < ARRAYSIZE(gProps); i++)
 			{
-				spawnlist_t sXenProps = gMoreProps[i];
+				spawnlist_t sXenProps = gProps[i];
 				UTIL_PrecacheOther(sXenProps.classname);
 			}
 
