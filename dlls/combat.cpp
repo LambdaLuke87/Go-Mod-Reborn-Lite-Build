@@ -2094,6 +2094,69 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Added Spawner Mode\n");
 				}
 			}
+			else if (pPlayer->m_iToolMode == 16)
+			{
+				if (pMonster->pev->scale == 1.0f)
+				{
+					pMonster->pev->scale = 1.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.5\n");
+				}
+				else if (pMonster->pev->scale == 1.5f)
+				{
+					pMonster->pev->scale = 2.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.0\n");
+				}
+				else if (pMonster->pev->scale == 2.0f)
+				{
+					pMonster->pev->scale = 2.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.5\n");
+				}
+				else if (pMonster->pev->scale == 2.5f)
+				{
+					pMonster->pev->scale = 3.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.0\n");
+				}
+				else if (pMonster->pev->scale == 3.0f)
+				{
+					pMonster->pev->scale = 3.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.5\n");
+				}
+				else if (pMonster->pev->scale == 3.5f)
+				{
+					pMonster->pev->scale = 4.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.0\n");
+				}
+				else if (pMonster->pev->scale == 4.0f)
+				{
+					pMonster->pev->scale = 4.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.5\n");
+				}
+				else if (pMonster->pev->scale == 4.5f)
+				{
+					pMonster->pev->scale = 5.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
+				}
+				else if (pMonster->pev->scale == 5.0f)
+				{
+					pMonster->pev->scale = 0.2f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
+				}
+				else if (pMonster->pev->scale == 0.2f)
+				{
+					pMonster->pev->scale = 0.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.5\n");
+				}
+				else if (pMonster->pev->scale == 0.5f)
+				{
+					pMonster->pev->scale = 0.8f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.8\n");
+				}
+				else
+				{
+					pMonster->pev->scale = 1.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
+				}
+			}
 		}
 	}
 
@@ -2320,6 +2383,74 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 				}
 				else
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Mode Needed\n");
+			}
+			else if (pPlayer->m_iToolMode == 16)
+			{
+				if (pMonster->pev->scale == 0.8f)
+				{
+					pMonster->pev->scale = 0.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.5\n");
+				}
+				else if (pMonster->pev->scale == 0.5f)
+				{
+					pMonster->pev->scale = 0.2f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
+				}
+				else if (pMonster->pev->scale == 0.2f)
+				{
+					pMonster->pev->scale = 5.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
+				}
+				else if (pMonster->pev->scale == 5.0f)
+				{
+					pMonster->pev->scale = 4.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.5\n");
+				}
+				else if (pMonster->pev->scale == 4.5f)
+				{
+					pMonster->pev->scale = 4.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.0\n");
+				}
+				else if (pMonster->pev->scale == 4.0f)
+				{
+					pMonster->pev->scale = 3.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.5\n");
+				}
+				else if (pMonster->pev->scale == 3.5f)
+				{
+					pMonster->pev->scale = 3.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.0\n");
+				}
+				else if (pMonster->pev->scale == 3.0f)
+				{
+					pMonster->pev->scale = 2.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.5\n");
+				}
+				else if (pMonster->pev->scale == 2.5f)
+				{
+					pMonster->pev->scale = 2.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.0\n");
+				}
+				else if (pMonster->pev->scale == 2.0f)
+				{
+					pMonster->pev->scale = 1.5f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.5\n");
+				}
+				else if (pMonster->pev->scale == 1.5f)
+				{
+					pMonster->pev->scale = 1.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
+				}
+				else if (pMonster->pev->scale == 1.0f)
+				{
+					pMonster->pev->scale = 0.8f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.8\n");
+				}
+				else
+				{
+					pMonster->pev->scale = 1.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
+				}
 			}
 		}
 	}

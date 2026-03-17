@@ -331,7 +331,8 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 
 	ButtonHelper(ButtonGlowsticks, "#Gomod_Tool_Glowsticks", "tool glowsticks", iXPos + XRES(16), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	ButtonHelper(ButtonSpawnertool, "#Gomod_Tool_Spawner", "tool spawner", iXPos + XRES(80), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
-	ButtonHelper(ButtonNoTools, "#Gomod_Tool_NoTools", "tool none", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonScalerTool, "#Gomod_Tool_Scaler", "tool scaler", iXPos + XRES(144), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonNoTools, "#Gomod_Tool_NoTools", "tool none", iXPos + XRES(208), iYPos + iYSize - YRES(144) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 	
 	// Render Buttons
 	ButtonHelper(ButtonRMNormal, "#Gomod_RenderMode_Normal", "rendermode normal", iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));
@@ -470,7 +471,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		ButtonDeadHgrunt, ButtonDeadMassassin, ButtonDeadAllyHgrunt, ButtonDeadAlienSlave, ButtonPanthereye, 
 		ButtonBabyGarg, ButtonDeadZombieSoldier, ButtonSporeBalls, ButtonAlienSlaveMelee, ButtonGonomeMelee,
 		ButtonPitdroneMelee, ButtonScientistPreDisaster, ButtonBarneyPreDisaster, ButtonRobogrunt, ButtonArcher,
-		ButtonCharger};
+		ButtonCharger, ButtonScalerTool};
 
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
@@ -491,7 +492,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		{5, {ButtonDuplicator, ButtonRemover, ButtonGibber, ButtonPoser, ButtonCamera,
 				ButtonHPModify, ButtonNoCollide, ButtonTakeDamage, ButtonBloodColor,
 				ButtonFramedit, ButtonTeleporter, ButtonGlowsticks, ButtonNoTools,
-				ButtonRender, ButtonShowRenders, ButtonSpawnertool}},
+				ButtonRender, ButtonShowRenders, ButtonSpawnertool, ButtonScalerTool}},
 		{6, {ButtonCrowbar, ButtonPhysgun, ButtonToolbow, ButtonGlock, ButtonPython,
 				ButtonMP5, ButtonShotgun, ButtonCrossbow, ButtonRPG, ButtonGauss,
 				ButtonEgon, ButtonHiveHand, ButtonGrenade, ButtonSatchel, ButtonTripmine,

@@ -1832,6 +1832,7 @@ public:
 	CommandButton* ButtonNoTools;
 	CommandButton* ButtonRender;
 	CommandButton* ButtonSpawnertool;
+	CommandButton* ButtonScalerTool;
 
 	// Render Modes
 	CommandButton* ButtonRMNormal;
