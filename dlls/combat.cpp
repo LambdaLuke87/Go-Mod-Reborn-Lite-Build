@@ -2096,6 +2096,9 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			}
 			else if (pPlayer->m_iToolMode == 16)
 			{
+				if (!pMonster->pev->scale) // set scale by default
+					pMonster->pev->scale = 1.0f;
+
 				if (pMonster->pev->scale == 1.0f)
 				{
 					pMonster->pev->scale = 1.5f;
@@ -2137,6 +2140,24 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
 				}
 				else if (pMonster->pev->scale == 5.0f)
+				{
+					if (scaler_limit.value)
+					{
+						pMonster->pev->scale = 0.2f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
+					}
+					else
+					{
+						pMonster->pev->scale = 8.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 8.0\n");
+					}
+				}
+				else if (pMonster->pev->scale == 8.0f)
+				{
+					pMonster->pev->scale = 10.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 10.0\n");
+				}
+				else if (pMonster->pev->scale == 10.0f)
 				{
 					pMonster->pev->scale = 0.2f;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
@@ -2386,6 +2407,9 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			}
 			else if (pPlayer->m_iToolMode == 16)
 			{
+				if (!pMonster->pev->scale) // set scale by default
+					pMonster->pev->scale = 1.0f;
+
 				if (pMonster->pev->scale == 0.8f)
 				{
 					pMonster->pev->scale = 0.5f;
@@ -2397,6 +2421,24 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
 				}
 				else if (pMonster->pev->scale == 0.2f)
+				{
+					if (scaler_limit.value)
+					{
+						pMonster->pev->scale = 5.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
+					}
+					else
+					{
+						pMonster->pev->scale = 10.0f;
+						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 10.0\n");
+					}
+				}
+				else if (pMonster->pev->scale == 10.0f)
+				{
+					pMonster->pev->scale = 8.0f;
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 8.0\n");
+				}
+				else if (pMonster->pev->scale == 8.0f)
 				{
 					pMonster->pev->scale = 5.0f;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
