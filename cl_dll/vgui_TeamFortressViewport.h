@@ -1810,6 +1810,8 @@ public:
 
 	// Explosives
 	CommandButton* ButtonPropC4;
+	CommandButton* ButtonPropGrenade;
+	CommandButton* ButtonPropTNT;
 
 	// Misc Props
 	CommandButton* ButtonChumtoad;

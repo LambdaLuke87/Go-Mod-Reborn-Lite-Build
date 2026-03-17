@@ -308,6 +308,8 @@ CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x,
 
 	// Explosives
 	ButtonHelper(ButtonPropC4, "#Gomod_Prop_C4", "summon prop_c4", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonPropGrenade, "#Gomod_Weapon_Grenade", "summon prop_grenade", iXPos + XRES(80), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
+	ButtonHelper(ButtonPropTNT, "#Gomod_Prop_TNT", "summon prop_tnt", iXPos + XRES(144), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
 
 	// Misc Props
 	ButtonHelper(ButtonChumtoad, "#Gomod_Prop_Chumtoads", "summon prop_chumtoad", iXPos + XRES(16), iYPos + iYSize - YRES(184) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y + YRES(5));
@@ -471,7 +473,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		ButtonDeadHgrunt, ButtonDeadMassassin, ButtonDeadAllyHgrunt, ButtonDeadAlienSlave, ButtonPanthereye, 
 		ButtonBabyGarg, ButtonDeadZombieSoldier, ButtonSporeBalls, ButtonAlienSlaveMelee, ButtonGonomeMelee,
 		ButtonPitdroneMelee, ButtonScientistPreDisaster, ButtonBarneyPreDisaster, ButtonRobogrunt, ButtonArcher,
-		ButtonCharger, ButtonScalerTool};
+		ButtonCharger, ButtonScalerTool, ButtonPropGrenade, ButtonPropTNT};
 
 	// Mapping button groups by category
 	std::map<int, std::vector<CommandButton*>> menuGroups = {
@@ -542,7 +544,7 @@ void CSandboxMenu::SetActiveInfo(int iShowText)
 		         ButtonXenSporeXL, ButtonPropCorpses, ButtonPropsExplosives, ButtonPropsMISC, ButtonAimMode, 
 				 ButtonUndoNPC, ButtonDeleteALlNpcs}},
 		{17, {ButtonPropC4, ButtonPropCorpses, ButtonXenProps, ButtonPropsMISC, ButtonAimMode, 
-		         ButtonUndoNPC, ButtonDeleteALlNpcs}},
+		         ButtonUndoNPC, ButtonDeleteALlNpcs, ButtonPropGrenade, ButtonPropTNT}},
 		{18, {ButtonChumtoad, ButtonSittingScientist, ButtonPropCorpses, ButtonXenProps, ButtonPropsExplosives, 
 		         ButtonAimMode, ButtonUndoNPC, ButtonDeleteALlNpcs, ButtonSpores}},
 	};

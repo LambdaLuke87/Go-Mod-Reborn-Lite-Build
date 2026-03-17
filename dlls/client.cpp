@@ -127,6 +127,9 @@ spawnlist_t gProps[] =
 	{
 		{"prop_c4"},
 		{"prop_chumtoad"},
+		{"prop_grenade"},
+		{"prop_spore"},
+		{"prop_tnt"},
 		{"xen_hair"},
 		{"xen_plantlight"},
 		{"xen_spore_large"},
@@ -1996,11 +1999,6 @@ void ClientPrecache()
 				spawnlist_t sXenProps = gProps[i];
 				UTIL_PrecacheOther(sXenProps.classname);
 			}
-
-			// Aditional Precaches needed bellow
-			PRECACHE_MODEL("models/fungus(small).mdl");
-			PRECACHE_MODEL("models/fungus.mdl");
-			PRECACHE_MODEL("models/fungus(large).mdl");
 		}
 
 		if (allow_nihilant.value)

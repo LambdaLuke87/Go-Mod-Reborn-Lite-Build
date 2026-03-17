@@ -538,7 +538,17 @@ void CXenSpore::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), pModelNames[pev->skin]);
+	if (UTIL_IsSandbox())
+	{
+		// All three models are the same; save precaches by rescaling the model.
+		SET_MODEL(ENT(pev), "models/fungus.mdl");
+		if (pev->skin == 0)
+			pev->scale = 0.5f;
+		else if (pev->skin == 2)
+			pev->scale = 2.0f;
+	}
+	else
+		SET_MODEL(ENT(pev), pModelNames[pev->skin]);
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_BBOX;
 	pev->takedamage = DAMAGE_YES;
@@ -561,7 +571,11 @@ const char* CXenSpore::pModelNames[] =
 
 void CXenSpore::Precache()
 {
-	PRECACHE_MODEL((char*)pModelNames[pev->skin]);
+	// All three models are the same; save precaches by rescaling the model.
+	if (UTIL_IsSandbox())
+		PRECACHE_MODEL("models/fungus.mdl");
+	else
+		PRECACHE_MODEL((char*)pModelNames[pev->skin]);
 }
 
 

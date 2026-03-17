@@ -136,24 +136,33 @@ int CChumtoad::Classify()
     return CLASS_NONE;
 }
 
-class CC4Prop : public CGrenade
+class CGrenadeProp : public CGrenade
 {
 public:
 	void Spawn() override;
-	void Precache() override;
 	int Classify() override;
+
+	virtual void ExplodeEffect();
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 
-	int m_iSpriteTexture;
+protected:
+	void SpawnHelper(const char* modelName);
 };
 
-LINK_ENTITY_TO_CLASS(prop_c4, CC4Prop);
+LINK_ENTITY_TO_CLASS(prop_grenade, CGrenadeProp);
+LINK_ENTITY_TO_CLASS(prop_tnt, CGrenadeProp);
 
-void CC4Prop::Spawn()
+void CGrenadeProp::Spawn()
 {
-	Precache();
+	SpawnHelper("models/w_grenade.mdl");
 
-	SET_MODEL(ENT(pev), "models/gomod/c4_bomb.mdl");
+	if (FClassnameIs(pev, "prop_tnt"))
+		pev->body = 1;
+}
+
+void CGrenadeProp::SpawnHelper(const char* modelName)
+{
+	SET_MODEL(ENT(pev), modelName);
 	UTIL_SetSize(pev, Vector(-4, -4, 0), Vector(4, 4, 8));
 
 	pev->movetype = MOVETYPE_STEP;
@@ -168,14 +177,17 @@ void CC4Prop::Spawn()
 	MonsterInit();
 }
 
-void CC4Prop::Precache()
+void CGrenadeProp::ExplodeEffect()
 {
-	PRECACHE_MODEL("models/gomod/c4_bomb.mdl");
-	PRECACHE_SOUND("weapons/mortarhit.wav");
-	m_iSpriteTexture = PRECACHE_MODEL("sprites/white.spr");
+	if (FClassnameIs(pev, "prop_tnt"))
+		pev->dmg = 200;
+	else
+		pev->dmg = 100;
+
+	Detonate();
 }
 
-void CC4Prop::Killed(entvars_t* pevAttacker, int iGib)
+void CGrenadeProp::Killed(entvars_t* pevAttacker, int iGib)
 {
 	if (explosion_control.value)
 		CBaseMonster::Killed(pevAttacker, GIB_ALWAYS);
@@ -183,42 +195,72 @@ void CC4Prop::Killed(entvars_t* pevAttacker, int iGib)
 	{
 		if (!m_Beingremoved)
 		{
-			Detonate();
-
-			// blast circle
-			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
-			WRITE_BYTE(TE_BEAMCYLINDER);
-			WRITE_COORD(pev->origin.x);
-			WRITE_COORD(pev->origin.y);
-			WRITE_COORD(pev->origin.z);
-			WRITE_COORD(pev->origin.x);
-			WRITE_COORD(pev->origin.y);
-			WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
-			WRITE_SHORT(m_iSpriteTexture);
-			WRITE_BYTE(0);	 // startframe
-			WRITE_BYTE(0);	 // framerate
-			WRITE_BYTE(4);	 // life
-			WRITE_BYTE(32);	 // width
-			WRITE_BYTE(0);	 // noise
-			WRITE_BYTE(255); // r, g, b
-			WRITE_BYTE(255); // r, g, b
-			WRITE_BYTE(192); // r, g, b
-			WRITE_BYTE(128); // brightness
-			WRITE_BYTE(0);	 // speed
-			MESSAGE_END();
-
-			EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
-
-			UTIL_ScreenShake(pev->origin, 4.0, 3.0, 1.0, 750);
-
-			::RadiusDamage(Center(), pev, pev, 950, 950, dont_ignore_monsters, DMG_BLAST);
+			ExplodeEffect();
 		}
 	}
 }
 
-int  CC4Prop::Classify()
+int CGrenadeProp::Classify()
 {
 	return CLASS_NONE;
+}
+
+class CC4Prop : public CGrenadeProp
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	void ExplodeEffect() override;
+
+	int m_iSpriteTexture;
+};
+
+LINK_ENTITY_TO_CLASS(prop_c4, CC4Prop);
+
+void CC4Prop::Spawn()
+{
+	Precache();
+	SpawnHelper("models/gomod/c4_bomb.mdl");
+}
+
+void CC4Prop::Precache()
+{
+	PRECACHE_MODEL("models/gomod/c4_bomb.mdl");
+	PRECACHE_SOUND("weapons/mortarhit.wav");
+	m_iSpriteTexture = PRECACHE_MODEL("sprites/white.spr");
+}
+
+void CC4Prop::ExplodeEffect()
+{
+	Detonate();
+
+	// blast circle
+	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
+	WRITE_BYTE(TE_BEAMCYLINDER);
+	WRITE_COORD(pev->origin.x);
+	WRITE_COORD(pev->origin.y);
+	WRITE_COORD(pev->origin.z);
+	WRITE_COORD(pev->origin.x);
+	WRITE_COORD(pev->origin.y);
+	WRITE_COORD(pev->origin.z + 2000); // reach damage radius over .2 seconds
+	WRITE_SHORT(m_iSpriteTexture);
+	WRITE_BYTE(0);	 // startframe
+	WRITE_BYTE(0);	 // framerate
+	WRITE_BYTE(4);	 // life
+	WRITE_BYTE(32);	 // width
+	WRITE_BYTE(0);	 // noise
+	WRITE_BYTE(255); // r, g, b
+	WRITE_BYTE(255); // r, g, b
+	WRITE_BYTE(192); // r, g, b
+	WRITE_BYTE(128); // brightness
+	WRITE_BYTE(0);	 // speed
+	MESSAGE_END();
+
+	EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
+
+	UTIL_ScreenShake(pev->origin, 4.0, 3.0, 1.0, 750);
+
+	::RadiusDamage(Center(), pev, pev, 950, 950, dont_ignore_monsters, DMG_BLAST);
 }
 
 class CWaspCamera : public CBaseMonster
