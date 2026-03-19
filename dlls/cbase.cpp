@@ -767,34 +767,34 @@ CBaseEntity* CBaseEntity::Create(const char* szName, const Vector& vecOrigin, co
 	return pEntity;
 }
 
-CBaseEntity* CBaseEntity::CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, 
-	float respawntime, bool altclass, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, int ramt, edict_t* pentOwner)
+CBaseEntity* CBaseEntity::CreateSpawner(const SpawnerParams& p)
 {
 	edict_t* pent;
 	CBaseEntity* pEntity;
 
-	pent = CREATE_NAMED_ENTITY(MAKE_STRING(szName));
+	pent = CREATE_NAMED_ENTITY(MAKE_STRING(p.name));
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "NULL Ent in Create!\n");
 		return NULL;
 	}
 	pEntity = Instance(pent);
-	pEntity->pev->owner = pentOwner;
-	pEntity->pev->origin = vecOrigin;
-	pEntity->pev->angles = vecAngles;
+	pEntity->pev->owner = p.owner;
+	pEntity->pev->origin = p.origin;
+	pEntity->pev->angles = p.angles;
 	pEntity->m_bShouldRespawn = true; // Respawn
 	pEntity->m_MenuCreated = true;	// Menu Created
-	pEntity->m_AltClass = altclass; // Get alt class
-	pEntity->m_respawntime = respawntime; // Respawn time
-	pEntity->m_CustomFrame = customframe; // Frame tool Support
+	pEntity->m_AltClass = p.altClass; // Get alt class
+	pEntity->m_respawntime = p.respawnTime; // Respawn time
+	pEntity->m_CustomFrame = p.customFrame; // Frame tool Support
 	// Renders Copy
-	pEntity->pev->rendermode = rendermode;
-	pEntity->pev->renderfx = renderfx;
-	pEntity->pev->rendercolor.x = rr;
-	pEntity->pev->rendercolor.y = rg;
-	pEntity->pev->rendercolor.z = rb;
-	pEntity->pev->renderamt = ramt;
+	pEntity->pev->rendermode = p.renderMode;
+	pEntity->pev->renderfx = p.renderFx;
+	pEntity->pev->rendercolor.x = p.r;
+	pEntity->pev->rendercolor.y = p.g;
+	pEntity->pev->rendercolor.z = p.b;
+	pEntity->pev->renderamt = p.a;
+	pEntity->pev->scale = p.scale; // Scaler Tool Support
 	DispatchSpawn(pEntity->edict());
 
 	if (respawn_npc_sound.value)

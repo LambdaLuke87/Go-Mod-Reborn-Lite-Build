@@ -150,6 +150,25 @@ public:
 	}
 };
 
+// Spawner Tool
+struct SpawnerParams
+{
+	const char* name;
+	Vector origin;
+	Vector angles;
+	float respawnTime;
+	bool altClass;
+	int customFrame;
+
+	int renderMode;
+	int renderFx;
+
+	int r, g, b, a;
+
+	float scale;
+
+	edict_t* owner = nullptr;
+};
 
 //
 // Base Entity.  All entity types derive from this
@@ -374,7 +393,7 @@ public:
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
 	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
-	static CBaseEntity* CreateSpawner(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, float respawntime, bool altclass, int customframe, int rendermode, int renderfx, int rr, int rg, int rb, int ramt, edict_t* pentOwner = NULL);
+	static CBaseEntity* CreateSpawner(const SpawnerParams& p);
 	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 

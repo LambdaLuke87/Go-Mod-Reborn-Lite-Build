@@ -789,20 +789,28 @@ void CBaseMonster::Killed(entvars_t* pevAttacker, int iGib)
 void CBaseMonster::MonsterRespawnThink()
 {
 	// Act the spawner function
-	CBaseEntity* pRespawned = CBaseEntity::CreateSpawner(
-		STRING(m_iszMonsterClassname),
-		m_vecSpawnOrigin,
-		m_vecSpawnAngles,
-		m_respawntime,
-		m_AltClass,
-		m_CustomFrame,
-		pev->rendermode,
-		pev->renderfx,
-		pev->rendercolor.x,
-		pev->rendercolor.y,
-		pev->rendercolor.z,
-		pev->renderamt,
-		edict());
+	SpawnerParams params;
+
+	params.name = STRING(m_iszMonsterClassname);
+	params.origin = m_vecSpawnOrigin;
+	params.angles = m_vecSpawnAngles;
+	params.respawnTime = m_respawntime;
+	params.altClass = m_AltClass;
+	params.customFrame = m_CustomFrame;
+
+	params.renderMode = pev->rendermode;
+	params.renderFx = pev->renderfx;
+
+	params.r = pev->rendercolor.x;
+	params.g = pev->rendercolor.y;
+	params.b = pev->rendercolor.z;
+	params.a = pev->renderamt;
+
+	params.scale = pev->scale;
+
+	params.owner = edict();
+
+	CBaseEntity* pRespawned = CBaseEntity::CreateSpawner(params);
 
 	UTIL_Remove(this); // Remove it
 }
