@@ -945,6 +945,8 @@ Schedule_t* CGonome::GetScheduleOfType(int Type)
 	switch (Type)
 	{
 	case SCHED_RANGE_ATTACK1:
+		if (FClassnameIs(pev, "monster_gonome_melee"))
+			return &slGonomeChaseEnemy[0];
 		return &slGonomeRangeAttack1[0];
 		break;
 	case SCHED_CHASE_ENEMY:

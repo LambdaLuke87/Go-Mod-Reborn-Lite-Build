@@ -1073,6 +1073,8 @@ Schedule_t* CPitdrone::GetScheduleOfType(int Type)
 	switch (Type)
 	{
 	case SCHED_RANGE_ATTACK1:
+		if (FClassnameIs(pev, "monster_pitdrone_melee"))
+			return &slPitdroneChaseEnemy[0];
 		return &slPitdroneRangeAttack1[0];
 		break;
 	case SCHED_PITDRONE_HURTHOP:
