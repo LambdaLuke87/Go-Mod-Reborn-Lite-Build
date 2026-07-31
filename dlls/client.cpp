@@ -1392,24 +1392,52 @@ void ClientCommand(edict_t* pEntity)
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
 	}
 
-	//In Opposing Force this is handled only by the CTF gamerules
-#if false
-	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
+	else if (FStrEq(pcmd, "spectate")) // clients wants to become a spectator
 	{
-			// always allow proxies to become a spectator
-		if ( (pev->flags & FL_PROXY) != 0 || 0 != allow_spectators.value  )
+		// Block too offten spectator command usage
+		if (UTIL_IsSandbox())
 		{
-			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(player);
-			player->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
+			if (!pPlayer->IsObserver())
+			{
+				// always allow proxies to become a spectator
+				if ((pev->flags & FL_PROXY) || allow_spectators.value)
+				{
+					edict_t* pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot(pPlayer);
+					pPlayer->StartObserver(pev->origin, VARS(pentSpawnSpot)->angles);
 
-			// notify other clients of player switching to spectator mode
-			UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s switched to spectator mode\n", 
-			 	( !FStringNull(pev->netname) && STRING(pev->netname)[0] != 0 ) ? STRING(pev->netname) : "unconnected" ) );
+					// notify other clients of player switching to spectator mode
+					UTIL_ClientPrintAll(HUD_PRINTNOTIFY, UTIL_VarArgs("%s switched to spectator mode\n",
+															 (pev->netname && STRING(pev->netname)[0] != 0) ? STRING(pev->netname) : "unconnected"));
+				}
+				else
+					ClientPrint(pev, HUD_PRINTCONSOLE, "Spectator mode is disabled.\n");
+			}
+			else
+			{
+				// get out of Spectator mode
+				pPlayer->StopObserver();
+				// notify other clients of player left spectators
+
+				UTIL_ClientPrintAll(HUD_PRINTNOTIFY, UTIL_VarArgs("%s has left spectator mode\n",
+														 (pev->netname && (STRING(pev->netname))[0] != 0) ? STRING(pev->netname) : "unconnected"));
+			}
 		}
-		else
-			ClientPrint( pev, HUD_PRINTCONSOLE, "Spectator mode is disabled.\n" );
-			
-	}	
+	}
+	else if (FStrEq(pcmd, "end_spectate"))
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (allow_spectators.value)
+			{
+				pPlayer->EndObserver();
+
+				// notify other clients of player left spectators
+				UTIL_ClientPrintAll(HUD_PRINTNOTIFY, UTIL_VarArgs("%s has left spectator mode\n",
+														 (pev->netname && (STRING(pev->netname))[0] != 0) ? STRING(pev->netname) : "unconnected"));
+			}
+		}
+	}
+#if false
 	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
 	{
 		if (player->IsObserver() )

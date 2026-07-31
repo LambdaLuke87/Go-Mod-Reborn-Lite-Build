@@ -326,6 +326,11 @@ public:
 	void StartDeathCam();
 	void StartObserver(Vector vecPosition, Vector vecViewAngle);
 
+	// Observer stuff
+	void StopObserver();
+	void EndObserver();
+	float m_flNextSpectCmd;
+
 	void AddPoints(int score, bool bAllowNegativeScore) override;
 	void AddPointsToTeam(int score, bool bAllowNegativeScore) override;
 	bool AddPlayerItem(CBasePlayerItem* pItem) override;

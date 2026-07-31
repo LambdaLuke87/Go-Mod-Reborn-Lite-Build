@@ -135,12 +135,12 @@ CMenuPanel* CSandboxMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, 
 CSandboxMenu::CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall) : CGMMenuBase(iTrans, iRemoveMe, x, y, wide, tall)
 {
 	// Main Headers
-	ButtonOptionHelper(ButtonLinkMenu, "#Gomod_MenuTab_Main", false, 0, iXPos + XRES(16), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
-	ButtonOptionHelper(ButtonSweepMenu, "#Gomod_MenuTab_Weapons", true, 1, iXPos + XRES(72), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
-	ButtonOptionHelper(ButtonItemsMenu, "#Gomod_MenuTab_Items", true, 2, iXPos + XRES(128), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
-	ButtonOptionHelper(ButtonNPCMenu, "#Gomod_MenuTab_Monsters", true, 3, iXPos + XRES(184), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
-	ButtonOptionHelper(ButtonPropsMenu, "#Gomod_MenuTab_Props", true, 4, iXPos + XRES(240), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
-	ButtonOptionHelper(ButtonToolsMenu, "#Gomod_MenuTab_Tools", true, 5, iXPos + XRES(296), iYPos + iYSize - YRES(275) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonLinkMenu, "#Gomod_MenuTab_Main", false, 0, iXPos + XRES(0), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonSweepMenu, "#Gomod_MenuTab_Weapons", true, 1, iXPos + XRES(56), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonItemsMenu, "#Gomod_MenuTab_Items", true, 2, iXPos + XRES(112), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonNPCMenu, "#Gomod_MenuTab_Monsters", true, 3, iXPos + XRES(168), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonPropsMenu, "#Gomod_MenuTab_Props", true, 4, iXPos + XRES(224), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
+	ButtonOptionHelper(ButtonToolsMenu, "#Gomod_MenuTab_Tools", true, 5, iXPos + XRES(280), iYPos + iYSize - YRES(282) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(104), BUTTON_SIZE_Y);
 
 	// SubHeaders Weapons
 	ButtonOptionHelper(ButtonHLSweeps, "#GAMETITLE", false, 6, iXPos + XRES(16), iYPos + iYSize - YRES(224) - BUTTON_SIZE_Y, CMENU_SIZE_X - XRES(96), BUTTON_SIZE_Y - YRES(8));

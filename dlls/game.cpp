@@ -43,7 +43,7 @@ cvar_t defaultteam = {"mp_defaultteam", "0"};
 cvar_t allowmonsters = {"mp_allowmonsters", "0", FCVAR_SERVER};
 cvar_t dropweapons = {"mp_dropweapons", "1", FCVAR_SERVER};
 
-cvar_t allow_spectators = {"allow_spectators", "0.0", FCVAR_SERVER}; // 0 prevents players from being spectators
+cvar_t allow_spectators = {"allow_spectators", "1", FCVAR_SERVER}; // 0 prevents players from being spectators
 
 cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 
