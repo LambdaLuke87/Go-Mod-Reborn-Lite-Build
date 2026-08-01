@@ -37,9 +37,7 @@
 #define TRACER_FREQ 4 // Tracers fire every fourth bullet
 
 extern bool IsBustingGame();
-extern bool IsReaperGame();
 extern bool IsPlayerBusting(CBaseEntity* pPlayer);
-extern bool IsPlayerReaper(CBaseEntity* pPlayer);
 
 int UTIL_DefaultPlaybackFlags()
 {
@@ -513,13 +511,6 @@ void CBasePlayerItem::FallThink()
 			UTIL_Remove(this);
 		}
 	}
-	else if (IsReaperGame() && FNullEnt(pev->owner))
-	{
-		if (!strcmp("weapon_knife", STRING(pev->classname)))
-		{
-			UTIL_Remove(this);
-		}
-	}
 }
 
 //=========================================================
@@ -613,9 +604,6 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity* pOther)
 		return;
 
 	if (IsPlayerBusting(pOther))
-		return;
-
-	if (IsPlayerReaper(pOther))
 		return;
 
 	CBasePlayer* pPlayer = (CBasePlayer*)pOther;
@@ -996,9 +984,6 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity* pOther)
 	}
 
 	if (IsPlayerBusting(pOther))
-		return;
-
-	if (IsPlayerReaper(pOther))
 		return;
 
 	if (AddAmmo(pOther))

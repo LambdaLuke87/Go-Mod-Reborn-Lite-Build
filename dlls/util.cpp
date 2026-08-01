@@ -34,7 +34,6 @@
 #include "UserMessages.h"
 
 extern bool IsSandBox();
-extern bool IsReaperGame();
 
 float UTIL_WeaponTimeBase()
 {
@@ -2530,9 +2529,4 @@ bool UTIL_IsCTF()
 bool UTIL_IsSandbox()
 {
 	return !UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox();
-}
-
-bool UTIL_IsReaperMode()
-{
-	return UTIL_IsMultiplayer() && IsReaperGame();
 }

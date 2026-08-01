@@ -58,7 +58,6 @@ extern void CopyToBodyQue(entvars_t* pev);
 extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 
 extern bool IsBustingGame();
-extern bool IsReaperGame();
 extern bool IsSandBox();
 
 #define TRAIN_ACTIVE 0x80
@@ -878,33 +877,6 @@ void CBasePlayer::PackDeadPlayerItems()
 						pWeaponBox->pev->renderfx = kRenderFxGlowShell;
 						pWeaponBox->pev->renderamt = 25;
 						pWeaponBox->pev->rendercolor = Vector(0, 75, 250);
-
-						break;
-					}
-				}
-			}
-		}
-	}
-	if (IsReaperGame())
-	{
-		if (HasNamedPlayerItem("weapon_knife"))
-		{
-			for (i = 0; i < MAX_ITEM_TYPES; i++)
-			{
-				CBasePlayerItem* pItem = m_rgpPlayerItems[i];
-
-				if (pItem)
-				{
-					if (!strcmp("weapon_knife", STRING(pItem->pev->classname)))
-					{
-						pWeaponBox->PackWeapon(pItem);
-
-						SET_MODEL(ENT(pWeaponBox->pev), "models/w_scythe.mdl");
-
-						pWeaponBox->pev->velocity = Vector(0, 0, 0);
-						pWeaponBox->pev->renderfx = kRenderFxGlowShell;
-						pWeaponBox->pev->renderamt = 25;
-						pWeaponBox->pev->rendercolor = Vector(255, 20, 42);
 
 						break;
 					}

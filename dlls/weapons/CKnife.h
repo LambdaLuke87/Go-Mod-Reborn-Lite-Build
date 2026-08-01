@@ -49,8 +49,6 @@ public:
 
 	bool Swing(const bool bFirst);
 
-	bool CanHolster();
-
 	void EXPORT SwingAgain();
 
 	void EXPORT Smack();

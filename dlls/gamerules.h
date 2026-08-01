@@ -432,34 +432,6 @@ public:
 	void UpdateGameMode(CBasePlayer* pPlayer) override;
 };
 
-//=========================================================
-// CMultiplayReaper
-// The counterpart of the mode Busters >:)
-//=========================================================
-class CMultiplayReaper : public CHalfLifeMultiplay
-{
-public:
-	CMultiplayReaper();
-
-	void Think();
-	int IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled);
-	void PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor);
-	void DeathNotice(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor);
-	int WeaponShouldRespawn(CBasePlayerItem* pWeapon);
-	bool CanHavePlayerItem(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon);
-	bool CanHaveItem(CBasePlayer* pPlayer, CItem* pItem);
-	void PlayerGotWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon);
-	void ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer);
-	void PlayerSpawn(CBasePlayer* pPlayer);
-
-	void SetPlayerModel(CBasePlayer* pPlayer);
-
-	void UpdateGameMode(CBasePlayer* pPlayer) override;
-protected:
-	float m_flEgonBustingCheckTime = -1.0f;
-	void CheckForKnifes();
-};
-
 inline DLL_GLOBAL CGameRules* g_pGameRules = nullptr;
 inline DLL_GLOBAL bool g_fGameOver;
 inline bool g_teamplay = false;
