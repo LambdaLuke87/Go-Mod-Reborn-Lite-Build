@@ -267,7 +267,7 @@ struct voices_t
 };
 
 // Voices
-voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 22};
+voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 27};
 
 // GM6 Spawn Monster Trace
 void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
