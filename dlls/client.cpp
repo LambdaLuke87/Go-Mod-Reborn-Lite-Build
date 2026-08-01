@@ -1391,6 +1391,24 @@ void ClientCommand(edict_t* pEntity)
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
 	}
+	else if (FStrEq(pcmd, "toggle_flashlight_mode"))
+	{
+		if (UTIL_IsSandbox())
+		{
+			if (player->m_fUseNightVision)
+			{
+				ClearBits(player->pev->effects, EF_BRIGHTLIGHT);
+				player->m_fUseNightVision = false;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to Normal Mode\n"));
+			}
+			else
+			{
+				ClearBits(player->pev->effects, EF_DIMLIGHT);
+				player->m_fUseNightVision = true;
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to Aura Mode\n"));
+			}
+		}
+	}
 	else if (FStrEq(pcmd, "lightstyle"))
 	{
 		// Check if it is a dedicated server.

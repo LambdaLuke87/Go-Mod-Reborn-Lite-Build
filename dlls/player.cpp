@@ -143,6 +143,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_fUseFrontSpawn, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fGiveItemMode, FIELD_BOOLEAN),
 		DEFINE_FIELD(CBasePlayer, m_fUseAlliedMode, FIELD_BOOLEAN),
+		DEFINE_FIELD(CBasePlayer, m_fUseNightVision, FIELD_BOOLEAN),
 
 		// Save Fog Values
 		DEFINE_FIELD(CBasePlayer, m_iFogRed, FIELD_INTEGER),
@@ -3890,6 +3891,9 @@ void CBasePlayer::GiveNamedItem(const char* szName, int defaultAmmo)
 
 bool CBasePlayer::FlashlightIsOn()
 {
+	if (m_fUseNightVision)
+		return FBitSet(pev->effects, EF_BRIGHTLIGHT);
+	
 	return FBitSet(pev->effects, EF_DIMLIGHT);
 }
 
@@ -3904,7 +3908,12 @@ void CBasePlayer::FlashlightTurnOn()
 	if (HasSuit())
 	{
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
-		SetBits(pev->effects, EF_DIMLIGHT);
+		if (m_fUseNightVision)
+		{
+			SetBits(pev->effects, EF_BRIGHTLIGHT);
+		}
+		else
+			SetBits(pev->effects, EF_DIMLIGHT);
 		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 		WRITE_BYTE(1);
 		WRITE_BYTE(m_iFlashBattery);
@@ -3918,7 +3927,10 @@ void CBasePlayer::FlashlightTurnOn()
 void CBasePlayer::FlashlightTurnOff()
 {
 	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
-	ClearBits(pev->effects, EF_DIMLIGHT);
+	if (m_fUseNightVision)
+		ClearBits(pev->effects, EF_BRIGHTLIGHT);
+	else
+		ClearBits(pev->effects, EF_DIMLIGHT);
 	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
 	WRITE_BYTE(0);
 	WRITE_BYTE(m_iFlashBattery);

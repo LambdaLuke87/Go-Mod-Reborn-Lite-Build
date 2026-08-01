@@ -461,6 +461,7 @@ public:
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
 	bool m_fUseFrontSpawn;
+	bool m_fUseNightVision;
 
 	// Fog Values
 	int m_iFogRed = 155;
