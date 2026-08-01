@@ -1391,7 +1391,39 @@ void ClientCommand(edict_t* pEntity)
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
 	}
+	else if (FStrEq(pcmd, "lightstyle"))
+	{
+		// Check if it is a dedicated server.
+		if (IS_DEDICATED_SERVER())
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't change lightstyle\n");
+			return;
+		}
 
+		// Verify if the player is the host (local player #1)
+		if (ENTINDEX(pEntity) != 1)
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can use lightstyle\n");
+			return;
+		}
+
+		if (CMD_ARGC() < 3)
+		{
+			CLIENT_PRINTF(pEntity, print_console,
+				"Usage: lightstyle <style> <pattern>\n");
+			return;
+		}
+
+		int style = atoi(CMD_ARGV(1));
+		const char* pattern = CMD_ARGV(2);
+
+		g_engfuncs.pfnLightStyle(style, (char*)pattern);
+
+		CLIENT_PRINTF(pEntity, print_console,
+			"LightStyle applied.\n");
+
+		return;
+	}
 	else if (FStrEq(pcmd, "spectate")) // clients wants to become a spectator
 	{
 		// Block too offten spectator command usage
@@ -1437,13 +1469,11 @@ void ClientCommand(edict_t* pEntity)
 			}
 		}
 	}
-#if false
 	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
 	{
-		if (player->IsObserver() )
+		if (player->IsObserver() && UTIL_IsSandbox())
 			player->Observer_SetMode( atoi( CMD_ARGV(1) ) );
 	}
-#endif
 	else if (FStrEq(pcmd, "closemenus"))
 	{
 		// just ignore it
