@@ -57,6 +57,7 @@ cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
 cvar_t current_gamemode = {"mp_gamemode", "0", FCVAR_SERVER}; // Sandbox Mode
 cvar_t mpweapons_skills = {"mp_weapons_skills", "1", FCVAR_SERVER};
 cvar_t rule_infammo = {"gm_infinite_ammo", "0", FCVAR_SERVER};
+cvar_t rule_grapple_hook = {"gm_grapple_hook_all", "0", FCVAR_SERVER};
 cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 
 // Sandbox Configs
@@ -763,6 +764,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&current_gamemode);
 	CVAR_REGISTER(&mpweapons_skills);
 	CVAR_REGISTER(&rule_infammo);
+	CVAR_REGISTER(&rule_grapple_hook);
 	CVAR_REGISTER(&allow_gaussfly);
 
 	// Sandbox Configs

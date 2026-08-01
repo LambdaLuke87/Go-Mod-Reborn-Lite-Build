@@ -446,6 +446,7 @@ extern int DamageDecal(CBaseEntity* pEntity, int bitsDamageType);
 extern void RadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 
 extern cvar_s rule_infammo;
+extern cvar_s rule_grapple_hook;
 
 typedef struct
 {

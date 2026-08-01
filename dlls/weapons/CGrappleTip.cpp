@@ -257,7 +257,12 @@ CGrappleTip::TargetClass CGrappleTip::ClassifyTarget(CBaseEntity* pTarget)
 
 	const auto pszTexture = TRACE_TEXTURE(pHit, pev->origin, vecEnd);
 
-	bool bIsFixed = false;
+	bool bIsFixed;
+
+	if (rule_grapple_hook.value)
+		bIsFixed = true;
+	else
+		bIsFixed = false;
 
 	if (pszTexture && strnicmp(pszTexture, "xeno_grapple", 12) == 0)
 	{

@@ -41,6 +41,7 @@
 #include "../demo.h"
 
 cvar_t rule_infammo;
+cvar_t rule_grapple_hook;
 
 extern int g_iUser1;
 
