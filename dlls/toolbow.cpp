@@ -398,7 +398,6 @@ void CToolbow::Holster()
 
 void CToolbow::PrimaryAttack()
 {
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
@@ -522,7 +521,6 @@ void CToolbow::PrimaryAttack()
 
 void CToolbow::SecondaryAttack()
 {
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;

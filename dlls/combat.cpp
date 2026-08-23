@@ -2012,6 +2012,30 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
 		}
 	}
+	else if (pPlayer->m_iToolMode == 17)
+	{
+		CBaseMonster* pMonster = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
+
+		if (!pMonster)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected");
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		TraceResult tr;
+
+		Vector vecEnd = vecSrc + vecDirShooting * flDistance;
+
+		UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, pPlayer->edict(), &tr);
+
+		if (tr.flFraction != 1.0)
+		{
+			if (pMonster->MoveToLocation(ACT_WALK, 0.0, tr.vecEndPos))
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC moving");
+			else
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
+		}
+	}
 	else if (pPlayer->m_iToolMode >= 8)
 	{
 		CBaseMonster* pMonster;
@@ -2323,6 +2347,21 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			}
 
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
+		}
+	}
+	else if (pPlayer->m_iToolMode == 17)
+	{
+		CBaseEntity* pEntity = FindEntityForwardNew(this);
+
+		if (pEntity)
+		{
+			CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEntity);
+
+			if (pMonster)
+			{
+				pPlayer->m_hManipulateNPC = pMonster;
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC selected");
+			}
 		}
 	}
 	else if (pPlayer->m_iToolMode >= 8)

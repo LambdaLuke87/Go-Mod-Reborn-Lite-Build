@@ -462,6 +462,7 @@ public:
 	bool m_fGiveItemMode;
 	bool m_fUseFrontSpawn;
 	bool m_fUseNightVision;
+	EHANDLE m_hManipulateNPC;
 
 	// Fog Values
 	int m_iFogRed = 155;

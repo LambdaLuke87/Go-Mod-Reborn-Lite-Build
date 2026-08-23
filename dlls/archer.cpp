@@ -251,8 +251,8 @@ const char* CArcher::pIdleSounds[] =
 
 const char* CArcher::pAlertSounds[] =
 {
+	"archer/arch_alert1.wav",
 	"archer/arch_alert2.wav",
-	"archer/arch_alert3.wav",
 };
 
 const char* CArcher::pAttackSounds[] =
