@@ -223,7 +223,8 @@ tbow_helper_t gToolbowModes[] =
 		{"glowsticks", "Glowsticks"},
 		{"spawner", "Spawner"},
 		{"scaler", "Scaler"},
-		{"lead", "Lead"}};
+		{"lead", "Lead"},
+		{"attacker", "Attacker"}};
 
 
 // Render Tool: Render Mode

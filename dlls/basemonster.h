@@ -365,6 +365,8 @@ public:
 
 	bool JumpToTarget(Activity movementAct, float waitTime);
 
+	bool m_bToolEnemy; // Force Hate with attacker tool
+
 	//Shock rifle shock effect
 	float m_flShockDuration;
 	float m_flShockTime;

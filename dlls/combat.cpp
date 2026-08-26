@@ -2036,6 +2036,78 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
 		}
 	}
+	else if (pPlayer->m_iToolMode == 18)
+	{
+		CBaseMonster* pAttacker = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
+
+		if (!pAttacker)
+		{
+			ClientPrint(
+				pPlayer->pev,
+				HUD_PRINTCENTER,
+				"No NPC selected\n");
+
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		CBaseEntity* pTarget = FindEntityForwardNew(this);
+
+		if (!pTarget)
+		{
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		CBaseMonster* pTargetMonster = pTarget->MyMonsterPointer();
+
+		if (!pTargetMonster)
+		{
+			ClientPrint(
+				pPlayer->pev,
+				HUD_PRINTCENTER,
+				"Target is not an NPC\n");
+
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		if (pTargetMonster == pAttacker)
+		{
+			ClientPrint(
+				pPlayer->pev,
+				HUD_PRINTCENTER,
+				"Cannot attack itself\n");
+
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		if (!pTargetMonster->IsAlive())
+		{
+			ClientPrint(
+				pPlayer->pev,
+				HUD_PRINTCENTER,
+				"Target is dead\n");
+
+			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+		}
+
+		// Assign the target as the NPC's enemy
+		pAttacker->m_bToolEnemy = true;
+		pAttacker->m_hEnemy = pTargetMonster;
+		pAttacker->m_vecEnemyLKP = pTargetMonster->pev->origin;
+
+		pAttacker->SetConditions(
+			bits_COND_NEW_ENEMY |
+			bits_COND_SEE_ENEMY |
+			bits_COND_SEE_HATE);
+
+		pAttacker->SetState(MONSTERSTATE_COMBAT);
+		pAttacker->ClearSchedule();
+		pAttacker->RouteClear();
+
+		ClientPrint(
+			pPlayer->pev,
+			HUD_PRINTCENTER,
+			"NPC attacking target\n");
+	}
 	else if (pPlayer->m_iToolMode >= 8)
 	{
 		CBaseMonster* pMonster;
@@ -2223,7 +2295,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 	Vector vecRight = gpGlobals->v_right;
 	Vector vecUp = gpGlobals->v_up;
 	float x, y = 0;
-	CBaseEntity* pEntity;
+	CBaseEntity* pEntity = FindEntityForwardNew(this);
 
 	if (pevAttacker == NULL)
 		pevAttacker = pev; // the default attacker is ourselves
@@ -2231,12 +2303,10 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 	ClearMultiDamage();
 	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
 
-	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
 	if (pPlayer->m_iToolMode == 2)
 	{
-		pEntity = FindEntityForwardNew(this);
 		if (pEntity)
 		{
 			// Pick the Monster ID
@@ -2247,7 +2317,6 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 	{
 		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
 		{
-			pEntity = FindEntityForwardNew(this);
 			if (pEntity)
 			{
 				pEntity->pev->sequence++;
@@ -2349,10 +2418,8 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode == 17)
+	else if (pPlayer->m_iToolMode == 17 || pPlayer->m_iToolMode == 18)
 	{
-		CBaseEntity* pEntity = FindEntityForwardNew(this);
-
 		if (pEntity)
 		{
 			CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEntity);

@@ -2207,6 +2207,9 @@ bool CBaseMonster::TaskIsRunning()
 //=========================================================
 int CBaseMonster::IRelationship(CBaseEntity* pTarget)
 {
+	if (m_bToolEnemy && pTarget == m_hEnemy)
+		return R_HT;
+
 	static int iEnemy[17][17] =
 		{//   NONE	 MACH	 PLYR	 HPASS	 HMIL	 AMIL	 APASS	 AMONST	APREY	 APRED	 INSECT	PLRALY	PBWPN	ABWPN	HMILA	RACEX
 			/*NONE*/ {R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO, R_NO},
