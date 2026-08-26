@@ -2014,99 +2014,81 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 	}
 	else if (pPlayer->m_iToolMode == 17)
 	{
-		CBaseMonster* pMonster = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
-
-		if (!pMonster)
+		if (pPlayer->m_fToolManipulatorMode) //Attack Mode
 		{
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected");
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			CBaseMonster* pAttacker = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
+
+			if (!pAttacker)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected\n");
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			CBaseEntity* pTarget = FindEntityForwardNew(this);
+
+			if (!pTarget)
+			{
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			CBaseMonster* pTargetMonster = pTarget->MyMonsterPointer();
+
+			if (!pTargetMonster)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is not an NPC\n");
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			if (pTargetMonster == pAttacker)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Cannot attack itself\n");
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			if (!pTargetMonster->IsAlive())
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is dead\n");
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			// Assign the target as the NPC's enemy
+			pAttacker->m_bToolEnemy = true;
+			pAttacker->m_hEnemy = pTargetMonster;
+			pAttacker->m_vecEnemyLKP = pTargetMonster->pev->origin;
+
+			pAttacker->SetConditions(bits_COND_NEW_ENEMY | bits_COND_SEE_ENEMY | bits_COND_SEE_HATE);
+
+			pAttacker->SetState(MONSTERSTATE_COMBAT);
+			pAttacker->ClearSchedule();
+			pAttacker->RouteClear();
+
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC attacking target\n");
+		}
+		else // Lead Mode
+		{
+			CBaseMonster* pMonster = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
+
+			if (!pMonster)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected");
+				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+			}
+
+			TraceResult tr;
+
+			Vector vecEnd = vecSrc + vecDirShooting * flDistance;
+
+			UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, pPlayer->edict(), &tr);
+
+			if (tr.flFraction != 1.0)
+			{
+				if (pMonster->MoveToLocation(ACT_WALK, 0.0, tr.vecEndPos))
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC moving");
+				else
+					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
+			}
 		}
 
-		TraceResult tr;
-
-		Vector vecEnd = vecSrc + vecDirShooting * flDistance;
-
-		UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, pPlayer->edict(), &tr);
-
-		if (tr.flFraction != 1.0)
-		{
-			if (pMonster->MoveToLocation(ACT_WALK, 0.0, tr.vecEndPos))
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC moving");
-			else
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
-		}
-	}
-	else if (pPlayer->m_iToolMode == 18)
-	{
-		CBaseMonster* pAttacker = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
-
-		if (!pAttacker)
-		{
-			ClientPrint(
-				pPlayer->pev,
-				HUD_PRINTCENTER,
-				"No NPC selected\n");
-
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-		}
-
-		CBaseEntity* pTarget = FindEntityForwardNew(this);
-
-		if (!pTarget)
-		{
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-		}
-
-		CBaseMonster* pTargetMonster = pTarget->MyMonsterPointer();
-
-		if (!pTargetMonster)
-		{
-			ClientPrint(
-				pPlayer->pev,
-				HUD_PRINTCENTER,
-				"Target is not an NPC\n");
-
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-		}
-
-		if (pTargetMonster == pAttacker)
-		{
-			ClientPrint(
-				pPlayer->pev,
-				HUD_PRINTCENTER,
-				"Cannot attack itself\n");
-
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-		}
-
-		if (!pTargetMonster->IsAlive())
-		{
-			ClientPrint(
-				pPlayer->pev,
-				HUD_PRINTCENTER,
-				"Target is dead\n");
-
-			return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-		}
-
-		// Assign the target as the NPC's enemy
-		pAttacker->m_bToolEnemy = true;
-		pAttacker->m_hEnemy = pTargetMonster;
-		pAttacker->m_vecEnemyLKP = pTargetMonster->pev->origin;
-
-		pAttacker->SetConditions(
-			bits_COND_NEW_ENEMY |
-			bits_COND_SEE_ENEMY |
-			bits_COND_SEE_HATE);
-
-		pAttacker->SetState(MONSTERSTATE_COMBAT);
-		pAttacker->ClearSchedule();
-		pAttacker->RouteClear();
-
-		ClientPrint(
-			pPlayer->pev,
-			HUD_PRINTCENTER,
-			"NPC attacking target\n");
 	}
 	else if (pPlayer->m_iToolMode >= 8)
 	{
@@ -2418,7 +2400,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
 		}
 	}
-	else if (pPlayer->m_iToolMode == 17 || pPlayer->m_iToolMode == 18)
+	else if (pPlayer->m_iToolMode == 17)
 	{
 		if (pEntity)
 		{

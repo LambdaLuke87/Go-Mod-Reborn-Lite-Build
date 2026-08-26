@@ -1354,6 +1354,7 @@ public:
 
 	void Spawn() override;
 	void Precache() override;
+	void Reload() override;
 	int iItemSlot() override { return 1; }
 	bool GetItemInfo(ItemInfo* p);
 	void PrimaryAttack() override;

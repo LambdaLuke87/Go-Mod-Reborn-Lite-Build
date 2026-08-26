@@ -191,7 +191,7 @@ void CBasePlayerWeapon::ItemPostFrame()
 		m_pPlayer->TabulateAmmo();
 		PrimaryAttack();
 	}
-	else if ((m_pPlayer->pev->button & IN_RELOAD) != 0 && iMaxClip() != WEAPON_NOCLIP && !m_fInReload)
+	else if ((m_pPlayer->pev->button & IN_RELOAD) != 0 && (iMaxClip() != WEAPON_NOCLIP || m_iId == WEAPON_TOOLBOW) && !m_fInReload)
 	{
 		// reload when reload is pressed, or if no buttons are down and weapon is empty.
 		Reload();

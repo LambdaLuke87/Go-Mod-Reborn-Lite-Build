@@ -615,6 +615,28 @@ void CToolbow::SecondaryAttack()
 #endif
 }
 
+void CToolbow::Reload()
+{
+	if (m_pPlayer->m_iToolMode == 17)
+	{
+		if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
+			return;
+
+		if (m_pPlayer->m_fToolManipulatorMode)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Manipulator_Lead");
+			m_pPlayer->m_fToolManipulatorMode = false;
+		}
+		else
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Manipulator_Attacker");
+			m_pPlayer->m_fToolManipulatorMode = true;
+		}
+
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	}
+}
+
 void CToolbow::WeaponIdle()
 {
 #ifndef CLIENT_DLL

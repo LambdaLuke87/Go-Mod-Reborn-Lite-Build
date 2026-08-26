@@ -1831,6 +1831,7 @@ public:
 	CommandButton* ButtonFramedit;
 	CommandButton* ButtonTeleporter;
 	CommandButton* ButtonGlowsticks;
+	CommandButton* ButtonManipulator;
 	CommandButton* ButtonNoTools;
 	CommandButton* ButtonRender;
 	CommandButton* ButtonSpawnertool;
