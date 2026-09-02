@@ -31,6 +31,7 @@
 #include "func_break.h"
 #include "game.h"
 #include "player.h"
+#include "studio.h"
 
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 
@@ -123,6 +124,45 @@ const char* MonsterInfo::GetName(int id)
 	}
 
 	return gMonsterInfos[id].classname;
+}
+
+static int GetModelBodyCount(CBaseAnimating* pAnimating)
+{
+	if (!pAnimating)
+		return 1;
+
+	studiohdr_t* pstudiohdr =
+		(studiohdr_t*)GET_MODEL_PTR(ENT(pAnimating->pev));
+
+	if (!pstudiohdr)
+		return 1;
+
+	int bodyCount = 1;
+
+	mstudiobodyparts_t* pbodypart =
+		(mstudiobodyparts_t*)((byte*)pstudiohdr + pstudiohdr->bodypartindex);
+
+	for (int i = 0; i < pstudiohdr->numbodyparts; ++i)
+	{
+		if (pbodypart[i].nummodels > 0)
+			bodyCount *= pbodypart[i].nummodels;
+	}
+
+	return bodyCount;
+}
+
+static int GetModelSkinCount(CBaseAnimating* pAnimating)
+{
+	if (!pAnimating)
+		return 1;
+
+	studiohdr_t* pstudiohdr =
+		(studiohdr_t*)GET_MODEL_PTR(ENT(pAnimating->pev));
+
+	if (!pstudiohdr || pstudiohdr->numskinfamilies <= 0)
+		return 1;
+
+	return pstudiohdr->numskinfamilies;
 }
 
 // HACKHACK -- The gib velocity equations don't work
@@ -2264,6 +2304,15 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
 				}
 			}
+			else if (pPlayer->m_iToolMode == 18)
+			{
+				int skinCount = GetModelSkinCount(pMonster);
+
+				pMonster->pev->skin++;
+
+				if (pMonster->pev->skin >= skinCount)
+					pMonster->pev->skin = 0;
+			}
 		}
 	}
 
@@ -2589,6 +2638,15 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 					pMonster->pev->scale = 1.0f;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
 				}
+			}
+			else if (pPlayer->m_iToolMode == 18)
+			{
+				int bodyCount = GetModelBodyCount(pMonster);
+
+				pMonster->pev->body++;
+
+				if (pMonster->pev->body >= bodyCount)
+					pMonster->pev->body = 0;
 			}
 		}
 	}
