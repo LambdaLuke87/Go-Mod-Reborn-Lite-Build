@@ -787,7 +787,7 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 
 	if (p.glowstick)
 		pEntity->m_ForceSkin = p.skin;
-	else if (p.advanced_spawn)
+	else if (p.spawner_mode)
 	{
 		pEntity->m_bShouldRespawn = p.spawner_mode; // Respawn
 		pEntity->m_respawntime = p.respawnTime;		// Respawn time
@@ -805,7 +805,7 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 	}
 	DispatchSpawn(pEntity->edict());
 
-	if (respawn_npc_sound.value)
+	if (respawn_npc_sound.value && !p.glowstick)
 		EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);
 
 	return pEntity;

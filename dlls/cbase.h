@@ -153,8 +153,8 @@ public:
 // Spawner Tool
 struct SpawnerParams
 {
-	bool advanced_spawn;
-	bool glowstick;
+	bool glowstick = false;
+	bool spawner_mode;
 	const char* name;
 	Vector origin;
 	Vector angles;
@@ -170,8 +170,6 @@ struct SpawnerParams
 	int r, g, b, a;
 
 	float scale;
-
-	bool spawner_mode;
 
 	edict_t* owner = nullptr;
 };

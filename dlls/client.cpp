@@ -286,7 +286,6 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
 		SpawnerParams params;
 
-		params.advanced_spawn = false;
 		params.name = sClassname;
 		params.origin = tr.vecEndPos;
 		params.angles = vAngle;
@@ -310,7 +309,6 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
 		SpawnerParams params;
 
-		params.advanced_spawn = false;
 		params.name = sClassname;
 		params.origin = tr.vecEndPos;
 		params.angles = vAngle;
@@ -967,7 +965,6 @@ void ClientCommand(edict_t* pEntity)
 						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 						SpawnerParams params;
 
-						params.advanced_spawn = false;
 						params.name = monsterInfo.classname;
 						params.origin = pev->origin + gpGlobals->v_forward * 128.0f;
 						params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
@@ -1025,7 +1022,6 @@ void ClientCommand(edict_t* pEntity)
 				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 				SpawnerParams params;
 
-				params.advanced_spawn = false;
 				params.name = "monster_apache";
 				params.origin = pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f;
 				params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
@@ -1040,7 +1036,6 @@ void ClientCommand(edict_t* pEntity)
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 					SpawnerParams params;
 
-					params.advanced_spawn = false;
 					params.name = "monster_nihilanth";
 					params.origin = pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f;
 					params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
@@ -1058,7 +1053,6 @@ void ClientCommand(edict_t* pEntity)
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
 					SpawnerParams params;
 
-					params.advanced_spawn = false;
 					params.name = "monster_tentacle";
 					params.origin = pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f;
 					params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
