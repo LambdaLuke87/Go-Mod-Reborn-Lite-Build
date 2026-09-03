@@ -831,12 +831,16 @@ void CBaseMonster::MonsterRespawnThink()
 	// Act the spawner function
 	SpawnerParams params;
 
+	params.advanced_spawn = true;
 	params.name = STRING(m_iszMonsterClassname);
 	params.origin = m_vecSpawnOrigin;
 	params.angles = m_vecSpawnAngles;
 	params.respawnTime = m_respawntime;
 	params.altClass = m_AltClass;
 	params.customFrame = m_CustomFrame;
+
+	params.body = pev->body;
+	params.skin = pev->skin;
 
 	params.renderMode = pev->rendermode;
 	params.renderFx = pev->renderfx;
@@ -847,10 +851,11 @@ void CBaseMonster::MonsterRespawnThink()
 	params.a = pev->renderamt;
 
 	params.scale = pev->scale;
+	params.spawner_mode = m_bShouldRespawn;
 
 	params.owner = edict();
 
-	CBaseEntity* pRespawned = CBaseEntity::CreateSpawner(params);
+	CBaseEntity* pRespawned = CBaseEntity::CreateCustom(params);
 
 	UTIL_Remove(this); // Remove it
 }
@@ -1928,7 +1933,16 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 			UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev) /*pentIgnore*/, &tr);
 
 			UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-			CBaseEntity::CreateCustom(MonsterInfo::GetName(monster_type - 1), tr.vecEndPos, Vector(0, pev->angles.y + 180, 0), pPlayer->m_fUseAlliedMode);
+
+			SpawnerParams params;
+
+			params.advanced_spawn = false;
+			params.name = MonsterInfo::GetName(monster_type - 1);
+			params.origin = tr.vecEndPos;
+			params.angles = Vector(0, pev->angles.y + 180, 0);
+			params.altClass = pPlayer->m_fUseAlliedMode;
+
+			CBaseEntity::CreateCustom(params);
 		}
 	}
 	else if (pPlayer->m_iToolMode == 3)

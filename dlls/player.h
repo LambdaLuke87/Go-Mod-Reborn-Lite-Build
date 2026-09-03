@@ -464,6 +464,7 @@ public:
 	bool m_fUseFrontSpawn;
 	bool m_fUseNightVision;
 	EHANDLE m_hManipulateNPC;
+	int m_iGlowstickType = 0;
 
 	// Fog Values
 	int m_iFogRed = 155;

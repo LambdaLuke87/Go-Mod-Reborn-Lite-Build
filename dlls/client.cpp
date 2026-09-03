@@ -284,7 +284,15 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 	{
 		CBasePlayer* pPlayer = (CBasePlayer*)pEntity;
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
-		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::CreateCustom(sClassname, tr.vecEndPos, vAngle, IsAllied);
+		SpawnerParams params;
+
+		params.advanced_spawn = false;
+		params.name = sClassname;
+		params.origin = tr.vecEndPos;
+		params.angles = vAngle;
+		params.altClass = IsAllied;
+
+		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::CreateCustom(params);
 	}
 }
 
@@ -300,7 +308,15 @@ void GoMod_SpawnItemTrace(const char* sClassname, entvars_t* pev, edict_t* pEnti
 	if (tr.pHit)
 	{
 		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
-		CBaseEntity* pItem = CBasePlayer::CreateCustom(sClassname, tr.vecEndPos, vAngle, false);
+		SpawnerParams params;
+
+		params.advanced_spawn = false;
+		params.name = sClassname;
+		params.origin = tr.vecEndPos;
+		params.angles = vAngle;
+		params.altClass = false;
+
+		CBaseEntity* pItem = (CBaseMonster*)CBasePlayer::CreateCustom(params);
 		pItem->pev->spawnflags |= SF_NORESPAWN;
 	}
 }
@@ -949,7 +965,15 @@ void ClientCommand(edict_t* pEntity)
 					if (pPlayer->m_fUseFrontSpawn)
 					{
 						UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-						CBaseEntity::CreateCustom(monsterInfo.classname, pev->origin + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
+						SpawnerParams params;
+
+						params.advanced_spawn = false;
+						params.name = monsterInfo.classname;
+						params.origin = pev->origin + gpGlobals->v_forward * 128.0f;
+						params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+						params.altClass = pPlayer->m_fUseAlliedMode;
+
+						CBaseEntity::CreateCustom(params);
 					}
 					else
 						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
@@ -999,14 +1023,30 @@ void ClientCommand(edict_t* pEntity)
 			if (FStrEq(combinetoprefix, "monster_apache"))
 			{
 				UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-				CBaseEntity::CreateCustom("monster_apache", pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
+				SpawnerParams params;
+
+				params.advanced_spawn = false;
+				params.name = "monster_apache";
+				params.origin = pev->origin + gpGlobals->v_up * 500 + gpGlobals->v_forward * 128.0f;
+				params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+				params.altClass = pPlayer->m_fUseAlliedMode;
+
+				CBaseEntity::CreateCustom(params);
 			}
 			else if (FStrEq(combinetoprefix, "monster_nihilanth"))
 			{
 				if (allow_nihilant.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::CreateCustom("monster_nihilanth", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
+					SpawnerParams params;
+
+					params.advanced_spawn = false;
+					params.name = "monster_nihilanth";
+					params.origin = pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f;
+					params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+					params.altClass = pPlayer->m_fUseAlliedMode;
+
+					CBaseEntity::CreateCustom(params);
 				}
 				else
 					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Nihilant Disabled - gm_allow_nihilant required\n");
@@ -1016,7 +1056,15 @@ void ClientCommand(edict_t* pEntity)
 				if (allow_tentacle.value)
 				{
 					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
-					CBaseEntity::CreateCustom("monster_tentacle", pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f, Vector(0.0f, pev->angles.y + 180.0f, 0.0f), pPlayer->m_fUseAlliedMode);
+					SpawnerParams params;
+
+					params.advanced_spawn = false;
+					params.name = "monster_tentacle";
+					params.origin = pev->origin + gpGlobals->v_up * 200 + gpGlobals->v_forward * 128.0f;
+					params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+					params.altClass = pPlayer->m_fUseAlliedMode;
+
+					CBaseEntity::CreateCustom(params);
 				}
 				else
 					ClientPrint(&pEntity->v, HUD_PRINTTALK, "Tentacle Disabled - gm_allow_tentacle required\n");

@@ -161,6 +161,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorR, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorG, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iToolRenderColorB, FIELD_INTEGER),
+		DEFINE_FIELD(CBasePlayer, m_iGlowstickType, FIELD_INTEGER),
 
 		DEFINE_FIELD(CBasePlayer, m_pPhysgunEnt, FIELD_CLASSPTR),
 		DEFINE_FIELD(CBasePlayer, m_flPhysgunDist, FIELD_FLOAT),

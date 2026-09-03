@@ -199,7 +199,7 @@ void CGlowstick::Spawn()
 
 	SET_MODEL(ENT(pev), "models/gomod/glowstick.mdl");
 
-	int colormatic = glowstick_colors.value;
+	int colormatic = m_ForceSkin;
 
 	switch (colormatic)
 	{
@@ -491,8 +491,18 @@ void CToolbow::PrimaryAttack()
 	{
 		Vector vecThrow = gpGlobals->v_forward * 274 + m_pPlayer->pev->velocity;
 
-		CBaseEntity* pSatchel = Create("item_glowstick", vecPlayerOrigin, Vector(0, 0, 0), m_pPlayer->edict());
-		pSatchel->pev->velocity = vecThrow;
+		SpawnerParams params;
+
+		params.glowstick = true;
+		params.name = "item_glowstick";
+		params.origin = vecPlayerOrigin;
+		params.angles = Vector(0, 0, 0);
+		params.owner = m_pPlayer->edict();
+		params.altClass = false;
+		params.skin = m_pPlayer->m_iGlowstickType;
+
+		CBaseEntity* pGlowstick = CreateCustom(params);
+		pGlowstick->pev->velocity = vecThrow;
 	}
 	else
 		vecDir = m_pPlayer->FireBulletsToolBow(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed);
@@ -617,7 +627,56 @@ void CToolbow::SecondaryAttack()
 
 void CToolbow::Reload()
 {
-	if (m_pPlayer->m_iToolMode == 17)
+	if (m_pPlayer->m_iToolMode == 14)
+	{
+		if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
+			return;
+
+		if (m_pPlayer->m_iGlowstickType == 0)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_White");
+			m_pPlayer->m_iGlowstickType = 1;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 1)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Red");
+			m_pPlayer->m_iGlowstickType = 2;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 2)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Green");
+			m_pPlayer->m_iGlowstickType = 3;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 3)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Blue");
+			m_pPlayer->m_iGlowstickType = 4;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 4)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Yellow");
+			m_pPlayer->m_iGlowstickType = 5;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 5)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Cyan");
+			m_pPlayer->m_iGlowstickType = 6;
+		}
+		else if (m_pPlayer->m_iGlowstickType == 6)
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Purple");
+			m_pPlayer->m_iGlowstickType = 7;
+		}
+		else
+		{
+			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Gomod_Glowstick_Random");
+			m_pPlayer->m_iGlowstickType = 0;
+		}
+
+
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	}
+	else if (m_pPlayer->m_iToolMode == 17)
 	{
 		if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
 			return;

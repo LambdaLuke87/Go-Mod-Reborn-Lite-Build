@@ -63,7 +63,6 @@ cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 // Sandbox Configs
 cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
 cvar_t custom_npc_gravity = {"gm_monster_custom_gravity", "0.4", FCVAR_SERVER};
-cvar_t glowstick_colors = {"gm_glowstick_color", "0", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
 cvar_t monster_allied_skins = {"gm_allied_monsters_skins", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
@@ -770,7 +769,6 @@ void GameDLLInit()
 	// Sandbox Configs
 	CVAR_REGISTER(&custom_npc_health);
 	CVAR_REGISTER(&custom_npc_gravity);
-	CVAR_REGISTER(&glowstick_colors);
 	CVAR_REGISTER(&npc_noai);
 	CVAR_REGISTER(&monster_allied_skins);
 	CVAR_REGISTER(&monster_polem);

@@ -153,12 +153,16 @@ public:
 // Spawner Tool
 struct SpawnerParams
 {
+	bool advanced_spawn;
+	bool glowstick;
 	const char* name;
 	Vector origin;
 	Vector angles;
 	float respawnTime;
 	bool altClass;
 	int customFrame;
+	int body;
+	int skin;
 
 	int renderMode;
 	int renderFx;
@@ -166,6 +170,8 @@ struct SpawnerParams
 	int r, g, b, a;
 
 	float scale;
+
+	bool spawner_mode;
 
 	edict_t* owner = nullptr;
 };
@@ -392,8 +398,7 @@ public:
 
 	//
 	static CBaseEntity* Create(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, edict_t* pentOwner = NULL);
-	static CBaseEntity* CreateCustom(const char* szName, const Vector& vecOrigin, const Vector& vecAngles, bool IsAllied, edict_t* pentOwner = NULL);
-	static CBaseEntity* CreateSpawner(const SpawnerParams& p);
+	static CBaseEntity* CreateCustom(const SpawnerParams& p);
 	static CBaseEntity* RemoveCustom(bool isAll);
 	static CBaseEntity* CreateCamera(const Vector& vecOrigin, const Vector& vecAngles, CBasePlayer* pOwner = NULL);
 
@@ -443,6 +448,7 @@ public:
 	Vector m_vecSpawnOrigin; // save the spawn origin
 	Vector m_vecSpawnAngles; // save the spawn angle
 	int m_respawntime = 3.0f; // The respawn time, by default is 3.0f
+	int m_ForceSkin; // used for Glowstick skins
 
 	// Used by physgun
 	int m_movetype = 0;
