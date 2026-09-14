@@ -78,6 +78,7 @@ extern cvar_t allow_gaussfly;
 extern cvar_t custom_npc_health;
 extern cvar_t custom_npc_gravity;
 extern cvar_t npc_noai;
+extern cvar_t npc_notarget;
 extern cvar_t monster_allied_skins;
 extern cvar_t monster_polem;
 extern cvar_t monster_variation;

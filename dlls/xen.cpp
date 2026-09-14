@@ -17,6 +17,7 @@
 #include "cbase.h"
 #include "animation.h"
 #include "effects.h"
+#include "game.h"
 
 
 #define XEN_PLANT_GLOW_SPRITE "sprites/flare3.spr"
@@ -298,7 +299,10 @@ void CXenTree::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/tree.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/tree.mdl");
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_BBOX;
 
@@ -333,7 +337,10 @@ const char* CXenTree::pAttackMissSounds[] =
 
 void CXenTree::Precache()
 {
-	PRECACHE_MODEL("models/tree.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/tree.mdl");
 	PRECACHE_MODEL(XEN_PLANT_GLOW_SPRITE);
 	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
@@ -343,6 +350,9 @@ void CXenTree::Precache()
 void CXenTree::Touch(CBaseEntity* pOther)
 {
 	if (!pOther->IsPlayer() && FClassnameIs(pOther->pev, "monster_bigmomma"))
+		return;
+
+	if (pOther->IsPlayer() && npc_notarget.value)
 		return;
 
 	Attack();

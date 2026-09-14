@@ -679,7 +679,10 @@ void CScientist::Spawn()
 
 	Precache();
 
-	SET_MODEL(ENT(pev), GetScientistModel());
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), GetScientistModel());
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -713,7 +716,10 @@ void CScientist::Spawn()
 //=========================================================
 void CScientist::Precache()
 {
-	PRECACHE_MODEL(GetScientistModel());
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL(GetScientistModel());
 	PRECACHE_SOUND("scientist/sci_pain1.wav");
 	PRECACHE_SOUND("scientist/sci_pain2.wav");
 	PRECACHE_SOUND("scientist/sci_pain3.wav");

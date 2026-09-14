@@ -64,6 +64,7 @@ cvar_t allow_gaussfly = {"gm_allow_gaussfly", "1", FCVAR_SERVER};
 cvar_t custom_npc_health = {"gm_monster_custom_hp", "100", FCVAR_SERVER};
 cvar_t custom_npc_gravity = {"gm_monster_custom_gravity", "0.4", FCVAR_SERVER};
 cvar_t npc_noai = {"gm_ai_disable", "0", FCVAR_SERVER};
+cvar_t npc_notarget = {"gm_notarget", "0", FCVAR_SERVER};
 cvar_t monster_allied_skins = {"gm_allied_monsters_skins", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
@@ -770,6 +771,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&custom_npc_health);
 	CVAR_REGISTER(&custom_npc_gravity);
 	CVAR_REGISTER(&npc_noai);
+	CVAR_REGISTER(&npc_notarget);
 	CVAR_REGISTER(&monster_allied_skins);
 	CVAR_REGISTER(&monster_polem);
 	CVAR_REGISTER(&monster_variation);
@@ -1364,7 +1366,7 @@ void GameDLLInit()
 
 	InitMapLoadingUtils();
 
-	SERVER_COMMAND("exec skills/vanilla.cfg\n");
+	SERVER_COMMAND("exec skills/halflife.cfg\n");
 	SERVER_COMMAND("exec skills/opfor.cfg\n");
 	SERVER_COMMAND("exec skills/extras.cfg\n");
 }

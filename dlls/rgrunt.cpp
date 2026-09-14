@@ -105,7 +105,10 @@ void CRGrunt::Spawn()
 	if (monster_allied_skins.value && m_AltClass)
 		pev->skin = 1;
 	
-	SET_MODEL(ENT(pev), "models/rgrunt.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/rgrunt.mdl");
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -140,7 +143,10 @@ void CRGrunt::Spawn()
 
 void CRGrunt::Precache()
 {
-	PRECACHE_MODEL("models/rgrunt.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/rgrunt.mdl");
 	PRECACHE_MODEL("models/computergibs.mdl");
 	PRECACHE_SOUND("turret/tu_die.wav");
 	PRECACHE_SOUND("turret/tu_die2.wav");

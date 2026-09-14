@@ -1116,7 +1116,10 @@ void COFMedicAlly::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/hgrunt_medic.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/hgrunt_medic.mdl");
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -1225,7 +1228,10 @@ void COFMedicAlly::Spawn()
 //=========================================================
 void COFMedicAlly::Precache()
 {
-	PRECACHE_MODEL("models/hgrunt_medic.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/hgrunt_medic.mdl");
 
 	TalkInit();
 

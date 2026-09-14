@@ -652,7 +652,10 @@ void CBullsquid::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/bullsquid.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/bullsquid.mdl");
 	UTIL_SetSize(pev, Vector(-32, -32, 0), Vector(32, 32, 64));
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -674,7 +677,10 @@ void CBullsquid::Spawn()
 //=========================================================
 void CBullsquid::Precache()
 {
-	PRECACHE_MODEL("models/bullsquid.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/bullsquid.mdl");
 
 	PRECACHE_MODEL("sprites/bigspit.spr"); // spit projectile.
 

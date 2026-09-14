@@ -272,7 +272,10 @@ void CFlybee::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/flybee.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/flybee.mdl");
 	UTIL_SetSize(pev, Vector(-24, -24, 0), Vector(24, 24, 24));
 
 	pev->solid = SOLID_BBOX;
@@ -308,7 +311,10 @@ void CFlybee::Spawn()
 //=========================================================
 void CFlybee::Precache()
 {
-	PRECACHE_MODEL("models/flybee.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/flybee.mdl");
 	//PRECACHE_MODEL("models/gibs/flybee_gibs.mdl");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav");

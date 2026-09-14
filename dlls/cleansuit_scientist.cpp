@@ -648,7 +648,10 @@ void CCleansuitScientist::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/cleansuit_scientist.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/cleansuit_scientist.mdl");
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -684,7 +687,10 @@ void CCleansuitScientist::Spawn()
 //=========================================================
 void CCleansuitScientist::Precache()
 {
-	PRECACHE_MODEL("models/cleansuit_scientist.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/cleansuit_scientist.mdl");
 	PRECACHE_SOUND("scientist/sci_pain1.wav");
 	PRECACHE_SOUND("scientist/sci_pain2.wav");
 	PRECACHE_SOUND("scientist/sci_pain3.wav");

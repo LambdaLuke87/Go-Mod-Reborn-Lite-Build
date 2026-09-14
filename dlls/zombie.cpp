@@ -248,7 +248,10 @@ void CZombie::HandleAnimEvent(MonsterEvent_t* pEvent)
 void CZombie::Spawn()
 {
 	Precache();
-	ZombieSpawnHelper("models/zombie.mdl", gSkillData.zombieHealth);
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		ZombieSpawnHelper("models/zombie.mdl", gSkillData.zombieHealth);
 }
 
 void CZombie::ZombieSpawnHelper(const char* modelName, float health)
@@ -273,7 +276,10 @@ void CZombie::ZombieSpawnHelper(const char* modelName, float health)
 //=========================================================
 void CZombie::Precache()
 {
-	PRECACHE_MODEL("models/zombie.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/zombie.mdl");
 	PrecacheSounds();
 }
 
@@ -335,12 +341,18 @@ LINK_ENTITY_TO_CLASS(monster_zombie_barney, CZombieBarney);
 void CZombieBarney::Spawn()
 {
 	Precache();
-	ZombieSpawnHelper("models/zombie_barney.mdl", gSkillData.zombieBarneyHealth);
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		ZombieSpawnHelper("models/zombie_barney.mdl", gSkillData.zombieBarneyHealth);
 }
 
 void CZombieBarney::Precache()
 {
-	PRECACHE_MODEL("models/zombie_barney.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/zombie_barney.mdl");
 	PrecacheSounds();
 }
 
@@ -359,12 +371,18 @@ LINK_ENTITY_TO_CLASS(monster_zombie_soldier, CZombieSoldier);
 void CZombieSoldier::Spawn()
 {
 	Precache();
-	ZombieSpawnHelper("models/zombie_soldier.mdl", gSkillData.zombieSoldierHealth);
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		ZombieSpawnHelper("models/zombie_soldier.mdl", gSkillData.zombieSoldierHealth);
 }
 
 void CZombieSoldier::Precache()
 {
-	PRECACHE_MODEL("models/zombie_soldier.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/zombie_soldier.mdl");
 	PrecacheSounds();
 }
 

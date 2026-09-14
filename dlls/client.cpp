@@ -128,7 +128,6 @@ spawnlist_t gProps[] =
 		{"prop_c4"},
 		{"prop_chumtoad"},
 		{"prop_grenade"},
-		{"prop_spore"},
 		{"prop_tnt"},
 		{"xen_hair"},
 		{"xen_plantlight"},
@@ -1207,6 +1206,28 @@ void ClientCommand(edict_t* pEntity)
 
 				CVAR_SET_FLOAT("gm_ai_disable", !npc_noai.value);
 				UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s changed NPC AI: %s\n", STRING((CBasePlayer*)pPlayer->pev->netname), !npc_noai.value ? "ENABLED" : "DISABLED"));
+			}
+			else if (FStrEq(pcmd, "button_notarget_set"))
+			{
+				if (onlyhoster_changeAI.value) // Change AI Lock (gm_change_ai_lock 1)
+				{
+					// Check if it is a dedicated server.
+					if (IS_DEDICATED_SERVER())
+					{
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - You can't disable/enable NoTarget\n");
+						return;
+					}
+
+					// Verify if the player is the host (local player #1)
+					if (ENTINDEX(pEntity) != 1)
+					{
+						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Admin Lock - Only the host can disable/enable NoTarget\n");
+						return;
+					}
+				}
+
+				CVAR_SET_FLOAT("gm_notarget", !npc_notarget.value);
+				UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s changed NPC NoTarget: %s\n", STRING((CBasePlayer*)pPlayer->pev->netname), !npc_notarget.value ? "DISABLED" : "ENABLED"));
 			}
 			else if (FStrEq(pcmd, "button_allied_set"))
 			{

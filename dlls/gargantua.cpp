@@ -890,7 +890,10 @@ void CGargantua::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), DefaultModel());
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), DefaultModel());
 	UTIL_SetSize(pev, Vector(-32, -32, 0), Vector(32, 32, 64));
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -927,7 +930,10 @@ void CGargantua::Precache()
 
 void CGargantua::PrecacheImpl()
 {
-	PRECACHE_MODEL(DefaultModel());
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL(DefaultModel());
 	PRECACHE_MODEL(EyeSprite());
 
 	PRECACHE_MODEL(GARG_BEAM_SPRITE_NAME);

@@ -1871,6 +1871,7 @@ public:
 	CommandButton* ButtonShowRenders;
 	CommandButton* ButtonAimMode;
 	CommandButton* ButtonGiveMode;
+	CommandButton* ButtonNoTarget;
 	CommandButton* ButtonNoAI;
 	CommandButton* ButtonAllieds;
 	CommandButton* ButtonUndoNPC;

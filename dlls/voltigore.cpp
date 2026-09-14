@@ -672,7 +672,10 @@ void COFVoltigore::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/voltigore.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/voltigore.mdl");
 	UTIL_SetSize(pev, Vector(-80, -80, 0), Vector(80, 80, 90));
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -703,7 +706,10 @@ void COFVoltigore::Precache()
 {
 	int i;
 
-	PRECACHE_MODEL("models/voltigore.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/voltigore.mdl");
 
 	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
 		PRECACHE_SOUND((char*)pAttackHitSounds[i]);

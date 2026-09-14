@@ -2207,6 +2207,9 @@ bool CBaseMonster::TaskIsRunning()
 //=========================================================
 int CBaseMonster::IRelationship(CBaseEntity* pTarget)
 {
+	if (npc_notarget.value && pTarget && pTarget->IsPlayer())
+		return R_NO;
+
 	if (m_bToolEnemy && pTarget == m_hEnemy)
 		return R_HT;
 

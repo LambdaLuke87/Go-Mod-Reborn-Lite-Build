@@ -631,7 +631,10 @@ void CArcher::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/archer.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/archer.mdl");
 	UTIL_SetSize(pev, Vector(-32, -32, -32), Vector(32, 32, 32));
 
 	pev->solid = SOLID_BBOX;
@@ -668,7 +671,10 @@ void CArcher::Spawn()
 //=========================================================
 void CArcher::Precache()
 {
-	PRECACHE_MODEL("models/archer.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/archer.mdl");
 
 	PRECACHE_SOUND_ARRAY(pIdleSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);

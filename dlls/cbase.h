@@ -154,7 +154,7 @@ public:
 struct SpawnerParams
 {
 	bool glowstick = false;
-	bool spawner_mode;
+	bool spawner_mode = false;
 	const char* name;
 	Vector origin;
 	Vector angles;

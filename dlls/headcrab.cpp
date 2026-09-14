@@ -101,6 +101,10 @@ public:
 	static const char* pAttackSounds[];
 	static const char* pDeathSounds[];
 	static const char* pBiteSounds[];
+
+protected:
+	virtual const char* DefaultModel();
+	virtual void CustomSpawn() {};
 };
 LINK_ENTITY_TO_CLASS(monster_headcrab, CHeadCrab);
 
@@ -277,7 +281,10 @@ void CHeadCrab::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/headcrab.mdl");
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), DefaultModel());
 	UTIL_SetSize(pev, Vector(-12, -12, 0), Vector(12, 12, 24));
 
 	pev->solid = SOLID_SLIDEBOX;
@@ -291,6 +298,7 @@ void CHeadCrab::Spawn()
 	m_MonsterState = MONSTERSTATE_NONE;
 
 	MonsterInit();
+	CustomSpawn(); // used for babycrab
 }
 
 //=========================================================
@@ -305,7 +313,10 @@ void CHeadCrab::Precache()
 	PRECACHE_SOUND_ARRAY(pDeathSounds);
 	PRECACHE_SOUND_ARRAY(pBiteSounds);
 
-	PRECACHE_MODEL("models/headcrab.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL(DefaultModel());
 }
 
 
@@ -464,6 +475,12 @@ void CHeadCrab::DeathSound()
 	EMIT_SOUND_DYN(edict(), CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), GetSoundVolue(), ATTN_IDLE, 0, GetVoicePitch());
 }
 
+const char* CHeadCrab::DefaultModel()
+{
+	return "models/headcrab.mdl";
+}
+
+
 Schedule_t* CHeadCrab::GetScheduleOfType(int Type)
 {
 	switch (Type)
@@ -482,23 +499,23 @@ Schedule_t* CHeadCrab::GetScheduleOfType(int Type)
 class CBabyCrab : public CHeadCrab
 {
 public:
-	void Spawn() override;
-	void Precache() override;
 	void SetYawSpeed() override;
 	float GetDamageAmount() override { return gSkillData.headcrabDmgBite * 0.3; }
 	bool CheckRangeAttack1(float flDot, float flDist) override;
 	Schedule_t* GetScheduleOfType(int Type) override;
 	int GetVoicePitch() override { return PITCH_NORM + RANDOM_LONG(40, 50); }
 	float GetSoundVolue() override { return 0.8; }
+
+protected:
+	const char* DefaultModel();
+	void CustomSpawn();
 };
 LINK_ENTITY_TO_CLASS(monster_babycrab, CBabyCrab);
 LINK_ENTITY_TO_CLASS(monster_babycrab_artificial, CBabyCrab);
 LINK_ENTITY_TO_CLASS(monster_babycrab_allied, CBabyCrab);
 
-void CBabyCrab::Spawn()
+void CBabyCrab::CustomSpawn()
 {
-	CHeadCrab::Spawn();
-	SET_MODEL(ENT(pev), "models/baby_headcrab.mdl");
 	pev->rendermode = kRenderTransTexture;
 	pev->renderamt = 192;
 	UTIL_SetSize(pev, Vector(-12, -12, 0), Vector(12, 12, 24));
@@ -509,12 +526,10 @@ void CBabyCrab::Spawn()
 		m_MenuCreated = true;
 }
 
-void CBabyCrab::Precache()
+const char* CBabyCrab::DefaultModel()
 {
-	PRECACHE_MODEL("models/baby_headcrab.mdl");
-	CHeadCrab::Precache();
+	return "models/baby_headcrab.mdl";
 }
-
 
 void CBabyCrab::SetYawSpeed()
 {

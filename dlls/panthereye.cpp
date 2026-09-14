@@ -223,7 +223,10 @@ void CDiablo::Spawn()
 {
 	Precache();
 
-	SET_MODEL(ENT(pev), "models/panthereye.mdl");// model
+	if (pev->model)
+		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
+	else
+		SET_MODEL(ENT(pev), "models/panthereye.mdl");
 
 	UTIL_SetSize(pev, Vector(-28, -48, 0), Vector(28, 48, 80));
 
@@ -255,7 +258,10 @@ void CDiablo::Spawn()
 
 void CDiablo::Precache()
 {
-	PRECACHE_MODEL("models/panthereye.mdl");
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
+	else
+		PRECACHE_MODEL("models/panthereye.mdl");
 
 	PRECACHE_SOUND("zombie/claw_miss1.wav");
 	PRECACHE_SOUND("zombie/claw_miss2.wav");
