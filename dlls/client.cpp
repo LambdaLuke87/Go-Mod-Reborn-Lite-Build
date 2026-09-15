@@ -62,14 +62,14 @@ extern void CopyToBodyQue(entvars_t* pev);
 struct spawnlist_t
 {
 	const char* classname;
-	//const char* convar;
+	bool floorhigher = false;
 };
 
 // Monsters List
 spawnlist_t gMonsters[] =
 	{
 		{"monster_alien_babyvoltigore"},
-		{"monster_alien_controller"},
+		{"monster_alien_controller", true},
 		{"monster_alien_grunt"},
 		{"monster_alien_grunt_melee"},
 		{"monster_alien_slave"},
@@ -88,7 +88,7 @@ spawnlist_t gMonsters[] =
 		{"monster_cleansuit_scientist_dead"},
 		{"monster_cockroach"},
 		{"monster_exp_alien_slave"},
-		{"monster_flyer"},
+		{"monster_flyer", true},
 		{"monster_gargantua"},
 		{"monster_gman"},
 		{"monster_gonome"},
@@ -102,7 +102,7 @@ spawnlist_t gMonsters[] =
 		{"monster_human_grunt_ally_dead"},
 		{"monster_human_medic_ally"},
 		{"monster_human_torch_ally"},
-		{"monster_ichthyosaur"},
+		{"monster_ichthyosaur", true},
 		{"monster_leech"},
 		{"monster_male_assassin"},
 		{"monster_massassin_dead"},
@@ -138,9 +138,9 @@ spawnlist_t gProps[] =
 
 spawnlist_t gExtraMonsters[] =
 	{
-		{"monster_archer"},
+		{"monster_archer", true},
 		{"monster_babygarg"},
-		{"monster_charger"},
+		{"monster_charger", true},
 		{"monster_panthereye"},
 		{"monster_robogrunt"}};
 
@@ -271,7 +271,7 @@ struct voices_t
 voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 27};
 
 // GM6 Spawn Monster Trace
-void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied)
+void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied, bool floorhigher)
 {
 	UTIL_MakeVectors(pev->v_angle);
 	TraceResult tr;
@@ -286,7 +286,10 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 		SpawnerParams params;
 
 		params.name = sClassname;
-		params.origin = tr.vecEndPos;
+		if (floorhigher)
+			params.origin = tr.vecEndPos + gpGlobals->v_up * 35;
+		else
+			params.origin = tr.vecEndPos;
 		params.angles = vAngle;
 		params.altClass = IsAllied;
 
@@ -972,7 +975,7 @@ void ClientCommand(edict_t* pEntity)
 						CBaseEntity::CreateCustom(params);
 					}
 					else
-						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
+						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode, monsterInfo.floorhigher);
 				}
 			}
 
@@ -983,7 +986,7 @@ void ClientCommand(edict_t* pEntity)
 				if (FStrEq(combinetoprefix, xenpropInfo.classname))
 				{
 					if (allow_props.value)
-						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false);
+						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false, false);
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
 				}
@@ -996,7 +999,22 @@ void ClientCommand(edict_t* pEntity)
 				if (FStrEq(combinetoprefix, extranpcsInfo.classname))
 				{
 					if (allow_extra_monsters.value)
-						GoMod_SpawnMonsterTrace(extranpcsInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode);
+					{
+						if (pPlayer->m_fUseFrontSpawn)
+						{
+							UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+							SpawnerParams params;
+
+							params.name = extranpcsInfo.classname;
+							params.origin = pev->origin + gpGlobals->v_forward * 128.0f;
+							params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+							params.altClass = pPlayer->m_fUseAlliedMode;
+
+							CBaseEntity::CreateCustom(params);
+						}
+						else
+							GoMod_SpawnMonsterTrace(extranpcsInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode, extranpcsInfo.floorhigher);
+					}
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Extra NPCs Disabled - gm_allow_extra_npcs required\n");
 				}
@@ -1009,7 +1027,7 @@ void ClientCommand(edict_t* pEntity)
 				if (FStrEq(combinetoprefix, powerupInfo.classname))
 				{
 					if (allow_powerups.value)
-						GoMod_SpawnMonsterTrace(powerupInfo.classname, pev, pEntity, false);
+						GoMod_SpawnMonsterTrace(powerupInfo.classname, pev, pEntity, false, false);
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Powerups Disabled - gm_allow_powerups required\n");
 				}
