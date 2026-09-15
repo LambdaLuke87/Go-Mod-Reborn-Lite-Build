@@ -80,6 +80,7 @@ public:
 	void OtisFirePistol();
 	void AlertSound() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Otis"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 
 	void RunTask(Task_t* pTask) override;

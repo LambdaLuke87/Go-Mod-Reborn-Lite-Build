@@ -83,6 +83,7 @@ public:
 	void AlertSound() override;
 	void PrescheduleThink() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Headcrab"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool CheckRangeAttack1(float flDot, float flDist) override;
 	bool CheckRangeAttack2(float flDot, float flDist) override;
@@ -499,6 +500,7 @@ Schedule_t* CHeadCrab::GetScheduleOfType(int Type)
 class CBabyCrab : public CHeadCrab
 {
 public:
+	const char* DefaultDisplayName() { return "Baby Headcrab"; }
 	void SetYawSpeed() override;
 	float GetDamageAmount() override { return gSkillData.headcrabDmgBite * 0.3; }
 	bool CheckRangeAttack1(float flDot, float flDist) override;

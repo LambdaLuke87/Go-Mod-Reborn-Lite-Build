@@ -24,7 +24,8 @@ class CChikenAnimal : public CBaseMonster
 public:
     void Spawn() override;
     void Precache() override;
-    int  Classify () override;      
+    int  Classify () override;    
+	const char* DefaultDisplayName() { return "Chiken"; }
     void Killed(entvars_t* pevAttacker, int iGib) override;
     void GibMonster() override;
     int m_Activity;                                                                 //What entity is doing (animation)//
@@ -86,7 +87,6 @@ void CChikenAnimal::GibMonster()
 {
 	// don't remove players!
 	SetThink(&CBaseMonster::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.15;
 
 	// Note: the original didn't have the violence check
 	if (CVAR_GET_FLOAT("violence_agibs") != 0) // Should never get here, but someone might call it directly
@@ -102,6 +102,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Chumtoad"; }
 };
 
 LINK_ENTITY_TO_CLASS(prop_chumtoad, CChumtoad);

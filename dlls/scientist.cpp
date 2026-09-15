@@ -81,6 +81,7 @@ public:
 
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Scientist"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void RunTask(Task_t* pTask) override;
 	void StartTask(Task_t* pTask) override;

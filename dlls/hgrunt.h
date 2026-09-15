@@ -50,6 +50,7 @@ class CHGrunt : public CSquadMonster
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "HECU Soldier"; }
 	void SetYawSpeed() override;
 	int Classify() override;
 	int ISoundMask() override;

@@ -32,6 +32,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Robo Grunt"; }
 	void RunAI() override;
 	void StartTask(Task_t* pTask) override;
 	void RunTask(Task_t* pTask) override;

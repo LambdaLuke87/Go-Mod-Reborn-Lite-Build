@@ -104,6 +104,8 @@ TYPEDESCRIPTION CBaseMonster::m_SaveData[] =
 		DEFINE_FIELD(CBaseMonster, m_AllowItemDropping, FIELD_BOOLEAN),
 
 		DEFINE_FIELD(CBaseMonster, m_AltClass, FIELD_INTEGER),
+
+		DEFINE_FIELD(CBaseMonster, m_displayName, FIELD_STRING),
 };
 
 //IMPLEMENT_SAVERESTORE( CBaseMonster, CBaseToggle );
@@ -2237,6 +2239,11 @@ int CBaseMonster::IRelationship(CBaseEntity* pTarget)
 	return iEnemy[Classify()][pTarget->Classify()];
 }
 
+const char* CBaseMonster::DisplayName()
+{
+	return FStringNull(m_displayName) ? DefaultDisplayName() : STRING(m_displayName);
+}
+
 //=========================================================
 // FindCover - tries to find a nearby node that will hide
 // the caller from its enemy.
@@ -3024,6 +3031,11 @@ bool CBaseMonster::KeyValue(KeyValueData* pkvd)
 	else if (FStrEq(pkvd->szKeyName, "allow_item_dropping"))
 	{
 		m_AllowItemDropping = atoi(pkvd->szValue) != 0;
+	}
+	else if (FStrEq(pkvd->szKeyName, "displayname"))
+	{
+		m_displayName = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = true;
 	}
 
 	return CBaseToggle::KeyValue(pkvd);

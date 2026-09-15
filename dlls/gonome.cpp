@@ -210,6 +210,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Gonome"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	int IgnoreConditions() override;
 

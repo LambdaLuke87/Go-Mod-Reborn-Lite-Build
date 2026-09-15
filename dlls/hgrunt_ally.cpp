@@ -177,6 +177,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void SetYawSpeed() override;
+	const char* DefaultDisplayName() { return "Allied HECU Soldier"; }
 	int Classify() override;
 	int ISoundMask() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;

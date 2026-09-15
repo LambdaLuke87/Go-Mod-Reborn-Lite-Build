@@ -559,6 +559,8 @@ public:
 
 	int Classify() override { return CLASS_ALIEN_MONSTER; }
 
+	const char* DefaultDisplayName() { return "Gene Worm"; }
+
 	int BloodColor() override { return BLOOD_COLOR_GREEN; }
 
 	//Don't gib ever

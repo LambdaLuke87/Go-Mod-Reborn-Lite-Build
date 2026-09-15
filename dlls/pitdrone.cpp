@@ -235,6 +235,7 @@ public:
 	void SetYawSpeed() override;
 	int ISoundMask() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Pit Drone"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void IdleSound() override;
 	void PainSound() override;

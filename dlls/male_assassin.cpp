@@ -152,6 +152,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Male Assassin"; }
 	int ISoundMask() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool FCanCheckAttacks() override;

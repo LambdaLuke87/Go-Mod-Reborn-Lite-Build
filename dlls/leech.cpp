@@ -74,6 +74,7 @@ class CLeech : public CBaseMonster
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "Leech"; }
 
 	void EXPORT SwimThink();
 	void EXPORT DeadThink();

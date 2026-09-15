@@ -65,6 +65,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Baby Voltigore"; }
 	int ISoundMask() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void SetObjectCollisionBox() override

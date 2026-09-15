@@ -65,6 +65,7 @@ public:
 	void Precache() override;		// on précache les sonds et les models
 	void SetYawSpeed() override; // vitesse de rotation
 	int Classify() override;		// "camp" du monstre : alien ou humain
+	const char* DefaultDisplayName() { return "Panthereye"; }
 
 	void HandleAnimEvent(MonsterEvent_t* pEvent);
 	Schedule_t* GetSchedule();						// analyse des bit_COND_ ...

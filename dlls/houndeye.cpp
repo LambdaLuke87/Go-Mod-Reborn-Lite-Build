@@ -78,6 +78,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Houndeye"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void SetYawSpeed() override;
 	void WarmUpSound();

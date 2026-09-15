@@ -52,6 +52,8 @@ public:
 
 	int Classify() override;
 
+	const char* DefaultDisplayName() { return "Drill Sergeant"; }
+
 	void SetYawSpeed() override;
 
 	void DeclineFollowing() override;

@@ -38,6 +38,7 @@ public:
 	void Precache() override;
 	CBaseEntity* TongueTouchEnt(float* pflLength);
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Barnacle"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void EXPORT BarnacleThink();
 	void EXPORT WaitTillDead();

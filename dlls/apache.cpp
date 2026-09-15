@@ -33,6 +33,7 @@ class CApache : public CBaseMonster
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Apache"; }
 	int BloodColor() override { return DONT_BLEED; }
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 	void GibMonster() override;

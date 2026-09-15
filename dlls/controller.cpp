@@ -48,6 +48,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Alien Controller"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 
 	void RunAI() override;

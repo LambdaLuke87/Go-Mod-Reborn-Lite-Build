@@ -65,6 +65,7 @@ class CFlockingFlyer : public CBaseMonster
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "Boid"; }
 	void SpawnCommonCode();
 	void EXPORT IdleThink();
 	void BoidAdvanceFrame();

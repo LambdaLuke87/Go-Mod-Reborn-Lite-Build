@@ -311,6 +311,7 @@ public:
 	void UpdateOnRemove();
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Gargantua"; }
 	bool TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
@@ -1636,6 +1637,7 @@ public:
 	{
 		PrecacheImpl();
 	}
+	const char* DefaultDisplayName() { return "Baby Gargantua"; }
 	void SetYawSpeed() override;
 	void StartTask(Task_t* pTask) override;
 	void RunTask(Task_t* pTask);

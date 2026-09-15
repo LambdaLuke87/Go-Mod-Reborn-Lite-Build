@@ -194,6 +194,7 @@ public:
 
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Big Momma"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void LayHeadcrab();
 

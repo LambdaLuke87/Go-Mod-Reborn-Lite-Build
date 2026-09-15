@@ -35,6 +35,7 @@ class COFBlackOpsApache : public CBaseMonster
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override { return CLASS_HUMAN_MILITARY; }
+	const char* DefaultDisplayName() { return "BlackOps Apache"; }
 	int BloodColor() override { return DONT_BLEED; }
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 	void GibMonster() override;

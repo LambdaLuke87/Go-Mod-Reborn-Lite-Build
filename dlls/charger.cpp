@@ -66,6 +66,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Charger"; }
 
 	bool Save(CSave& save);
 	bool Restore(CRestore& restore);

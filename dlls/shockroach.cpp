@@ -84,6 +84,7 @@ public:
 	void AlertSound() override;
 	void PrescheduleThink() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Shock Roach"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool CheckRangeAttack1(float flDot, float flDist) override;
 	bool CheckRangeAttack2(float flDot, float flDist) override;

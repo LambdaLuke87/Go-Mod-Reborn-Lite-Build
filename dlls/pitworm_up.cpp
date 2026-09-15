@@ -77,6 +77,8 @@ public:
 
 	int Classify() override { return CLASS_ALIEN_MILITARY; }
 
+	const char* DefaultDisplayName() { return "Pit Worm"; }
+
 	int ObjectCaps() override { return 0; }
 
 	//Don't gib ever

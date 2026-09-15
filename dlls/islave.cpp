@@ -46,6 +46,7 @@ public:
 	void SetYawSpeed() override;
 	int ISoundMask() override;
 	int Classify() override;
+	const char* DefaultDisplayName();
 	int IRelationship(CBaseEntity* pTarget) override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool CheckRangeAttack1(float flDot, float flDist) override;
@@ -138,6 +139,14 @@ int CISlave::Classify()
 		return CLASS_PLAYER_ALIEN_ALLY;
 
 	return CLASS_ALIEN_MILITARY;
+}
+
+const char* CISlave::DefaultDisplayName()
+{
+	if (FClassnameIs(pev, "monster_exp_alien_slave"))
+		return "StrawBerry Alien Slave"; // Magenta? nahh StrawBerry
+
+	return "Alien Slave";
 }
 
 

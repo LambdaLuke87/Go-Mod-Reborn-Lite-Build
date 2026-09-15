@@ -193,6 +193,7 @@ public:
 	void SetYawSpeed() override;
 	int ISoundMask() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Bullsquid"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void IdleSound() override;
 	void PainSound() override;

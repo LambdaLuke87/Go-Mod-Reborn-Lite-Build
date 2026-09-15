@@ -36,6 +36,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Flocking Floater"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 
 	void PainSound() override;

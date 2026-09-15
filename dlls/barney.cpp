@@ -51,6 +51,7 @@ public:
 	void BarneyFirePistol();
 	void AlertSound() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Barney"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 
 	void RunTask(Task_t* pTask) override;

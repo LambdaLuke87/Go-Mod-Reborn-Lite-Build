@@ -223,6 +223,12 @@ void CMonsterMaker::MakeMonster()
 		pevCreate->targetname = pev->netname;
 	}
 
+	CBaseMonster* createdMonster = GetMonsterPointer(pent);
+	if (createdMonster)
+	{
+		createdMonster->m_displayName = m_displayName;
+	}
+
 	m_cLiveChildren++; // count this monster
 	m_cNumMonsters--;
 

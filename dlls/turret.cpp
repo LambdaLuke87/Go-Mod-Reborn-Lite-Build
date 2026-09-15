@@ -174,6 +174,7 @@ class CTurret : public CBaseTurret
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "Turret"; }
 	// Think functions
 	void SpinUpCall() override;
 	void SpinDownCall() override;
@@ -202,6 +203,7 @@ class CMiniTurret : public CBaseTurret
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "Mini Turret"; }
 	// other functions
 	void Shoot(Vector& vecSrc, Vector& vecDirToEnemy) override;
 };
@@ -1156,6 +1158,7 @@ class CSentry : public CBaseTurret
 public:
 	void Spawn() override;
 	void Precache() override;
+	const char* DefaultDisplayName() { return "Sentry Turret"; }
 	// other functions
 	void Shoot(Vector& vecSrc, Vector& vecDirToEnemy) override;
 	bool TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;

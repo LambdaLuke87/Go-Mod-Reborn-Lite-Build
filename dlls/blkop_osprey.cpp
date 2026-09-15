@@ -47,6 +47,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	int Classify() override { return CLASS_MACHINE; }
+	const char* DefaultDisplayName() { return "BlackOps Osprey"; }
 	int BloodColor() override { return DONT_BLEED; }
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 

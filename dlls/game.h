@@ -38,6 +38,7 @@ extern cvar_t teamlist;
 extern cvar_t teamoverride;
 extern cvar_t defaultteam;
 extern cvar_t allowmonsters;
+extern cvar_t allowmonsterinfo;
 
 extern cvar_t ctf_capture;
 extern cvar_t oldweapons;

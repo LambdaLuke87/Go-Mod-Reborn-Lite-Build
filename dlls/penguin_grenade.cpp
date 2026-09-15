@@ -47,6 +47,7 @@ public:
 	void Spawn() override;
 
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Penguin"; }
 	int IRelationship(CBaseEntity* pTarget) override;
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 	void EXPORT HuntThink();

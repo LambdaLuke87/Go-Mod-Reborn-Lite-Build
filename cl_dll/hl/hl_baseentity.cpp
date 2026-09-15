@@ -229,6 +229,7 @@ bool CBaseMonster::TakeHealth(float flHealth, int bitsDamageType) { return false
 bool CBaseMonster::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) { return false; }
 bool CBaseMonster::Restore(class CRestore&) { return true; }
 bool CBaseMonster::Save(class CSave&) { return true; }
+const char* CBaseMonster::DisplayName() { return NULL; }
 
 int TrainSpeed(int iSpeed, int iMax) { return 0; }
 void CBasePlayer::DeathSound() {}

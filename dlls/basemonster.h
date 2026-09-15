@@ -111,12 +111,17 @@ public:
 
 	bool m_AllowItemDropping = true;
 
+	string_t m_displayName;
+
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 
 	static TYPEDESCRIPTION m_SaveData[];
 
 	bool KeyValue(KeyValueData* pkvd) override;
+
+	virtual const char* DefaultDisplayName() { return NULL; }
+	const char* DisplayName();
 
 	// monster use function
 	void EXPORT MonsterUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);

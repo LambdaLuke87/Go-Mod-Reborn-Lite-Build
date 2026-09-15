@@ -53,6 +53,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Ichthyosaur"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	CUSTOM_SCHEDULES;
 
