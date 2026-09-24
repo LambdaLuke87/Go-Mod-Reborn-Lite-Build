@@ -146,10 +146,10 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\hud_spectator.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_sprite.cpp" />
     <ClCompile Include="..\..\cl_dll\hud_update.cpp" />
-    <ClCompile Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
@@ -247,10 +247,10 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
     <ClInclude Include="..\..\cl_dll\hud_sprite.h" />
-    <ClInclude Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imconfig.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imstb_textedit.h" />

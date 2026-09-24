@@ -33,7 +33,7 @@
 #include "environment.h"
 
 #include "imgui/imgui.h"
-#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll

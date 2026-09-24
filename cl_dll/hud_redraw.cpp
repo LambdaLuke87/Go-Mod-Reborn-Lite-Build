@@ -22,7 +22,7 @@
 #include "vgui_StatsMenuPanel.h"
 
 #include "imgui/imgui.h"
-#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_opengl3.h"
 #include "keydefs.h"
 
 #include <SDL2/SDL.h>
