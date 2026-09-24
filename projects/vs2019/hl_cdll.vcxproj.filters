@@ -76,6 +76,18 @@
     <Filter Include="Source Files\cl_dll\particleman">
       <UniqueIdentifier>{7085339d-2b33-4cdf-846c-0e4c7d33add8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cl_dll\imgui">
+      <UniqueIdentifier>{1e205d7d-5cd4-47ed-9353-5cc6a05dc59c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cl_dll\imgui\backends">
+      <UniqueIdentifier>{94d24a7b-b46e-4f65-99cd-cef8c84302ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\imgui">
+      <UniqueIdentifier>{e36ed548-10f6-44dc-97ee-d0c58f66d554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\imgui\backends">
+      <UniqueIdentifier>{040b3c3b-0537-4fdd-9b44-7694caaa37a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -399,6 +411,24 @@
     <ClCompile Include="..\..\cl_dll\environment.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_demo.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_draw.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_tables.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Source Files\cl_dll\imgui\backends</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -715,6 +745,30 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\environment.h">
       <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imgui_internal.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imgui.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>Header Files\cl_dll\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>Header Files\cl_dll\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imconfig.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imstb_rectpack.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imstb_textedit.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imstb_truetype.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

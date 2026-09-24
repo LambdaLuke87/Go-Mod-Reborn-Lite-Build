@@ -34,6 +34,12 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/hl/hl_events.o \
 	$(HL1_OBJ_DIR)/hl/hl_objects.o \
 	$(HL1_OBJ_DIR)/hl/hl_weapons.o \
+	$(HL1_OBJ_DIR)/imgui/backends/imgui_impl_opengl3.o \
+	$(HL1_OBJ_DIR)/imgui/imgui.o \
+	$(HL1_OBJ_DIR)/imgui/imgui_demo.o \
+	$(HL1_OBJ_DIR)/imgui/imgui_draw.o \
+	$(HL1_OBJ_DIR)/imgui/imgui_tables.o \
+	$(HL1_OBJ_DIR)/imgui/imgui_widgets.o \
 	$(HL1_OBJ_DIR)/hud.o \
 	$(HL1_OBJ_DIR)/inputw32.o \
 	$(HL1_OBJ_DIR)/ammo.o \

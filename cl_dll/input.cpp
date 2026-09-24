@@ -21,6 +21,9 @@
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
 
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+
 
 extern bool g_iAlive;
 
@@ -1037,6 +1040,9 @@ void DLLEXPORT HUD_Shutdown()
 	//	RecClShutdown();
 
 	ShutdownInput();
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui::DestroyContext();
 
 
 	FileSystem_FreeFileSystem();

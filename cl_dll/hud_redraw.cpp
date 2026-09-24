@@ -21,6 +21,12 @@
 #include "vgui_TeamFortressViewport.h"
 #include "vgui_StatsMenuPanel.h"
 
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "keydefs.h"
+
+#include <SDL2/SDL.h>
+
 #define MAX_LOGO_FRAMES 56
 
 int grgLogoFrame[MAX_LOGO_FRAMES] =
@@ -37,6 +43,60 @@ float HUD_GetFOV();
 extern float IN_GetMouseSensitivity();
 
 extern cvar_t* hud_renderer;
+
+extern bool g_bShowMenu;
+extern void __CmdFunc_ShowMenu();
+
+ImGuiKey TranslateValveKeyToImGui(int keynum)
+{
+	switch (keynum)
+	{
+	case K_TAB: return ImGuiKey_Tab;
+	case K_LEFTARROW: return ImGuiKey_LeftArrow;
+	case K_RIGHTARROW: return ImGuiKey_RightArrow;
+	case K_UPARROW: return ImGuiKey_UpArrow;
+	case K_DOWNARROW: return ImGuiKey_DownArrow;
+	case K_ENTER: return ImGuiKey_Enter;
+	case K_ESCAPE: return ImGuiKey_Escape;
+	case K_SPACE: return ImGuiKey_Space;
+	default: return ImGuiKey_None;
+	}
+}
+
+int HUD_Key_Event(int keynum, int down)
+{
+	if (g_bShowMenu)
+	{
+		if (keynum == K_ESCAPE && down)
+		{
+			__CmdFunc_ShowMenu(); // Turn Off
+			return 0;
+		}
+		return 0;
+	}
+
+	return 1;
+}
+
+void ScaleSize(int& width, int& height)
+{
+	float yfactor = (float)ScreenWidth / (float)ScreenHeight;
+
+	float xscale = ((float)ScreenWidth / 1536.0f);
+	float yscale = ((float)ScreenHeight / 1536.0f) * yfactor;
+
+	int minwidth = width * 0.67f;
+	int minheight = height * 0.67f;
+
+	width *= xscale;
+	height *= yscale;
+
+	if (height < minheight)
+		height = minheight;
+
+	if (width < minwidth)
+		width = minwidth;
+}
 
 // Think
 void CHud::Think()
@@ -227,6 +287,97 @@ bool CHud::Redraw(float flTime, bool intermission)
 	{
 		CHud::Renderer().DrawCrosshair();
 	}
+
+	ImGuiIO& io = ImGui::GetIO();
+	extern bool g_bShowMenu;
+
+	if (g_iVisibleMouse && g_bShowMenu)
+	{
+		// Get the mouse position calculated by the engine.
+		Point mousePosStructure;
+		gEngfuncs.pfnGetMousePos(&mousePosStructure);
+		io.MousePos = ImVec2((float)mousePosStructure.x, (float)mousePosStructure.y);
+
+		Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+
+		io.AddMouseButtonEvent(ImGuiMouseButton_Left, (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Right, (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Middle, (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+
+		//SDL_ShowCursor(1);
+		io.MouseDrawCursor = true; // not very clean
+	}
+	else
+	{
+		io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+		//SDL_ShowCursor(0);
+		io.MouseDrawCursor = false; // not very clean
+	}
+
+	// Synchronize screen size
+	io.DisplaySize = ImVec2((float)gHUD.m_scrinfo.iWidth, (float)gHUD.m_scrinfo.iHeight);
+
+	static float flLastTime = 0.0f;
+	io.DeltaTime = (flTime - flLastTime > 0.0f) ? (flTime - flLastTime) : 1.0f / 60.0f;
+	flLastTime = flTime;
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui::NewFrame();
+
+	if (g_bShowMenu)
+	{
+		int WindowWidth = 345;
+		int WindowHeight = 445;
+
+		int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
+
+		ScaleSize(WindowWidth, WindowHeight);
+
+		ImGui::SetNextWindowPos(ImVec2(iPos[0], iPos[1]), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(WindowWidth, WindowHeight), ImGuiCond_Once);
+
+		ImGui::Begin("HUD Color", &g_bShowMenu);
+		
+		ImGui::Text("Select a color for your HUD:");
+		ImGui::Separator();
+
+		static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
+
+		// Pick Color Panel
+		ImGui::SetNextItemWidth(400.0f);
+		ImGui::ColorPicker4("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// Apply Color
+		if (ImGui::Button("Apply HUD Color", ImVec2(200, 30)))
+		{
+			int r = (int)(miColor[0] * 255.0f);
+			int g = (int)(miColor[1] * 255.0f);
+			int b = (int)(miColor[2] * 255.0f);
+
+			// Bufer
+			char cmdBuffer[64];
+
+			// assign "hud_color RRR GGG BBB"
+			snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
+
+			// execute command
+			gEngfuncs.pfnClientCmd(cmdBuffer);
+		}
+
+		ImGui::Spacing();
+
+		ImGui::End();
+
+		 if (!g_bShowMenu)
+			g_iVisibleMouse = 0; // turn back mouse control
+	}
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	return true;
 }

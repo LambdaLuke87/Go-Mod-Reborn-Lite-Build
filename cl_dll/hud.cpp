@@ -32,6 +32,9 @@
 
 #include "environment.h"
 
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
@@ -41,6 +44,9 @@ cvar_t* m_pCvarHudGreen;
 cvar_t* m_pCvarHudBlue;
 
 extern int giOldWeapons;
+
+bool g_bShowMenu = false;
+extern bool g_iVisibleMouse; 
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -400,6 +406,20 @@ void __CmdFunc_HUDColor()
 	gHUD.HUDColorCmd();
 }
 
+void __CmdFunc_ShowMenu(void)
+{
+	g_bShowMenu = !g_bShowMenu;
+
+	if (g_bShowMenu)
+	{
+		g_iVisibleMouse = true;
+	}
+	else
+	{
+		g_iVisibleMouse = false;
+	}
+}
+
 // This is called every time the DLL is loaded
 void CHud::Init()
 {
@@ -455,6 +475,13 @@ void CHud::Init()
 
 	// VGUI Menus
 	HOOK_MESSAGE(VGUIMenu);
+
+	gEngfuncs.pfnAddCommand("color_menu", __CmdFunc_ShowMenu);
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGui_ImplOpenGL3_Init("#version 120");
 
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
