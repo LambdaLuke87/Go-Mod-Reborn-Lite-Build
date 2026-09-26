@@ -328,37 +328,46 @@ bool CHud::Redraw(float flTime, bool intermission)
 	{
 		int WindowWidth = 345;
 		int WindowHeight = 445;
-
-		int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
+		int ButtonWidth = 200;
+		int ButtonHeight = 30;
 
 		ScaleSize(WindowWidth, WindowHeight);
+		ScaleSize(ButtonWidth, ButtonHeight);
 
-		ImGui::SetNextWindowPos(ImVec2(iPos[0], iPos[1]), ImGuiCond_Once);
-		ImGui::SetNextWindowSize(ImVec2(WindowWidth, WindowHeight), ImGuiCond_Once);
+		// calculate the center
+		int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
 
-		ImGui::Begin("HUD Color", &g_bShowMenu);
-		
+		ImGui::SetNextWindowPos(ImVec2((float)iPos[0], (float)iPos[1]), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2((float)WindowWidth, (float)WindowHeight), ImGuiCond_Appearing);
+
+		ImGui::Begin("HUD Color", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
 		ImGui::Text("Select a color for your HUD:");
 		ImGui::Separator();
 
 		static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
 
+		float contentRegionWidth = ImGui::GetContentRegionAvail().x;
+		ImGui::SetNextItemWidth(contentRegionWidth);
+
 		// Pick Color Panel
-		ImGui::SetNextItemWidth(400.0f);
-		ImGui::ColorPicker4("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+		ImGui::ColorPicker3("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
 
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
 
+		float buttonPosX = (ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f;
+		ImGui::SetCursorPosX(buttonPosX);
+
 		// Apply Color
-		if (ImGui::Button("Apply HUD Color", ImVec2(200, 30)))
+		if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
 		{
 			int r = (int)(miColor[0] * 255.0f);
 			int g = (int)(miColor[1] * 255.0f);
 			int b = (int)(miColor[2] * 255.0f);
 
-			// Bufer
+			// buffer
 			char cmdBuffer[64];
 
 			// assign "hud_color RRR GGG BBB"
@@ -369,10 +378,9 @@ bool CHud::Redraw(float flTime, bool intermission)
 		}
 
 		ImGui::Spacing();
-
 		ImGui::End();
 
-		 if (!g_bShowMenu)
+		if (!g_bShowMenu)
 			g_iVisibleMouse = 0; // turn back mouse control
 	}
 
