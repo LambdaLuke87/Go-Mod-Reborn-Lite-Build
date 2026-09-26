@@ -98,6 +98,41 @@ void ScaleSize(int& width, int& height)
 		width = minwidth;
 }
 
+void GoModImGuiStyle()
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	ImVec4 darkGrayOuter = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
+	ImVec4 lightGrayInner = ImVec4(0.48f, 0.48f, 0.48f, 1.00f);
+	ImVec4 actionButtons = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
+	ImVec4 thinBorder = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
+	ImVec4 inputBackground = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+	ImVec4 hoveredColor = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
+	ImVec4 activeColor = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+
+	style.Colors[ImGuiCol_WindowBg] = darkGrayOuter;
+	style.Colors[ImGuiCol_TitleBg] = darkGrayOuter;
+	style.Colors[ImGuiCol_TitleBgActive] = darkGrayOuter;
+	style.Colors[ImGuiCol_ChildBg] = lightGrayInner;
+	style.Colors[ImGuiCol_Button] = actionButtons;
+	style.Colors[ImGuiCol_ButtonHovered] = hoveredColor;
+	style.Colors[ImGuiCol_ButtonActive] = activeColor;
+	style.Colors[ImGuiCol_Border] = thinBorder;
+	style.Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	style.Colors[ImGuiCol_FrameBg] = inputBackground;
+	style.Colors[ImGuiCol_FrameBgHovered] = activeColor;
+	style.Colors[ImGuiCol_FrameBgActive] = thinBorder;
+	style.Colors[ImGuiCol_Header] = actionButtons;
+	style.Colors[ImGuiCol_HeaderHovered] = hoveredColor;
+	style.Colors[ImGuiCol_HeaderActive] = activeColor;
+
+	/*
+	style.WindowRounding = 12.0f;
+	style.ChildRounding = 8.0f;
+	style.FrameRounding = 14.0f;
+	style.WindowBorderSize = 1.0f;*/
+}
+
 // Think
 void CHud::Think()
 {
@@ -289,7 +324,6 @@ bool CHud::Redraw(float flTime, bool intermission)
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
-	extern bool g_bShowMenu;
 
 	if (g_iVisibleMouse && g_bShowMenu)
 	{
@@ -326,6 +360,8 @@ bool CHud::Redraw(float flTime, bool intermission)
 
 	if (g_bShowMenu)
 	{
+		GoModImGuiStyle();
+
 		int WindowWidth = 345;
 		int WindowHeight = 445;
 		int ButtonWidth = 200;
