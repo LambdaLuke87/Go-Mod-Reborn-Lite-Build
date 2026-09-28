@@ -85,6 +85,8 @@ extern CMenuPanel* CMessageWindowPanel_Create(const char* szMOTD, const char* sz
 extern CMenuPanel* CSandboxMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall);
 extern float* GetClientColor(int clientIndex);
 
+extern void ImGuiMenu_SetOpen(bool open);
+
 using namespace vgui;
 
 // Team Colors
@@ -1618,6 +1620,8 @@ CMenuPanel* TeamFortressViewport::CreateTextWindow(int iTextToShow)
 // VGUI Menus
 void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 {
+	ImGuiMenu_SetOpen(false); // close ImGui
+
 	CMenuPanel* pNewMenu = NULL;
 
 	// Don't open menus in demo playback

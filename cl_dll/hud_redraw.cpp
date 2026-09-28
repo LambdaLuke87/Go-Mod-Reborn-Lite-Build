@@ -36,15 +36,20 @@ int grgLogoFrame[MAX_LOGO_FRAMES] =
 		29, 29, 29, 29, 29, 28, 27, 26, 25, 24, 30, 31};
 
 
-extern bool g_iVisibleMouse;
-
 float HUD_GetFOV();
 
 extern float IN_GetMouseSensitivity();
 
 extern cvar_t* hud_renderer;
 
-extern bool g_bShowMenu;
+extern bool g_iVisibleMouse;
+extern void IN_ResetMouseAfterMenu();
+
+bool g_bShowMenu = false;
+static bool s_bMenuApplied = false;
+static bool s_bPrevRelative = false;
+static int s_iPrevCursor = SDL_DISABLE;
+
 extern void __CmdFunc_ShowMenu();
 
 ImGuiKey TranslateValveKeyToImGui(int keynum)
@@ -63,19 +68,94 @@ ImGuiKey TranslateValveKeyToImGui(int keynum)
 	}
 }
 
+
+void ImGuiMenu_SetOpen(bool open)
+{
+	g_bShowMenu = open;
+
+	if (open == s_bMenuApplied)
+		return;
+
+	s_bMenuApplied = open;
+	g_iVisibleMouse = open ? 1 : 0;
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (open)
+	{
+		// save the state set by the engine in order to restore it later
+		s_bPrevRelative = (SDL_GetRelativeMouseMode() == SDL_TRUE);
+		s_iPrevCursor = SDL_ShowCursor(SDL_QUERY);
+
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		SDL_ShowCursor(SDL_ENABLE);
+	}
+	else
+	{
+		io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Right, false);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Middle, false);
+		io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+
+		SDL_ShowCursor(s_iPrevCursor);
+		SDL_SetRelativeMouseMode(s_bPrevRelative ? SDL_TRUE : SDL_FALSE);
+
+		IN_ResetMouseAfterMenu(); // avoid the camera jump
+	}
+}
+
+static void ImGuiMenu_UpdateMouse(ImGuiIO& io)
+{
+	int mx, my;
+	Uint32 state = SDL_GetMouseState(&mx, &my);
+
+	float x = (float)mx, y = (float)my;
+
+	// SDL provides window coordinates; ImGui uses DisplaySize coordinates.
+	if (SDL_Window* window = SDL_GetMouseFocus())
+	{
+		int ww, wh;
+		SDL_GetWindowSize(window, &ww, &wh);
+		if (ww > 0 && wh > 0)
+		{
+			x *= io.DisplaySize.x / ww;
+			y *= io.DisplaySize.y / wh;
+		}
+	}
+
+	io.AddMousePosEvent(x, y);
+	io.AddMouseButtonEvent(ImGuiMouseButton_Left, (state & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0);
+	io.AddMouseButtonEvent(ImGuiMouseButton_Right, (state & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0);
+	io.AddMouseButtonEvent(ImGuiMouseButton_Middle, (state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
+}
+
 int HUD_Key_Event(int keynum, int down)
 {
-	if (g_bShowMenu)
+	if (!g_bShowMenu)
+		return 1;
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (keynum == K_ESCAPE)
 	{
-		if (keynum == K_ESCAPE && down)
-		{
-			__CmdFunc_ShowMenu(); // Turn Off
-			return 0;
-		}
+		if (down)
+			ImGuiMenu_SetOpen(false);
+		return 0; // prevent the engine from opening the main menu
+	}
+
+	if (keynum == K_MWHEELUP || keynum == K_MWHEELDOWN)
+	{
+		if (down)
+			io.AddMouseWheelEvent(0.0f, keynum == K_MWHEELUP ? 1.0f : -1.0f);
 		return 0;
 	}
 
-	return 1;
+	// clicks should not fire the weapon
+	// so there isn't a +attack hanging
+	if (keynum == K_MOUSE1 || keynum == K_MOUSE2 || keynum == K_MOUSE3)
+		return down ? 0 : 1;
+
+	return 1; // the rest (WASD, etc.) still works
 }
 
 void ScaleSize(int& width, int& height)
@@ -131,6 +211,92 @@ void GoModImGuiStyle()
 	style.ChildRounding = 8.0f;
 	style.FrameRounding = 14.0f;
 	style.WindowBorderSize = 1.0f;*/
+}
+
+
+// Llamar desde CHud::Redraw en lugar de todo el bloque ImGui actual
+void ImGuiMenu_Draw(float flTime)
+{
+	if (!g_bShowMenu)
+		return; // closed menu: ImGui does not run.
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	io.DisplaySize = ImVec2((float)gHUD.m_scrinfo.iWidth, (float)gHUD.m_scrinfo.iHeight);
+
+	static float flLastTime = 0.0f;
+	float dt = flTime - flLastTime;
+	io.DeltaTime = (dt > 0.0f && dt < 0.1f) ? dt : 1.0f / 60.0f;
+	flLastTime = flTime;
+
+	ImGuiMenu_UpdateMouse(io);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui::NewFrame();
+
+	// Start Menu Code
+	GoModImGuiStyle();
+
+	int WindowWidth = 345;
+	int WindowHeight = 445;
+	int ButtonWidth = 200;
+	int ButtonHeight = 30;
+
+	ScaleSize(WindowWidth, WindowHeight);
+	ScaleSize(ButtonWidth, ButtonHeight);
+
+	// calculate the center
+	int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
+
+	ImGui::SetNextWindowPos(ImVec2((float)iPos[0], (float)iPos[1]), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ImVec2((float)WindowWidth, (float)WindowHeight), ImGuiCond_Appearing);
+
+	ImGui::Begin("HUD Color", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+	ImGui::Text("Select a color for your HUD:");
+	ImGui::Separator();
+
+	static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
+
+	float contentRegionWidth = ImGui::GetContentRegionAvail().x;
+	ImGui::SetNextItemWidth(contentRegionWidth);
+
+	// Pick Color Panel
+	ImGui::ColorPicker3("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	float buttonPosX = (ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f;
+	ImGui::SetCursorPosX(buttonPosX);
+
+	// Apply Color
+	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+	{
+		int r = (int)(miColor[0] * 255.0f);
+		int g = (int)(miColor[1] * 255.0f);
+		int b = (int)(miColor[2] * 255.0f);
+
+		// buffer
+		char cmdBuffer[64];
+
+		// assign "hud_color RRR GGG BBB"
+		snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
+
+		// execute command
+		gEngfuncs.pfnClientCmd(cmdBuffer);
+	}
+
+	ImGui::Spacing();
+	ImGui::End();
+	// End Menu
+
+	if (!g_bShowMenu) // close with x button
+		ImGuiMenu_SetOpen(false);
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 // Think
@@ -323,105 +489,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 		CHud::Renderer().DrawCrosshair();
 	}
 
-	ImGuiIO& io = ImGui::GetIO();
-
-	if (g_iVisibleMouse && g_bShowMenu)
-	{
-		// Get the mouse position calculated by the engine.
-		Point mousePosStructure;
-		gEngfuncs.pfnGetMousePos(&mousePosStructure);
-		io.MousePos = ImVec2((float)mousePosStructure.x, (float)mousePosStructure.y);
-
-		Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
-
-		io.AddMouseButtonEvent(ImGuiMouseButton_Left, (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0);
-		io.AddMouseButtonEvent(ImGuiMouseButton_Right, (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0);
-		io.AddMouseButtonEvent(ImGuiMouseButton_Middle, (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
-
-		//SDL_ShowCursor(1);
-		io.MouseDrawCursor = true; // not very clean
-	}
-	else
-	{
-		io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-		//SDL_ShowCursor(0);
-		io.MouseDrawCursor = false; // not very clean
-	}
-
-	// Synchronize screen size
-	io.DisplaySize = ImVec2((float)gHUD.m_scrinfo.iWidth, (float)gHUD.m_scrinfo.iHeight);
-
-	static float flLastTime = 0.0f;
-	io.DeltaTime = (flTime - flLastTime > 0.0f) ? (flTime - flLastTime) : 1.0f / 60.0f;
-	flLastTime = flTime;
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui::NewFrame();
-
-	if (g_bShowMenu)
-	{
-		GoModImGuiStyle();
-
-		int WindowWidth = 345;
-		int WindowHeight = 445;
-		int ButtonWidth = 200;
-		int ButtonHeight = 30;
-
-		ScaleSize(WindowWidth, WindowHeight);
-		ScaleSize(ButtonWidth, ButtonHeight);
-
-		// calculate the center
-		int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
-
-		ImGui::SetNextWindowPos(ImVec2((float)iPos[0], (float)iPos[1]), ImGuiCond_Appearing);
-		ImGui::SetNextWindowSize(ImVec2((float)WindowWidth, (float)WindowHeight), ImGuiCond_Appearing);
-
-		ImGui::Begin("HUD Color", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-
-		ImGui::Text("Select a color for your HUD:");
-		ImGui::Separator();
-
-		static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
-
-		float contentRegionWidth = ImGui::GetContentRegionAvail().x;
-		ImGui::SetNextItemWidth(contentRegionWidth);
-
-		// Pick Color Panel
-		ImGui::ColorPicker3("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
-
-		ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Spacing();
-
-		float buttonPosX = (ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f;
-		ImGui::SetCursorPosX(buttonPosX);
-
-		// Apply Color
-		if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
-		{
-			int r = (int)(miColor[0] * 255.0f);
-			int g = (int)(miColor[1] * 255.0f);
-			int b = (int)(miColor[2] * 255.0f);
-
-			// buffer
-			char cmdBuffer[64];
-
-			// assign "hud_color RRR GGG BBB"
-			snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
-
-			// execute command
-			gEngfuncs.pfnClientCmd(cmdBuffer);
-		}
-
-		ImGui::Spacing();
-		ImGui::End();
-
-		if (!g_bShowMenu)
-			g_iVisibleMouse = 0; // turn back mouse control
-	}
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGuiMenu_Draw(flTime); // Start ImGui
 
 	return true;
 }

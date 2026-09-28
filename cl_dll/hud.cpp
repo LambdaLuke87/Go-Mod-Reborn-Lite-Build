@@ -45,8 +45,8 @@ cvar_t* m_pCvarHudBlue;
 
 extern int giOldWeapons;
 
-bool g_bShowMenu = false;
-extern bool g_iVisibleMouse; 
+extern void ImGuiMenu_SetOpen(bool open);
+extern bool g_bShowMenu;
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -406,18 +406,9 @@ void __CmdFunc_HUDColor()
 	gHUD.HUDColorCmd();
 }
 
-void __CmdFunc_ShowMenu(void)
+void __CmdFunc_ShowMenu()
 {
-	g_bShowMenu = !g_bShowMenu;
-
-	if (g_bShowMenu)
-	{
-		g_iVisibleMouse = true;
-	}
-	else
-	{
-		g_iVisibleMouse = false;
-	}
+	ImGuiMenu_SetOpen(!g_bShowMenu);
 }
 
 // This is called every time the DLL is loaded

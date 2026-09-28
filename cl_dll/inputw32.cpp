@@ -65,6 +65,8 @@ extern cvar_t* cl_movespeedkey;
 
 static cvar_t* m_rawinput = nullptr;
 
+static int s_iMouseSkipFrames = 0;
+
 static bool IN_UseRawInput()
 {
 	return m_rawinput ? m_rawinput->value != 0 : true;
@@ -662,6 +664,21 @@ void IN_MouseMove(float frametime, usercmd_t* cmd)
 IN_Accumulate
 ===========
 */
+
+// call when close IMGUI
+void IN_ResetMouseAfterMenu()
+{
+	mx_accum = 0;
+	my_accum = 0;
+
+	int dx, dy;
+	SDL_GetRelativeMouseState(&dx, &dy);
+
+	IN_ResetMouse(); // reset
+
+	s_iMouseSkipFrames = 2;
+}
+
 void DLLEXPORT IN_Accumulate()
 {
 	//only accumulate mouse if we are not moving the camera with the mouse
@@ -689,6 +706,14 @@ void DLLEXPORT IN_Accumulate()
 				mx_accum += deltaX;
 				my_accum += deltaY;
 			}
+
+			if (s_iMouseSkipFrames > 0)
+			{
+				s_iMouseSkipFrames--;
+				mx_accum = 0;
+				my_accum = 0;
+			}
+
 			// force the mouse to the center, so there's room to move
 			IN_ResetMouse();
 		}
