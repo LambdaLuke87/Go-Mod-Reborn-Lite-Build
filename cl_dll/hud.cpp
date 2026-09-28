@@ -46,6 +46,8 @@ cvar_t* m_pCvarHudBlue;
 extern int giOldWeapons;
 
 extern void ImGuiMenu_SetOpen(bool open);
+extern void GoModMenu_Reload();
+
 extern bool g_bShowMenu;
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
@@ -437,7 +439,7 @@ void CHud::Init()
 
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
-	HOOK_COMMAND("toggleSandboxMenu", OpenSandboxMenu);
+	HOOK_COMMAND("OLDtoggleSandboxMenu", OpenSandboxMenu); // Deprecated
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);
@@ -467,7 +469,8 @@ void CHud::Init()
 	// VGUI Menus
 	HOOK_MESSAGE(VGUIMenu);
 
-	gEngfuncs.pfnAddCommand("color_menu", __CmdFunc_ShowMenu);
+	gEngfuncs.pfnAddCommand("gomod_menu_reload", GoModMenu_Reload);
+	gEngfuncs.pfnAddCommand("toggleSandboxMenu", __CmdFunc_ShowMenu);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

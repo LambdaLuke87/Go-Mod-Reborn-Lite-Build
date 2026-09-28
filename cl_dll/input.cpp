@@ -32,6 +32,8 @@ extern cl_enginefunc_t gEngfuncs;
 
 extern int g_iVisibleMouse;
 
+extern void GoModMenu_Shutdown();
+
 // Defined in pm_math.c
 float anglemod(float a);
 
@@ -1043,6 +1045,7 @@ void DLLEXPORT HUD_Shutdown()
 
 	ShutdownInput();
 
+	GoModMenu_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 

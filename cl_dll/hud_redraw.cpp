@@ -50,6 +50,7 @@ static bool s_bMenuApplied = false;
 static bool s_bPrevRelative = false;
 static int s_iPrevCursor = SDL_DISABLE;
 
+extern void GoModMenu_Draw();
 extern void __CmdFunc_ShowMenu();
 
 ImGuiKey TranslateValveKeyToImGui(int keynum)
@@ -158,26 +159,6 @@ int HUD_Key_Event(int keynum, int down)
 	return 1; // the rest (WASD, etc.) still works
 }
 
-void ScaleSize(int& width, int& height)
-{
-	float yfactor = (float)ScreenWidth / (float)ScreenHeight;
-
-	float xscale = ((float)ScreenWidth / 1536.0f);
-	float yscale = ((float)ScreenHeight / 1536.0f) * yfactor;
-
-	int minwidth = width * 0.67f;
-	int minheight = height * 0.67f;
-
-	width *= xscale;
-	height *= yscale;
-
-	if (height < minheight)
-		height = minheight;
-
-	if (width < minwidth)
-		width = minwidth;
-}
-
 void GoModImGuiStyle()
 {
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -205,6 +186,9 @@ void GoModImGuiStyle()
 	style.Colors[ImGuiCol_Header] = actionButtons;
 	style.Colors[ImGuiCol_HeaderHovered] = hoveredColor;
 	style.Colors[ImGuiCol_HeaderActive] = activeColor;
+	style.Colors[ImGuiCol_Tab] = actionButtons;
+	style.Colors[ImGuiCol_TabHovered] = hoveredColor;
+	style.Colors[ImGuiCol_TabActive] = lightGrayInner;
 
 	/*
 	style.WindowRounding = 12.0f;
@@ -234,63 +218,8 @@ void ImGuiMenu_Draw(float flTime)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
-	// Start Menu Code
 	GoModImGuiStyle();
-
-	int WindowWidth = 345;
-	int WindowHeight = 445;
-	int ButtonWidth = 200;
-	int ButtonHeight = 30;
-
-	ScaleSize(WindowWidth, WindowHeight);
-	ScaleSize(ButtonWidth, ButtonHeight);
-
-	// calculate the center
-	int iPos[2] = {((ScreenWidth - WindowWidth) / 2), ((ScreenHeight - WindowHeight) / 2)};
-
-	ImGui::SetNextWindowPos(ImVec2((float)iPos[0], (float)iPos[1]), ImGuiCond_Appearing);
-	ImGui::SetNextWindowSize(ImVec2((float)WindowWidth, (float)WindowHeight), ImGuiCond_Appearing);
-
-	ImGui::Begin("HUD Color", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-
-	ImGui::Text("Select a color for your HUD:");
-	ImGui::Separator();
-
-	static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
-
-	float contentRegionWidth = ImGui::GetContentRegionAvail().x;
-	ImGui::SetNextItemWidth(contentRegionWidth);
-
-	// Pick Color Panel
-	ImGui::ColorPicker3("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-
-	float buttonPosX = (ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f;
-	ImGui::SetCursorPosX(buttonPosX);
-
-	// Apply Color
-	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
-	{
-		int r = (int)(miColor[0] * 255.0f);
-		int g = (int)(miColor[1] * 255.0f);
-		int b = (int)(miColor[2] * 255.0f);
-
-		// buffer
-		char cmdBuffer[64];
-
-		// assign "hud_color RRR GGG BBB"
-		snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
-
-		// execute command
-		gEngfuncs.pfnClientCmd(cmdBuffer);
-	}
-
-	ImGui::Spacing();
-	ImGui::End();
-	// End Menu
+	GoModMenu_Draw();
 
 	if (!g_bShowMenu) // close with x button
 		ImGuiMenu_SetOpen(false);

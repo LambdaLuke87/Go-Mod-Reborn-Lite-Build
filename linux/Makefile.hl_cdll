@@ -21,7 +21,7 @@ CFLAGS=$(BASE_CFLAGS) $(ARCH_CFLAGS) -DCLIENT_DLL
 
 INCLUDEDIRS=-I$(HL_SRC_DIR) -I$(HL_PARTICLEMAN_DIR) -I../dlls -I/usr/include/malloc -I$(COMMON_SRC_DIR) -I$(PUBLIC_SRC_DIR) -I../pm_shared -I../engine -I../utils/vgui/include -I../game_shared -I../external
 
-LDFLAGS=$(SHLIBLDFLAGS) $(CPP_LIB) -L$(CFG) vgui.so -L. libSDL2-2.0.so.0
+LDFLAGS=$(SHLIBLDFLAGS) $(CPP_LIB) -L$(CFG) vgui.so -L. libSDL2-2.0.so.0 -l:libGL.so.1
 
 DO_CC=$(CPLUS) $(INCLUDEDIRS) $(CFLAGS) -o $@ -c $<
 
@@ -37,6 +37,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/imgui/imgui.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_demo.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_draw.o \
+	$(HL1_OBJ_DIR)/imgui/imgui_gomod_menu.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_impl_opengl3.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_tables.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_widgets.o \

@@ -1,0 +1,800 @@
+// gomod_menu.cpp
+// Garry's Mod 11 Styled Menu for Go-Mod: Reborn (Dear ImGui).
+
+#include "hud.h"
+#include "cl_util.h"
+
+#include "imgui.h"
+
+#ifdef _WIN32
+#define HSPRITE WINDOWS_HSPRITE
+#endif
+#include <../external/SDL2/SDL_opengl.h>
+#ifdef _WIN32
+#undef HSPRITE
+#endif
+
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <cctype>
+#include <string>
+#include <vector>
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_PNG
+#include "stb_image.h"
+
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE 0x812F
+#endif
+
+extern bool g_bShowMenu;
+
+// =====================================================================
+//  Utilities
+// =====================================================================
+
+void ScaleSize(int& width, int& height)
+{
+	float yfactor = (float)ScreenWidth / (float)ScreenHeight;
+
+	float xscale = ((float)ScreenWidth / 1536.0f);
+	float yscale = ((float)ScreenHeight / 1536.0f) * yfactor;
+
+	int minwidth = width * 0.67f;
+	int minheight = height * 0.67f;
+
+	width *= xscale;
+	height *= yscale;
+
+	if (height < minheight)
+		height = minheight;
+
+	if (width < minwidth)
+		width = minwidth;
+}
+
+static bool IsSpace(char c)
+{
+	return isspace((unsigned char)c) != 0;
+}
+
+static void RunCmd(const char* cmd)
+{
+	char buf[256];
+	snprintf(buf, sizeof(buf), "%s", cmd);
+	gEngfuncs.pfnClientCmd(buf);
+}
+
+static bool LoadTextFile(const char* path, std::string& out)
+{
+	int len = 0;
+	byte* data = gEngfuncs.COM_LoadFile((char*)path, 5, &len);
+
+	if (!data)
+		return false;
+
+	const char* p = (const char*)data;
+
+	// saltar BOM UTF-8
+	if (len >= 3 && (unsigned char)p[0] == 0xEF && (unsigned char)p[1] == 0xBB && (unsigned char)p[2] == 0xBF)
+	{
+		p += 3;
+		len -= 3;
+	}
+
+	out.assign(p, len);
+	gEngfuncs.COM_FreeFile(data);
+	return true;
+}
+
+static bool KeyIs(const std::string& s, const char* key)
+{
+	size_t n = strlen(key);
+
+	if (s.size() != n)
+		return false;
+
+	for (size_t i = 0; i < n; i++)
+	{
+		if (tolower((unsigned char)s[i]) != tolower((unsigned char)key[i]))
+			return false;
+	}
+
+	return true;
+}
+
+// =====================================================================
+//  Data
+// =====================================================================
+
+struct MenuItem
+{
+	std::string name;
+	std::string image;
+	std::string command;
+
+	GLuint tex = 0;
+	bool triedLoad = false;
+};
+
+struct MenuCategory
+{
+	std::string name;
+	std::vector<MenuItem> items;
+};
+
+struct Toggle
+{
+	const char* label;
+	const char* cvar; // send "<cvar> 0/1" when change
+	bool value;
+};
+
+struct Action
+{
+	const char* label;
+	const char* command;
+};
+
+struct SpawnTab
+{
+	const char* title;
+	const char* file;
+	std::vector<MenuCategory> cats;
+	bool loaded = false;
+	std::vector<Toggle> toggles;
+	std::vector<Action> actions;
+};
+
+struct ToolDef
+{
+	const char* name;
+	const char* command;
+};
+
+struct ToolCategory
+{
+	const char* name;
+	std::vector<ToolDef> tools;
+};
+
+static std::vector<SpawnTab> g_Tabs;
+static std::vector<ToolCategory> g_ToolCats;
+
+// =====================================================================
+//  Config, Commands, CVARS
+// =====================================================================
+
+static void InitData()
+{
+	if (!g_Tabs.empty())
+		return;
+
+	SpawnTab npcs;
+	npcs.title = "NPCs";
+	npcs.file = "resource/npcs.txt";
+	npcs.toggles = {
+		{"Ignore Players", "gomod_npc_ignoreplayers", false},
+		{"No AI", "gomod_npc_noai", false},
+		{"Alternate Classify", "gomod_npc_altclassify", false},
+	};
+	npcs.actions = {
+		{"Undo", "gomod_undo npc"},
+		{"Remove All", "gomod_removeall npc"},
+	};
+
+	SpawnTab props;
+	props.title = "Props";
+	props.file = "resource/props.txt";
+	props.toggles = {
+		{"Ignore Players", "gomod_prop_ignoreplayers", false},
+	};
+	props.actions = {
+		{"Undo", "remove_entity_undo"},
+		{"Remove All", "gomod_removeall prop"},
+	};
+
+	SpawnTab items;
+	items.title = "Items";
+	items.file = "resource/items.txt";
+	items.toggles = {
+		{"Give Mode", "gomod_item_give", false},
+		{"Front Spawn", "gomod_item_front", false},
+	};
+	items.actions = {
+		{"Undo", "gomod_undo item"},
+		{"Remove All", "gomod_removeall item"},
+	};
+
+	SpawnTab sweeps;
+	sweeps.title = "Sweeps";
+	sweeps.file = "resource/sweeps.txt";
+	sweeps.toggles = {
+		{"Give Mode", "gomod_sweep_give", false},
+		{"Front Spawn", "gomod_sweep_front", false},
+	};
+	sweeps.actions = {
+		{"Undo", "gomod_undo sweep"},
+		{"Remove All", "gomod_removeall sweep"},
+	};
+
+	g_Tabs.push_back(std::move(npcs));
+	g_Tabs.push_back(std::move(props));
+	g_Tabs.push_back(std::move(items));
+	g_Tabs.push_back(std::move(sweeps));
+
+	// Tools: command = "tool <name>"
+	g_ToolCats = {
+		{"Common Tools",
+		 {
+			 {"No Tools", "tool none"},
+			 {"Duplicator", "tool duplicator"},
+			 {"Remover", "tool remover"},
+			 {"Render", "tool render"},
+		 }},
+		{"Monster Manage",
+		 {
+			 {"Blood Color", "tool blood_color"},
+			 {"Frame Editor", "tool frame_set"},
+			 {"Health Modify", "tool health_set"},
+			 {"Poser", "tool poser"},
+			 {"Manipulator", "tool manipulator"},
+			 {"Model Editor", "tool model_editor"},
+			 {"No Colide", "tool no_collide"},
+			 {"Scaler", "tool scaler"},
+			 {"Spawner", "tool spawner"},
+			 {"Take Damage", "tool take_damage"},
+		 }},
+		{"Utilites",
+			{
+				{"Camera", "tool camera"},
+				{"Gibber", "tool gibber"},
+				{"Glowsticks", "tool glowsticks"},
+				{"Teleporter", "tool teleporter"},
+		}},
+	};
+}
+
+// =====================================================================
+//  Parser de los txt (formato tolerante: ignora comas, ':' y comentarios //)
+// =====================================================================
+
+struct Lexer
+{
+	enum Type
+	{
+		T_END,
+		T_OPEN,
+		T_CLOSE,
+		T_STRING
+	};
+
+	const char* p;
+	const char* end;
+	Type type = T_END;
+	std::string text;
+
+	Lexer(const char* data, size_t len) : p(data), end(data + len) {}
+
+	void Next()
+	{
+		for (;;)
+		{
+			while (p < end && (IsSpace(*p) || *p == ',' || *p == ':'))
+				p++;
+
+			if (p + 1 < end && p[0] == '/' && p[1] == '/')
+			{
+				while (p < end && *p != '\n')
+					p++;
+				continue;
+			}
+			break;
+		}
+
+		text.clear();
+
+		if (p >= end)
+		{
+			type = T_END;
+			return;
+		}
+
+		if (*p == '{')
+		{
+			type = T_OPEN;
+			p++;
+			return;
+		}
+
+		if (*p == '}')
+		{
+			type = T_CLOSE;
+			p++;
+			return;
+		}
+
+		type = T_STRING;
+
+		if (*p == '"')
+		{
+			p++;
+			while (p < end && *p != '"')
+				text.push_back(*p++);
+			if (p < end)
+				p++;
+		}
+		else
+		{
+			while (p < end && !IsSpace(*p) && *p != ',' && *p != ':' && *p != '{' && *p != '}')
+				text.push_back(*p++);
+		}
+	}
+};
+
+static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out)
+{
+	Lexer lx(src.data(), src.size());
+	lx.Next();
+
+	if (lx.type != Lexer::T_OPEN)
+		return false;
+	lx.Next();
+
+	while (lx.type == Lexer::T_STRING)
+	{
+		MenuCategory cat;
+		cat.name = lx.text;
+		lx.Next();
+
+		if (lx.type != Lexer::T_OPEN)
+			return false;
+		lx.Next();
+
+		while (lx.type == Lexer::T_STRING)
+		{
+			MenuItem item;
+			item.name = lx.text;
+			lx.Next();
+
+			if (lx.type != Lexer::T_OPEN)
+				return false;
+			lx.Next();
+
+			while (lx.type == Lexer::T_STRING)
+			{
+				std::string key = lx.text;
+				lx.Next();
+
+				if (lx.type != Lexer::T_STRING)
+					return false;
+
+				if (KeyIs(key, "image"))
+					item.image = lx.text;
+				else if (KeyIs(key, "command"))
+					item.command = lx.text;
+
+				lx.Next();
+			}
+
+			if (lx.type != Lexer::T_CLOSE)
+				return false;
+			lx.Next();
+
+			cat.items.push_back(std::move(item));
+		}
+
+		if (lx.type != Lexer::T_CLOSE)
+			return false;
+		lx.Next();
+
+		out.push_back(std::move(cat));
+	}
+
+	return lx.type == Lexer::T_CLOSE;
+}
+
+static void EnsureLoaded(SpawnTab& tab)
+{
+	if (tab.loaded)
+		return;
+
+	tab.loaded = true;
+	tab.cats.clear();
+
+	std::string src;
+
+	if (!LoadTextFile(tab.file, src))
+	{
+		gEngfuncs.Con_Printf("GoMod menu: no se pudo abrir %s\n", tab.file);
+		return;
+	}
+
+	if (!ParseMenuFile(src, tab.cats))
+	{
+		gEngfuncs.Con_Printf("GoMod menu: error de sintaxis en %s\n", tab.file);
+		tab.cats.clear();
+	}
+}
+
+// =====================================================================
+//  Texturas
+// =====================================================================
+
+static GLuint LoadTexture(const char* path)
+{
+	int len = 0;
+	byte* file = gEngfuncs.COM_LoadFile((char*)path, 5, &len);
+
+	if (!file)
+	{
+		gEngfuncs.Con_Printf("GoMod menu: imagen no encontrada: %s\n", path);
+		return 0;
+	}
+
+	int w = 0, h = 0, comp = 0;
+	unsigned char* pixels = stbi_load_from_memory((const unsigned char*)file, len, &w, &h, &comp, 4);
+	gEngfuncs.COM_FreeFile(file);
+
+	if (!pixels)
+	{
+		gEngfuncs.Con_Printf("GoMod menu: PNG invalido: %s\n", path);
+		return 0;
+	}
+
+	// no romper el estado GL del engine: restaurar el bind anterior
+	GLint lastTexture = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+
+	GLuint tex = 0;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glBindTexture(GL_TEXTURE_2D, (GLuint)lastTexture);
+
+	stbi_image_free(pixels);
+	return tex;
+}
+
+static void FreeAllTextures()
+{
+	for (SpawnTab& tab : g_Tabs)
+	{
+		for (MenuCategory& cat : tab.cats)
+		{
+			for (MenuItem& item : cat.items)
+			{
+				if (item.tex != 0)
+					glDeleteTextures(1, &item.tex);
+				item.tex = 0;
+				item.triedLoad = false;
+			}
+		}
+	}
+}
+
+// =====================================================================
+//  Widgets
+// =====================================================================
+
+// Boton cuadrado con imagen y el nombre superpuesto abajo (como en GMod)
+static bool ThumbButton(MenuItem& item, const ImVec2& size, int id)
+{
+	if (!item.triedLoad)
+	{
+		item.triedLoad = true;
+		if (!item.image.empty())
+			item.tex = LoadTexture(item.image.c_str());
+	}
+
+	ImGui::PushID(id);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+
+	bool clicked;
+	if (item.tex != 0)
+		clicked = ImGui::ImageButton("##btn", (ImTextureID)(intptr_t)item.tex, size, ImVec2(0, 0), ImVec2(1, 1));
+	else
+		clicked = ImGui::Button("##btn", size);
+
+	ImGui::PopStyleVar();
+	ImGui::PopID();
+
+	const ImVec2 mn = ImGui::GetItemRectMin();
+	const ImVec2 mx = ImGui::GetItemRectMax();
+	const float barH = ImGui::GetTextLineHeight() + 4.0f;
+
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	dl->AddRectFilled(ImVec2(mn.x + 1, mx.y - barH - 1), ImVec2(mx.x - 1, mx.y - 1), IM_COL32(0, 0, 0, 150));
+
+	const ImVec2 ts = ImGui::CalcTextSize(item.name.c_str());
+	float tx = mn.x + (size.x - ts.x) * 0.5f;
+	if (tx < mn.x + 2.0f)
+		tx = mn.x + 2.0f;
+
+	dl->PushClipRect(ImVec2(mn.x + 1, mx.y - barH - 1), ImVec2(mx.x - 1, mx.y - 1), true);
+	dl->AddText(ImVec2(tx, mx.y - barH + 1.0f), IM_COL32_WHITE, item.name.c_str());
+	dl->PopClipRect();
+
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("%s", item.name.c_str());
+
+	return clicked;
+}
+
+// =====================================================================
+//  Ventana izquierda: spawn menu
+// =====================================================================
+
+static void DrawSpawnTab(SpawnTab& tab)
+{
+	EnsureLoaded(tab);
+
+	const ImGuiStyle& style = ImGui::GetStyle();
+
+	int thumbW = 84, thumbH = 84;
+	ScaleSize(thumbW, thumbH);
+	const ImVec2 thumb((float)thumbW, (float)thumbH);
+
+	int btnW = 120, btnH = 26;
+	ScaleSize(btnW, btnH);
+
+	// altura del pie: checkboxes a la izquierda, botones a la derecha
+	const float rowH = (ImGui::GetFrameHeight() > (float)btnH ? ImGui::GetFrameHeight() : (float)btnH) + style.ItemSpacing.y;
+	const size_t rows = tab.toggles.size() > tab.actions.size() ? tab.toggles.size() : tab.actions.size();
+	const float footerH = rows * rowH + style.WindowPadding.y * 2.0f + style.ItemSpacing.y;
+
+	// ---- lista de secciones ----
+	ImGui::BeginChild("##list", ImVec2(0, -footerH), ImGuiChildFlags_Borders);
+
+	if (tab.cats.empty())
+		ImGui::TextDisabled("Sin entradas. Revisa %s", tab.file);
+
+	for (size_t c = 0; c < tab.cats.size(); c++)
+	{
+		MenuCategory& cat = tab.cats[c];
+
+		ImGui::PushID((int)c);
+
+		if (ImGui::CollapsingHeader(cat.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const float avail = ImGui::GetContentRegionAvail().x;
+			const float spacing = style.ItemSpacing.x;
+			float used = 0.0f;
+
+			for (size_t i = 0; i < cat.items.size(); i++)
+			{
+				if (i > 0)
+				{
+					if (used + spacing + thumb.x <= avail)
+					{
+						ImGui::SameLine();
+						used += spacing;
+					}
+					else
+					{
+						used = 0.0f;
+					}
+				}
+
+				MenuItem& item = cat.items[i];
+
+				if (ThumbButton(item, thumb, (int)i) && !item.command.empty())
+					RunCmd(item.command.c_str());
+
+				used += thumb.x;
+			}
+
+			ImGui::Spacing();
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::EndChild();
+
+	// ---- pie: checkboxes + botones ----
+	ImGui::BeginChild("##footer", ImVec2(0, 0), ImGuiChildFlags_Borders);
+
+	ImGui::BeginGroup();
+	for (Toggle& t : tab.toggles)
+	{
+		if (ImGui::Checkbox(t.label, &t.value))
+		{
+			char buf[128];
+			snprintf(buf, sizeof(buf), "%s %d", t.cvar, t.value ? 1 : 0);
+			RunCmd(buf);
+		}
+	}
+	ImGui::EndGroup();
+
+	ImGui::SameLine(ImGui::GetWindowWidth() - (float)btnW - style.WindowPadding.x);
+
+	ImGui::BeginGroup();
+	for (const Action& a : tab.actions)
+	{
+		if (ImGui::Button(a.label, ImVec2((float)btnW, (float)btnH)))
+			RunCmd(a.command);
+	}
+	ImGui::EndGroup();
+
+	ImGui::EndChild();
+}
+
+static void DrawSpawnWindow(int x, int y, int w, int h)
+{
+	ImGui::SetNextWindowPos(ImVec2((float)x, (float)y), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ImVec2((float)w, (float)h), ImGuiCond_Appearing);
+
+	// la X de esta ventana cierra todo el menu
+	ImGui::Begin("Go-Mod Spawn Menu", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::BeginTabBar("##spawntabs"))
+	{
+		for (size_t t = 0; t < g_Tabs.size(); t++)
+		{
+			if (ImGui::BeginTabItem(g_Tabs[t].title))
+			{
+				ImGui::PushID((int)t);
+				DrawSpawnTab(g_Tabs[t]);
+				ImGui::PopID();
+				ImGui::EndTabItem();
+			}
+		}
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+}
+
+// =====================================================================
+//  Ventana derecha: Tools + HUD Color
+// =====================================================================
+
+static void DrawToolsTab()
+{
+	static const ToolDef* s_pActive = nullptr;
+
+	ImGui::BeginChild("##toollist", ImVec2(ImGui::GetContentRegionAvail().x * 0.45f, 0), ImGuiChildFlags_Borders);
+
+	for (size_t c = 0; c < g_ToolCats.size(); c++)
+	{
+		ImGui::PushID((int)c);
+
+		if (ImGui::CollapsingHeader(g_ToolCats[c].name, ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			for (const ToolDef& tool : g_ToolCats[c].tools)
+			{
+				if (ImGui::Selectable(tool.name, s_pActive == &tool))
+				{
+					s_pActive = &tool;
+					RunCmd(tool.command);
+				}
+			}
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::EndChild();
+	ImGui::SameLine();
+
+	// panel de opciones de la herramienta activa (por ahora solo el nombre)
+	ImGui::BeginChild("##tooloptions", ImVec2(0, 0), ImGuiChildFlags_Borders);
+
+	if (s_pActive)
+		ImGui::Text("%s", s_pActive->name);
+	else
+		ImGui::TextDisabled("Selecciona una herramienta");
+
+	ImGui::EndChild();
+}
+
+static void DrawHudColorTab()
+{
+	int ButtonWidth = 200;
+	int ButtonHeight = 30;
+	ScaleSize(ButtonWidth, ButtonHeight);
+
+	ImGui::BeginChild("##hudcolor", ImVec2(0, 0), ImGuiChildFlags_None);
+
+	ImGui::Text("Select a color for your HUD:");
+	ImGui::Separator();
+
+	static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	ImGui::ColorPicker3("##picker", miColor, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
+
+	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+	{
+		int r = (int)(miColor[0] * 255.0f);
+		int g = (int)(miColor[1] * 255.0f);
+		int b = (int)(miColor[2] * 255.0f);
+
+		char cmdBuffer[64];
+		snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
+		gEngfuncs.pfnClientCmd(cmdBuffer);
+	}
+
+	ImGui::EndChild();
+}
+
+static void DrawToolsWindow(int x, int y, int w, int h)
+{
+	ImGui::SetNextWindowPos(ImVec2((float)x, (float)y), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ImVec2((float)w, (float)h), ImGuiCond_Appearing);
+
+	ImGui::Begin("Go-Mod Tools", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::BeginTabBar("##toolstabs"))
+	{
+		if (ImGui::BeginTabItem("Tools"))
+		{
+			DrawToolsTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("HUD Color"))
+		{
+			DrawHudColorTab();
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+}
+
+// =====================================================================
+//  API publica
+// =====================================================================
+
+// Llamar entre ImGui::NewFrame() y ImGui::Render(), solo con el menu abierto
+void GoModMenu_Draw()
+{
+	InitData();
+
+	const int leftW = (int)(ScreenWidth * 0.46f);
+	const int rightW = (int)(ScreenWidth * 0.30f);
+	const int gap = (int)(ScreenWidth * 0.01f);
+	const int h = (int)(ScreenHeight * 0.72f);
+
+	const int x0 = (ScreenWidth - (leftW + gap + rightW)) / 2;
+	const int y0 = (ScreenHeight - h) / 2;
+
+	DrawSpawnWindow(x0, y0, leftW, h);
+	DrawToolsWindow(x0 + leftW + gap, y0, rightW, h);
+}
+
+// Comando "gomod_menu_reload": vuelve a leer los txt e imagenes
+void GoModMenu_Reload()
+{
+	FreeAllTextures();
+
+	for (SpawnTab& tab : g_Tabs)
+	{
+		tab.cats.clear();
+		tab.loaded = false;
+	}
+}
+
+// Llamar en HUD_Shutdown ANTES de ImGui_ImplOpenGL3_Shutdown()
+void GoModMenu_Shutdown()
+{
+	FreeAllTextures();
+	g_Tabs.clear();
+	g_ToolCats.clear();
+}
