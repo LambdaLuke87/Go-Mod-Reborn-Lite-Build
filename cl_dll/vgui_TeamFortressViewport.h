@@ -49,7 +49,6 @@ class CClassMenuPanel;
 class CTeamMenuPanel;
 class TeamFortressViewport;
 class CStatsMenuPanel;
-class CSandboxMenu; // Sandbox Menu
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -517,8 +516,6 @@ private:
 	CMenuPanel*	 ShowClassMenu( void );
 	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
-
-	CMenuPanel* ShowSandboxMenu(void);
 	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
@@ -653,7 +650,6 @@ public:
 	CStatsMenuPanel* m_pStatsMenu;
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
-	CSandboxMenu* m_pSandboxMenu; // Sandbox Menu
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -1638,244 +1634,6 @@ public:
 	int iYSize;
 	int iXPos;
 	int iYPos;
-};
-
-class CSandboxMenu : public CGMMenuBase
-{
-public:
-	CSandboxMenu(const char* szMOTD, int iTrans, int iRemoveMe, int x, int y, int wide, int tall);
-	void SetActiveInfo(int iShowText);
-	ScrollPanel* pScrollPanel;
-	TextPanel* pText;
-
-	// Header Buttons
-	CommandButton* ButtonLinkMenu;
-	CommandButton* ButtonSweepMenu;
-	CommandButton* ButtonItemsMenu;
-	CommandButton* ButtonNPCMenu;
-	CommandButton* ButtonPropsMenu;
-	CommandButton* ButtonToolsMenu;
-
-	// SubHeaders Weapons
-	CommandButton* ButtonHLSweeps;
-	CommandButton* ButtonOp4Sweeps;
-
-	// SubHeaders NPCs
-	CommandButton* ButtonMilAliens;
-	CommandButton* ButtonWildAliens;
-	CommandButton* ButtonFriendHumans;
-	CommandButton* ButtonMilUnits;
-	CommandButton* ButtonMiscNPCS;
-	CommandButton* ButtonExtraNPCS;
-
-	// SubHeaders Props
-	CommandButton* ButtonPropCorpses;
-	CommandButton* ButtonXenProps;
-	CommandButton* ButtonPropsExplosives;
-	CommandButton* ButtonPropsMISC;
-
-	// HL Weapons
-	CommandButton* ButtonCrowbar;
-	CommandButton* ButtonPhysgun;
-	CommandButton* ButtonToolbow;
-	CommandButton* ButtonGlock;
-	CommandButton* ButtonPython;
-	CommandButton* ButtonMP5;
-	CommandButton* ButtonShotgun;
-	CommandButton* ButtonCrossbow;
-	CommandButton* ButtonRPG;
-	CommandButton* ButtonGauss;
-	CommandButton* ButtonEgon;
-	CommandButton* ButtonHiveHand;
-	CommandButton* ButtonGrenade;
-	CommandButton* ButtonSatchel;
-	CommandButton* ButtonTripmine;
-	CommandButton* ButtonSnark;
-
-	// OP4 Weapons
-	CommandButton* ButtonKnife;
-	CommandButton* ButtonPipeWrench;
-	CommandButton* ButtonGrapple;
-	CommandButton* ButtonDEagle;
-	CommandButton* ButtonM249;
-	CommandButton* ButtonSniperRifle;
-	CommandButton* ButtonDisplacer;
-	CommandButton* ButtonShockRifle;
-	CommandButton* ButtonSporeLauncher;
-	CommandButton* ButtonPenguin;
-
-	// Items and Ammo
-	CommandButton* ButtonHealthKit;
-	CommandButton* ButtonBattery;
-	CommandButton* ButtonLongJump;
-	CommandButton* ButtonHEV;
-	CommandButton* ButtonGlockAmmo;
-	CommandButton* ButtonMP5Ammo;
-	CommandButton* ButtonARGrenades;
-	CommandButton* ButtonArrows;
-	CommandButton* ButtonUranium;
-	CommandButton* ButtonRockets;
-	CommandButton* ButtonBuckshot;
-	CommandButton* Button357Ammo;
-	CommandButton* Button556Ammo;
-	CommandButton* ButtonSporeBalls;
-	CommandButton* Button762Ammo;
-	CommandButton* ButtonCTFAccrtor;
-	CommandButton* ButtonCTFBpack;
-	CommandButton* ButtonCTFLJump;
-	CommandButton* ButtonCTFPHEV;
-	CommandButton* ButtonCTFReg;
-
-	// Military Aliens
-	CommandButton* ButtonAlienController;
-	CommandButton* ButtonAlienGrunt;
-	CommandButton* ButtonAlienSlave;
-	CommandButton* ButtonGargantua;
-	CommandButton* ButtonShockTrooper;
-	CommandButton* ButtonVoltigore;
-	CommandButton* ButtonBabyGarg;
-	CommandButton* ButtonNihilant;
-
-	// Wildlife Aliens and Zombies
-	CommandButton* ButtonHeadcrab;
-	CommandButton* ButtonBabycrab;
-	CommandButton* ButtonShockRoach;
-	CommandButton* ButtonBabyVoltigore;
-	CommandButton* ButtonHoundeye;
-	CommandButton* ButtonBullsquid;
-	CommandButton* ButtonPitdrone;
-	CommandButton* ButtonBigMomma;
-	CommandButton* ButtonIchthyosaur;
-	CommandButton* ButtonZombie;
-	CommandButton* ButtonZombieBarney;
-	CommandButton* ButtonZombieSoldier;
-	CommandButton* ButtonGonome;
-	CommandButton* ButtonBarnacle;
-	CommandButton* ButtonArcher;
-	CommandButton* ButtonPanthereye;
-	CommandButton* ButtonCharger;
-
-	// Friendly Humans
-	CommandButton* ButtonScientist;
-	CommandButton* ButtonClScientist;
-	CommandButton* ButtonBarney;
-	CommandButton* ButtonOtis;
-	CommandButton* ButtonAllyHgrunt;
-	CommandButton* ButtonMedicHgrunt;
-	CommandButton* ButtonTorchHgrunt;
-
-	// Enemy Humans and Machines
-	CommandButton* ButtonHGrunt;
-	CommandButton* ButtonMassassin;
-	CommandButton* ButtonFassassin;
-	CommandButton* ButtonApache;
-	CommandButton* ButtonSentry;
-	CommandButton* ButtonRobogrunt;
-
-	// Misc Monsters
-	CommandButton* ButtonBoid;
-	CommandButton* ButtonLeech;
-	CommandButton* ButtonCockRoach;
-	CommandButton* ButtonRat;
-	CommandButton* ButtonGman;
-	CommandButton* ButtonTentacle;
-	CommandButton* ButtonChiken;
-
-	// Extra Monsters
-	CommandButton* ButtonAlienGruntMelee;
-	CommandButton* ButtonAlienSlaveMelee;
-	CommandButton* ButtonGonomeMelee;
-	CommandButton* ButtonPitdroneMelee;
-	CommandButton* ButtonScientistPreDisaster;
-	CommandButton* ButtonBarneyPreDisaster;
-
-	// Corpses
-	CommandButton* ButtonDeadScientist;
-	CommandButton* ButtonDeadBarney;
-	CommandButton* ButtonDeadOtis;
-	CommandButton* ButtonDeadClScientist;
-	CommandButton* ButtonDeadHgrunt;
-	CommandButton* ButtonDeadMassassin;
-	CommandButton* ButtonDeadAllyHgrunt;
-	CommandButton* ButtonDeadAlienSlave;
-	CommandButton* ButtonDeadZombieSoldier;
-	
-	// Xen Decorations
-	CommandButton* ButtonXenHair;
-	CommandButton* ButtonXenTree;
-	CommandButton* ButtonXenPlantL;
-	CommandButton* ButtonXenSporeXS;
-	CommandButton* ButtonXenSporeL;
-	CommandButton* ButtonXenSporeXL;
-
-	// Explosives
-	CommandButton* ButtonPropC4;
-	CommandButton* ButtonPropGrenade;
-	CommandButton* ButtonPropTNT;
-
-	// Misc Props
-	CommandButton* ButtonChumtoad;
-	CommandButton* ButtonSittingScientist;
-	CommandButton* ButtonSpores;
-
-	// Tools
-	CommandButton* ButtonDuplicator;
-	CommandButton* ButtonRemover;
-	CommandButton* ButtonGibber;
-	CommandButton* ButtonPoser;
-	CommandButton* ButtonCamera;
-	CommandButton* ButtonHPModify;
-	CommandButton* ButtonNoCollide;
-	CommandButton* ButtonTakeDamage;
-	CommandButton* ButtonBloodColor;
-	CommandButton* ButtonFramedit;
-	CommandButton* ButtonTeleporter;
-	CommandButton* ButtonGlowsticks;
-	CommandButton* ButtonManipulator;
-	CommandButton* ButtonModelEdit;
-	CommandButton* ButtonNoTools;
-	CommandButton* ButtonRender;
-	CommandButton* ButtonSpawnertool;
-	CommandButton* ButtonScalerTool;
-
-	// Render Modes
-	CommandButton* ButtonRMNormal;
-	CommandButton* ButtonRMColor;
-	CommandButton* ButtonRMTexture;
-	CommandButton* ButtonRMGlow;
-	CommandButton* ButtonRMSolid;
-	CommandButton* ButtonRMAdditive;
-
-	// Render FX
-	CommandButton* ButtonFXNone;
-	CommandButton* ButtonFXSPulse;
-	CommandButton* ButtonFXFPulse;
-	CommandButton* ButtonFXSWPulse;
-	CommandButton* ButtonFXFWPulse;
-	CommandButton* ButtonFXSFadeAway;
-	CommandButton* ButtonFXFFadeAway;
-	CommandButton* ButtonFXSSolid;
-	CommandButton* ButtonFXFSolid;
-	CommandButton* ButtonFXSStrobe;
-	CommandButton* ButtonFXFStrobe;
-	CommandButton* ButtonFXFRStrobe;
-	CommandButton* ButtonFXSFlicker;
-	CommandButton* ButtonFXFFlicker;
-	CommandButton* ButtonFXConstantGlow;
-	CommandButton* ButtonFXDistort;
-	CommandButton* ButtonFXHologram;
-	CommandButton* ButtonFXExplode;
-	CommandButton* ButtonFXGlowShell;
-
-	// Options Per Menu
-	CommandButton* ButtonShowRenders;
-	CommandButton* ButtonAimMode;
-	CommandButton* ButtonGiveMode;
-	CommandButton* ButtonNoTarget;
-	CommandButton* ButtonNoAI;
-	CommandButton* ButtonAllieds;
-	CommandButton* ButtonUndoNPC;
-	CommandButton* ButtonDeleteALlNpcs;
 };
 
 //================================================================

@@ -246,14 +246,6 @@ void __CmdFunc_OpenMapInfoMenu()
 	}
 }
 
-void __CmdFunc_OpenSandboxMenu()
-{
-	if (gViewPort)
-	{
-		gViewPort->ShowVGUIMenu(MENU_SANDBOXMENU);
-	}
-}
-
 // TFFree Command Menu Message Handlers
 int __MsgFunc_ValClass(const char* pszName, int iSize, void* pbuf)
 {
@@ -439,7 +431,6 @@ void CHud::Init()
 
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
-	HOOK_COMMAND("OLDtoggleSandboxMenu", OpenSandboxMenu); // Deprecated
 	HOOK_COMMAND("hud_color", HUDColor);
 
 	HOOK_MESSAGE(ValClass);

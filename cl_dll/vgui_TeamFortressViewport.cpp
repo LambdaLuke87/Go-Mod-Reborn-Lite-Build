@@ -82,7 +82,6 @@ int g_iUser3 = 0;
 void IN_ResetMouse();
 void IN_ResetRelativeMouseState();
 extern CMenuPanel* CMessageWindowPanel_Create(const char* szMOTD, const char* szTitle, bool iShadeFullscreen, bool iRemoveMe, int x, int y, int wide, int tall);
-extern CMenuPanel* CSandboxMenu_Create(const char* szMOTD, int iTrans, bool iRemoveMe, int x, int y, int wide, int tall);
 extern float* GetClientColor(int clientIndex);
 
 extern void ImGuiMenu_SetOpen(bool open);
@@ -545,7 +544,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_pSpectatorPanel = NULL;
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
-	m_pSandboxMenu = NULL; // Sandbox Menu
 
 	Initialize();
 	addInputSignal(new CViewPortInputHandler);
@@ -658,10 +656,6 @@ void TeamFortressViewport::Initialize()
 	{
 		m_pStatsMenu->Initialize();
 	}
-
-	// Go-Mod Menus
-	if (m_pSandboxMenu)
-		m_pSandboxMenu->setVisible(false);
 
 	// Make sure all menus are hidden
 	HideVGUIMenu();
@@ -1482,34 +1476,6 @@ void TeamFortressViewport::CreateScoreBoard()
 	m_pScoreBoard->setVisible(false);
 }
 
-CMenuPanel* TeamFortressViewport::ShowSandboxMenu()
-{
-	if (!UTIL_IsSandbox())
-		return NULL;
-
-	char sz[256];
-	const char* cText = "";
-	char* pfile = NULL;
-	static const int MAX_TITLE_LENGTH = 64;
-
-	strcpy(sz, "gfx/gmrnews.txt");
-	
-	pfile = (char*)gEngfuncs.COM_LoadFile(sz, 5, NULL);
-
-	if (!pfile)
-		return NULL;
-
-	cText = pfile;
-
-	CMenuPanel* pTextPanel = CSandboxMenu_Create(cText, 100, false, 0, 0, ScreenWidth, ScreenHeight);
-	pTextPanel->setParent(this);
-
-	if (pfile)
-		gEngfuncs.COM_FreeFile(pfile);
-
-	return pTextPanel;
-}
-
 //======================================================================
 // Set the VGUI Menu
 void TeamFortressViewport::SetCurrentMenu(CMenuPanel* pMenu)
@@ -1666,10 +1632,6 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 
 	case MENU_CLASSHELP:
 		pNewMenu = CreateTextWindow(SHOW_CLASSDESC);
-		break;
-
-	case MENU_SANDBOXMENU:
-		pNewMenu = ShowSandboxMenu();
 		break;
 
 		/*

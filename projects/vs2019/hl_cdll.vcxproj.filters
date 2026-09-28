@@ -390,9 +390,6 @@
     <ClCompile Include="..\..\cl_dll\hud_sprite.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_GMRMenu.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\physgun.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
