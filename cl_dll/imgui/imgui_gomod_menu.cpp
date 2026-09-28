@@ -9,6 +9,7 @@
 #ifdef _WIN32
 #define HSPRITE WINDOWS_HSPRITE
 #endif
+#include <SDL2/SDL.h>
 #include <../external/SDL2/SDL_opengl.h>
 #ifdef _WIN32
 #undef HSPRITE
@@ -425,8 +426,45 @@ static void EnsureLoaded(SpawnTab& tab)
 //  Texturas
 // =====================================================================
 
+typedef void(APIENTRY* PFN_GenTextures)(GLsizei, GLuint*);
+typedef void(APIENTRY* PFN_DeleteTextures)(GLsizei, const GLuint*);
+typedef void(APIENTRY* PFN_BindTexture)(GLenum, GLuint);
+typedef void(APIENTRY* PFN_TexParameteri)(GLenum, GLenum, GLint);
+typedef void(APIENTRY* PFN_TexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void*);
+typedef void(APIENTRY* PFN_GetIntegerv)(GLenum, GLint*);
+
+static PFN_GenTextures pfnGenTextures;
+static PFN_DeleteTextures pfnDeleteTextures;
+static PFN_BindTexture pfnBindTexture;
+static PFN_TexParameteri pfnTexParameteri;
+static PFN_TexImage2D pfnTexImage2D;
+static PFN_GetIntegerv pfnGetIntegerv;
+
+static bool LoadGL()
+{
+	static int state = 0; // 0 = sin intentar, 1 = ok, -1 = fallo
+	if (state != 0)
+		return state > 0;
+
+	pfnGenTextures = (PFN_GenTextures)SDL_GL_GetProcAddress("glGenTextures");
+	pfnDeleteTextures = (PFN_DeleteTextures)SDL_GL_GetProcAddress("glDeleteTextures");
+	pfnBindTexture = (PFN_BindTexture)SDL_GL_GetProcAddress("glBindTexture");
+	pfnTexParameteri = (PFN_TexParameteri)SDL_GL_GetProcAddress("glTexParameteri");
+	pfnTexImage2D = (PFN_TexImage2D)SDL_GL_GetProcAddress("glTexImage2D");
+	pfnGetIntegerv = (PFN_GetIntegerv)SDL_GL_GetProcAddress("glGetIntegerv");
+
+	const bool ok = pfnGenTextures && pfnDeleteTextures && pfnBindTexture &&
+					pfnTexParameteri && pfnTexImage2D && pfnGetIntegerv;
+
+	state = ok ? 1 : -1;
+	return ok;
+}
+
 static GLuint LoadTexture(const char* path)
 {
+	if (!LoadGL())
+		return 0;
+
 	int len = 0;
 	byte* file = gEngfuncs.COM_LoadFile((char*)path, 5, &len);
 
@@ -448,17 +486,17 @@ static GLuint LoadTexture(const char* path)
 
 	// do not break the engine's GL state: restore the previous binding
 	GLint lastTexture = 0;
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+	pfnGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
 
 	GLuint tex = 0;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	glBindTexture(GL_TEXTURE_2D, (GLuint)lastTexture);
+	pfnGenTextures(1, &tex);
+	pfnBindTexture(GL_TEXTURE_2D, tex);
+	pfnTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	pfnTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	pfnTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	pfnTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	pfnTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	pfnBindTexture(GL_TEXTURE_2D, (GLuint)lastTexture);
 
 	stbi_image_free(pixels);
 	return tex;
@@ -472,8 +510,8 @@ static void FreeAllTextures()
 		{
 			for (MenuItem& item : cat.items)
 			{
-				if (item.tex != 0)
-					glDeleteTextures(1, &item.tex);
+				if (item.tex && pfnDeleteTextures)
+					pfnDeleteTextures(1, &item.tex);
 				item.tex = 0;
 				item.triedLoad = false;
 			}
