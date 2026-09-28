@@ -161,8 +161,32 @@ struct ToolCategory
 	std::vector<ToolDef> tools;
 };
 
+struct HandCategory
+{
+	std::string name;
+	std::vector<std::string> skins;
+};
+
+struct VoiceOption
+{
+	const char* label;
+	const char* value;
+};
+
 static std::vector<SpawnTab> g_Tabs;
 static std::vector<ToolCategory> g_ToolCats;
+static std::vector<ToolCategory> g_RenderToolCats;
+
+static std::vector<HandCategory> g_HandCats;
+static bool g_HandsLoaded = false;
+static const char* HANDS_FILE = "resource/imgui/hands_manage.txt";
+
+static const VoiceOption g_VoiceOptions[] = {
+	{"Gordon/HEV Suit", "hevsuit"},
+	{"Team Fortress Classic", "dmc"},
+	{"Counter-Strike 1.6", "cstrike"},
+	{"Half-Life Alpha", "hlalpha"},
+};
 
 // =====================================================================
 //  Config, Commands, CVARS
@@ -177,7 +201,7 @@ static void InitData()
 
 	SpawnTab npcs;
 	npcs.title = "NPCs";
-	npcs.file = "resource/npcs.txt";
+	npcs.file = "resource/imgui/npcs.txt";
 	npcs.toggles = {
 		{"Ignore Players", "button_notarget_set", false},
 		{"No AI", "button_ai_set", false},
@@ -190,7 +214,7 @@ static void InitData()
 
 	SpawnTab props;
 	props.title = "Props";
-	props.file = "resource/props.txt";
+	props.file = "resource/imgui/props.txt";
 	props.toggles = {
 		{"Ignore Players", "button_notarget_set", false},
 	};
@@ -201,7 +225,7 @@ static void InitData()
 
 	SpawnTab items;
 	items.title = "Items";
-	items.file = "resource/items.txt";
+	items.file = "resource/imgui/items.txt";
 	items.toggles = {
 		{"Give Mode", "button_self_pickup", false},
 		{"Front Spawn", "button_front_spawn", false},
@@ -213,7 +237,7 @@ static void InitData()
 
 	SpawnTab sweeps;
 	sweeps.title = "Sweeps";
-	sweeps.file = "resource/sweeps.txt";
+	sweeps.file = "resource/imgui/sweeps.txt";
 	sweeps.toggles = {
 		{"Give Mode", "button_self_pickup", false},
 		{"Front Spawn", "button_front_spawn", false},
@@ -242,20 +266,57 @@ static void InitData()
 			 {"Blood Color", "tool blood_color"},
 			 {"Frame Editor", "tool frame_set"},
 			 {"Health Modify", "tool health_set"},
-			 {"Poser", "tool poser"},
 			 {"Manipulator", "tool manipulator"},
 			 {"Model Editor", "tool model_editor"},
 			 {"No Colide", "tool no_collide"},
+			 {"Poser", "tool poser"},
 			 {"Scaler", "tool scaler"},
 			 {"Spawner", "tool spawner"},
 			 {"Take Damage", "tool take_damage"},
 		 }},
 		{"Utilites",
-			{
-				{"Camera", "tool camera"},
-				{"Gibber", "tool gibber"},
-				{"Glowsticks", "tool glowsticks"},
-				{"Teleporter", "tool teleporter"},
+		 {
+			 {"Camera", "tool camera"},
+			 {"Gibber", "tool gibber"},
+			 {"Glowsticks", "tool glowsticks"},
+			 {"Teleporter", "tool teleporter"},
+		}},
+	};
+
+	// Render Options:
+	// command = "rendermode <name>"
+	// command = "renderfx <name>"
+	g_RenderToolCats = {
+		{"Render Mode",
+		 {
+			 {"Normal", "rendermode normal"},
+			 {"Color", "rendermode color"},
+			 {"Texture", "rendermode texture"},
+			 {"Glow", "rendermode glow"},
+			 {"Solid", "rendermode solid"},
+			 {"Additive", "rendermode additive"},
+		}},
+		{"Render FX",
+		{
+			 {"Normal", "renderfx normal"},
+			 {"Slow Pulse", "renderfx slow_pulse"},
+			 {"Fast Pulse", "renderfx fast_pulse"},
+			 {"Slow Wide Pulse", "renderfx slow_wide_pulse"},
+			 {"Fast Wide Pulse", "renderfx fast_wide_pulse"},
+			 {"Slow Fade Away", "renderfx slow_fade_away"},
+			 {"Fast Fade Away", "renderfx fast_fade_away"},
+			 {"Slow Become Solid", "renderfx slow_become_solid"},
+			 {"Fast Become Solid", "renderfx fast_become_solid"},
+			 {"Slow Strobe", "renderfx slow_strobe"},
+			 {"Fast Strobe", "renderfx fast_strobe"},
+			 {"Faster Strobe", "renderfx faster_strobe"},
+			 {"Slow Flicker", "renderfx slow_flicker"},
+			 {"Fast Flicker", "renderfx fast_flicker"},
+			 {"Constant Glow", "renderfx constant_glow"},
+			 {"Distort", "renderfx distort"},
+			 {"Hologram", "renderfx hologram"},
+			 {"Explode", "renderfx explode"},
+			 {"Glow Shell", "renderfx glow_shell"},
 		}},
 	};
 }
@@ -399,6 +460,41 @@ static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out
 	return lx.type == Lexer::T_CLOSE;
 }
 
+static bool ParseHandsFile(const std::string& src, std::vector<HandCategory>& out)
+{
+	Lexer lx(src.data(), src.size());
+	lx.Next();
+
+	if (lx.type != Lexer::T_OPEN)
+		return false;
+	lx.Next();
+
+	while (lx.type == Lexer::T_STRING)
+	{
+		HandCategory cat;
+		cat.name = lx.text;
+		lx.Next();
+
+		if (lx.type != Lexer::T_OPEN)
+			return false;
+		lx.Next();
+
+		while (lx.type == Lexer::T_STRING)
+		{
+			cat.skins.push_back(lx.text);
+			lx.Next();
+		}
+
+		if (lx.type != Lexer::T_CLOSE)
+			return false;
+		lx.Next();
+
+		out.push_back(std::move(cat));
+	}
+
+	return lx.type == Lexer::T_CLOSE;
+}
+
 static void EnsureLoaded(SpawnTab& tab)
 {
 	if (tab.loaded)
@@ -422,8 +518,31 @@ static void EnsureLoaded(SpawnTab& tab)
 	}
 }
 
+static void EnsureHandsLoaded()
+{
+	if (g_HandsLoaded)
+		return;
+
+	g_HandsLoaded = true;
+	g_HandCats.clear();
+
+	std::string src;
+
+	if (!LoadTextFile(HANDS_FILE, src))
+	{
+		gEngfuncs.Con_Printf("GoMod menu: it could not be opened %s\n", HANDS_FILE);
+		return;
+	}
+
+	if (!ParseHandsFile(src, g_HandCats))
+	{
+		gEngfuncs.Con_Printf("GoMod menu: syntax error in %s\n", HANDS_FILE);
+		g_HandCats.clear();
+	}
+}
+
 // =====================================================================
-//  Texturas
+//  Textures
 // =====================================================================
 
 typedef void(APIENTRY* PFN_GenTextures)(GLsizei, GLuint*);
@@ -693,26 +812,24 @@ static void DrawSpawnWindow(int x, int y, int w, int h)
 }
 
 // =====================================================================
-//  Right Window: Tools + HUD Color
+//  Right Window: Tools + Render Options + Customization + Color Settings
 // =====================================================================
 
-static void DrawToolsTab()
+static void DrawToolCategoryList(std::vector<ToolCategory>& cats, const ToolDef*& activeTool)
 {
-	static const ToolDef* s_pActive = nullptr;
-
 	ImGui::BeginChild("##toollist", ImVec2(ImGui::GetContentRegionAvail().x * 0.45f, 0), ImGuiChildFlags_Borders);
 
-	for (size_t c = 0; c < g_ToolCats.size(); c++)
+	for (size_t c = 0; c < cats.size(); c++)
 	{
 		ImGui::PushID((int)c);
 
-		if (ImGui::CollapsingHeader(g_ToolCats[c].name, ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(cats[c].name, ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			for (const ToolDef& tool : g_ToolCats[c].tools)
+			for (const ToolDef& tool : cats[c].tools)
 			{
-				if (ImGui::Selectable(tool.name, s_pActive == &tool))
+				if (ImGui::Selectable(tool.name, activeTool == &tool))
 				{
-					s_pActive = &tool;
+					activeTool = &tool;
 					RunCmd(tool.command);
 				}
 			}
@@ -727,23 +844,156 @@ static void DrawToolsTab()
 	// Active tool options panel (currently just the name)
 	ImGui::BeginChild("##tooloptions", ImVec2(0, 0), ImGuiChildFlags_Borders);
 
-	if (s_pActive)
-		ImGui::Text("%s", s_pActive->name);
+	if (activeTool)
+		ImGui::Text("%s", activeTool->name);
 	else
-		ImGui::TextDisabled("Selecciona una herramienta");
+		ImGui::TextDisabled("Select a Tool");
 
 	ImGui::EndChild();
 }
 
-static void DrawHudColorTab()
+static void DrawToolsTab()
 {
-	int ButtonWidth = 200;
-	int ButtonHeight = 30;
-	ScaleSize(ButtonWidth, ButtonHeight);
+	static const ToolDef* s_pActive = nullptr;
+	DrawToolCategoryList(g_ToolCats, s_pActive);
+}
 
-	ImGui::BeginChild("##hudcolor", ImVec2(0, 0), ImGuiChildFlags_None);
+static void DrawRenderOptionsTab()
+{
+	static const ToolDef* s_pActive = nullptr;
+	DrawToolCategoryList(g_RenderToolCats, s_pActive);
+}
 
-	ImGui::Text("Select a color for your HUD:");
+static void DrawCustomizationTab()
+{
+	EnsureHandsLoaded();
+
+	static int s_handCatIndex = 0;
+	static int s_handSkinIndex = 0;
+	static int s_voiceIndex = 0;
+
+	ImGui::BeginChild("##customization", ImVec2(0, 0), ImGuiChildFlags_None);
+
+	if (g_HandCats.empty())
+	{
+		ImGui::TextDisabled("Sin datos. Revisa %s", HANDS_FILE);
+	}
+	else
+	{
+		if (s_handCatIndex >= (int)g_HandCats.size())
+			s_handCatIndex = 0;
+
+		// ---- Hand Model ----
+		ImGui::Text("Hand Model");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (ImGui::BeginCombo("##handmodel", g_HandCats[s_handCatIndex].name.c_str()))
+		{
+			for (int i = 0; i < (int)g_HandCats.size(); i++)
+			{
+				bool selected = (i == s_handCatIndex);
+
+				ImGui::PushID(i);
+				if (ImGui::Selectable(g_HandCats[i].name.c_str(), selected))
+				{
+					if (i != s_handCatIndex)
+						s_handSkinIndex = 0; // reset skin when change category
+					s_handCatIndex = i;
+				}
+				ImGui::PopID();
+
+				if (selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::Spacing();
+
+		// ---- Hand Skins (depende de la categoria elegida) ----
+		const HandCategory& cat = g_HandCats[s_handCatIndex];
+		if (s_handSkinIndex >= (int)cat.skins.size())
+			s_handSkinIndex = 0;
+
+		ImGui::Text("Hand Skins");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		const char* skinPreview = cat.skins.empty() ? "N/A" : cat.skins[s_handSkinIndex].c_str();
+		if (ImGui::BeginCombo("##handskin", skinPreview))
+		{
+			for (int i = 0; i < (int)cat.skins.size(); i++)
+			{
+				bool selected = (i == s_handSkinIndex);
+
+				ImGui::PushID(i);
+				if (ImGui::Selectable(cat.skins[i].c_str(), selected))
+					s_handSkinIndex = i;
+				ImGui::PopID();
+
+				if (selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	// ---- Player Voice (hardcoded) ----
+	ImGui::Text("Player Voice");
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	if (ImGui::BeginCombo("##playervoice", g_VoiceOptions[s_voiceIndex].label))
+	{
+		for (int i = 0; i < (int)(sizeof(g_VoiceOptions) / sizeof(g_VoiceOptions[0])); i++)
+		{
+			bool selected = (i == s_voiceIndex);
+			if (ImGui::Selectable(g_VoiceOptions[i].label, selected))
+				s_voiceIndex = i;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	int btnW = 200, btnH = 30;
+	ScaleSize(btnW, btnH);
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)btnW) * 0.5f);
+
+	if (ImGui::Button("Apply Changes", ImVec2((float)btnW, (float)btnH)))
+	{
+		char buf[64];
+
+		if (!g_HandCats.empty())
+		{
+			// EXAMPLE: HEV Hands -> cl_hands 1, Soldier Hands -> cl_hands 2, etc.
+			snprintf(buf, sizeof(buf), "cl_hands %d", s_handCatIndex + 1);
+			RunCmd(buf);
+
+			const HandCategory& catNow = g_HandCats[s_handCatIndex];
+			if (!catNow.skins.empty())
+			{
+				// EXAMPLE: Gordon -> cl_hands_skin 1, Collete -> 2, Gina -> 3, etc.
+				snprintf(buf, sizeof(buf), "cl_hands_skin %d", s_handSkinIndex + 1);
+				RunCmd(buf);
+			}
+		}
+
+		snprintf(buf, sizeof(buf), "cl_player_sfx_type %s", g_VoiceOptions[s_voiceIndex].value);
+		RunCmd(buf);
+	}
+
+	ImGui::EndChild();
+}
+
+static void DrawColorSettingsTab()
+{
+	ImGui::BeginChild("##colorsettings", ImVec2(0, 0), ImGuiChildFlags_None);
+
+	ImGui::Text("Pick a color:");
 	ImGui::Separator();
 
 	static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
@@ -755,18 +1005,36 @@ static void DrawHudColorTab()
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
+	int ButtonWidth = 220;
+	int ButtonHeight = 30;
+	ScaleSize(ButtonWidth, ButtonHeight);
 
-	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+	auto ApplyColorCmd = [&](const char* cvar)
 	{
 		int r = (int)(miColor[0] * 255.0f);
 		int g = (int)(miColor[1] * 255.0f);
 		int b = (int)(miColor[2] * 255.0f);
 
 		char cmdBuffer[64];
-		snprintf(cmdBuffer, sizeof(cmdBuffer), "hud_color %d %d %d", r, g, b);
-		gEngfuncs.pfnClientCmd(cmdBuffer);
-	}
+		snprintf(cmdBuffer, sizeof(cmdBuffer), "%s %d %d %d", cvar, r, g, b);
+		RunCmd(cmdBuffer);
+	};
+
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
+	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+		ApplyColorCmd("hud_color");
+
+	ImGui::Spacing();
+
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
+	if (ImGui::Button("Apply HUD Color Critical", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+		ApplyColorCmd("hud_color_critical");
+
+	ImGui::Spacing();
+
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
+	if (ImGui::Button("Apply Render Tool Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
+		ApplyColorCmd("render_color");
 
 	ImGui::EndChild();
 }
@@ -786,9 +1054,21 @@ static void DrawToolsWindow(int x, int y, int w, int h)
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("HUD Color"))
+		if (ImGui::BeginTabItem("Render Options"))
 		{
-			DrawHudColorTab();
+			DrawRenderOptionsTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Customization"))
+		{
+			DrawCustomizationTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Color Settings"))
+		{
+			DrawColorSettingsTab();
 			ImGui::EndTabItem();
 		}
 
