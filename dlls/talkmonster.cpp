@@ -906,6 +906,10 @@ bool CTalkMonster::FOkToSpeak()
 		return false;
 	}
 
+	// do not speak if im a enemy
+	if (m_AltClass)
+		return false;
+
 	// if someone else is talking, don't speak
 	if (gpGlobals->time <= CTalkMonster::g_talkWaitTime)
 		return false;

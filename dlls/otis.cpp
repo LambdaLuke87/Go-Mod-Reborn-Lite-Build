@@ -556,6 +556,10 @@ bool COtis::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float fl
 	if (!IsAlive() || pev->deadflag == DEAD_DYING)
 		return ret;
 
+	// do not speak if im a enemy
+	if (m_AltClass)
+		return ret;
+
 	if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT) != 0)
 	{
 		m_flPlayerDamage += flDamage;
