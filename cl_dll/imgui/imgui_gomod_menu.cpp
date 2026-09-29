@@ -205,7 +205,7 @@ static void InitData()
 	npcs.toggles = {
 		{"Ignore Players", "button_notarget_set", false},
 		{"No AI", "button_ai_set", false},
-		{"Alternate Classify", "button_allied_set", false},
+		{"Reverse Relationship", "button_reverse_relationship", false},
 	};
 	npcs.actions = {
 		{"Undo", "remove_entity_undo"},

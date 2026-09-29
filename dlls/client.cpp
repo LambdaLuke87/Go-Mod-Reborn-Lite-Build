@@ -1247,10 +1247,10 @@ void ClientCommand(edict_t* pEntity)
 				CVAR_SET_FLOAT("gm_notarget", !npc_notarget.value);
 				UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s changed NPC NoTarget: %s\n", STRING((CBasePlayer*)pPlayer->pev->netname), !npc_notarget.value ? "DISABLED" : "ENABLED"));
 			}
-			else if (FStrEq(pcmd, "button_allied_set"))
+			else if (FStrEq(pcmd, "button_reverse_relationship"))
 			{
 				pPlayer->m_fUseAlliedMode = !pPlayer->m_fUseAlliedMode;
-				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("NPC classify to: %s\n", pPlayer->m_fUseAlliedMode ? "ALTERNATE/ALLIEDS" : "DEFAULT"));
+				ClientPrint(&pEntity->v, HUD_PRINTTALK, UTIL_VarArgs("NPC Relationships: %s\n", pPlayer->m_fUseAlliedMode ? "REVERSED" : "DEFAULT"));
 			}
 			else if (FStrEq(pcmd, "button_self_pickup"))
 			{
