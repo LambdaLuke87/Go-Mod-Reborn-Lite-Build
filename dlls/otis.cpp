@@ -291,6 +291,9 @@ int COtis::ISoundMask()
 //=========================================================
 int COtis::Classify()
 {
+	if (m_AltClass)
+		return CLASS_HUMAN_MILITARY;
+
 	return CLASS_PLAYER_ALLY;
 }
 

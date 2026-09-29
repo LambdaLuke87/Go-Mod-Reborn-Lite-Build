@@ -332,6 +332,9 @@ IMPLEMENT_CUSTOM_SCHEDULES(CIchthyosaur, CFlyingMonster);
 //=========================================================
 int CIchthyosaur::Classify()
 {
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
 	return CLASS_ALIEN_MONSTER;
 }
 
