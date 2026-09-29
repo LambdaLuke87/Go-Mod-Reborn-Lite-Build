@@ -743,6 +743,10 @@ bool CHGruntAlly::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 	if (pev->deadflag != DEAD_NO)
 		return ret;
 
+	// do not speak if im a enemy
+	if (m_AltClass)
+		return ret;
+
 	Forget(bits_MEMORY_INCOVER);
 
 	if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT) != 0)
@@ -1270,6 +1274,10 @@ void CHGruntAlly::Spawn()
 	MonsterInit();
 
 	SetUse(&CHGruntAlly::FollowerUse);
+
+	// is an enemy, block player use
+	if (m_AltClass)
+		SetUse(NULL);
 }
 
 //=========================================================

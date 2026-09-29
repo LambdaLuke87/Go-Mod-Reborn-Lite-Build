@@ -618,7 +618,8 @@ CBaseEntity* COFAllyMonster::EnumFriends(CBaseEntity* pPrevious, int listNumber,
 	pszFriend = m_szFriends[FriendNumber(listNumber)];
 	while (pFriend = UTIL_FindEntityByClassname(pFriend, pszFriend))
 	{
-		if (pFriend == this || !pFriend->IsAlive())
+		if (pFriend == this || !pFriend->IsAlive() || (m_AltClass) && !pFriend->m_AltClass)
+			// FIX: don't get mad at the player if kill an inverted relationship
 			// don't talk to self or dead people
 			continue;
 		if (bTrace)
@@ -885,6 +886,10 @@ bool COFAllyMonster::FOkToSpeak()
 	{
 		return false;
 	}
+
+	// do not speak if im a enemy
+	if (m_AltClass)
+		return false;
 
 	// if someone else is talking, don't speak
 	if (gpGlobals->time <= COFAllyMonster::g_talkWaitTime)

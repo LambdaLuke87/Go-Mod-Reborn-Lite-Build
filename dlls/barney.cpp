@@ -429,6 +429,10 @@ void CBarney::Spawn()
 
 	MonsterInit();
 	SetUse(&CBarney::FollowerUse);
+
+	// is an enemy, block player use
+	if (m_AltClass)
+		SetUse(NULL);
 }
 
 //=========================================================

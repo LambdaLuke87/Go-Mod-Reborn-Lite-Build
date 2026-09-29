@@ -482,6 +482,10 @@ void COtis::Spawn()
 
 	MonsterInit();
 	SetUse(&COtis::FollowerUse);
+
+	// is an enemy, block player use
+	if (m_AltClass)
+		SetUse(NULL);
 }
 
 //=========================================================

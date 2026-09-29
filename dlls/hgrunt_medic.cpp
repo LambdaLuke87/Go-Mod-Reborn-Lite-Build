@@ -747,6 +747,10 @@ bool COFMedicAlly::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, f
 	if (!IsAlive() || pev->deadflag == DEAD_DYING)
 		return ret;
 
+	// do not speak if im a enemy
+	if (m_AltClass)
+		return ret;
+
 	Forget(bits_MEMORY_INCOVER);
 
 	if (m_MonsterState != MONSTERSTATE_PRONE && (pevAttacker->flags & FL_CLIENT) != 0)
@@ -1222,6 +1226,10 @@ void COFMedicAlly::Spawn()
 	MonsterInit();
 
 	SetUse(&COFMedicAlly::HealerUse);
+
+	// is an enemy, block player use
+	if (m_AltClass)
+		SetUse(NULL);
 }
 
 //=========================================================
