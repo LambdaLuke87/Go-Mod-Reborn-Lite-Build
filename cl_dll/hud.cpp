@@ -53,6 +53,7 @@ extern void ImGuiMenu_SetOpen(bool open);
 extern void GoModMenu_Reload();
 
 extern bool g_bShowMenu;
+extern bool UTIL_IsSandbox();
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -420,6 +421,12 @@ void __CmdFunc_HUDColor_Critical()
 
 void __CmdFunc_ShowMenu()
 {
+	if (!UTIL_IsSandbox())
+	{
+		gEngfuncs.Con_Printf("this gamemode is not Sandbox\n");
+		return;
+	}
+
 	ImGuiMenu_SetOpen(!g_bShowMenu);
 }
 

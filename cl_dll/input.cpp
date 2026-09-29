@@ -33,6 +33,7 @@ extern cl_enginefunc_t gEngfuncs;
 extern int g_iVisibleMouse;
 
 extern void GoModMenu_Shutdown();
+extern int GoModMenu_KeyEvent(int down, int keynum);
 
 // Defined in pm_math.c
 float anglemod(float a);
@@ -374,6 +375,9 @@ Return 1 to allow engine to process the key, otherwise, act on it as needed
 int DLLEXPORT HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 {
 	//	RecClKeyEvent(down, keynum, pszCurrentBinding);
+
+	if (GoModMenu_KeyEvent(down, keynum) == 0)
+		return 0;
 
 	if (gViewPort)
 		return static_cast<int>(gViewPort->KeyInput(0 != down, keynum, pszCurrentBinding));

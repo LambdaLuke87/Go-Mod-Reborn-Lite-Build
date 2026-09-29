@@ -130,7 +130,7 @@ static void ImGuiMenu_UpdateMouse(ImGuiIO& io)
 	io.AddMouseButtonEvent(ImGuiMouseButton_Middle, (state & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0);
 }
 
-int HUD_Key_Event(int keynum, int down)
+int GoModMenu_KeyEvent(int down, int keynum)
 {
 	if (!g_bShowMenu)
 		return 1;
@@ -139,7 +139,7 @@ int HUD_Key_Event(int keynum, int down)
 
 	if (keynum == K_ESCAPE)
 	{
-		if (down)
+		if (!down)
 			ImGuiMenu_SetOpen(false);
 		return 0; // prevent the engine from opening the main menu
 	}
@@ -150,11 +150,6 @@ int HUD_Key_Event(int keynum, int down)
 			io.AddMouseWheelEvent(0.0f, keynum == K_MWHEELUP ? 1.0f : -1.0f);
 		return 0;
 	}
-
-	// clicks should not fire the weapon
-	// so there isn't a +attack hanging
-	if (keynum == K_MOUSE1 || keynum == K_MOUSE2 || keynum == K_MOUSE3)
-		return down ? 0 : 1;
 
 	return 1; // the rest (WASD, etc.) still works
 }
