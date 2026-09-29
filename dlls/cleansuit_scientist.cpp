@@ -369,13 +369,13 @@ Schedule_t slCleansuitScientistStartle[] =
 };
 
 
-
+// Marphy Fact Files Fix - Restore fear display animation
 Task_t tlCleanFear[] =
 	{
 		{TASK_STOP_MOVING, (float)0},
 		{TASK_FACE_ENEMY, (float)0},
 		{TASK_SAY_FEAR, (float)0},
-		//	{ TASK_PLAY_SEQUENCE,			(float)ACT_FEAR_DISPLAY		},
+		{TASK_PLAY_SEQUENCE_FACE_ENEMY, (float)ACT_FEAR_DISPLAY},
 };
 
 Schedule_t slCleanFear[] =
@@ -417,12 +417,13 @@ void CCleansuitScientist::DeclineFollowing()
 
 void CCleansuitScientist::Scream()
 {
-	if (FOkToSpeak())
-	{
-		Talk(10);
-		m_hTalkTarget = m_hEnemy;
-		PlaySentence("SC_SCREAM", RANDOM_FLOAT(3, 6), VOL_NORM, ATTN_NORM);
-	}
+	// Marphy Fact Files Fix - This speech check always fails during combat, so removing
+	//if ( FOkToSpeak() )
+	//{
+	Talk(10);
+	m_hTalkTarget = m_hEnemy;
+	PlaySentence("SC_SCREAM", RANDOM_FLOAT(3, 6), VOL_NORM, ATTN_NORM);
+	//}
 }
 
 
@@ -459,7 +460,9 @@ void CCleansuitScientist::StartTask(Task_t* pTask)
 		break;
 
 	case TASK_SAY_FEAR:
-		if (FOkToSpeak())
+		// Marphy Fact FIles Fix - This speech check always fails during combat, so removing
+		//if ( FOkToSpeak() )
+		if (m_hEnemy)
 		{
 			Talk(2);
 			m_hTalkTarget = m_hEnemy;
@@ -505,14 +508,18 @@ void CCleansuitScientist::RunTask(Task_t* pTask)
 	case TASK_RUN_PATH_SCARED:
 		if (MovementIsComplete())
 			TaskComplete();
-		if (RANDOM_LONG(0, 31) < 8)
+
+		// Marphy Fact Files Fix - Reducing scream (which didn't work before) chance significantly
+		//if ( RANDOM_LONG(0,31) < 8 )
+		if (RANDOM_LONG(0, 63) < 1)
 			Scream();
 		break;
 
 	case TASK_MOVE_TO_TARGET_RANGE_SCARED:
 	{
-		if (RANDOM_LONG(0, 63) < 8)
-			Scream();
+		// Marphy Fact Files Fix - Removing redundant scream
+		//if ( RANDOM_LONG(0,63)< 8 )
+		//Scream();
 
 		if (m_hEnemy == NULL)
 		{
@@ -931,6 +938,9 @@ Schedule_t* CCleansuitScientist::GetSchedule()
 			{
 				m_hEnemy = NULL;
 				pEnemy = NULL;
+
+				// Marphy Fact Files Fix - Fix scientists not disregarding enemy after hiding
+				m_fearTime = gpGlobals->time;
 			}
 		}
 
@@ -1006,11 +1016,37 @@ Schedule_t* CCleansuitScientist::GetSchedule()
 	case MONSTERSTATE_COMBAT:
 		if (HasConditions(bits_COND_NEW_ENEMY))
 			return slCleanFear; // Point and scream!
+
 		if (HasConditions(bits_COND_SEE_ENEMY))
+		{
+			// Marphy Fact Files Fix - Fix scientists not disregarding enemy after hiding
+			m_fearTime = gpGlobals->time;
 			return slCleansuitScientistCover; // Take Cover
+		}
 
 		if (HasConditions(bits_COND_HEAR_SOUND))
 			return slTakeCoverFromBestSound; // Cower and panic from the scary sound!
+
+		// Marphy Fact Files Fix - Fix scientists not disregarding enemy after hiding
+		if (pEnemy)
+		{
+			if (HasConditions(bits_COND_SEE_ENEMY))
+				m_fearTime = gpGlobals->time;
+			else if (DisregardEnemy(pEnemy)) // After 15 seconds of being hidden, return to alert
+			{
+				m_hEnemy = NULL;
+				pEnemy = NULL;
+
+				m_fearTime = gpGlobals->time;
+
+				if (IsFollowing())
+				{
+					return slCleansuitScientistStartle;
+				}
+
+				return slCleansuitScientistHide; // Hide after disregard
+			}
+		}
 
 		return slCleansuitScientistCover; // Run & Cower
 		break;
@@ -1057,6 +1093,9 @@ MONSTERSTATE CCleansuitScientist::GetIdealState()
 				// Strip enemy when going to alert
 				m_IdealMonsterState = MONSTERSTATE_ALERT;
 				m_hEnemy = NULL;
+
+				// Marphy Fact Files Fix - Fix scientists not disregarding enemy after hiding
+				m_fearTime = gpGlobals->time;
 				return m_IdealMonsterState;
 			}
 			// Follow if only scared a little
