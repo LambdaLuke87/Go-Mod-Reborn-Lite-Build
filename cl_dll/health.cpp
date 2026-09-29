@@ -161,9 +161,9 @@ void CHudHealth::GetPainColor(int& r, int& g, int& b)
 	}
 	else
 	{
-		r = 250;
-		g = 0;
-		b = 0;
+		r = giRCritical;
+		g = giGCritical;
+		b = giBCritical;
 	}
 
 	if (gHUD.isNightVisionOn())

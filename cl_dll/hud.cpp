@@ -39,9 +39,13 @@ hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
 int giR, giG, giB;
+int giRCritical, giGCritical, giBCritical;
 cvar_t* m_pCvarHudRed;
 cvar_t* m_pCvarHudGreen;
 cvar_t* m_pCvarHudBlue;
+cvar_t* m_pCvarHudRed_Critical;
+cvar_t* m_pCvarHudGreen_Critical;
+cvar_t* m_pCvarHudBlue_Critical;
 
 extern int giOldWeapons;
 
@@ -126,6 +130,15 @@ int __MsgFunc_HudColor(const char* pszName, int iSize, void* pbuf)
 	giR = READ_BYTE();
 	giG = READ_BYTE();
 	giB = READ_BYTE();
+	return 1;
+}
+
+int __MsgFunc_HudColor_Critical(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	giRCritical = READ_BYTE();
+	giGCritical = READ_BYTE();
+	giBCritical = READ_BYTE();
 	return 1;
 }
 
@@ -397,7 +410,12 @@ int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
 
 void __CmdFunc_HUDColor()
 {
-	gHUD.HUDColorCmd();
+	gHUD.HUDColorCmd(false);
+}
+
+void __CmdFunc_HUDColor_Critical()
+{
+	gHUD.HUDColorCmd(true);
 }
 
 void __CmdFunc_ShowMenu()
@@ -432,6 +450,7 @@ void CHud::Init()
 	HOOK_COMMAND("toggleMOTDMenu", OpenMOTDMenu);
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
+	HOOK_COMMAND("hud_color_critical", HUDColor_Critical);
 
 	HOOK_MESSAGE(ValClass);
 	HOOK_MESSAGE(TeamNames);
@@ -472,10 +491,15 @@ void CHud::Init()
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
 
 	int hudR, hudG, hudB;
+	int hudR_Critical, hudG_Critical, hudB_Critical;
 	UnpackRGB(hudR, hudG, hudB, RGB_YELLOWISH);
+	UnpackRGB(hudR_Critical, hudG_Critical, hudB_Critical, RGB_REDISH);
 	m_pCvarHudRed = CVAR_CREATE_INTVALUE("hud_color_r", hudR, FCVAR_ARCHIVE);
 	m_pCvarHudGreen = CVAR_CREATE_INTVALUE("hud_color_g", hudG, FCVAR_ARCHIVE);
 	m_pCvarHudBlue = CVAR_CREATE_INTVALUE("hud_color_b", hudB, FCVAR_ARCHIVE);
+	m_pCvarHudRed_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_r", hudR_Critical, FCVAR_ARCHIVE);
+	m_pCvarHudGreen_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_g", hudG_Critical, FCVAR_ARCHIVE);
+	m_pCvarHudBlue_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_b", hudB_Critical, FCVAR_ARCHIVE);
 
 	m_iLogo = 0;
 	m_iFOV = 0;
@@ -895,8 +919,18 @@ HudSpriteRenderer& CHud::Renderer()
 	return gHUD.hudRenderer.DefaultScale();
 }
 
-void CHud::HUDColorCmd()
+void CHud::HUDColorCmd(bool bCritical)
 {
+	const char* cvarR = bCritical ? "hud_color_critical_r" : "hud_color_r";
+	const char* cvarG = bCritical ? "hud_color_critical_g" : "hud_color_g";
+	const char* cvarB = bCritical ? "hud_color_critical_b" : "hud_color_b";
+	const char* cmdName = bCritical ? "hud_color_critical" : "hud_color";
+	const long defaultColor = bCritical ? RGB_REDISH : RGB_YELLOWISH;
+
+	cvar_t* pCvarRed = bCritical ? m_pCvarHudRed_Critical : m_pCvarHudRed;
+	cvar_t* pCvarGreen = bCritical ? m_pCvarHudGreen_Critical : m_pCvarHudGreen;
+	cvar_t* pCvarBlue = bCritical ? m_pCvarHudBlue_Critical : m_pCvarHudBlue;
+
 	int r, g, b;
 	bool shouldPrintHelp = false;
 
@@ -913,7 +947,7 @@ void CHud::HUDColorCmd()
 		{
 			if (strcmp(param, "default") == 0)
 			{
-				UnpackRGB(r, g, b, RGB_YELLOWISH);
+				UnpackRGB(r, g, b, defaultColor);
 			}
 			else if (strncmp(param, "0x", 2) == 0 || *param == '#')
 			{
@@ -958,24 +992,25 @@ void CHud::HUDColorCmd()
 
 	if (shouldPrintHelp)
 	{
-		const int hudR = m_pCvarHudRed->value;
-		const int hudG = m_pCvarHudGreen->value;
-		const int hudB = m_pCvarHudBlue->value;
+		const int hudR = pCvarRed->value;
+		const int hudG = pCvarGreen->value;
+		const int hudB = pCvarBlue->value;
 		const int currentHudColor = ((hudR & 0xFF) << 16) | ((hudG & 0xFF) << 8) | (hudB & 0xFF);
 		gEngfuncs.Con_Printf("Current HUD color: %d %d %d (%06X)\n"
-							  "usage:\n"
-							  "hud_color RRR GGG BBB\n"
-							  "hud_color \"RRR GGG BBB\"\n"
-							  "hud_color 0xRRGGBB\n"
-							  "hud_color #RRGGBB\n"
-							  "hud_color default\n",
-			hudR, hudG, hudB, currentHudColor);
+							 "usage:\n"
+							 "%s RRR GGG BBB\n"
+							 "%s \"RRR GGG BBB\"\n"
+							 "%s 0xRRGGBB\n"
+							 "%s #RRGGBB\n"
+							 "%s default\n",
+			hudR, hudG, hudB, currentHudColor,
+			cmdName, cmdName, cmdName, cmdName, cmdName);
 	}
 	else
 	{
-		gEngfuncs.Cvar_SetValue("hud_color_r", r);
-		gEngfuncs.Cvar_SetValue("hud_color_g", g);
-		gEngfuncs.Cvar_SetValue("hud_color_b", b);
-		gEngfuncs.Con_Printf("Set hud color to (%d, %d, %d)\n", r, g, b);
+		gEngfuncs.Cvar_SetValue(cvarR, r);
+		gEngfuncs.Cvar_SetValue(cvarG, g);
+		gEngfuncs.Cvar_SetValue(cvarB, b);
+		gEngfuncs.Con_Printf("Set %s color to (%d, %d, %d)\n", bCritical ? "hud critical" : "hud", r, g, b);
 	}
 }

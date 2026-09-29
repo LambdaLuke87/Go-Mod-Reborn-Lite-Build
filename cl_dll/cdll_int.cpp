@@ -280,6 +280,10 @@ void DLLEXPORT HUD_Frame(double time)
 	giG = m_pCvarHudGreen->value;
 	giB = m_pCvarHudBlue->value;
 
+	giRCritical = m_pCvarHudRed_Critical->value;
+	giGCritical = m_pCvarHudGreen_Critical->value;
+	giBCritical = m_pCvarHudBlue_Critical->value;
+
 	//	RecClHudFrame(time);
 
 	GetClientVoiceMgr()->Frame(time);
