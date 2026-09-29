@@ -634,7 +634,8 @@ CBaseEntity* CTalkMonster::EnumFriends(CBaseEntity* pPrevious, int listNumber, b
 	pszFriend = m_szFriends[FriendNumber(listNumber)];
 	while (pFriend = UTIL_FindEntityByClassname(pFriend, pszFriend))
 	{
-		if (pFriend == this || !pFriend->IsAlive())
+		if (pFriend == this || !pFriend->IsAlive() || (m_AltClass) && !pFriend->m_AltClass)
+			// FIX: don't get mad at the player if kill an inverted relationship
 			// don't talk to self or dead people
 			continue;
 		if (bTrace)
