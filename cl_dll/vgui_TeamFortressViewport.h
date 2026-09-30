@@ -498,7 +498,6 @@ private:
 	bool		 m_iInitialized;
 
 	CCommandMenu *m_pCommandMenus[ MAX_MENUS ];
-	CCommandMenu *m_pCurrentCommandMenu;
 	float		 m_flMenuOpenTime;
 	float		 m_flScoreBoardLastUpdated;
 	float		 m_flSpectatorPanelLastUpdated;
@@ -640,6 +639,7 @@ public:
 
 public:
 	// VGUI Menus
+	CCommandMenu* m_pCurrentCommandMenu;
 	CMenuPanel		*m_pCurrentMenu;
 	CTeamMenuPanel	*m_pTeamMenu;
 	int						m_StandardMenu;	// indexs in m_pCommandMenus

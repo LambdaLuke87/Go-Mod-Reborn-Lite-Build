@@ -213,6 +213,8 @@ int __MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 // TFFree Command Menu
 void __CmdFunc_OpenCommandMenu()
 {
+	ImGuiMenu_SetOpen(false);
+
 	if (gViewPort)
 	{
 		gViewPort->ShowCommandMenu(gViewPort->m_StandardMenu);
@@ -426,6 +428,14 @@ void __CmdFunc_ShowMenu()
 		gEngfuncs.Con_Printf("this gamemode is not Sandbox\n");
 		return;
 	}
+
+	// avoid open in MTOD or MAPINFO
+	if (gViewPort && gViewPort->m_pCurrentMenu)
+		return;
+
+	// avoid open in CommandMenu
+	if (gViewPort && gViewPort->m_pCurrentCommandMenu)
+		return;
 
 	ImGuiMenu_SetOpen(!g_bShowMenu);
 }
