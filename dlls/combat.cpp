@@ -39,9 +39,6 @@ extern Vector VecBModelOrigin(entvars_t* pevBModel);
 #define HUMAN_GIB_COUNT 6
 #define ALIEN_GIB_COUNT 4
 
-int monster_type;
-char* monster_name;
-
 struct MonsterInfo
 {
 	const char* classname;
@@ -1932,7 +1929,7 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 
 			SpawnerParams params;
 
-			params.name = MonsterInfo::GetName(monster_type - 1);
+			params.name = MonsterInfo::GetName(pPlayer->m_iCopiedMonsterID - 1);
 			params.origin = tr.vecEndPos;
 			params.angles = Vector(0, pev->angles.y + 180, 0);
 			params.altClass = pPlayer->m_fUseAlliedMode;
@@ -2350,7 +2347,7 @@ Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Ve
 		if (pEntity)
 		{
 			// Pick the Monster ID
-			monster_type = MonsterInfo::GetId(STRING(pEntity->pev->classname));
+			pPlayer->m_iCopiedMonsterID = MonsterInfo::GetId(STRING(pEntity->pev->classname));
 		}
 	}
 	else if (pPlayer->m_iToolMode == 5)

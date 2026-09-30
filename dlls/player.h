@@ -462,6 +462,7 @@ public:
 	int m_iToolRenderColorR;
 	int m_iToolRenderColorG;
 	int m_iToolRenderColorB;
+	int m_iCopiedMonsterID;
 	bool m_fToolManipulatorMode;
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
