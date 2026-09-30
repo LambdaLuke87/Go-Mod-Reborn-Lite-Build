@@ -129,8 +129,7 @@ struct MenuCategory
 struct Toggle
 {
 	const char* label;
-	const char* cvar; // send "<cvar> 0/1" when change
-	bool value;
+	const char* command;
 };
 
 struct Action
@@ -203,48 +202,50 @@ static void InitData()
 	npcs.title = "NPCs";
 	npcs.file = "resource/imgui/npcs.txt";
 	npcs.toggles = {
-		{"Ignore Players", "button_notarget_set", false},
-		{"No AI", "button_ai_set", false},
-		{"Reverse Relationship", "button_reverse_relationship", false},
+		{"Ignore Players", "button_notarget_set"},
+		{"No AI", "button_ai_set"},
+		{"Reverse Relationship", "button_reverse_relationship"},
 	};
 	npcs.actions = {
 		{"Undo", "remove_entity_undo"},
 		{"Remove All", "remove_entities_all"},
+		{"Front Spawn", "button_front_spawn"},
 	};
 
 	SpawnTab props;
 	props.title = "Props";
 	props.file = "resource/imgui/props.txt";
 	props.toggles = {
-		{"Ignore Players", "button_notarget_set", false},
+		{"Ignore Players", "button_notarget_set"},
 	};
 	props.actions = {
 		{"Undo", "remove_entity_undo"},
 		{"Remove All", "remove_entities_all"},
+		{"Front Spawn", "button_front_spawn"},
 	};
 
 	SpawnTab items;
 	items.title = "Items";
 	items.file = "resource/imgui/items.txt";
 	items.toggles = {
-		{"Give Mode", "button_self_pickup", false},
-		{"Front Spawn", "button_front_spawn", false},
+		{"Give Mode", "button_self_pickup"},
 	};
 	items.actions = {
 		{"Undo", "remove_entity_undo"},
 		{"Remove All", "remove_entities_all"},
+		{"Front Spawn", "button_front_spawn"},
 	};
 
 	SpawnTab sweeps;
 	sweeps.title = "Sweeps";
 	sweeps.file = "resource/imgui/sweeps.txt";
 	sweeps.toggles = {
-		{"Give Mode", "button_self_pickup", false},
-		{"Front Spawn", "button_front_spawn", false},
+		{"Give Mode", "button_self_pickup"},
 	};
 	sweeps.actions = {
 		{"Undo", "remove_entity_undo"},
 		{"Remove All", "remove_entities_all"},
+		{"Front Spawn", "button_front_spawn"},
 	};
 
 	g_Tabs.push_back(std::move(npcs));
@@ -700,11 +701,14 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ScaleSize(thumbW, thumbH);
 	const ImVec2 thumb((float)thumbW, (float)thumbH);
 
-	int btnW = 120, btnH = 26;
+	int btnW = 120, btnH = 22;
 	ScaleSize(btnW, btnH);
 
+	int toggleW = 130, toggleH = 22;
+	ScaleSize(toggleW, toggleH);
+
 	// checkboxes on the left, buttons on the right
-	const float rowH = (ImGui::GetFrameHeight() > (float)btnH ? ImGui::GetFrameHeight() : (float)btnH) + style.ItemSpacing.y;
+	const float rowH = ((float)toggleH > (float)btnH ? (float)toggleH : (float)btnH) + style.ItemSpacing.y;
 	const size_t rows = tab.toggles.size() > tab.actions.size() ? tab.toggles.size() : tab.actions.size();
 	const float footerH = rows * rowH + style.WindowPadding.y * 2.0f + style.ItemSpacing.y;
 
@@ -761,14 +765,10 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginChild("##footer", ImVec2(0, 0), ImGuiChildFlags_Borders);
 
 	ImGui::BeginGroup();
-	for (Toggle& t : tab.toggles)
+	for (const Toggle& t : tab.toggles)
 	{
-		if (ImGui::Checkbox(t.label, &t.value))
-		{
-			char buf[128];
-			snprintf(buf, sizeof(buf), "%s %d", t.cvar, t.value ? 1 : 0);
-			RunCmd(buf);
-		}
+		if (ImGui::Button(t.label, ImVec2((float)toggleW, (float)toggleH)))
+			RunCmd(t.command);
 	}
 	ImGui::EndGroup();
 
