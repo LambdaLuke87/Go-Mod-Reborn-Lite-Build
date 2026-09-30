@@ -159,6 +159,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\ctf\CTFGoalFlag.cpp" />
     <ClCompile Include="..\..\dlls\ctf\ctfplay_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\ctf\CTFSpawn.cpp" />
+    <ClCompile Include="..\..\dlls\custom_monsters.cpp" />
     <ClCompile Include="..\..\dlls\custom_props.cpp" />
     <ClCompile Include="..\..\dlls\defaultai.cpp" />
     <ClCompile Include="..\..\dlls\doors.cpp" />
@@ -349,6 +350,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\dlls\ctf\CTFGoalFlag.h" />
     <ClInclude Include="..\..\dlls\ctf\ctfplay_gamerules.h" />
     <ClInclude Include="..\..\dlls\ctf\CTFSpawn.h" />
+    <ClInclude Include="..\..\dlls\custom_monsters.h" />
     <ClInclude Include="..\..\dlls\decals.h" />
     <ClInclude Include="..\..\dlls\defaultai.h" />
     <ClInclude Include="..\..\dlls\doors.h" />

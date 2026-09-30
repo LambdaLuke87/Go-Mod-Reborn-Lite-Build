@@ -52,6 +52,8 @@
 #include "ctf/CTFGoalFlag.h"
 #include "ctf/ctfplay_gamerules.h"
 
+#include "custom_monsters.h"
+
 extern DLL_GLOBAL unsigned int g_ulModelIndexPlayer;
 extern DLL_GLOBAL bool g_fGameOver;
 extern DLL_GLOBAL int g_iSkillLevel;
@@ -271,20 +273,23 @@ struct voices_t
 voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 27};
 
 // GM6 Spawn Monster Trace
-void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied, bool floorhigher)
+CBaseEntity* GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied, bool floorhigher)
 {
 	UTIL_MakeVectors(pev->v_angle);
+
 	TraceResult tr;
 	Vector start = pev->origin + pev->view_ofs;
 	Vector end = start + gpGlobals->v_forward * 1024;
+
 	UTIL_TraceLine(start, end, ignore_monsters, pEntity, &tr);
 
 	if (tr.pHit)
 	{
 		CBasePlayer* pPlayer = (CBasePlayer*)pEntity;
-		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
-		SpawnerParams params;
 
+		Vector vAngle = Vector(0, pev->angles.y + 180.0f, 0);
+
+		SpawnerParams params;
 		params.name = sClassname;
 		if (floorhigher)
 			params.origin = tr.vecEndPos + gpGlobals->v_up * 35;
@@ -293,8 +298,10 @@ void GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pE
 		params.angles = vAngle;
 		params.altClass = IsAllied;
 
-		CBaseMonster* mMonster = (CBaseMonster*)CBasePlayer::CreateCustom(params);
+		return CBasePlayer::CreateCustom(params); // <-- ahora devuelve el puntero
 	}
+
+	return nullptr;
 }
 
 // GM6 Spawn Item Trace
@@ -1018,6 +1025,33 @@ void ClientCommand(edict_t* pEntity)
 					else
 						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Extra NPCs Disabled - gm_allow_extra_npcs required\n");
 				}
+			}
+
+			// custom monster_scripts (scripts/custom_monsters.json)
+			const CustomMonsterDef* pCustomDef = FindCustomMonsterDef(combinetoprefix);
+			if (pCustomDef)
+			{
+				CBaseEntity* pSpawned = nullptr;
+
+				if (pPlayer->m_fUseFrontSpawn)
+				{
+					UTIL_MakeVectors(Vector(0.0f, pev->v_angle.y, 0.0f));
+
+					SpawnerParams params;
+					params.name = pCustomDef->baseClassname.c_str();
+					params.origin = pev->origin + gpGlobals->v_forward * 128.0f;
+					params.angles = Vector(0.0f, pev->angles.y + 180.0f, 0.0f);
+					params.altClass = pPlayer->m_fUseAlliedMode;
+
+					pSpawned = CBaseEntity::CreateCustom(params);
+				}
+				else
+				{
+					pSpawned = GoMod_SpawnMonsterTrace(pCustomDef->baseClassname.c_str(), pev, pEntity, pPlayer->m_fUseAlliedMode, false);
+				}
+
+				if (pSpawned)
+					ApplyCustomMonsterOverrides(pSpawned, *pCustomDef);
 			}
 
 			// CTF Powerups
@@ -2122,6 +2156,8 @@ void ClientPrecache()
 
 	if (UTIL_IsSandbox())
 	{
+		CustomMonsters_Precache();
+
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
 		{
