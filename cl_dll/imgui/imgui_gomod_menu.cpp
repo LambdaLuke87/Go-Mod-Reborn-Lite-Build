@@ -178,7 +178,7 @@ static std::vector<ToolCategory> g_RenderToolCats;
 
 static std::vector<HandCategory> g_HandCats;
 static bool g_HandsLoaded = false;
-static const char* HANDS_FILE = "resource/imgui/hands_manage.txt";
+static const char* HANDS_FILE = "resource/imgui/hands.txt";
 
 static const VoiceOption g_VoiceOptions[] = {
 	{"Gordon/HEV Suit", "hevsuit"},
