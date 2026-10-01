@@ -10,6 +10,30 @@ struct CustomMonsterDef
 	std::string modelPath;	   // example: "models/custom_zombie.mdl"
 	int health = 0;
 	float damageMultiplier = 1.0f;
+
+	int body = -1;
+	int skin = -1;
+
+	bool hasBloodColor = false;
+	int bloodColor = 0; // DONT_BLEED / BLOOD_COLOR_RED / etc.
+
+	bool hasRenderMode = false;
+	int renderMode = 0;
+	bool hasRenderFx = false;
+	int renderFx = 0;
+	bool hasColorR = false;
+	int colorR = 0;
+	bool hasColorG = false;
+	int colorG = 0;
+	bool hasColorB = false;
+	int colorB = 0;
+	bool hasRenderAmt = false;
+	int renderAmt = 0;
+
+	float scale = 0.0f;
+	float gravity = 0.0f;
+
+	int gibModel = 0; // (1=human, 2=human_and_skull, 3=alien)
 };
 
 // Call ONCE, within the world's precache hook (still to be defined).
