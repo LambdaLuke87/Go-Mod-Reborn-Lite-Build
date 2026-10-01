@@ -79,7 +79,16 @@ static bool ParseMonsterFile(const std::string& path, CustomMonsterDef& outDef)
 		return false;
 	}
 
-	outDef.baseClassname = doc["classname"].GetString();
+	std::string classname = doc["classname"].GetString();
+
+	if (classname.rfind("monster_", 0) != 0) // only "monster_" is accepted
+	{
+		ALERT(at_console, "CustomMonsters: invalid \"classname\" in %s ('%s' is not a NPC, must begin with 'monster_')\n",
+			path.c_str(), classname.c_str());
+		return false;
+	}
+
+	outDef.baseClassname = classname;
 
 	if (doc.HasMember("id") && doc["id"].IsString())
 		outDef.id = doc["id"].GetString();
