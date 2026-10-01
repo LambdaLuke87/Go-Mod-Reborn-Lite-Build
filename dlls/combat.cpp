@@ -762,7 +762,7 @@ void CBaseMonster::Killed(entvars_t* pevAttacker, int iGib)
 	{
 		// Used Leech logic
 		SetActivity(GetDeathActivity());
-		DeathSound();
+		BaseDeathSound();
 
 		ClearShockEffect();
 
@@ -1067,7 +1067,7 @@ bool CBaseMonster::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, f
 	if (pev->deadflag == DEAD_NO)
 	{
 		// no pain sound during death animation.
-		PainSound(); // "Ouch!"
+		BasePainSound(); // "Ouch!"
 	}
 
 	//!!!LATER - make armor consideration here!

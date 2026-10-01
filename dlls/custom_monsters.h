@@ -8,6 +8,7 @@ struct CustomMonsterDef
 	std::string id;			   // what is written in "summon <id>"
 	std::string baseClassname; // real NPC, example: "monster_zombie"
 	std::string modelPath;	   // example: "models/custom_zombie.mdl"
+	std::string customSoundsId; // "custom_sounds" from json, empty = use default sounds
 	int health = 0;
 	float damageMultiplier = 1.0f;
 

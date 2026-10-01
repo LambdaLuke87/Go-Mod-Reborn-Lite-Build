@@ -98,6 +98,9 @@ static bool ParseMonsterFile(const std::string& path, CustomMonsterDef& outDef)
 	if (doc.HasMember("model") && doc["model"].IsString())
 		outDef.modelPath = doc["model"].GetString();
 
+	if (doc.HasMember("custom_sounds") && doc["custom_sounds"].IsString())
+		outDef.customSoundsId = doc["custom_sounds"].GetString();
+
 	if (doc.HasMember("health") && doc["health"].IsInt())
 		outDef.health = doc["health"].GetInt();
 
@@ -329,6 +332,13 @@ void ApplyCustomMonsterOverrides(CBaseEntity* pEntity, const CustomMonsterDef& d
 
 		// restore collision
 		UTIL_SetSize(pEntity->pev, mins, maxs);
+	}
+
+	if (!def.customSoundsId.empty())
+	{
+		// override new sounds to the npc
+		CBaseMonster* pMonster = static_cast<CBaseMonster*>(pEntity);
+		pMonster->m_customSoundsId = def.customSoundsId;
 	}
 
 	if (def.health > 0)

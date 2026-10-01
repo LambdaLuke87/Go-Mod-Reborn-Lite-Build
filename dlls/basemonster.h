@@ -337,6 +337,11 @@ public:
 	void RouteClear();
 	void RouteNew();
 
+	void BaseDeathSound();
+	void BaseAlertSound();
+	void BaseIdleSound();
+	void BasePainSound();
+
 	virtual void DeathSound() {}
 	virtual void AlertSound() {}
 	virtual void IdleSound() {}

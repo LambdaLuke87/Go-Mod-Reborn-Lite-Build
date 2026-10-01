@@ -91,7 +91,7 @@ void CBaseMonster::RunAI()
 	{
 		if ((m_MonsterState == MONSTERSTATE_IDLE || m_MonsterState == MONSTERSTATE_ALERT) && RANDOM_LONG(0, 99) == 0 && (pev->spawnflags & SF_MONSTER_GAG) == 0)
 		{
-			IdleSound();
+			BaseIdleSound();
 		}
 
 		if (m_MonsterState != MONSTERSTATE_NONE &&

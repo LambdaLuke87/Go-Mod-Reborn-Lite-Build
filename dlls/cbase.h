@@ -50,6 +50,8 @@ CBaseEntity
 #include "schedule.h"
 #include "monsterevent.h"
 
+#include <string>
+
 // C functions for external declarations that call the appropriate C++ methods
 
 #define EXPORT DLLEXPORT
@@ -447,6 +449,7 @@ public:
 	Vector m_vecSpawnAngles; // save the spawn angle
 	int m_respawntime = 3.0f; // The respawn time, by default is 3.0f
 	int m_ForceSkin; // used for Glowstick skins
+	std::string m_customSoundsId;
 
 	// Used by physgun
 	int m_movetype = 0;

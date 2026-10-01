@@ -1263,31 +1263,31 @@ void CBaseMonster::StartTask(Task_t* pTask)
 	}
 	case TASK_SOUND_WAKE:
 	{
-		AlertSound();
+		BaseAlertSound();
 		TaskComplete();
 		break;
 	}
 	case TASK_SOUND_DIE:
 	{
-		DeathSound();
+		BaseDeathSound();
 		TaskComplete();
 		break;
 	}
 	case TASK_SOUND_IDLE:
 	{
-		IdleSound();
+		BaseIdleSound();
 		TaskComplete();
 		break;
 	}
 	case TASK_SOUND_PAIN:
 	{
-		PainSound();
+		BasePainSound();
 		TaskComplete();
 		break;
 	}
 	case TASK_SOUND_DEATH:
 	{
-		DeathSound();
+		BaseDeathSound();
 		TaskComplete();
 		break;
 	}

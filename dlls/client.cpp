@@ -53,6 +53,7 @@
 #include "ctf/ctfplay_gamerules.h"
 
 #include "custom_monsters.h"
+#include "custom_sounds.h"
 
 extern DLL_GLOBAL unsigned int g_ulModelIndexPlayer;
 extern DLL_GLOBAL bool g_fGameOver;
@@ -2157,6 +2158,7 @@ void ClientPrecache()
 	if (UTIL_IsSandbox())
 	{
 		CustomMonsters_Precache();
+		CustomSounds_Precache();
 
 		// Npcs Precache System
 		for (int i = 0; i < ARRAYSIZE(gMonsters); i++)
