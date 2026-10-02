@@ -77,7 +77,7 @@ public:
 	void PainSound() override;
 	void AlertSound() override;
 	void IdleSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void DeathSound() override;
 
 	static const char* pAttackSounds[];
@@ -329,7 +329,7 @@ void CController::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case CONTROLLER_AE_SMALL_SHOOT:
 	{
-		AttackSound();
+		BaseAttackSound();
 		m_flShootTime = gpGlobals->time;
 		m_flShootEnd = m_flShootTime + atoi(pEvent->options) / 15.0;
 	}

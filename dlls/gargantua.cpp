@@ -325,6 +325,7 @@ public:
 		pev->absmax = pev->origin + Vector(80, 80, 214);
 	}
 
+	void AttackSound() override;
 	Schedule_t* GetSchedule();
 	Schedule_t* GetScheduleOfType(int Type);
 	void StartTask(Task_t* pTask);
@@ -378,7 +379,6 @@ protected:
 	virtual int SmallFlameScale();
 	virtual void PrecacheSounds();
 	virtual void BreatheSound();
-	virtual void AttackSound();
 	virtual float FlameTimeDivider();
 	virtual Vector StompAttackStartVec();
 
@@ -1233,7 +1233,7 @@ void CGargantua::StartTask(Task_t* pTask)
 		break;
 	case TASK_SOUND_ATTACK:
 		if (RANDOM_LONG(0, 100) < 30)
-			AttackSound();
+			BaseAttackSound();
 		TaskComplete();
 		break;
 	case TASK_DIE:
@@ -1651,6 +1651,8 @@ public:
 		pev->absmax = pev->origin + Vector(32, 32, 100);
 	}
 
+	void AttackSound() override;
+
 	static const char* pBeamAttackSounds[];
 	static const char* pFootSounds[];
 	static const char* pIdleSounds[];
@@ -1678,7 +1680,6 @@ protected:
 	int BigFlameScale();
 	int SmallFlameScale();
 	void BreatheSound();
-	void AttackSound();
 	float FlameTimeDivider();
 	Vector StompAttackStartVec();
 };

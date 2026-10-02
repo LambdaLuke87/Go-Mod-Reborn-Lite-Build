@@ -22,7 +22,7 @@ static bool LoadTextFileSafe(const char* path, std::string& out)
 
 static bool IsValidSoundType(const std::string& type)
 {
-	return type == "alert" || type == "idle" || type == "pain" || type == "death";
+	return type == "alert" || type == "idle" || type == "pain" || type == "death" || type == "attack";
 }
 
 static bool ParseSoundFile(const std::string& path, SoundGroupDef& outDef)
@@ -57,7 +57,7 @@ static bool ParseSoundFile(const std::string& path, SoundGroupDef& outDef)
 
 	if (!IsValidSoundType(outDef.type))
 	{
-		ALERT(at_console, "CustomSounds: \"type\" invalid ('%s') in %s (valid values: alert, idle, pain, death)\n",
+		ALERT(at_console, "CustomSounds: \"type\" invalid ('%s') in %s (valid values: alert, idle, pain, death, attack)\n",
 			outDef.type.c_str(), path.c_str());
 		return false;
 	}

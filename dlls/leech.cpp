@@ -97,7 +97,7 @@ public:
 		pev->absmax = pev->origin + Vector(8, 8, 2);
 	}
 
-	void AttackSound();
+	void AttackSound() override;
 	void AlertSound() override;
 	void UpdateMotion();
 	float ObstacleDistance(CBaseEntity* pTarget);
@@ -320,7 +320,7 @@ void CLeech::HandleAnimEvent(MonsterEvent_t* pEvent)
 	switch (pEvent->event)
 	{
 	case LEECH_AE_ATTACK:
-		AttackSound();
+		BaseAttackSound();
 		CBaseEntity* pEnemy;
 
 		pEnemy = m_hEnemy;

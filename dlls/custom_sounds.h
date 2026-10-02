@@ -6,7 +6,7 @@
 struct SoundGroupDef
 {
 	std::string id;
-	std::string type; // "alert" | "idle" | "pain" | "death"
+	std::string type; // "alert" | "idle" | "pain" | "death" | "attack"
 	std::vector<std::string> sounds;
 	float volume = 1.0f;
 	int pitch = 100;

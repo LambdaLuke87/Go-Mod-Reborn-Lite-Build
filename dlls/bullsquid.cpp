@@ -199,7 +199,7 @@ public:
 	void PainSound() override;
 	void DeathSound() override;
 	void AlertSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void StartTask(Task_t* pTask) override;
 	void RunTask(Task_t* pTask) override;
 	bool CheckMeleeAttack1(float flDot, float flDist) override;
@@ -529,7 +529,7 @@ void CBullsquid::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 
 			// do stuff for this event.
-			AttackSound();
+			BaseAttackSound();
 
 			// spew the spittle temporary ents.
 			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpitOffset);

@@ -340,11 +340,13 @@ public:
 	void BaseAlertSound();
 	void BaseIdleSound();
 	void BasePainSound();
+	void BaseAttackSound();
 
 	virtual void DeathSound() {}
 	virtual void AlertSound() {}
 	virtual void IdleSound() {}
 	virtual void PainSound() {}
+	virtual void AttackSound() {}
 
 	virtual void StopFollowing(bool clearSchedule) {}
 

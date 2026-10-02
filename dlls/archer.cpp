@@ -227,7 +227,7 @@ public:
 
 	void IdleSound() override;
 	void AlertSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void BiteSound();
 	void DeathSound() override;
 	void PainSound() override;
@@ -589,7 +589,7 @@ void CArcher::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 
 			// do stuff for this event.
-			AttackSound();
+			BaseAttackSound();
 
 			/*// spew the spittle temporary ents.
 			MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpitOffset);
@@ -749,7 +749,7 @@ Schedule_t * CArcher::GetScheduleOfType(int Type)
 	case SCHED_DIE:
 		return slATwitchDie;
 	case SCHED_CHASE_ENEMY:
-		AttackSound();
+		BaseAttackSound();
 	}
 
 	return CBaseMonster::GetScheduleOfType(Type);

@@ -82,7 +82,7 @@ public:
 	void StartTask(Task_t* pTask) override;
 	void RunTask(Task_t* pTask) override;
 	void AlertSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void PainSound() override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
 	int IRelationship(CBaseEntity* pTarget) override;
@@ -943,7 +943,7 @@ Schedule_t* COFBabyVoltigore::GetSchedule()
 		// zap player!
 		if (HasConditions(bits_COND_CAN_MELEE_ATTACK1))
 		{
-			AttackSound(); // this is a total hack. Should be parto f the schedule
+			BaseAttackSound(); // this is a total hack. Should be parto f the schedule
 			return GetScheduleOfType(SCHED_MELEE_ATTACK1);
 		}
 

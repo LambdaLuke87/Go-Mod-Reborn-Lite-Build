@@ -60,3 +60,9 @@ void CBaseMonster::BasePainSound()
 	if (!PlayCustomSound(this, "pain"))
 		PainSound();
 }
+
+void CBaseMonster::BaseAttackSound()
+{
+	if (!PlayCustomSound(this, "attack"))
+		AttackSound();
+}

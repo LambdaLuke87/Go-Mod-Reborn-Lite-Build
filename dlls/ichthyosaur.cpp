@@ -119,7 +119,7 @@ public:
 
 	void IdleSound() override;
 	void AlertSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void BiteSound();
 	void DeathSound() override;
 	void PainSound() override;
@@ -597,7 +597,7 @@ Schedule_t* CIchthyosaur::GetScheduleOfType(int Type)
 
 		return slTwitchDie;
 	case SCHED_CHASE_ENEMY:
-		AttackSound();
+		BaseAttackSound();
 	}
 
 	return CBaseMonster::GetScheduleOfType(Type);

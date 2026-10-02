@@ -50,7 +50,7 @@ public:
 	virtual void PainSound() override;
 	virtual void AlertSound() override;
 	virtual void IdleSound() override;
-	virtual void AttackSound();
+	virtual void AttackSound() override;
 
 	//static const char* pAttackSounds[];
 	//static const char* pIdleSounds[];
@@ -218,7 +218,7 @@ void CZombie::SlashAttack(float dmg, float rightScalar, float forwardScalar, flo
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
 
 	if (RANDOM_LONG(0, 1))
-		AttackSound();
+		BaseAttackSound();
 }
 
 void CZombie::HandleAnimEvent(MonsterEvent_t* pEvent)

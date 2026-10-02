@@ -92,7 +92,7 @@ public:
 	void AlertSound() override;
 	void DeathSound() override;
 	void PainSound() override;
-	void AttackSound();
+	void AttackSound() override;
 	void PrescheduleThink() override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
 	int IRelationship(CBaseEntity* pTarget) override;
@@ -1057,7 +1057,7 @@ Schedule_t* CAGrunt::GetSchedule()
 		// zap player!
 		if (HasConditions(bits_COND_CAN_MELEE_ATTACK1))
 		{
-			AttackSound(); // this is a total hack. Should be parto f the schedule
+			BaseAttackSound(); // this is a total hack. Should be parto f the schedule
 			return GetScheduleOfType(SCHED_MELEE_ATTACK1);
 		}
 
