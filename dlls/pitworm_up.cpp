@@ -521,7 +521,7 @@ void COFPitWormUp::HuntThink()
 
 			m_iWasHit = 0;
 
-			PainSound();
+			BasePainSound();
 		}
 		else if (m_fSequenceFinished)
 		{
@@ -1014,7 +1014,7 @@ void COFPitWormUp::NextActivity()
 			pev->sequence = PITWORM_ANIM_Flinch1 + RANDOM_LONG(0, 1);
 			m_iWasHit = 0;
 
-			PainSound();
+			BasePainSound();
 
 			m_fLockHeight = false;
 			m_fLockYaw = false;
@@ -1230,7 +1230,7 @@ void COFPitWormUp::PainSound()
 
 bool COFPitWormUp::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
-	PainSound();
+	BasePainSound();
 	return false;
 }
 

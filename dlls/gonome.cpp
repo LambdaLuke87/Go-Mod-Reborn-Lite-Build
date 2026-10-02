@@ -447,7 +447,7 @@ bool CGonome::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float 
 
 	// HACK HACK -- until we fix this.
 	if (IsAlive())
-		PainSound();
+		BasePainSound();
 
 	return CBaseMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 }
