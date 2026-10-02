@@ -418,6 +418,8 @@ public:
 	virtual bool FVisible(CBaseEntity* pEntity);
 	virtual bool FVisible(const Vector& vecOrigin);
 
+	int m_bloodColor; // color of blood particless
+
 	//We use this variables to store each ammo count.
 	int ammo_9mm;
 	int ammo_357;

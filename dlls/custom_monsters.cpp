@@ -355,8 +355,8 @@ void ApplyCustomMonsterOverrides(CBaseEntity* pEntity, const CustomMonsterDef& d
 	if (def.skin >= 0)
 		pEntity->pev->skin = def.skin;
 
-	//if (def.hasBloodColor)
-	//	pEntity->m_bloodColor = def.bloodColor;
+	if (def.hasBloodColor)
+		pEntity->m_bloodColor = def.bloodColor;
 
 	if (def.hasRenderMode)
 		pEntity->pev->rendermode = def.renderMode;
