@@ -26,6 +26,8 @@
 #define STBI_ONLY_PNG
 #include "stb_image.h"
 
+#include "../external/rapidjson/document.h"
+
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE 0x812F
 #endif
@@ -56,11 +58,6 @@ void ScaleSize(int& width, int& height)
 		width = minwidth;
 }
 
-static bool IsSpace(char c)
-{
-	return isspace((unsigned char)c) != 0;
-}
-
 static void RunCmd(const char* cmd)
 {
 	char buf[256];
@@ -87,22 +84,6 @@ static bool LoadTextFile(const char* path, std::string& out)
 
 	out.assign(p, len);
 	gEngfuncs.COM_FreeFile(data);
-	return true;
-}
-
-static bool KeyIs(const std::string& s, const char* key)
-{
-	size_t n = strlen(key);
-
-	if (s.size() != n)
-		return false;
-
-	for (size_t i = 0; i < n; i++)
-	{
-		if (tolower((unsigned char)s[i]) != tolower((unsigned char)key[i]))
-			return false;
-	}
-
 	return true;
 }
 
@@ -178,7 +159,7 @@ static std::vector<ToolCategory> g_RenderToolCats;
 
 static std::vector<HandCategory> g_HandCats;
 static bool g_HandsLoaded = false;
-static const char* HANDS_FILE = "resource/imgui/hands.txt";
+static const char* HANDS_FILE = "resource/imgui/hands.json";
 
 static const VoiceOption g_VoiceOptions[] = {
 	{"Gordon/HEV Suit", "hevsuit"},
@@ -193,14 +174,12 @@ static const VoiceOption g_VoiceOptions[] = {
 
 static void InitData()
 {
-	//WIP, TOGGLES NEED BE MODIFIED IN CLIENT.CPP
-
 	if (!g_Tabs.empty())
 		return;
 
 	SpawnTab npcs;
 	npcs.title = "NPCs";
-	npcs.file = "resource/imgui/npcs.txt";
+	npcs.file = "resource/imgui/npcs.json";
 	npcs.toggles = {
 		{"Ignore Players", "button_notarget_set"},
 		{"No AI", "button_ai_set"},
@@ -214,7 +193,7 @@ static void InitData()
 
 	SpawnTab props;
 	props.title = "Props";
-	props.file = "resource/imgui/props.txt";
+	props.file = "resource/imgui/props.json";
 	props.toggles = {
 		{"Ignore Players", "button_notarget_set"},
 	};
@@ -226,7 +205,7 @@ static void InitData()
 
 	SpawnTab items;
 	items.title = "Items";
-	items.file = "resource/imgui/items.txt";
+	items.file = "resource/imgui/items.json";
 	items.toggles = {
 		{"Give Mode", "button_self_pickup"},
 	};
@@ -238,7 +217,7 @@ static void InitData()
 
 	SpawnTab sweeps;
 	sweeps.title = "Sweeps";
-	sweeps.file = "resource/imgui/sweeps.txt";
+	sweeps.file = "resource/imgui/sweeps.json";
 	sweeps.toggles = {
 		{"Give Mode", "button_self_pickup"},
 	};
@@ -256,32 +235,32 @@ static void InitData()
 	// Tools: command = "tool <name>"
 	g_ToolCats = {
 		{"Common Tools",
-		 {
-			 {"No Tools", "tool none"},
-			 {"Duplicator", "tool duplicator"},
-			 {"Remover", "tool remover"},
-			 {"Render", "tool render"},
-		 }},
+			{
+				{"No Tools", "tool none"},
+				{"Duplicator", "tool duplicator"},
+				{"Remover", "tool remover"},
+				{"Render", "tool render"},
+			}},
 		{"Monster Manage",
-		 {
-			 {"Blood Color", "tool blood_color"},
-			 {"Frame Editor", "tool frame_set"},
-			 {"Health Modify", "tool health_set"},
-			 {"Manipulator", "tool manipulator"},
-			 {"Model Editor", "tool model_editor"},
-			 {"No Colide", "tool no_collide"},
-			 {"Poser", "tool poser"},
-			 {"Scaler", "tool scaler"},
-			 {"Spawner", "tool spawner"},
-			 {"Take Damage", "tool take_damage"},
-		 }},
+			{
+				{"Blood Color", "tool blood_color"},
+				{"Frame Editor", "tool frame_set"},
+				{"Health Modify", "tool health_set"},
+				{"Manipulator", "tool manipulator"},
+				{"Model Editor", "tool model_editor"},
+				{"No Colide", "tool no_collide"},
+				{"Poser", "tool poser"},
+				{"Scaler", "tool scaler"},
+				{"Spawner", "tool spawner"},
+				{"Take Damage", "tool take_damage"},
+			}},
 		{"Utilites",
-		 {
-			 {"Camera", "tool camera"},
-			 {"Gibber", "tool gibber"},
-			 {"Glowsticks", "tool glowsticks"},
-			 {"Teleporter", "tool teleporter"},
-		}},
+			{
+				{"Camera", "tool camera"},
+				{"Gibber", "tool gibber"},
+				{"Glowsticks", "tool glowsticks"},
+				{"Teleporter", "tool teleporter"},
+			}},
 	};
 
 	// Render Options:
@@ -289,211 +268,146 @@ static void InitData()
 	// command = "renderfx <name>"
 	g_RenderToolCats = {
 		{"Render Mode",
-		 {
-			 {"Normal", "rendermode normal"},
-			 {"Color", "rendermode color"},
-			 {"Texture", "rendermode texture"},
-			 {"Glow", "rendermode glow"},
-			 {"Solid", "rendermode solid"},
-			 {"Additive", "rendermode additive"},
-		}},
+			{
+				{"Normal", "rendermode normal"},
+				{"Color", "rendermode color"},
+				{"Texture", "rendermode texture"},
+				{"Glow", "rendermode glow"},
+				{"Solid", "rendermode solid"},
+				{"Additive", "rendermode additive"},
+			}},
 		{"Render FX",
-		{
-			 {"Normal", "renderfx normal"},
-			 {"Slow Pulse", "renderfx slow_pulse"},
-			 {"Fast Pulse", "renderfx fast_pulse"},
-			 {"Slow Wide Pulse", "renderfx slow_wide_pulse"},
-			 {"Fast Wide Pulse", "renderfx fast_wide_pulse"},
-			 {"Slow Fade Away", "renderfx slow_fade_away"},
-			 {"Fast Fade Away", "renderfx fast_fade_away"},
-			 {"Slow Become Solid", "renderfx slow_become_solid"},
-			 {"Fast Become Solid", "renderfx fast_become_solid"},
-			 {"Slow Strobe", "renderfx slow_strobe"},
-			 {"Fast Strobe", "renderfx fast_strobe"},
-			 {"Faster Strobe", "renderfx faster_strobe"},
-			 {"Slow Flicker", "renderfx slow_flicker"},
-			 {"Fast Flicker", "renderfx fast_flicker"},
-			 {"Constant Glow", "renderfx constant_glow"},
-			 {"Distort", "renderfx distort"},
-			 {"Hologram", "renderfx hologram"},
-			 {"Explode", "renderfx explode"},
-			 {"Glow Shell", "renderfx glow_shell"},
-		}},
+			{
+				{"Normal", "renderfx normal"},
+				{"Slow Pulse", "renderfx slow_pulse"},
+				{"Fast Pulse", "renderfx fast_pulse"},
+				{"Slow Wide Pulse", "renderfx slow_wide_pulse"},
+				{"Fast Wide Pulse", "renderfx fast_wide_pulse"},
+				{"Slow Fade Away", "renderfx slow_fade_away"},
+				{"Fast Fade Away", "renderfx fast_fade_away"},
+				{"Slow Become Solid", "renderfx slow_become_solid"},
+				{"Fast Become Solid", "renderfx fast_become_solid"},
+				{"Slow Strobe", "renderfx slow_strobe"},
+				{"Fast Strobe", "renderfx fast_strobe"},
+				{"Faster Strobe", "renderfx faster_strobe"},
+				{"Slow Flicker", "renderfx slow_flicker"},
+				{"Fast Flicker", "renderfx fast_flicker"},
+				{"Constant Glow", "renderfx constant_glow"},
+				{"Distort", "renderfx distort"},
+				{"Hologram", "renderfx hologram"},
+				{"Explode", "renderfx explode"},
+				{"Glow Shell", "renderfx glow_shell"},
+			}},
 	};
 }
 
 // =====================================================================
-//  parse txt (Format with: ignore commas, ':' and comments //)
+//  parse json (RapidJSON) - npcs/props/items/sweeps use "sections":
+//  that point to individual section files (name + button_list)
 // =====================================================================
-
-struct Lexer
+// load ONE section (ej. resource/imgui/sections/npcs/military_aliens.json)
+// and adds it to the vector as another category 'out'.
+static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& out)
 {
-	enum Type
+	std::string src;
+	if (!LoadTextFile(path.c_str(), src))
 	{
-		T_END,
-		T_OPEN,
-		T_CLOSE,
-		T_STRING
-	};
-
-	const char* p;
-	const char* end;
-	Type type = T_END;
-	std::string text;
-
-	Lexer(const char* data, size_t len) : p(data), end(data + len) {}
-
-	void Next()
-	{
-		for (;;)
-		{
-			while (p < end && (IsSpace(*p) || *p == ',' || *p == ':'))
-				p++;
-
-			if (p + 1 < end && p[0] == '/' && p[1] == '/')
-			{
-				while (p < end && *p != '\n')
-					p++;
-				continue;
-			}
-			break;
-		}
-
-		text.clear();
-
-		if (p >= end)
-		{
-			type = T_END;
-			return;
-		}
-
-		if (*p == '{')
-		{
-			type = T_OPEN;
-			p++;
-			return;
-		}
-
-		if (*p == '}')
-		{
-			type = T_CLOSE;
-			p++;
-			return;
-		}
-
-		type = T_STRING;
-
-		if (*p == '"')
-		{
-			p++;
-			while (p < end && *p != '"')
-				text.push_back(*p++);
-			if (p < end)
-				p++;
-		}
-		else
-		{
-			while (p < end && !IsSpace(*p) && *p != ',' && *p != ':' && *p != '{' && *p != '}')
-				text.push_back(*p++);
-		}
-	}
-};
-
-static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out)
-{
-	Lexer lx(src.data(), src.size());
-	lx.Next();
-
-	if (lx.type != Lexer::T_OPEN)
+		gEngfuncs.Con_Printf("GoMod menu: the section %s could not be opened\n", path.c_str());
 		return false;
-	lx.Next();
+	}
 
-	while (lx.type == Lexer::T_STRING)
+	rapidjson::Document doc;
+	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject())
 	{
-		MenuCategory cat;
-		cat.name = lx.text;
-		lx.Next();
+		gEngfuncs.Con_Printf("GoMod menu: invalid JSON in %s\n", path.c_str());
+		return false;
+	}
 
-		if (lx.type != Lexer::T_OPEN)
-			return false;
-		lx.Next();
+	MenuCategory cat;
 
-		while (lx.type == Lexer::T_STRING)
+	if (doc.HasMember("section_name") && doc["section_name"].IsString())
+		cat.name = doc["section_name"].GetString();
+	else
+		cat.name = path; // fallback: if the name is missing, show the path.
+
+	if (doc.HasMember("button_list") && doc["button_list"].IsObject())
+	{
+		const auto& buttons = doc["button_list"];
+
+		for (auto it = buttons.MemberBegin(); it != buttons.MemberEnd(); ++it)
 		{
+			if (strcmp(it->name.GetString(), "button") != 0 || !it->value.IsObject())
+				continue;
+
+			const auto& btn = it->value;
 			MenuItem item;
-			item.name = lx.text;
-			lx.Next();
 
-			if (lx.type != Lexer::T_OPEN)
-				return false;
-			lx.Next();
-
-			while (lx.type == Lexer::T_STRING)
-			{
-				std::string key = lx.text;
-				lx.Next();
-
-				if (lx.type != Lexer::T_STRING)
-					return false;
-
-				if (KeyIs(key, "image"))
-					item.image = lx.text;
-				else if (KeyIs(key, "command"))
-					item.command = lx.text;
-
-				lx.Next();
-			}
-
-			if (lx.type != Lexer::T_CLOSE)
-				return false;
-			lx.Next();
+			if (btn.HasMember("name") && btn["name"].IsString())
+				item.name = btn["name"].GetString();
+			if (btn.HasMember("image") && btn["image"].IsString())
+				item.image = btn["image"].GetString();
+			if (btn.HasMember("command") && btn["command"].IsString())
+				item.command = btn["command"].GetString();
 
 			cat.items.push_back(std::move(item));
 		}
-
-		if (lx.type != Lexer::T_CLOSE)
-			return false;
-		lx.Next();
-
-		out.push_back(std::move(cat));
 	}
 
-	return lx.type == Lexer::T_CLOSE;
+	out.push_back(std::move(cat));
+	return true;
 }
 
+// load the index (npcs.json, props.json, items.json, sweeps.json):
+// only has one array "sections" with the section file paths.
+static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out)
+{
+	rapidjson::Document doc;
+	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
+		!doc.HasMember("sections") || !doc["sections"].IsArray())
+		return false;
+
+	for (auto& entry : doc["sections"].GetArray())
+	{
+		if (!entry.IsString())
+			continue;
+
+		// if an individual section fails, only that one is skipped (and advice on console).
+		// the rest of the menu continues to load normally.
+		LoadSectionFile(entry.GetString(), out);
+	}
+
+	return true;
+}
+
+// hands.json: an unique file with "categories": [{ "name", "skins": [...] }, ...]
 static bool ParseHandsFile(const std::string& src, std::vector<HandCategory>& out)
 {
-	Lexer lx(src.data(), src.size());
-	lx.Next();
-
-	if (lx.type != Lexer::T_OPEN)
+	rapidjson::Document doc;
+	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
+		!doc.HasMember("categories") || !doc["categories"].IsArray())
 		return false;
-	lx.Next();
 
-	while (lx.type == Lexer::T_STRING)
+	for (auto& entry : doc["categories"].GetArray())
 	{
+		if (!entry.IsObject() || !entry.HasMember("name") || !entry["name"].IsString())
+			continue;
+
 		HandCategory cat;
-		cat.name = lx.text;
-		lx.Next();
+		cat.name = entry["name"].GetString();
 
-		if (lx.type != Lexer::T_OPEN)
-			return false;
-		lx.Next();
-
-		while (lx.type == Lexer::T_STRING)
+		if (entry.HasMember("skins") && entry["skins"].IsArray())
 		{
-			cat.skins.push_back(lx.text);
-			lx.Next();
+			for (auto& skin : entry["skins"].GetArray())
+			{
+				if (skin.IsString())
+					cat.skins.push_back(skin.GetString());
+			}
 		}
-
-		if (lx.type != Lexer::T_CLOSE)
-			return false;
-		lx.Next();
 
 		out.push_back(std::move(cat));
 	}
 
-	return lx.type == Lexer::T_CLOSE;
+	return true;
 }
 
 static void EnsureLoaded(SpawnTab& tab)
@@ -1109,6 +1023,9 @@ void GoModMenu_Reload()
 		tab.cats.clear();
 		tab.loaded = false;
 	}
+
+	g_HandCats.clear();
+	g_HandsLoaded = false;
 }
 
 void GoModMenu_Shutdown()
