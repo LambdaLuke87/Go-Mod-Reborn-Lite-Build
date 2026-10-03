@@ -21,6 +21,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
@@ -133,6 +134,7 @@ struct ToolDef
 {
 	const char* name;
 	const char* command;
+	const char* hint = nullptr;
 };
 
 struct ToolCategory
@@ -160,6 +162,10 @@ static std::vector<ToolCategory> g_RenderToolCats;
 static std::vector<HandCategory> g_HandCats;
 static bool g_HandsLoaded = false;
 static const char* HANDS_FILE = "resource/imgui/hands.json";
+
+static std::unordered_map<std::string, std::string> g_KeyStrings;
+static bool g_KeyStringsLoaded = false;
+static const char* KEY_STRINGS_FILE = "resource/gomod_gui.txt";
 
 static const VoiceOption g_VoiceOptions[] = {
 	{"Gordon/HEV Suit", "hevsuit"},
@@ -236,30 +242,30 @@ static void InitData()
 	g_ToolCats = {
 		{"Common Tools",
 			{
-				{"No Tools", "tool none"},
-				{"Duplicator", "tool duplicator"},
-				{"Remover", "tool remover"},
-				{"Render", "tool render"},
+				{"No Tools", "tool none", "#Hint_tool_none"},
+				{"Duplicator", "tool duplicator", "#Hint_tool_duplicator"},
+				{"Remover", "tool remover", "#Hint_tool_remover"},
+				{"Render", "tool render", "#Hint_tool_render"},
 			}},
 		{"Monster Manage",
 			{
-				{"Blood Color", "tool blood_color"},
-				{"Frame Editor", "tool frame_set"},
-				{"Health Modify", "tool health_set"},
-				{"Manipulator", "tool manipulator"},
-				{"Model Editor", "tool model_editor"},
-				{"No Colide", "tool no_collide"},
-				{"Poser", "tool poser"},
-				{"Scaler", "tool scaler"},
-				{"Spawner", "tool spawner"},
-				{"Take Damage", "tool take_damage"},
+				{"Blood Color", "tool blood_color", "#Hint_tool_blood_color"},
+				{"Frame Editor", "tool frame_set", "#Hint_tool_frame_set"},
+				{"Health Modify", "tool health_set", "#Hint_tool_health_set"},
+				{"Manipulator", "tool manipulator", "#Hint_tool_manipulator"},
+				{"Model Editor", "tool model_editor", "#Hint_tool_model_edit"},
+				{"No Colide", "tool no_collide", "#Hint_tool_no_colide"},
+				{"Poser", "tool poser", "#Hint_tool_poser"},
+				{"Scaler", "tool scaler", "#Hint_tool_scaler"},
+				{"Spawner", "tool spawner", "#Hint_tool_spawner"},
+				{"Take Damage", "tool take_damage", "#Hint_tool_take_damage"},
 			}},
 		{"Utilites",
 			{
-				{"Camera", "tool camera"},
-				{"Gibber", "tool gibber"},
-				{"Glowsticks", "tool glowsticks"},
-				{"Teleporter", "tool teleporter"},
+				{"Camera", "tool camera", "#Hint_tool_camera"},
+				{"Gibber", "tool gibber", "#Hint_tool_gibber"},
+				{"Glowsticks", "tool glowsticks", "#Hint_tool_glowsticks"},
+				{"Teleporter", "tool teleporter", "#Hint_tool_teleporter"},
 			}},
 	};
 
@@ -269,34 +275,34 @@ static void InitData()
 	g_RenderToolCats = {
 		{"Render Mode",
 			{
-				{"Normal", "rendermode normal"},
-				{"Color", "rendermode color"},
-				{"Texture", "rendermode texture"},
-				{"Glow", "rendermode glow"},
-				{"Solid", "rendermode solid"},
-				{"Additive", "rendermode additive"},
+				{"Normal", "rendermode normal", "#Hint_rendermode_normal"},
+				{"Color", "rendermode color", "#Hint_rendermode_color"},
+				{"Texture", "rendermode texture", "#Hint_rendermode_texture"},
+				//{"Glow", "rendermode glow", "#Hint_rendermode_glow"},
+				//{"Solid", "rendermode solid", "#Hint_rendermode_solid"},
+				{"Additive", "rendermode additive", "#Hint_rendermode_additive"},
 			}},
 		{"Render FX",
 			{
-				{"Normal", "renderfx normal"},
-				{"Slow Pulse", "renderfx slow_pulse"},
-				{"Fast Pulse", "renderfx fast_pulse"},
-				{"Slow Wide Pulse", "renderfx slow_wide_pulse"},
-				{"Fast Wide Pulse", "renderfx fast_wide_pulse"},
-				{"Slow Fade Away", "renderfx slow_fade_away"},
-				{"Fast Fade Away", "renderfx fast_fade_away"},
-				{"Slow Become Solid", "renderfx slow_become_solid"},
-				{"Fast Become Solid", "renderfx fast_become_solid"},
-				{"Slow Strobe", "renderfx slow_strobe"},
-				{"Fast Strobe", "renderfx fast_strobe"},
-				{"Faster Strobe", "renderfx faster_strobe"},
-				{"Slow Flicker", "renderfx slow_flicker"},
-				{"Fast Flicker", "renderfx fast_flicker"},
-				{"Constant Glow", "renderfx constant_glow"},
-				{"Distort", "renderfx distort"},
-				{"Hologram", "renderfx hologram"},
-				{"Explode", "renderfx explode"},
-				{"Glow Shell", "renderfx glow_shell"},
+				{"Normal", "renderfx normal", "#Hint_renderfx_normal"},
+				{"Slow Pulse", "renderfx slow_pulse", "#Hint_renderfx_slow_pulse"},
+				{"Fast Pulse", "renderfx fast_pulse", "#Hint_renderfx_fast_pulse"},
+				{"Slow Wide Pulse", "renderfx slow_wide_pulse", "#Hint_renderfx_slow_wide_pulse"},
+				{"Fast Wide Pulse", "renderfx fast_wide_pulse", "#Hint_renderfx_fast_wide_pulse"},
+				//{"Slow Fade Away", "renderfx slow_fade_away", "#Hint_renderfx_slow_fade_away"},
+				//{"Fast Fade Away", "renderfx fast_fade_away", "#Hint_renderfx_fast_fade_away"},
+				//{"Slow Become Solid", "renderfx slow_become_solid", "#Hint_renderfx_slow_become_solid"},
+				//{"Fast Become Solid", "renderfx fast_become_solid", "#Hint_renderfx_fast_become_solid"},
+				{"Slow Strobe", "renderfx slow_strobe", "#Hint_renderfx_slow_strobe"},
+				{"Fast Strobe", "renderfx fast_strobe", "#Hint_renderfx_fast_strobe"},
+				{"Faster Strobe", "renderfx faster_strobe", "#Hint_renderfx_faster_strobe"},
+				{"Slow Flicker", "renderfx slow_flicker", "#Hint_renderfx_slow_flicker"},
+				{"Fast Flicker", "renderfx fast_flicker", "#Hint_renderfx_fast_flicker"},
+				//{"Constant Glow", "renderfx constant_glow", "#Hint_renderfx_constant_glow"},
+				{"Distort", "renderfx distort", "#Hint_renderfx_distort"},
+				{"Hologram", "renderfx hologram", "#Hint_renderfx_hologram"},
+				{"Explode", "renderfx explode", "#Hint_renderfx_explode"},
+				{"Glow Shell", "renderfx glow_shell", "#Hint_renderfx_glow_shell"},
 			}},
 	};
 }
@@ -454,6 +460,119 @@ static void EnsureHandsLoaded()
 		gEngfuncs.Con_Printf("GoMod menu: syntax error in %s\n", HANDS_FILE);
 		g_HandCats.clear();
 	}
+}
+
+// resource/gomod_gui.txt keys
+static void EnsureHintStringsLoaded()
+{
+	if (g_KeyStringsLoaded)
+		return;
+
+	g_KeyStringsLoaded = true;
+	g_KeyStrings.clear();
+
+	std::string src;
+	if (!LoadTextFile(KEY_STRINGS_FILE, src))
+	{
+		gEngfuncs.Con_Printf("GoMod menu: %s dont exist (the keys with # are not going to be resolved)\n", KEY_STRINGS_FILE);
+		return;
+	}
+
+	const char* p = src.c_str();
+	const char* end = p + src.size();
+
+	auto SkipWhitespaceAndComments = [&]()
+	{
+		for (;;)
+		{
+			while (p < end && isspace((unsigned char)*p))
+				p++;
+
+			if (p + 1 < end && p[0] == '/' && p[1] == '/')
+			{
+				while (p < end && *p != '\n')
+					p++;
+				continue;
+			}
+			break;
+		}
+	};
+
+	auto ReadQuoted = [&](std::string& out) -> bool
+	{
+		SkipWhitespaceAndComments();
+
+		if (p >= end || *p != '"')
+			return false;
+
+		p++;
+		out.clear();
+
+		while (p < end && *p != '"')
+		{
+			if (*p == '\\' && p + 1 < end)
+			{
+				char next = p[1];
+				if (next == 'n')
+				{
+					out.push_back('\n');
+					p += 2;
+					continue;
+				}
+				if (next == '"')
+				{
+					out.push_back('"');
+					p += 2;
+					continue;
+				}
+				if (next == '\\')
+				{
+					out.push_back('\\');
+					p += 2;
+					continue;
+				}
+			}
+			out.push_back(*p++);
+		}
+
+		if (p < end)
+			p++;
+
+		return true;
+	};
+
+	std::string key, value;
+	while (ReadQuoted(key))
+	{
+		if (!ReadQuoted(value))
+		{
+			gEngfuncs.Con_Printf("GoMod menu: %s - missing value of \"%s\"\n", KEY_STRINGS_FILE, key.c_str());
+			break;
+		}
+
+		g_KeyStrings[key] = value;
+	}
+
+	gEngfuncs.Con_Printf("GoMod menu: %d keys loaded from %s\n", (int)g_KeyStrings.size(), KEY_STRINGS_FILE);
+}
+
+// read the key with '#' in resource/gomod_gui.txt
+// if not used, raw text
+static std::string ResolveKeyText(const char* key)
+{
+	if (!key || key[0] == '\0')
+		return std::string();
+
+	if (key[0] != '#')
+		return std::string(key);
+
+	EnsureHintStringsLoaded();
+
+	auto it = g_KeyStrings.find(key + 1);
+	if (it != g_KeyStrings.end())
+		return it->second;
+
+	return std::string(key); // not founded: show raw text
 }
 
 // =====================================================================
@@ -759,7 +878,21 @@ static void DrawToolCategoryList(std::vector<ToolCategory>& cats, const ToolDef*
 	ImGui::BeginChild("##tooloptions", ImVec2(0, 0), ImGuiChildFlags_Borders);
 
 	if (activeTool)
-		ImGui::Text("%s", activeTool->name);
+	{
+		if (activeTool->hint && activeTool->hint[0] != '\0')
+		{
+			std::string text = ResolveKeyText(activeTool->hint);
+			ImGui::TextWrapped("%s", text.c_str());
+		}
+		else
+		{
+			std::string lowerName = activeTool->name;
+			for (char& ch : lowerName)
+				ch = (char)tolower((unsigned char)ch);
+
+			ImGui::TextWrapped("hint of %s", lowerName.c_str());
+		}
+	}
 	else
 		ImGui::TextDisabled("Select a Tool");
 
@@ -934,21 +1067,50 @@ static void DrawColorSettingsTab()
 		RunCmd(cmdBuffer);
 	};
 
-	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
-	if (ImGui::Button("Apply HUD Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
-		ApplyColorCmd("hud_color");
+	{
+		const float avail = ImGui::GetContentRegionAvail().x;
+		const float spacing = ImGui::GetStyle().ItemSpacing.x;
+		const float btnW = (avail - 2.0f * spacing) / 3.0f;
+
+		if (ImGui::Button("Apply for HUD", ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("hud_color");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Apply HUD Critical", ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("hud_color_critical");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Apply FX Color", ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("render_color");
+	}
 
 	ImGui::Spacing();
-
-	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
-	if (ImGui::Button("Apply HUD Color Critical", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
-		ApplyColorCmd("hud_color_critical");
-
+	ImGui::Separator();
 	ImGui::Spacing();
 
-	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)ButtonWidth) * 0.5f);
-	if (ImGui::Button("Apply Render Tool Color", ImVec2((float)ButtonWidth, (float)ButtonHeight)))
-		ApplyColorCmd("render_color");
+	{
+		static int s_renderAmount = 255;
+
+		int applyBtnW = 170, applyBtnH = 30;
+		ScaleSize(applyBtnW, applyBtnH);
+
+		const float avail = ImGui::GetContentRegionAvail().x;
+		const float spacing = ImGui::GetStyle().ItemSpacing.x;
+		float sliderW = avail - (float)applyBtnW - spacing;
+		if (sliderW < 50.0f)
+			sliderW = 50.0f;
+
+		ImGui::SetNextItemWidth(sliderW);
+		ImGui::SliderInt("##render_amount", &s_renderAmount, 0, 255, "Render Amount: %d");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Apply FX Amount", ImVec2((float)applyBtnW, (float)applyBtnH)))
+		{
+			char cmdBuffer[64];
+			snprintf(cmdBuffer, sizeof(cmdBuffer), "render_amount %d", s_renderAmount);
+			RunCmd(cmdBuffer);
+		}
+	}
 
 	ImGui::EndChild();
 }
@@ -1026,6 +1188,9 @@ void GoModMenu_Reload()
 
 	g_HandCats.clear();
 	g_HandsLoaded = false;
+
+	g_KeyStrings.clear();
+	g_KeyStringsLoaded = false;
 }
 
 void GoModMenu_Shutdown()
