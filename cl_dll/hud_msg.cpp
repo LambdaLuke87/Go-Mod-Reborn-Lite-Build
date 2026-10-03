@@ -31,6 +31,7 @@ extern IParticleMan* g_pParticleMan;
 
 extern int giTeamplay;
 extern int g_iToolBowSkin;
+extern int g_iNightVision;
 
 extern BEAM* pBeam;
 extern BEAM* pBeam2;
@@ -218,6 +219,14 @@ int CHud::MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 	g_iToolBowSkin = READ_SHORT();
+
+	return 1;
+}
+
+int CHud::MsgFunc_NightVision(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	g_iNightVision = READ_SHORT();
 
 	return 1;
 }

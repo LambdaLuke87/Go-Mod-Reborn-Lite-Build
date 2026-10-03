@@ -66,6 +66,7 @@ void LinkUserMessages()
 
 	gmsgWeapons = REG_USER_MSG("Weapons", 8);
 	gmsgToolBowSkin = REG_USER_MSG("ToolBowSkin", -1);
+	gmsgNightVision = REG_USER_MSG("NightVision", -1);
 
 	gmsgSetFog = REG_USER_MSG("SetFog", 15);
 	gmsgRain = REG_USER_MSG("Rain", -1);

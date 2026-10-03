@@ -6,10 +6,6 @@
 
 #include "imgui.h"
 
-#ifdef ARRAYSIZE
-#undef ARRAYSIZE
-#endif
-
 #ifdef _WIN32
 #define HSPRITE WINDOWS_HSPRITE
 #endif
@@ -185,10 +181,10 @@ static const VoiceOption g_VoiceOptions[] = {
 };
 
 static const FlashLightOption g_FlashLightOptions[] = {
-	{"Flashlight", 0},
-	{"OP4 Night Vision", 1},
-	{"CS1.6 Night Vision", 2},
-	{"Red Night Vision", 3},
+	{"Gordon/HEV Suit", 0},
+	{"Team Fortress Classic", "dmc"},
+	{"Counter-Strike 1.6", "cstrike"},
+	{"Half-Life Alpha", "hlalpha"},
 };
 
 // =====================================================================
@@ -935,7 +931,6 @@ static void DrawCustomizationTab()
 	static int s_handCatIndex = 0;
 	static int s_handSkinIndex = 0;
 	static int s_voiceIndex = 0;
-	static int s_flashlightIndex = 0;
 
 	ImGui::BeginChild("##customization", ImVec2(0, 0), ImGuiChildFlags_None);
 
@@ -1024,26 +1019,6 @@ static void DrawCustomizationTab()
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	// ---- Player Flashlight (hardcoded) ----
-	ImGui::Text("Flashlight Type");
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	if (ImGui::BeginCombo("##flashlighttype", g_FlashLightOptions[s_flashlightIndex].label))
-	{
-		for (int i = 0; i < (int)(sizeof(g_FlashLightOptions) / sizeof(g_FlashLightOptions[0])); i++)
-		{
-			bool selected = (i == s_flashlightIndex);
-			if (ImGui::Selectable(g_FlashLightOptions[i].label, selected))
-				s_flashlightIndex = i;
-			if (selected)
-				ImGui::SetItemDefaultFocus();
-		}
-		ImGui::EndCombo();
-	}
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-
 	int btnW = 200, btnH = 30;
 	ScaleSize(btnW, btnH);
 	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)btnW) * 0.5f);
@@ -1068,9 +1043,6 @@ static void DrawCustomizationTab()
 		}
 
 		snprintf(buf, sizeof(buf), "cl_player_sfx_type %s", g_VoiceOptions[s_voiceIndex].value);
-		RunCmd(buf);
-
-		snprintf(buf, sizeof(buf), "toggle_flashlight_mode %d", g_FlashLightOptions[s_flashlightIndex].value);
 		RunCmd(buf);
 	}
 

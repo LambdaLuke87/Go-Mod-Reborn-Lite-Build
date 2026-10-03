@@ -32,6 +32,8 @@ DECLARE_MESSAGE(m_Flash, Flashlight)
 
 #define BAT_NAME "sprites/%d_Flashlight.spr"
 
+int g_iNightVision;
+
 bool CHudFlashlight::Init()
 {
 	m_fFade = 0;
@@ -157,7 +159,12 @@ bool CHudFlashlight::Draw(float flTime)
 		CHud::Renderer().SPR_Set(m_hBeam, r, g, b);
 		CHud::Renderer().SPR_DrawAdditive(0, x, y, m_prcBeam);
 
-		//drawNightVision();
+		if (g_iNightVision == 1)
+			drawNightVision();
+		else if (g_iNightVision == 2)
+			gEngfuncs.pfnFillRGBABlend(0, 0, ScreenWidth, ScreenHeight, 50, 225, 50, 110);
+		else if (g_iNightVision == 3)
+			gEngfuncs.pfnFillRGBABlend(0, 0, ScreenWidth, ScreenHeight, 255, 50, 50, 110); // I SEE RED, I HAVE TO CLEAR
 	}
 
 	// draw the flashlight energy level

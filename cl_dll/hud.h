@@ -766,6 +766,7 @@ public:
 	bool MsgFunc_Weapons(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_SetFog(const char* pszName, int iSize, void* pbuf);
 	int MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf);
+	int MsgFunc_NightVision(const char* pszName, int iSize, void* pbuf);
 
 	// Screen information
 	SCREENINFO m_scrinfo;

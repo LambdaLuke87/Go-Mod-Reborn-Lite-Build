@@ -1513,18 +1513,60 @@ void ClientCommand(edict_t* pEntity)
 	{
 		if (UTIL_IsSandbox())
 		{
-			if (player->m_fUseNightVision)
+			int mode = atoi(CMD_ARGV(1));
+
+			// clear lights
+			ClearBits(player->pev->effects, EF_DIMLIGHT);
+			ClearBits(player->pev->effects, EF_BRIGHTLIGHT);
+
+			if (mode >= 1)
 			{
-				ClearBits(player->pev->effects, EF_BRIGHTLIGHT);
-				player->m_fUseNightVision = false;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to Normal Mode\n"));
+				player->m_fUseNightVision = true;
+
+				if (mode == 1)
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgNightVision, NULL, pPlayer->edict());
+					WRITE_SHORT(1);
+					MESSAGE_END();
+
+					CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to NightVision Mode\n"));
+				}
+				else
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgNightVision, NULL, pPlayer->edict());
+					if (mode == 3)
+					{
+						WRITE_SHORT(3);
+						MESSAGE_END();
+
+						// I SEE RED, I HAVE TO CLEAR
+						CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to I SEE RED, I HAVE TO CLEAR\n"));
+					}
+					else
+					{
+						WRITE_SHORT(2);
+						MESSAGE_END();
+
+						CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to CS NightVision Mode\n"));
+					}
+				}
 			}
 			else
 			{
-				ClearBits(player->pev->effects, EF_DIMLIGHT);
-				player->m_fUseNightVision = true;
-				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to Aura Mode\n"));
+				player->m_fUseNightVision = false;
+
+				MESSAGE_BEGIN(MSG_ONE, gmsgNightVision, NULL, pPlayer->edict());
+				WRITE_SHORT(0);
+				MESSAGE_END();
+
+				CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("Changed Flashlight to Normal Mode\n"));
 			}
+
+			// Turn off flashlight hud sprite
+			MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pPlayer->edict());
+			WRITE_BYTE(0);
+			WRITE_BYTE(player->m_iFlashBattery);
+			MESSAGE_END();
 		}
 	}
 	else if (FStrEq(pcmd, "lightstyle"))

@@ -55,6 +55,7 @@ inline int gmsgStatusValue = 0;
 
 inline int gmsgWeapons = 0;
 inline int gmsgToolBowSkin = 0;
+inline int gmsgNightVision = 0;
 
 inline int gmsgSetFog = 0;
 inline int gmsgRain = 0;

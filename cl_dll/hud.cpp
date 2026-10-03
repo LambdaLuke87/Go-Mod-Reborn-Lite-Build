@@ -355,6 +355,12 @@ int __MsgFunc_ToolBowSkin(const char* pszName, int iSize, void* pbuf)
 	return 1;
 }
 
+int __MsgFunc_NightVision(const char* pszName, int iSize, void* pbuf)
+{
+	gHUD.MsgFunc_NightVision(pszName, iSize, pbuf);
+	return 1;
+}
+
 int __MsgFunc_Spectator(const char* pszName, int iSize, void* pbuf)
 {
 	if (gViewPort)
@@ -454,6 +460,7 @@ void CHud::Init()
 	HOOK_MESSAGE(OldWeapon);
 	HOOK_MESSAGE(Weapons);
 	HOOK_MESSAGE(ToolBowSkin);
+	HOOK_MESSAGE(NightVision);
 	HOOK_MESSAGE(SetFog);
 	HOOK_MESSAGE(Rain);
 	HOOK_MESSAGE(Snow);
