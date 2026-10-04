@@ -307,6 +307,15 @@ void CPhysgun::ItemThink()
 	}
 }
 
+static bool IsPickupEntity(CBaseEntity* pEntity)
+{
+	const char* classname = STRING(pEntity->pev->classname);
+
+	return (strncmp(classname, "item_", 5) == 0) ||
+		   (strncmp(classname, "ammo_", 5) == 0) ||
+		   (strncmp(classname, "weapon_", 7) == 0);
+}
+
 CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 {
 	TraceResult tr;
@@ -324,18 +333,20 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 	{
 		if (pEntity->IsBSPModel())
 		{
-			// verify if is water or another liquid
-			/*int contents = POINT_CONTENTS(tr.vecEndPos);
-			if (contents == CONTENTS_WATER || contents == CONTENTS_SLIME || contents == CONTENTS_LAVA)
-				return nullptr; // then ignore
-
-			if (pEntity->edict() != INDEXENT(0) && pEntity->pev->movetype == MOVETYPE_PUSHSTEP)
-				return pEntity;*/
-
 			// only func_pushable can be used
 			if (FClassnameIs(pEntity->pev, "func_pushable"))
 			{
 				return pEntity;
+			}
+
+			CBaseEntity* pPickup = nullptr;
+			while (pPickup = UTIL_FindEntityInSphere(pPickup, tr.vecEndPos, 2.0f))
+			{
+				if (pPickup == m_pPlayer)
+					continue;
+
+				if (IsPickupEntity(pPickup))
+					return pPickup;
 			}
 
 			// ignore the rest
