@@ -266,34 +266,38 @@ public:
 	void Precache() override;
 	void Touch(CBaseEntity* pOther) override;
 	void Think() override;
+
 	bool TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override
 	{
 		Attack();
 		return false;
 	}
+
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	void Attack();
 	int Classify() override { return CLASS_BARNACLE; }
-
-	bool Save(CSave& save) override;
-	bool Restore(CRestore& restore) override;
-	static TYPEDESCRIPTION m_SaveData[];
 
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
 
 private:
-	CXenTreeTrigger* m_pTrigger;
+	// Calcula la caja de ataque en vivo (64 unidades al frente del arbol),
+	// sin depender de ninguna entidad separada.
+	void GetTriggerBounds(Vector& mins, Vector& maxs);
 };
 
 LINK_ENTITY_TO_CLASS(xen_tree, CXenTree);
 
-TYPEDESCRIPTION CXenTree::m_SaveData[] =
-	{
-		DEFINE_FIELD(CXenTree, m_pTrigger, FIELD_CLASSPTR),
-};
+void CXenTree::GetTriggerBounds(Vector& mins, Vector& maxs)
+{
+	Vector forward;
+	UTIL_MakeVectorsPrivate(pev->angles, forward, NULL, NULL);
 
-IMPLEMENT_SAVERESTORE(CXenTree, CActAnimating);
+	Vector center = pev->origin + (forward * 64);
+
+	mins = center + Vector(-24, -24, 0);
+	maxs = center + Vector(24, 24, 128);
+}
 
 void CXenTree::Spawn()
 {
@@ -303,23 +307,17 @@ void CXenTree::Spawn()
 		SET_MODEL(ENT(pev), STRING(pev->model)); // LRC
 	else
 		SET_MODEL(ENT(pev), "models/tree.mdl");
+
 	pev->movetype = MOVETYPE_NONE;
 	pev->solid = SOLID_BBOX;
-
 	pev->takedamage = DAMAGE_YES;
 
 	UTIL_SetSize(pev, Vector(-30, -30, 0), Vector(30, 30, 188));
+
 	SetActivity(ACT_IDLE);
 	pev->nextthink = gpGlobals->time + 0.1;
 	pev->frame = RANDOM_FLOAT(0, 255);
 	pev->framerate = RANDOM_FLOAT(0.7, 1.4);
-
-	Vector triggerPosition;
-	UTIL_MakeVectorsPrivate(pev->angles, triggerPosition, NULL, NULL);
-	triggerPosition = pev->origin + (triggerPosition * 64);
-	// Create the trigger
-	m_pTrigger = CXenTreeTrigger::TriggerCreate(edict(), triggerPosition);
-	UTIL_SetSize(m_pTrigger->pev, Vector(-24, -24, 0), Vector(24, 24, 128));
 }
 
 const char* CXenTree::pAttackHitSounds[] =
@@ -376,11 +374,14 @@ void CXenTree::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case TREE_AE_ATTACK:
 	{
+		Vector mins, maxs;
+		GetTriggerBounds(mins, maxs);
+
 		CBaseEntity* pList[8];
 		bool sound = false;
-		int count = UTIL_EntitiesInBox(pList, 8, m_pTrigger->pev->absmin, m_pTrigger->pev->absmax, FL_MONSTER | FL_CLIENT);
-		Vector forward;
+		int count = UTIL_EntitiesInBox(pList, 8, mins, maxs, FL_MONSTER | FL_CLIENT);
 
+		Vector forward;
 		UTIL_MakeVectorsPrivate(pev->angles, forward, NULL, NULL);
 
 		for (int i = 0; i < count; i++)
@@ -398,9 +399,7 @@ void CXenTree::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 
 		if (sound)
-		{
 			EMIT_SOUND_ARRAY_DYN(CHAN_WEAPON, pAttackHitSounds);
-		}
 	}
 		return;
 	}
@@ -412,7 +411,37 @@ void CXenTree::Think()
 {
 	float flInterval = StudioFrameAdvance();
 	pev->nextthink = gpGlobals->time + 0.1;
+
 	DispatchAnimEvents(flInterval);
+
+	// Reemplaza al xen_ttrigger: escaneamos la zona de ataque calculada en
+	// vivo, cada 0.1s, en vez de depender de una entidad separada con su
+	// propio trigger. Como se calcula desde pev->origin/angles del arbol
+	// en este mismo instante, siempre esta en el lugar correcto, incluso
+	// recien movido con el physgun.
+	if (GetActivity() == ACT_IDLE)
+	{
+		Vector mins, maxs;
+		GetTriggerBounds(mins, maxs);
+
+		CBaseEntity* pList[8];
+		int count = UTIL_EntitiesInBox(pList, 8, mins, maxs, FL_MONSTER | FL_CLIENT);
+
+		for (int i = 0; i < count; i++)
+		{
+			if (pList[i] == this)
+				continue;
+
+			if (!pList[i]->IsPlayer() && FClassnameIs(pList[i]->pev, "monster_bigmomma"))
+				continue;
+
+			if (pList[i]->IsPlayer() && npc_notarget.value)
+				continue;
+
+			Attack();
+			break;
+		}
+	}
 
 	switch (GetActivity())
 	{
@@ -423,13 +452,11 @@ void CXenTree::Think()
 			pev->framerate = RANDOM_FLOAT(0.6, 1.4);
 		}
 		break;
-
 	default:
 	case ACT_IDLE:
 		break;
 	}
 }
-
 
 // UNDONE:	These need to smoke somehow when they take damage
 //			Touch behavior?
@@ -539,9 +566,14 @@ void CXenSporeLarge::Spawn()
 
 	UTIL_MakeVectorsPrivate(pev->angles, forward, right, NULL);
 
-	// Rotate the leg hulls into position
-	for (int i = 0; i < ARRAYSIZE(m_hullSizes); i++)
-		CXenHull::CreateHull(this, Vector(-12, -12, 0), Vector(12, 12, 120), (m_hullSizes[i].x * forward) + (m_hullSizes[i].y * right));
+	if (UTIL_IsSandbox())
+		UTIL_SetSize(pev, Vector(-80, -80, 0), Vector(80, 80, 240));
+	else
+	{
+		// Rotate the leg hulls into position
+		for (int i = 0; i < ARRAYSIZE(m_hullSizes); i++)
+			CXenHull::CreateHull(this, Vector(-12, -12, 0), Vector(12, 12, 120), (m_hullSizes[i].x * forward) + (m_hullSizes[i].y * right));
+	}
 }
 
 void CXenSpore::Spawn()
