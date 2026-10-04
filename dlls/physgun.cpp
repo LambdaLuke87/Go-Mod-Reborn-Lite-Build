@@ -353,7 +353,13 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 			return nullptr;
 		}
 		else
+		{
+			// ignore players
+			if (pEntity->IsPlayer())
+				return nullptr;
+
 			return pEntity;
+		}
 	}
 
 	pEntity = nullptr;
