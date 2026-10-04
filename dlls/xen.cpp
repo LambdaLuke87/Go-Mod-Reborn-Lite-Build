@@ -225,7 +225,8 @@ void CXenHair::Precache()
 	PRECACHE_MODEL("models/hair.mdl");
 }
 
-
+// UNUSED: XEN TRIGGER, USED FOR XEN TREE, BUT IT DONT NEED THIS ANYMORE
+/*
 class CXenTreeTrigger : public CBaseEntity
 {
 public:
@@ -254,7 +255,7 @@ void CXenTreeTrigger::Touch(CBaseEntity* pOther)
 		CBaseEntity* pEntity = CBaseEntity::Instance(pev->owner);
 		pEntity->Touch(pOther);
 	}
-}
+}*/
 
 
 #define TREE_AE_ATTACK 1
