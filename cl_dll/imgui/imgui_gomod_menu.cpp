@@ -238,13 +238,13 @@ static void InitData()
 		{"Front Spawn", "button_front_spawn"},
 	};
 
-	SpawnTab sweeps;
-	sweeps.title = "Sweeps";
-	sweeps.file = "resource/imgui/sweeps.json";
-	sweeps.toggles = {
+	SpawnTab sweps;
+	sweps.title = "SWEPs";
+	sweps.file = "resource/imgui/sweps.json";
+	sweps.toggles = {
 		{"Give Mode", "button_self_pickup"},
 	};
-	sweeps.actions = {
+	sweps.actions = {
 		{"Undo", "remove_entity_undo"},
 		{"Remove All", "remove_entities_all"},
 		{"Front Spawn", "button_front_spawn"},
@@ -253,7 +253,7 @@ static void InitData()
 	g_Tabs.push_back(std::move(npcs));
 	g_Tabs.push_back(std::move(props));
 	g_Tabs.push_back(std::move(items));
-	g_Tabs.push_back(std::move(sweeps));
+	g_Tabs.push_back(std::move(sweps));
 
 	// Tools: command = "tool <name>"
 	g_ToolCats = {
@@ -325,7 +325,7 @@ static void InitData()
 }
 
 // =====================================================================
-//  parse json (RapidJSON) - npcs/props/items/sweeps use "sections":
+//  parse json (RapidJSON) - npcs/props/items/sweps use "sections":
 //  that point to individual section files (name + button_list)
 // =====================================================================
 // load ONE section (ej. resource/imgui/sections/npcs/military_aliens.json)
@@ -380,7 +380,7 @@ static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& 
 	return true;
 }
 
-// load the index (npcs.json, props.json, items.json, sweeps.json):
+// load the index (npcs.json, props.json, items.json, sweps.json):
 // only has one array "sections" with the section file paths.
 static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out)
 {
