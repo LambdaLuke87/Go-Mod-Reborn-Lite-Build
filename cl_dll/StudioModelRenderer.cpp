@@ -21,6 +21,8 @@
 #include "StudioModelRenderer.h"
 #include "GameStudioModelRenderer.h"
 
+#include "physgun_beam.h"
+
 extern cvar_t* tfc_newmodels;
 
 cvar_t* cl_hands;
@@ -40,8 +42,6 @@ int m_nPlayerGaitSequences[MAX_PLAYERS];
 
 // Global engine <-> studio model rendering code interface
 engine_studio_api_t IEngineStudio;
-
-extern BEAM* pPhysBeam;
 
 /////////////////////
 // Implementation of CStudioModelRenderer.h
@@ -1220,9 +1220,10 @@ bool CStudioModelRenderer::StudioDrawModel(int flags)
 	IEngineStudio.GetViewInfo(m_vRenderOrigin, m_vUp, m_vRight, m_vNormal);
 	IEngineStudio.GetAliasScale(&m_fSoftwareXScale, &m_fSoftwareYScale);
 
-	if ((int)cl_pred_physgun->value > 0 && pPhysBeam && pPhysBeam->endEntity == m_pCurrentEntity->index)
+	BEAM* physBeam = PhysBeam_GetLocal();
+	if ((int)cl_pred_physgun->value > 0 && physBeam && physBeam->endEntity == m_pCurrentEntity->index)
 	{
-	//	UpdatePhysBeam();
+		//	UpdatePhysBeam();
 		m_pCurrentEntity->origin = m_pCurrentEntity->baseline.origin;
 		m_pCurrentEntity->angles = m_pCurrentEntity->baseline.angles;
 	}

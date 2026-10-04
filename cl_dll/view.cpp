@@ -44,6 +44,8 @@ void VectorAngles(const float* forward, float* angles);
 #include "com_model.h"
 #include "kbutton.h"
 
+#include "physgun_beam.h"
+
 extern engine_studio_api_t IEngineStudio;
 
 extern kbutton_t in_mlook;
@@ -102,7 +104,6 @@ cvar_t v_ipitch_level = {"v_ipitch_level", "0.3", 0, 0.3};
 float v_idlescale; // used by TFC for concussion grenade effect
 
 Vector v_lockedangles;
-extern BEAM* pPhysBeam;
 extern kbutton_t in_use;
 
 //=============================================================================
@@ -1729,7 +1730,8 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 		V_CalcNormalRefdef(pparams);
 	}
 
-	if ((cl_pred_physgun && (int)cl_pred_physgun->value > 0) && (pPhysBeam && pPhysBeam->endEntity > 0) && (in_use.state & 1) != 0)
+	BEAM* physBeam = PhysBeam_GetLocal();
+	if ((cl_pred_physgun && (int)cl_pred_physgun->value > 0) && (physBeam && physBeam->endEntity > 0) && (in_use.state & 1) != 0)
 	{
 		VectorCopy(Vector(v_lockedangles.x, v_lockedangles.y, 0.0f), pparams->viewangles);
 		VectorCopy(Vector(-v_lockedangles.x, v_lockedangles.y, 0.0f), gEngfuncs.GetViewModel()->curstate.angles);

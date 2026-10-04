@@ -70,6 +70,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/interpolation.o \
 	$(HL1_OBJ_DIR)/menu.o \
 	$(HL1_OBJ_DIR)/message.o \
+	$(HL1_OBJ_DIR)/physgun_beam.o \
 	$(HL1_OBJ_DIR)/saytext.o \
 	$(HL1_OBJ_DIR)/scoreboard.o \
 	$(HL1_OBJ_DIR)/status_icons.o \

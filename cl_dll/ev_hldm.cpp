@@ -51,6 +51,8 @@
 #include "r_studioint.h"
 #include "com_model.h"
 
+#include "physgun_beam.h"
+
 extern engine_studio_api_t IEngineStudio;
 
 static int tracerCount[MAX_PLAYERS];
@@ -2072,8 +2074,6 @@ void EV_PhysGun(event_args_t* args)
 //======================
 //	   PHYSGUN START
 //======================
-BEAM* pPhysBeam;
-
 void EV_PhysGun(event_args_t* args)
 {
 	int idx;
@@ -2095,25 +2095,28 @@ void EV_PhysGun(event_args_t* args)
 
 	if (args->bparam2 > 0)
 	{
-		if (pPhysBeam)
+		BEAM* pExisting = PhysBeam_Get(idx);
+		if (pExisting)
 		{
-			pPhysBeam->die = 0.0f;
-			pPhysBeam = nullptr;
+			pExisting->die = 0.0f;
+			PhysBeam_Clear(idx);
 		}
 		return;
 	}
 
-	if (pPhysBeam)
+	BEAM* pCurrent = PhysBeam_Get(idx);
+	if (pCurrent)
 	{
-		if (pPhysBeam->endEntity > 0)
+		if (pCurrent->endEntity > 0)
 			return;
-	
+
 		if (targidx == 0)
 			return;
 
-		pPhysBeam->die = 0.01f;
-		pPhysBeam = nullptr;
+		pCurrent->die = 0.01f;
+		PhysBeam_Clear(idx);
 	}
+
 	if (targidx > 0)
 	{
 		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(targidx);
@@ -2123,15 +2126,16 @@ void EV_PhysGun(event_args_t* args)
 		if (isBspModel)
 			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
 
-		pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
+		BEAM* pNewBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
 
-		if (pPhysBeam)
+		if (pNewBeam)
 		{
-			// SAVED ANGLES
 			targent->baseline.origin = targent->origin;
 			targent->baseline.angles = targent->angles;
-			pPhysBeam->endEntity = targidx;
+			pNewBeam->endEntity = targidx;
 		}
+
+		PhysBeam_Set(idx, pNewBeam);
 	}
 	else
 	{
@@ -2143,32 +2147,23 @@ void EV_PhysGun(event_args_t* args)
 		if (pl)
 		{
 			VectorCopy(gHUD.m_vecAngles, angles);
-
 			AngleVectors(angles, forward, right, up);
-
 			EV_GetGunPosition(args, vecSrc, pl->origin);
-
 			VectorMA(vecSrc, 2048, forward, vecEnd);
 
 			gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction(0, 1);
-
-			// Store off the old count
 			gEngfuncs.pEventAPI->EV_PushPMStates();
-
-			// Now add in all of the players.
 			gEngfuncs.pEventAPI->EV_SetSolidPlayers(idx - 1);
-
 			gEngfuncs.pEventAPI->EV_SetTraceHull(2);
 			gEngfuncs.pEventAPI->EV_PlayerTrace(vecSrc, vecEnd, PM_NORMAL, -1, &tr);
-
 			gEngfuncs.pEventAPI->EV_PopPMStates();
 
-			pPhysBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
+			BEAM* pNewBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, (float*)&tr.endpos, m_iBeam, 99999, 1.0, 0.00f, 1.0f, 120.0f * 0.1f, 0, 1, 1, 1, 1);
 
-			if (pPhysBeam)
-			{
-				pPhysBeam->endEntity = 0;
-			}
+			if (pNewBeam)
+				pNewBeam->endEntity = 0;
+
+			PhysBeam_Set(idx, pNewBeam);
 		}
 	}
 }

@@ -423,6 +423,9 @@
     <ClCompile Include="..\..\cl_dll\imgui\imgui_gomod_menu.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\physgun_beam.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -765,6 +768,9 @@
       <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\stb_image.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\physgun_beam.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
   </ItemGroup>

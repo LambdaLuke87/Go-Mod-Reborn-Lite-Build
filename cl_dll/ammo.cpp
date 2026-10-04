@@ -29,6 +29,8 @@
 #include "ammohistory.h"
 #include "vgui_TeamFortressViewport.h"
 
+#include "physgun_beam.h"
+
 WEAPON* gpActiveSel; // NULL means off, 1 means just the menu bar, otherwise
 					 // this points to the active weapon menu item
 WEAPON* gpLastSel;	 // Last weapon menu selection
@@ -764,13 +766,11 @@ void CHudAmmo::UserCmd_Close()
 		EngineClientCmd("escape");
 }
 
-
-extern BEAM* pPhysBeam;
-
 // Selects the next item in the weapon menu
 void CHudAmmo::UserCmd_NextWeapon()
 {
-	if (pPhysBeam && pPhysBeam->endEntity > 0)
+	BEAM* physBeam = PhysBeam_GetLocal();
+	if (physBeam && physBeam->endEntity > 0)
 	{
 		gEngfuncs.pfnClientCmd("+physback");
 		return;
@@ -816,7 +816,8 @@ void CHudAmmo::UserCmd_NextWeapon()
 // Selects the previous item in the menu
 void CHudAmmo::UserCmd_PrevWeapon()
 {
-	if (pPhysBeam && pPhysBeam->endEntity > 0)
+	BEAM* physBeam = PhysBeam_GetLocal();
+	if (physBeam && physBeam->endEntity > 0)
 	{
 		gEngfuncs.pfnClientCmd("+physfwd");
 		return;
