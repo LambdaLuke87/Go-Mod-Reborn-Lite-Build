@@ -281,8 +281,6 @@ public:
 	static const char* pAttackMissSounds[];
 
 private:
-	// Calcula la caja de ataque en vivo (64 unidades al frente del arbol),
-	// sin depender de ninguna entidad separada.
 	void GetTriggerBounds(Vector& mins, Vector& maxs);
 };
 
@@ -414,11 +412,6 @@ void CXenTree::Think()
 
 	DispatchAnimEvents(flInterval);
 
-	// Reemplaza al xen_ttrigger: escaneamos la zona de ataque calculada en
-	// vivo, cada 0.1s, en vez de depender de una entidad separada con su
-	// propio trigger. Como se calcula desde pev->origin/angles del arbol
-	// en este mismo instante, siempre esta en el lugar correcto, incluso
-	// recien movido con el physgun.
 	if (GetActivity() == ACT_IDLE)
 	{
 		Vector mins, maxs;
