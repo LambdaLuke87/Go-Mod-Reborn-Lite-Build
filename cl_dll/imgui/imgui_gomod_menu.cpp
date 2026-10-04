@@ -757,7 +757,6 @@ static void DrawSpawnTab(SpawnTab& tab)
 	int toggleW = 130, toggleH = 22;
 	ScaleSize(toggleW, toggleH);
 
-	// checkboxes on the left, buttons on the right
 	const float rowH = ((float)toggleH > (float)btnH ? (float)toggleH : (float)btnH) + style.ItemSpacing.y;
 	const size_t rows = tab.toggles.size() > tab.actions.size() ? tab.toggles.size() : tab.actions.size();
 	const float footerH = rows * rowH + style.WindowPadding.y * 2.0f + style.ItemSpacing.y;
@@ -766,7 +765,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginChild("##list", ImVec2(0, -footerH), ImGuiChildFlags_Borders);
 
 	if (tab.cats.empty())
-		ImGui::TextDisabled("Sin entradas. Revisa %s", tab.file);
+		ImGui::TextDisabled("witouth entries. check %s", tab.file);
 
 	for (size_t c = 0; c < tab.cats.size(); c++)
 	{
@@ -798,7 +797,10 @@ static void DrawSpawnTab(SpawnTab& tab)
 				MenuItem& item = cat.items[i];
 
 				if (ThumbButton(item, thumb, (int)i) && !item.command.empty())
+				{
 					RunCmd(item.command.c_str());
+					gEngfuncs.pfnPlaySoundByName("!MI_SENTENC5", 1.0f);
+				}
 
 				used += thumb.x;
 			}
