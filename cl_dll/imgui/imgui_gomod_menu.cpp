@@ -913,7 +913,7 @@ static void DrawToolCategoryList(std::vector<ToolCategory>& cats, const ToolDef*
 		}
 	}
 	else
-		ImGui::TextDisabled("Select a Tool");
+		ImGui::TextColored(ImVec4(0.75f, 0.75f, 0.75f, 1.00f), "Select a Tool");
 
 	ImGui::EndChild();
 }

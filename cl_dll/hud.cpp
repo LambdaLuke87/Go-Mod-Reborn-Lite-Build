@@ -505,6 +505,7 @@ void CHud::Init()
 
 	gEngfuncs.pfnAddCommand("gomod_menu_reload", GoModMenu_Reload);
 	gEngfuncs.pfnAddCommand("toggleSandboxMenu", __CmdFunc_ShowMenu);
+	gEngfuncs.pfnRegisterVariable("cl_gomod_menu_theme", "0", FCVAR_ARCHIVE);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

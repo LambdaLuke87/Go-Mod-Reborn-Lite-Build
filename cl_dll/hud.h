@@ -749,6 +749,11 @@ public:
 	bool Redraw(float flTime, bool intermission);
 	bool UpdateClientData(client_data_t* cdata, float time);
 
+	// ImGui
+	void ImGuiMenu_Draw(float flTime);
+	void GoModImGuiStyle();
+	int GetMenuThemeCvar();
+
 	CHud() : m_iSpriteCount(0), m_pHudList(NULL) {}
 	~CHud(); // destructor, frees allocated memory
 
