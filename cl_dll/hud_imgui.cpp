@@ -10,8 +10,6 @@
 #include <SDL2/SDL.h>
 #include "keydefs.h"
 
-extern cvar_t* hud_renderer;
-
 extern bool g_iVisibleMouse;
 extern void IN_ResetMouseAfterMenu();
 
