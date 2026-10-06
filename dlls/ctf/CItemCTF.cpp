@@ -69,7 +69,16 @@ void CItemCTF::Spawn()
 	{
 		SET_MODEL(edict(), STRING(pev->model));
 
-		pev->sequence = LookupSequence("idle");
+		if (powerup_type == 1)
+			pev->sequence = LookupSequence("idle_h");
+		else if (powerup_type == 2)
+			pev->sequence = LookupSequence("idle_ac");
+		else if (powerup_type == 3)
+			pev->sequence = LookupSequence("idle_j");
+		else if (powerup_type == 4)
+			pev->sequence = LookupSequence("idle_b");
+		else
+			pev->sequence = LookupSequence("idle");
 
 		if (pev->sequence != -1)
 		{

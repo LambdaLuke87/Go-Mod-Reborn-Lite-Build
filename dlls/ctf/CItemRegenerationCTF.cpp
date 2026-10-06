@@ -30,7 +30,7 @@ LINK_ENTITY_TO_CLASS(item_ctfregeneration, CItemRegenerationCTF);
 
 void CItemRegenerationCTF::Precache()
 {
-	g_engfuncs.pfnPrecacheModel("models/w_health.mdl");
+	g_engfuncs.pfnPrecacheModel("models/w_powerups.mdl");
 	//g_engfuncs.pfnPrecacheSound("ctf/pow_health_charge.wav");
 }
 
@@ -87,7 +87,10 @@ void CItemRegenerationCTF::Spawn()
 	Precache();
 
 	//TODO: shouldn't this be using pev->model?
-	g_engfuncs.pfnSetModel(edict(), "models/w_health.mdl");
+	g_engfuncs.pfnSetModel(edict(), "models/w_powerups.mdl");
+	pev->skin = 1;
+	pev->body = 1;
+	powerup_type = 1;
 
 	pev->spawnflags |= SF_NORESPAWN;
 	pev->oldorigin = pev->origin;

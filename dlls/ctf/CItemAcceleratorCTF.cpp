@@ -26,7 +26,7 @@ void CItemAcceleratorCTF::Precache()
 {
 	CItemCTF::Precache();
 
-	PRECACHE_MODEL("models/w_accelerator.mdl");
+	PRECACHE_MODEL("models/w_powerups.mdl");
 	//PRECACHE_SOUND("turret/tu_ping.wav");
 }
 
@@ -34,7 +34,10 @@ void CItemAcceleratorCTF::Spawn()
 {
 	Precache();
 
-	SET_MODEL(edict(), "models/w_accelerator.mdl");
+	SET_MODEL(edict(), "models/w_powerups.mdl");
+	pev->skin = 2;
+	pev->body = 2;
+	powerup_type = 2;
 
 	//TODO: is this actually used?
 	pev->spawnflags |= SF_NORESPAWN;

@@ -29,7 +29,7 @@ LINK_ENTITY_TO_CLASS(item_ctfportablehev, CItemPortableHEVCTF);
 
 void CItemPortableHEVCTF::Precache()
 {
-	g_engfuncs.pfnPrecacheModel("models/w_porthev.mdl");
+	g_engfuncs.pfnPrecacheModel("models/w_powerups.mdl");
 	//g_engfuncs.pfnPrecacheSound("ctf/pow_armor_charge.wav");
 }
 
@@ -79,7 +79,7 @@ void CItemPortableHEVCTF::Spawn()
 	Precache();
 
 	//TODO: shouldn't this be using pev->model?
-	g_engfuncs.pfnSetModel(edict(), "models/w_porthev.mdl");
+	g_engfuncs.pfnSetModel(edict(), "models/w_powerups.mdl");
 
 	pev->spawnflags |= SF_NORESPAWN;
 	pev->oldorigin = pev->origin;

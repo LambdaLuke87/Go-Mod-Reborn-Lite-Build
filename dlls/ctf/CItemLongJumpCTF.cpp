@@ -29,7 +29,7 @@ LINK_ENTITY_TO_CLASS(item_ctflongjump, CItemLongJumpCTF);
 
 void CItemLongJumpCTF::Precache()
 {
-	g_engfuncs.pfnPrecacheModel("models/w_jumppack.mdl");
+	g_engfuncs.pfnPrecacheModel("models/w_powerups.mdl");
 	//g_engfuncs.pfnPrecacheSound("ctf/pow_big_jump.wav");
 }
 
@@ -85,7 +85,10 @@ void CItemLongJumpCTF::Spawn()
 	Precache();
 
 	//TODO: shouldn't this be using pev->model?
-	g_engfuncs.pfnSetModel(edict(), "models/w_jumppack.mdl");
+	g_engfuncs.pfnSetModel(edict(), "models/w_powerups.mdl");
+	pev->skin = 3;
+	pev->body = 3;
+	powerup_type = 3;
 
 	pev->spawnflags |= SF_NORESPAWN;
 	pev->oldorigin = pev->origin;

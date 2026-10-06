@@ -29,7 +29,7 @@ LINK_ENTITY_TO_CLASS(item_ctfbackpack, CItemBackpackCTF);
 
 void CItemBackpackCTF::Precache()
 {
-	g_engfuncs.pfnPrecacheModel("models/w_backpack.mdl");
+	g_engfuncs.pfnPrecacheModel("models/w_powerups.mdl");
 	//g_engfuncs.pfnPrecacheSound("ctf/pow_backpack.wav");
 }
 
@@ -91,7 +91,10 @@ void CItemBackpackCTF::Spawn()
 	Precache();
 
 	//TODO: shouldn't this be using pev->model?
-	g_engfuncs.pfnSetModel(edict(), "models/w_backpack.mdl");
+	g_engfuncs.pfnSetModel(edict(), "models/w_powerups.mdl");
+	pev->skin = 4;
+	pev->body = 4;
+	powerup_type = 4;
 
 	pev->spawnflags |= SF_NORESPAWN;
 	pev->oldorigin = pev->origin;

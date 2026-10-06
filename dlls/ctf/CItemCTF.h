@@ -51,6 +51,8 @@ public:
 	void ScatterItem(CBasePlayer* pPlayer);
 	void ThrowItem(CBasePlayer* pPlayer);
 
+	int powerup_type = 0;
+
 	CTFTeam team_no;
 	int m_iLastTouched;
 	float m_flNextTouchTime;
