@@ -23,10 +23,13 @@
 
 #include "physgun_beam.h"
 
+#include <string>
+#include <unordered_map>
+
+#include "../external/rapidjson/document.h"
+
 extern cvar_t* tfc_newmodels;
 
-cvar_t* cl_hands;
-cvar_t* cl_hands_skin;
 cvar_t* cl_pred_physgun;
 int g_iToolBowSkin; // ToolBow modes in relation with model screen
 
@@ -46,6 +49,80 @@ engine_studio_api_t IEngineStudio;
 /////////////////////
 // Implementation of CStudioModelRenderer.h
 
+static std::unordered_map<std::string, std::string> g_HandsCache; // player model -> ruta de manos ya resuelta
+static const char* DEFAULT_HAND_MODEL = "models/hands/v_hands_hev.mdl";
+
+static bool LoadTextFileClient(const char* path, std::string& out)
+{
+	int len = 0;
+	byte* data = gEngfuncs.COM_LoadFile((char*)path, 5, &len);
+	if (!data)
+		return false;
+
+	const char* p = (const char*)data;
+	if (len >= 3 && (unsigned char)p[0] == 0xEF && (unsigned char)p[1] == 0xBB && (unsigned char)p[2] == 0xBF)
+	{
+		p += 3;
+		len -= 3;
+	}
+
+	out.assign(p, len);
+	gEngfuncs.COM_FreeFile(data);
+	return true;
+}
+
+static bool TryLoadHandModelFromPlayerFolder(const char* playerModelName, std::string& outPath)
+{
+	if (!playerModelName || playerModelName[0] == '\0')
+		return false;
+
+	char jsonPath[256];
+	snprintf(jsonPath, sizeof(jsonPath), "models/player/%s/%s.json", playerModelName, playerModelName);
+
+	std::string src;
+	if (!LoadTextFileClient(jsonPath, src))
+		return false;
+
+	rapidjson::Document doc;
+	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject())
+	{
+		gEngfuncs.Con_Printf("GoMod hands: invalid JSON in %s\n", jsonPath);
+		return false;
+	}
+
+	if (!doc.HasMember("model") || !doc["model"].IsString())
+	{
+		gEngfuncs.Con_Printf("GoMod hands: missing \"model\" in %s\n", jsonPath);
+		return false;
+	}
+
+	outPath = doc["model"].GetString();
+	return true;
+}
+
+static const char* GetHandModelForLocalPlayer()
+{
+	static cvar_t* pModelCvar = nullptr;
+	if (!pModelCvar)
+		pModelCvar = gEngfuncs.pfnGetCvarPointer("model");
+
+	const char* playerModel = (pModelCvar && pModelCvar->string) ? pModelCvar->string : "";
+
+	if (playerModel[0] == '\0')
+		return DEFAULT_HAND_MODEL;
+
+	auto cached = g_HandsCache.find(playerModel);
+	if (cached != g_HandsCache.end())
+		return cached->second.c_str();
+
+	std::string resolved;
+	if (!TryLoadHandModelFromPlayerFolder(playerModel, resolved))
+		resolved = DEFAULT_HAND_MODEL;
+
+	auto inserted = g_HandsCache.emplace(playerModel, std::move(resolved));
+	return inserted.first->second.c_str();
+}
+
 /*
 ====================
 Init
@@ -58,10 +135,6 @@ void CStudioModelRenderer::Init()
 	m_pCvarHiModels = IEngineStudio.GetCvar("cl_himodels");
 	m_pCvarDeveloper = IEngineStudio.GetCvar("developer");
 	m_pCvarDrawEntities = IEngineStudio.GetCvar("r_drawentities");
-
-	// cvar for Bacontsu cl_hands
-	cl_hands = CVAR_CREATE("cl_hands", "1", FCVAR_ARCHIVE);
-	cl_hands_skin = CVAR_CREATE("cl_hands_skin", "1", FCVAR_ARCHIVE);
 
 	cl_pred_physgun = CVAR_CREATE("cl_pred_physgun", "1", FCVAR_ARCHIVE);
 
@@ -80,8 +153,8 @@ void CStudioModelRenderer::Init()
 ====================
 StudioRenderHands
 "cl_hands" system, to easily change hand model between mods
-by Bacontsu, written for HL:E
-HOW TO USE : this function will merges v_hands.mdl with weapon models, to easily change between hands
+by Bacontsu, written for HL:E and Updated for Go-Mod
+HOW TO USE : just select a player model
 ====================
 */
 void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
@@ -93,17 +166,17 @@ void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
 
 		cl_entity_t saveent = *m_pCurrentEntity;
 
-		model_t* handmodel = IEngineStudio.Mod_ForName("models/v_hands.mdl", 1); // load model
+		const char* handModelPath = GetHandModelForLocalPlayer();
+		model_t* handmodel = IEngineStudio.Mod_ForName((char*)handModelPath, 0);
 
-		if (cl_hands_skin->value != 0)
+		if (!handmodel && strcmp(handModelPath, DEFAULT_HAND_MODEL) != 0)
 		{
-			m_pCurrentEntity->curstate.skin = cl_hands_skin->value - 1;
+			gEngfuncs.Con_Printf("GoMod hands: %s don't exist, using %s\n", handModelPath, DEFAULT_HAND_MODEL);
+			handmodel = IEngineStudio.Mod_ForName((char*)DEFAULT_HAND_MODEL, 0);
 		}
 
-		if (cl_hands->value != 0)
+		if (handmodel)
 		{
-			m_pCurrentEntity->curstate.body = cl_hands->value - 1;
-
 			m_pStudioHeader = (studiohdr_t*)IEngineStudio.Mod_Extradata(handmodel);
 
 			IEngineStudio.StudioSetHeader(m_pStudioHeader);
@@ -117,6 +190,10 @@ void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
 			StudioCalcAttachments();
 
 			*m_pCurrentEntity = saveent;
+		}
+		else
+		{
+			gEngfuncs.Con_Printf("GoMod hands: neither the hand model nor the default could be loaded (%s)\n", DEFAULT_HAND_MODEL);
 		}
 	}
 }

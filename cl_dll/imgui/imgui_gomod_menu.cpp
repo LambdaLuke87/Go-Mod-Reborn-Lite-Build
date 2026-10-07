@@ -147,12 +147,6 @@ struct ToolCategory
 	std::vector<ToolDef> tools;
 };
 
-struct HandCategory
-{
-	std::string name;
-	std::vector<std::string> skins;
-};
-
 struct VoiceOption
 {
 	const char* label;
@@ -168,10 +162,6 @@ struct FlashLightOption
 static std::vector<SpawnTab> g_Tabs;
 static std::vector<ToolCategory> g_ToolCats;
 static std::vector<ToolCategory> g_RenderToolCats;
-
-static std::vector<HandCategory> g_HandCats;
-static bool g_HandsLoaded = false;
-static const char* HANDS_FILE = "resource/imgui/hands.json";
 
 static std::unordered_map<std::string, std::string> g_KeyStrings;
 static bool g_KeyStringsLoaded = false;
@@ -402,37 +392,6 @@ static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out
 	return true;
 }
 
-// hands.json: an unique file with "categories": [{ "name", "skins": [...] }, ...]
-static bool ParseHandsFile(const std::string& src, std::vector<HandCategory>& out)
-{
-	rapidjson::Document doc;
-	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
-		!doc.HasMember("categories") || !doc["categories"].IsArray())
-		return false;
-
-	for (auto& entry : doc["categories"].GetArray())
-	{
-		if (!entry.IsObject() || !entry.HasMember("name") || !entry["name"].IsString())
-			continue;
-
-		HandCategory cat;
-		cat.name = entry["name"].GetString();
-
-		if (entry.HasMember("skins") && entry["skins"].IsArray())
-		{
-			for (auto& skin : entry["skins"].GetArray())
-			{
-				if (skin.IsString())
-					cat.skins.push_back(skin.GetString());
-			}
-		}
-
-		out.push_back(std::move(cat));
-	}
-
-	return true;
-}
-
 static void EnsureLoaded(SpawnTab& tab)
 {
 	if (tab.loaded)
@@ -453,29 +412,6 @@ static void EnsureLoaded(SpawnTab& tab)
 	{
 		gEngfuncs.Con_Printf("GoMod menu: syntax error in %s\n", tab.file);
 		tab.cats.clear();
-	}
-}
-
-static void EnsureHandsLoaded()
-{
-	if (g_HandsLoaded)
-		return;
-
-	g_HandsLoaded = true;
-	g_HandCats.clear();
-
-	std::string src;
-
-	if (!LoadTextFile(HANDS_FILE, src))
-	{
-		gEngfuncs.Con_Printf("GoMod menu: it could not be opened %s\n", HANDS_FILE);
-		return;
-	}
-
-	if (!ParseHandsFile(src, g_HandCats))
-	{
-		gEngfuncs.Con_Printf("GoMod menu: syntax error in %s\n", HANDS_FILE);
-		g_HandCats.clear();
 	}
 }
 
@@ -932,79 +868,10 @@ static void DrawRenderOptionsTab()
 
 static void DrawCustomizationTab()
 {
-	EnsureHandsLoaded();
-
-	static int s_handCatIndex = 0;
-	static int s_handSkinIndex = 0;
 	static int s_voiceIndex = 0;
 	static int s_flashlightIndex = 0;
 
 	ImGui::BeginChild("##customization", ImVec2(0, 0), ImGuiChildFlags_None);
-
-	if (g_HandCats.empty())
-	{
-		ImGui::TextDisabled("Sin datos. Revisa %s", HANDS_FILE);
-	}
-	else
-	{
-		if (s_handCatIndex >= (int)g_HandCats.size())
-			s_handCatIndex = 0;
-
-		// ---- Hand Model ----
-		ImGui::Text("Hand Model");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (ImGui::BeginCombo("##handmodel", g_HandCats[s_handCatIndex].name.c_str()))
-		{
-			for (int i = 0; i < (int)g_HandCats.size(); i++)
-			{
-				bool selected = (i == s_handCatIndex);
-
-				ImGui::PushID(i);
-				if (ImGui::Selectable(g_HandCats[i].name.c_str(), selected))
-				{
-					if (i != s_handCatIndex)
-						s_handSkinIndex = 0; // reset skin when change category
-					s_handCatIndex = i;
-				}
-				ImGui::PopID();
-
-				if (selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		ImGui::Spacing();
-
-		// ---- Hand Skins (depende de la categoria elegida) ----
-		const HandCategory& cat = g_HandCats[s_handCatIndex];
-		if (s_handSkinIndex >= (int)cat.skins.size())
-			s_handSkinIndex = 0;
-
-		ImGui::Text("Hand Skins");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		const char* skinPreview = cat.skins.empty() ? "N/A" : cat.skins[s_handSkinIndex].c_str();
-		if (ImGui::BeginCombo("##handskin", skinPreview))
-		{
-			for (int i = 0; i < (int)cat.skins.size(); i++)
-			{
-				bool selected = (i == s_handSkinIndex);
-
-				ImGui::PushID(i);
-				if (ImGui::Selectable(cat.skins[i].c_str(), selected))
-					s_handSkinIndex = i;
-				ImGui::PopID();
-
-				if (selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-	}
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
 
 	// ---- Player Voice (hardcoded) ----
 	ImGui::Text("Player Voice");
@@ -1053,21 +920,6 @@ static void DrawCustomizationTab()
 	if (ImGui::Button("Apply Changes", ImVec2((float)btnW, (float)btnH)))
 	{
 		char buf[64];
-
-		if (!g_HandCats.empty())
-		{
-			// EXAMPLE: HEV Hands -> cl_hands 1, Soldier Hands -> cl_hands 2, etc.
-			snprintf(buf, sizeof(buf), "cl_hands %d", s_handCatIndex + 1);
-			RunCmd(buf);
-
-			const HandCategory& catNow = g_HandCats[s_handCatIndex];
-			if (!catNow.skins.empty())
-			{
-				// EXAMPLE: Gordon -> cl_hands_skin 1, Collete -> 2, Gina -> 3, etc.
-				snprintf(buf, sizeof(buf), "cl_hands_skin %d", s_handSkinIndex + 1);
-				RunCmd(buf);
-			}
-		}
 
 		snprintf(buf, sizeof(buf), "cl_player_sfx_type %s", g_VoiceOptions[s_voiceIndex].value);
 		RunCmd(buf);
@@ -1228,9 +1080,6 @@ void GoModMenu_Reload()
 		tab.cats.clear();
 		tab.loaded = false;
 	}
-
-	g_HandCats.clear();
-	g_HandsLoaded = false;
 
 	g_KeyStrings.clear();
 	g_KeyStringsLoaded = false;
