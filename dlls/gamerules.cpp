@@ -344,6 +344,23 @@ void CGameRules::RefreshSkillData()
 	gSkillData.pitWormDmgSwipe = GetSkillCvar("sk_pitworm_dmg_swipe");
 	gSkillData.pitWormDmgBeam = GetSkillCvar("sk_pitworm_dmg_beam");
 
+	// Tor
+	gSkillData.torHealth = GetSkillCvar("sk_tor_health");
+	gSkillData.torPunch = GetSkillCvar("sk_tor_punch");
+	gSkillData.torEnergyBeam = GetSkillCvar("sk_tor_energybeam");
+	gSkillData.torSonicBlast = GetSkillCvar("sk_tor_sonicblast");
+	gSkillData.torLiftSpeedGround = GetSkillCvar("sk_tor_lift_speed_ground");
+	gSkillData.torLiftSpeed = GetSkillCvar("sk_tor_lift_speed");
+
+	// Kingpin
+	gSkillData.kingpinHealth = GetSkillCvar("sk_kingpin_health");
+	gSkillData.kingpinPlasmaBlast = GetSkillCvar("sk_kingpin_plasma_blast");
+	gSkillData.kingpinLightning = GetSkillCvar("sk_kingpin_lightning");
+	gSkillData.kingpinMelee = GetSkillCvar("sk_kingpin_melee");
+	gSkillData.kingpinHead = GetSkillCvar("sk_kingpin_head");
+	gSkillData.kingpinShield = GetSkillCvar("sk_kingpin_shield");
+	gSkillData.kingpinShieldReserve = GetSkillCvar("sk_kingpin_shield_reserve");
+
 	// Gene Worm
 	gSkillData.geneWormHealth = GetSkillCvar("sk_geneworm_health");
 	gSkillData.geneWormDmgSpit = GetSkillCvar("sk_geneworm_dmg_spit");

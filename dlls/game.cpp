@@ -375,6 +375,23 @@ DECLARE_SKILL_CVARS(pitworm_health);
 DECLARE_SKILL_CVARS(pitworm_dmg_swipe);
 DECLARE_SKILL_CVARS(pitworm_dmg_beam);
 
+// Tor
+DECLARE_SKILL_CVARS(tor_health);
+DECLARE_SKILL_CVARS(tor_punch);
+DECLARE_SKILL_CVARS(tor_energybeam);
+DECLARE_SKILL_CVARS(tor_sonicblast);
+DECLARE_SKILL_CVARS(tor_lift_speed_ground);
+DECLARE_SKILL_CVARS(tor_lift_speed);
+
+// Kingpin
+DECLARE_SKILL_CVARS(kingpin_health);
+DECLARE_SKILL_CVARS(kingpin_plasma_blast);
+DECLARE_SKILL_CVARS(kingpin_lightning);
+DECLARE_SKILL_CVARS(kingpin_melee);
+DECLARE_SKILL_CVARS(kingpin_head);
+DECLARE_SKILL_CVARS(kingpin_shield);
+DECLARE_SKILL_CVARS(kingpin_shield_reserve);
+
 // Gene Worm
 DECLARE_SKILL_CVARS(geneworm_health);
 DECLARE_SKILL_CVARS(geneworm_dmg_spit);
@@ -1066,6 +1083,23 @@ void GameDLLInit()
 	REGISTER_SKILL_CVARS(pitworm_health);
 	REGISTER_SKILL_CVARS(pitworm_dmg_swipe);
 	REGISTER_SKILL_CVARS(pitworm_dmg_beam);
+
+	// Tor
+	REGISTER_SKILL_CVARS(tor_health);
+	REGISTER_SKILL_CVARS(tor_punch);
+	REGISTER_SKILL_CVARS(tor_energybeam);
+	REGISTER_SKILL_CVARS(tor_sonicblast);
+	REGISTER_SKILL_CVARS(tor_lift_speed_ground);
+	REGISTER_SKILL_CVARS(tor_lift_speed);
+
+	// Kingpin
+	REGISTER_SKILL_CVARS(kingpin_health);
+	REGISTER_SKILL_CVARS(kingpin_plasma_blast);
+	REGISTER_SKILL_CVARS(kingpin_lightning);
+	REGISTER_SKILL_CVARS(kingpin_melee);
+	REGISTER_SKILL_CVARS(kingpin_head);
+	REGISTER_SKILL_CVARS(kingpin_shield);
+	REGISTER_SKILL_CVARS(kingpin_shield_reserve);
 
 	// Gene Worm
 	REGISTER_SKILL_CVARS(geneworm_health);

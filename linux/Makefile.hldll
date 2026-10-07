@@ -137,6 +137,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/islave.o \
 	$(HLDLL_OBJ_DIR)/item_generic.o \
 	$(HLDLL_OBJ_DIR)/items.o \
+	$(HLDLL_OBJ_DIR)/kingpin.o \
 	$(HLDLL_OBJ_DIR)/leech.o \
 	$(HLDLL_OBJ_DIR)/lights.o \
 	$(HLDLL_OBJ_DIR)/loader.o \
@@ -192,6 +193,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/tempmonster.o \
 	$(HLDLL_OBJ_DIR)/tentacle.o \
 	$(HLDLL_OBJ_DIR)/toolbow.o \
+	$(HLDLL_OBJ_DIR)/tor.o \
 	$(HLDLL_OBJ_DIR)/triggers.o \
 	$(HLDLL_OBJ_DIR)/tripmine.o \
 	$(HLDLL_OBJ_DIR)/turret.o \

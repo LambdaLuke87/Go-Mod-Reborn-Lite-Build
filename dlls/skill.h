@@ -134,6 +134,21 @@ struct skilldata_t
 	float pitWormDmgSwipe;
 	float pitWormDmgBeam;
 
+	float torHealth;
+	float torPunch;
+	float torEnergyBeam;
+	float torSonicBlast;
+	float torLiftSpeedGround;
+	float torLiftSpeed;
+
+	float kingpinHealth;
+	float kingpinPlasmaBlast;
+	float kingpinLightning;
+	float kingpinMelee;
+	float kingpinHead;
+	float kingpinShield;
+	float kingpinShieldReserve;
+
 	float geneWormHealth;
 	float geneWormDmgSpit;
 	float geneWormDmgHit;

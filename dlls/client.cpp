@@ -145,6 +145,8 @@ spawnlist_t gExtraMonsters[] =
 		{"monster_babygarg"},
 		{"monster_charger", true},
 		{"monster_panthereye"},
+		{"monster_kingpin"},
+		{"monster_alien_tor"},
 		{"monster_robogrunt"}};
 
 // Weapons/Items List
