@@ -2,6 +2,7 @@
 #include "util.h"
 #include "cbase.h"
 #include "custom_sounds.h"
+#include "custom_packs.h"
 
 #include "../external/rapidjson/document.h"
 
@@ -105,39 +106,66 @@ void CustomSounds_Precache()
 {
 	g_CustomSounds.clear();
 
-	std::string src;
-	if (!LoadTextFileSafe("scripts/custom_sounds.json", src))
-	{
-		ALERT(at_console, "CustomSounds: doesn't exist scripts/custom_sounds.json\n");
-		return;
-	}
+	std::vector<std::string> packs;
+	CustomPacks_GetPackNames(packs);
 
-	rapidjson::Document doc;
-	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
-		!doc.HasMember("sounds") || !doc["sounds"].IsArray())
-	{
-		ALERT(at_console, "CustomSounds: invalid JSON in custom_sounds.json\n");
-		return;
-	}
+	int packsWithSounds = 0;
 
-	for (auto& entry : doc["sounds"].GetArray())
+	for (const std::string& pack : packs)
 	{
-		if (!entry.IsString())
+		const std::string indexPath = CustomPacks_BuildPath(pack, "custom_sounds.json");
+
+		std::string src;
+		if (!LoadTextFileSafe(indexPath.c_str(), src))
+			continue; // this pack has no sounds (maybe it only has monsters), that's fine
+
+		rapidjson::Document doc;
+		if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
+			!doc.HasMember("sounds") || !doc["sounds"].IsArray())
+		{
+			ALERT(at_console, "CustomSounds: invalid JSON in %s\n", indexPath.c_str());
 			continue;
+		}
 
-		SoundGroupDef def;
-		std::string soundPath = entry.GetString();
+		packsWithSounds++;
 
-		if (!ParseSoundFile(soundPath, def))
-			continue;
+		for (auto& entry : doc["sounds"].GetArray())
+		{
+			if (!entry.IsString())
+				continue;
 
-		for (const std::string& s : def.sounds)
-			PRECACHE_SOUND((char*)s.c_str());
+			// the path in the json is relative to the pack folder: "sounds/zombie_alert.json"
+			const std::string relativePath = entry.GetString();
 
-		g_CustomSounds.push_back(std::move(def));
+			if (!CustomPacks_IsSafeRelativePath(relativePath))
+			{
+				ALERT(at_console, "CustomSounds: invalid path '%s' in %s, ignored\n", relativePath.c_str(), indexPath.c_str());
+				continue;
+			}
+
+			SoundGroupDef def;
+
+			if (!ParseSoundFile(CustomPacks_BuildPath(pack, relativePath), def))
+				continue;
+
+			// same id + type in two packs: the first one wins (packs are always read in alphabetical order)
+			if (const SoundGroupDef* pExisting = FindCustomSoundGroup(def.id, def.type))
+			{
+				ALERT(at_console, "CustomSounds: id '%s' (%s) from pack '%s' ignored, it is already defined by pack '%s'\n",
+					def.id.c_str(), def.type.c_str(), pack.c_str(), pExisting->pack.c_str());
+				continue;
+			}
+
+			def.pack = pack;
+
+			for (const std::string& s : def.sounds)
+				PRECACHE_SOUND((char*)s.c_str());
+
+			g_CustomSounds.push_back(std::move(def));
+		}
 	}
 
-	ALERT(at_console, "CustomSounds: %d group of sounds loaded\n", (int)g_CustomSounds.size());
+	ALERT(at_console, "CustomSounds: %d group of sounds loaded from %d pack(s)\n", (int)g_CustomSounds.size(), packsWithSounds);
 }
 
 const SoundGroupDef* FindCustomSoundGroup(const std::string& id, const std::string& type)

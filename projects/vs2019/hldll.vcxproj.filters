@@ -621,6 +621,9 @@
     <ClCompile Include="..\..\dlls\tor.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\custom_packs.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -999,6 +1002,9 @@
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\custom_sounds.h">
+      <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\custom_packs.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>

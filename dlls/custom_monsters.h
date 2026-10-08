@@ -5,9 +5,10 @@
 
 struct CustomMonsterDef
 {
-	std::string id;			   // what is written in "summon <id>"
-	std::string baseClassname; // real NPC, example: "monster_zombie"
-	std::string modelPath;	   // example: "models/custom_zombie.mdl"
+	std::string id;				// what is written in "summon <id>"
+	std::string pack;			// pack folder it was loaded from (scripts/<pack>/)
+	std::string baseClassname;	// real NPC, example: "monster_zombie"
+	std::string modelPath;		// example: "models/custom_zombie.mdl"
 	std::string customSoundsId; // "custom_sounds" from json, empty = use default sounds
 	int health = 0;
 	float damageMultiplier = 1.0f;
@@ -37,8 +38,9 @@ struct CustomMonsterDef
 	int gibModel = 0; // (1=human, 2=human_and_skull, 3=alien)
 };
 
-// Call ONCE, within the world's precache hook (still to be defined).
-// Loads scripts/custom_monsters.json and each listed monster, and precaches their models.
+// Call ONCE, within the world's precache hook.
+// Looks for every pack folder in scripts/, loads scripts/<pack>/custom_monsters.json and each
+// monster listed in it (paths are relative to the pack folder), and precaches their models.
 void CustomMonsters_Precache();
 
 // Look for a definition by "id" (or by "classname" if the JSON does not have an "id").

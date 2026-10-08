@@ -2,6 +2,7 @@
 #include "util.h"
 #include "cbase.h"
 #include "custom_monsters.h"
+#include "custom_packs.h"
 
 #include <climits>
 #include <unordered_map>
@@ -270,40 +271,67 @@ void CustomMonsters_Precache()
 {
 	g_CustomMonsters.clear();
 
-	std::string src;
-	if (!LoadTextFileSafe("scripts/custom_monsters.json", src))
-	{
-		ALERT(at_console, "CustomMonsters: don't exist in scripts/custom_monsters.json\n");
-		return;
-	}
+	std::vector<std::string> packs;
+	CustomPacks_GetPackNames(packs);
 
-	rapidjson::Document doc;
-	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
-		!doc.HasMember("monsters") || !doc["monsters"].IsArray())
-	{
-		ALERT(at_console, "CustomMonsters: invalid JSON in custom_monsters.json\n");
-		return;
-	}
+	int packsWithMonsters = 0;
 
-	for (auto& entry : doc["monsters"].GetArray())
+	for (const std::string& pack : packs)
 	{
-		if (!entry.IsString())
+		const std::string indexPath = CustomPacks_BuildPath(pack, "custom_monsters.json");
+
+		std::string src;
+		if (!LoadTextFileSafe(indexPath.c_str(), src))
+			continue; // this pack has no monsters (maybe it only has sounds), that's fine
+
+		rapidjson::Document doc;
+		if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
+			!doc.HasMember("monsters") || !doc["monsters"].IsArray())
+		{
+			ALERT(at_console, "CustomMonsters: invalid JSON in %s\n", indexPath.c_str());
 			continue;
+		}
 
-		CustomMonsterDef def;
-		std::string monsterPath = entry.GetString();
+		packsWithMonsters++;
 
-		if (!ParseMonsterFile(monsterPath, def))
-			continue;
+		for (auto& entry : doc["monsters"].GetArray())
+		{
+			if (!entry.IsString())
+				continue;
 
-		// Precache
-		if (!def.modelPath.empty())
-			PRECACHE_MODEL((char*)def.modelPath.c_str());
+			// the path in the json is relative to the pack folder: "monsters/zombie.json"
+			const std::string relativePath = entry.GetString();
 
-		g_CustomMonsters.push_back(std::move(def));
+			if (!CustomPacks_IsSafeRelativePath(relativePath))
+			{
+				ALERT(at_console, "CustomMonsters: invalid path '%s' in %s, ignored\n", relativePath.c_str(), indexPath.c_str());
+				continue;
+			}
+
+			CustomMonsterDef def;
+
+			if (!ParseMonsterFile(CustomPacks_BuildPath(pack, relativePath), def))
+				continue;
+
+			// same id in two packs: the first one wins (packs are always read in alphabetical order)
+			if (const CustomMonsterDef* pExisting = FindCustomMonsterDef(def.id.c_str()))
+			{
+				ALERT(at_console, "CustomMonsters: id '%s' from pack '%s' ignored, it is already defined by pack '%s'\n",
+					def.id.c_str(), pack.c_str(), pExisting->pack.c_str());
+				continue;
+			}
+
+			def.pack = pack;
+
+			// Precache
+			if (!def.modelPath.empty())
+				PRECACHE_MODEL((char*)def.modelPath.c_str());
+
+			g_CustomMonsters.push_back(std::move(def));
+		}
 	}
 
-	ALERT(at_console, "CustomMonsters: %d loaded definitions\n", (int)g_CustomMonsters.size());
+	ALERT(at_console, "CustomMonsters: %d loaded definitions from %d pack(s)\n", (int)g_CustomMonsters.size(), packsWithMonsters);
 }
 
 const CustomMonsterDef* FindCustomMonsterDef(const char* id)
