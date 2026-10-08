@@ -1817,7 +1817,7 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 
 					if (tr.pHit && tr.pHit->v.takedamage != DAMAGE_NO)
 					{
-						EMIT_SOUND_DYN(tr.pHit, CHAN_BODY, "weapons/xbow_hitbod2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+						EMIT_SOUND_DYN(tr.pHit, CHAN_BODY, "!WP_GUNMISC9", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 
 						auto pHitEntity = Instance(tr.pHit);
 
