@@ -49,6 +49,8 @@
 #define TOR_MAX_ALLOWED_CHILDREN 3
 
 #define TOR_SUMMON_CLASSNAME "monster_alien_grunt"
+#define TOR_SUMMON_CLASSNAME_ALT "monster_alien_grunt_alt"
+#define TOR_SUMMON_CLASSNAME_ALLIED "monster_alien_grunt_allied"
 
 // Approximate hull of an alien grunt, used to check if there is space for a summoned child
 static const Vector TOR_SUMMON_MINS(-32, -32, 0);
@@ -141,7 +143,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void SetYawSpeed() override;
-	int Classify() override { return CLASS_ALIEN_MILITARY; }
+	int Classify() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	Schedule_t* GetSchedule() override;
 	Schedule_t* GetScheduleOfType(int Type) override;
@@ -385,6 +387,14 @@ IMPLEMENT_CUSTOM_SCHEDULES(CTor, CSquadMonster);
 void CTor::SetYawSpeed()
 {
 	pev->yaw_speed = 180;
+}
+
+int CTor::Classify()
+{
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
+	return CLASS_ALIEN_MILITARY;
 }
 
 void CTor::MeleeHit(CBaseEntity* pHurt)
@@ -959,7 +969,16 @@ void CTorSummonPoint::SummonThink()
 	}
 
 	// same way CMonsterMaker creates children
-	edict_t* pent = CREATE_NAMED_ENTITY(MAKE_STRING(TOR_SUMMON_CLASSNAME));
+	edict_t* pent;
+	if (pOwner->m_AltClass)
+		pent = CREATE_NAMED_ENTITY(MAKE_STRING(TOR_SUMMON_CLASSNAME_ALLIED));
+	else
+	{
+		if (UTIL_IsSandbox())
+			pent = CREATE_NAMED_ENTITY(MAKE_STRING(TOR_SUMMON_CLASSNAME_ALT));
+		else
+			pent = CREATE_NAMED_ENTITY(MAKE_STRING(TOR_SUMMON_CLASSNAME));
+	}
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "%s is going to be removed. Reason: can't spawn a child '%s'\n", STRING(pev->classname), TOR_SUMMON_CLASSNAME);

@@ -847,7 +847,7 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	void SetYawSpeed() override { pev->yaw_speed = 140; }
-	int Classify() override { return CLASS_ALIEN_MONSTER; }
+	int Classify() override;
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool KeyValue(KeyValueData* pkvd) override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
@@ -1164,6 +1164,14 @@ void CKingpin::Precache()
 
 	UTIL_PrecacheOther("kingpin_plasma_ball");
 	UTIL_PrecacheOther("kingpin_plasma_cluster");
+}
+
+int CKingpin::Classify()
+{
+	if (m_AltClass)
+		return CLASS_PLAYER_ALIEN_ALLY;
+
+	return CLASS_ALIEN_MONSTER;
 }
 
 void CKingpin::HandleAnimEvent(MonsterEvent_t* pEvent)

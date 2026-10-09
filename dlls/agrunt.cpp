@@ -120,6 +120,8 @@ public:
 };
 LINK_ENTITY_TO_CLASS(monster_alien_grunt, CAGrunt);
 LINK_ENTITY_TO_CLASS(monster_alien_grunt_melee, CAGrunt);
+LINK_ENTITY_TO_CLASS(monster_alien_grunt_allied, CAGrunt);
+LINK_ENTITY_TO_CLASS(monster_alien_grunt_alt, CAGrunt);
 
 TYPEDESCRIPTION CAGrunt::m_SaveData[] =
 	{
@@ -352,7 +354,7 @@ void CAGrunt::PainSound()
 //=========================================================
 int CAGrunt::Classify()
 {
-	if (m_AltClass)
+	if (m_AltClass || FClassnameIs(pev, "monster_alien_grunt_allied"))
 		return CLASS_PLAYER_ALIEN_ALLY;
 
 	return CLASS_ALIEN_MILITARY;
@@ -586,6 +588,9 @@ void CAGrunt::Spawn()
 
 	if (FClassnameIs(pev, "monster_alien_grunt_melee"))
 		pev->body = 1;
+
+	if (FClassnameIs(pev, "monster_alien_grunt_alt") || FClassnameIs(pev, "monster_alien_grunt_allied"))
+		m_MenuCreated = true;
 
 	MonsterInit();
 }
