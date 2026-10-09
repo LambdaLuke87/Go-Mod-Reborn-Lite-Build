@@ -3,6 +3,7 @@
 
 #include "hud.h"
 #include "cl_util.h"
+#include "filesystem_utils.h"
 
 #include "imgui.h"
 
@@ -26,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <set>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
@@ -127,7 +129,7 @@ struct Action
 struct SpawnTab
 {
 	const char* title;
-	const char* file;
+	const char* folder; // every .json inside this folder is one section
 	std::vector<MenuCategory> cats;
 	bool loaded = false;
 	std::vector<Toggle> toggles;
@@ -192,7 +194,7 @@ static void InitData()
 
 	SpawnTab npcs;
 	npcs.title = "NPCs";
-	npcs.file = "resource/imgui/npcs.json";
+	npcs.folder = "resource/imgui/npcs";
 	npcs.toggles = {
 		{"Ignore Players", "button_notarget_set"},
 		{"No AI", "button_ai_set"},
@@ -206,7 +208,7 @@ static void InitData()
 
 	SpawnTab props;
 	props.title = "Props";
-	props.file = "resource/imgui/props.json";
+	props.folder = "resource/imgui/props";
 	props.toggles = {
 		{"Ignore Players", "button_notarget_set"},
 	};
@@ -218,7 +220,7 @@ static void InitData()
 
 	SpawnTab items;
 	items.title = "Items";
-	items.file = "resource/imgui/items.json";
+	items.folder = "resource/imgui/items";
 	items.toggles = {
 		{"Give Mode", "button_self_pickup"},
 	};
@@ -230,7 +232,7 @@ static void InitData()
 
 	SpawnTab sweps;
 	sweps.title = "SWEPs";
-	sweps.file = "resource/imgui/sweps.json";
+	sweps.folder = "resource/imgui/sweps";
 	sweps.toggles = {
 		{"Give Mode", "button_self_pickup"},
 	};
@@ -315,10 +317,11 @@ static void InitData()
 }
 
 // =====================================================================
-//  parse json (RapidJSON) - npcs/props/items/sweps use "sections":
-//  that point to individual section files (name + button_list)
+//  parse json (RapidJSON) - every tab reads ALL the .json files that are
+//  inside its folder (resource/imgui/npcs/, props/, items/, sweps/).
+//  Each file is one section (section_name + button_list).
 // =====================================================================
-// load ONE section (ej. resource/imgui/sections/npcs/military_aliens.json)
+// load ONE section (ej. resource/imgui/npcs/military_aliens.json)
 // and adds it to the vector as another category 'out'.
 static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& out)
 {
@@ -370,26 +373,52 @@ static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& 
 	return true;
 }
 
-// load the index (npcs.json, props.json, items.json, sweps.json):
-// only has one array "sections" with the section file paths.
-static bool ParseMenuFile(const std::string& src, std::vector<MenuCategory>& out)
+// Names of every .json file inside 'folder' (only the file names, not the full path).
+// They are searched through ALL the engine search paths, so a pack dropped in an
+// addon/downloads folder shows up too. The result is sorted alphabetically and has no
+// duplicates (the engine returns the same file once per search path that has it),
+// so the sections always appear in the same order: name the files "01_xxx.json",
+// "02_xxx.json" if you want to choose that order.
+static void ListJsonFilesInFolder(const char* folder, std::vector<std::string>& out)
 {
-	rapidjson::Document doc;
-	if (doc.Parse(src.c_str()).HasParseError() || !doc.IsObject() ||
-		!doc.HasMember("sections") || !doc["sections"].IsArray())
-		return false;
+	out.clear();
 
-	for (auto& entry : doc["sections"].GetArray())
+	if (!g_pFileSystem)
 	{
-		if (!entry.IsString())
-			continue;
-
-		// if an individual section fails, only that one is skipped (and advice on console).
-		// the rest of the menu continues to load normally.
-		LoadSectionFile(entry.GetString(), out);
+		gEngfuncs.Con_Printf("GoMod menu: filesystem not available, cannot read %s/\n", folder);
+		return;
 	}
 
-	return true;
+	std::set<std::string> found; // removes duplicates and keeps them sorted
+
+	char pattern[256];
+	snprintf(pattern, sizeof(pattern), "%s/*.json", folder);
+
+	FileFindHandle_t handle;
+	const char* name = g_pFileSystem->FindFirst(pattern, &handle, nullptr);
+
+	// the handle is only valid if FindFirst found something, so no FindClose when it didn't.
+	if (!name)
+		return;
+
+	for (; name; name = g_pFileSystem->FindNext(handle))
+	{
+		if (g_pFileSystem->FindIsDirectory(handle))
+			continue;
+
+		std::string file = name;
+
+		// some filesystems may return a path, keep only the file name
+		size_t pos = file.find_last_of("/\\");
+		if (pos != std::string::npos)
+			file = file.substr(pos + 1);
+
+		found.insert(file);
+	}
+
+	g_pFileSystem->FindClose(handle);
+
+	out.assign(found.begin(), found.end());
 }
 
 static void EnsureLoaded(SpawnTab& tab)
@@ -400,18 +429,20 @@ static void EnsureLoaded(SpawnTab& tab)
 	tab.loaded = true;
 	tab.cats.clear();
 
-	std::string src;
+	std::vector<std::string> files;
+	ListJsonFilesInFolder(tab.folder, files);
 
-	if (!LoadTextFile(tab.file, src))
+	if (files.empty())
 	{
-		gEngfuncs.Con_Printf("GoMod menu: it could not be opened %s\n", tab.file);
+		gEngfuncs.Con_Printf("GoMod menu: no sections found in %s/\n", tab.folder);
 		return;
 	}
 
-	if (!ParseMenuFile(src, tab.cats))
+	for (const std::string& file : files)
 	{
-		gEngfuncs.Con_Printf("GoMod menu: syntax error in %s\n", tab.file);
-		tab.cats.clear();
+		// if an individual section fails, only that one is skipped (the console says why).
+		// the rest of the menu continues to load normally.
+		LoadSectionFile(std::string(tab.folder) + "/" + file, tab.cats);
 	}
 }
 
@@ -701,7 +732,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginChild("##list", ImVec2(0, -footerH), ImGuiChildFlags_Borders);
 
 	if (tab.cats.empty())
-		ImGui::TextDisabled("witouth entries. check %s", tab.file);
+		ImGui::TextDisabled("witouth entries. check %s/", tab.folder);
 
 	for (size_t c = 0; c < tab.cats.size(); c++)
 	{
