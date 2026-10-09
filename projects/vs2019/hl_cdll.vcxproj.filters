@@ -429,6 +429,9 @@
     <ClCompile Include="..\..\cl_dll\hud_imgui.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\weapons\CNailgun.cpp">
+      <Filter>Source Files\_hl\dlls\weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -775,6 +778,9 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\physgun_beam.h">
       <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\weapons\CNailgun.h">
+      <Filter>Header Files\_hl\dlls\weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

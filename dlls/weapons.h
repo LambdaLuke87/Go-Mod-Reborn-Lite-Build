@@ -98,6 +98,7 @@ public:
 #define SPORELAUNCHER_WEIGHT 20
 #define SNIPERRIFLE_WEIGHT 10
 #define PENGUIN_WEIGHT 5
+#define NAILGUN_WEIGHT 15
 
 
 // weapon clip/carry ammo capacities
@@ -117,6 +118,7 @@ public:
 #define SPORELAUNCHER_MAX_CARRY 20
 #define SNIPERRIFLE_MAX_CARRY 15
 #define PENGUIN_MAX_CARRY 9
+#define NAILGUN_MAX_CARRY 200
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP -1
@@ -166,6 +168,7 @@ public:
 #define SPORELAUNCHER_DEFAULT_GIVE 5
 #define SHOCKRIFLE_DEFAULT_GIVE 10
 #define SNIPERRIFLE_DEFAULT_GIVE 5
+#define NAILGUN_DEFAULT_GIVE 50
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE 20
@@ -183,6 +186,7 @@ public:
 #define AMMO_EAGLE_GIVE 7
 #define AMMO_SPORE_GIVE 1
 #define AMMO_SNIPERRIFLE_GIVE 5
+#define AMMO_NAILS_GIVE 30
 
 // bullet types
 typedef enum

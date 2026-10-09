@@ -147,6 +147,7 @@ spawnlist_t gExtraMonsters[] =
 		{"monster_panthereye"},
 		{"monster_kingpin"},
 		{"monster_alien_tor"},
+		{"monster_robocop"},
 		{"monster_robogrunt"}};
 
 // Weapons/Items List
@@ -178,6 +179,7 @@ spawnlist_t gWeapons[] =
 		{"weapon_pipewrench"},
 		{"weapon_knife"},
 		{"weapon_penguin"},
+		{"weapon_nailgun"},
 		{"item_healthkit"},
 		{"item_battery"},
 		{"item_longjump"},

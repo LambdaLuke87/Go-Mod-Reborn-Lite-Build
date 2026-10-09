@@ -624,6 +624,12 @@
     <ClCompile Include="..\..\dlls\custom_packs.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\robocop.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\weapons\CNailgun.cpp">
+      <Filter>Source Files\dlls\weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -1006,6 +1012,9 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\custom_packs.h">
       <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\weapons\CNailgun.h">
+      <Filter>Header Files\dlls\weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

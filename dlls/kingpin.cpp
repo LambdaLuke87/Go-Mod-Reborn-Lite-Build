@@ -848,6 +848,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override { pev->yaw_speed = 140; }
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Kingpin"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	bool KeyValue(KeyValueData* pkvd) override;
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;

@@ -237,6 +237,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\rat.cpp" />
     <ClCompile Include="..\..\dlls\rgrunt.cpp" />
     <ClCompile Include="..\..\dlls\roach.cpp" />
+    <ClCompile Include="..\..\dlls\robocop.cpp" />
     <ClCompile Include="..\..\dlls\rope\CElectrifiedWire.cpp" />
     <ClCompile Include="..\..\dlls\rope\CRope.cpp" />
     <ClCompile Include="..\..\dlls\rope\CRopeSample.cpp" />
@@ -280,6 +281,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\weapons\CEagleLaser.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CKnife.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CM249.cpp" />
+    <ClCompile Include="..\..\dlls\weapons\CNailgun.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CPenguin.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CPipewrench.cpp" />
     <ClCompile Include="..\..\dlls\weapons\CShockBeam.cpp" />
@@ -404,6 +406,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\dlls\weapons\CEagleLaser.h" />
     <ClInclude Include="..\..\dlls\weapons\CKnife.h" />
     <ClInclude Include="..\..\dlls\weapons\CM249.h" />
+    <ClInclude Include="..\..\dlls\weapons\CNailgun.h" />
     <ClInclude Include="..\..\dlls\weapons\CPenguin.h" />
     <ClInclude Include="..\..\dlls\weapons\CPipewrench.h" />
     <ClInclude Include="..\..\dlls\weapons\CShockBeam.h" />

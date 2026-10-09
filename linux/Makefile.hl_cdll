@@ -108,6 +108,7 @@ DLL_OBJS = \
 	$(WEAPONS_OBJ_DIR)/CGrappleTip.o \
 	$(WEAPONS_OBJ_DIR)/CKnife.o \
 	$(WEAPONS_OBJ_DIR)/CM249.o \
+	$(WEAPONS_OBJ_DIR)/CNailgun.o \
 	$(WEAPONS_OBJ_DIR)/CPenguin.o \
 	$(WEAPONS_OBJ_DIR)/CPipewrench.o \
 	$(WEAPONS_OBJ_DIR)/CShockRifle.o \

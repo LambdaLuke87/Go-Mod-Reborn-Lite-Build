@@ -361,6 +361,16 @@ void CGameRules::RefreshSkillData()
 	gSkillData.kingpinShield = GetSkillCvar("sk_kingpin_shield");
 	gSkillData.kingpinShieldReserve = GetSkillCvar("sk_kingpin_shield_reserve");
 
+	// Robocop
+	gSkillData.robocopHealth = GetSkillCvar("sk_robocop_health");
+	gSkillData.robocopDmgMortar = GetSkillCvar("sk_robocop_dmg_mortar");
+	gSkillData.robocopDmgFist = GetSkillCvar("sk_robocop_dmg_fist");
+	gSkillData.robocopSwRadius = GetSkillCvar("sk_robocop_sw_radius");
+
+	// Nailgun
+	gSkillData.nailDmg = GetSkillCvar("sk_nail");
+	gSkillData.plrDmgNail = GetSkillCvar("sk_plr_nail");
+
 	// Gene Worm
 	gSkillData.geneWormHealth = GetSkillCvar("sk_geneworm_health");
 	gSkillData.geneWormDmgSpit = GetSkillCvar("sk_geneworm_dmg_spit");

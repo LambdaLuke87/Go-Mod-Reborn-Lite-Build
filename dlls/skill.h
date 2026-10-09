@@ -149,6 +149,14 @@ struct skilldata_t
 	float kingpinShield;
 	float kingpinShieldReserve;
 
+	float robocopHealth;
+	float robocopDmgMortar;
+	float robocopDmgFist;
+	float robocopSwRadius;
+
+	float nailDmg;
+	float plrDmgNail;
+
 	float geneWormHealth;
 	float geneWormDmgSpit;
 	float geneWormDmgHit;

@@ -144,6 +144,7 @@ public:
 	void Precache() override;
 	void SetYawSpeed() override;
 	int Classify() override;
+	const char* DefaultDisplayName() { return "Tor"; }
 	void HandleAnimEvent(MonsterEvent_t* pEvent) override;
 	Schedule_t* GetSchedule() override;
 	Schedule_t* GetScheduleOfType(int Type) override;

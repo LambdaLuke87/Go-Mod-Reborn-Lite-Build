@@ -28,6 +28,7 @@
 #include "weapons/CSniperRifle.h"
 #include "weapons/CKnife.h"
 #include "weapons/CPenguin.h"
+#include "weapons/CNailgun.h"
 
 #include "usercmd.h"
 #include "entity_state.h"
@@ -95,6 +96,7 @@ CKnife g_Knife;
 CPenguin g_Penguin;
 CPhysgun g_PhysGun;
 CToolbow g_ToolBow;
+CNailgun g_Nailgun;
 
 
 /*
@@ -537,6 +539,7 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity(&g_Penguin, &player);
 	HUD_PrepEntity(&g_PhysGun, &player);
 	HUD_PrepEntity(&g_ToolBow, &player);
+	HUD_PrepEntity(&g_Nailgun, &player);
 }
 
 /*
@@ -636,6 +639,8 @@ CBasePlayerWeapon* GetLocalWeapon(int id)
 		return &g_PhysGun;
 	case WEAPON_TOOLBOW:
 		return &g_ToolBow;
+	case WEAPON_NAILGUN:
+		return &g_Nailgun;
 
 	default:
 		return nullptr;

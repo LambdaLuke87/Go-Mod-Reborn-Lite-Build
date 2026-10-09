@@ -42,6 +42,7 @@ void EV_Knife(event_args_t* args);
 void EV_PenguinFire(event_args_t* args);
 void EV_PhysGun(event_args_t* args);
 void EV_ToolBow(event_args_t* args);
+void EV_FireNailgun(event_args_t* args);
 
 
 void EV_TrainPitchAdjust(event_args_t* args);

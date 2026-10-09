@@ -55,6 +55,7 @@ HLDLL_OBJS = \
 	$(WEAPONS_OBJ_DIR)/CGrappleTip.o \
 	$(WEAPONS_OBJ_DIR)/CKnife.o \
 	$(WEAPONS_OBJ_DIR)/CM249.o \
+	$(WEAPONS_OBJ_DIR)/CNailgun.o \
 	$(WEAPONS_OBJ_DIR)/CPenguin.o \
 	$(WEAPONS_OBJ_DIR)/CPipewrench.o \
 	$(WEAPONS_OBJ_DIR)/CShockBeam.o \
@@ -171,6 +172,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/rat.o \
 	$(HLDLL_OBJ_DIR)/rgrunt.o \
 	$(HLDLL_OBJ_DIR)/roach.o \
+	$(HLDLL_OBJ_DIR)/robocop.o \
 	$(HLDLL_OBJ_DIR)/rpg.o \
 	$(HLDLL_OBJ_DIR)/satchel.o \
 	$(HLDLL_OBJ_DIR)/schedule.o \

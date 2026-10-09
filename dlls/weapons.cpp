@@ -365,6 +365,9 @@ void W_Precache()
 	UTIL_PrecacheOtherWeapon("weapon_sniperrifle");
 	UTIL_PrecacheOther("ammo_762");
 
+	UTIL_PrecacheOtherWeapon("weapon_nailgun");
+	UTIL_PrecacheOther("ammo_nails");
+
 	UTIL_PrecacheOtherWeapon("weapon_knife");
 
 	UTIL_PrecacheOtherWeapon("weapon_penguin");

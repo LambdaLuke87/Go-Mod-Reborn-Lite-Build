@@ -28,6 +28,7 @@
 #include "weapons/CSniperRifle.h"
 #include "weapons/CKnife.h"
 #include "weapons/CPenguin.h"
+#include "weapons/CNailgun.h"
 
 #include "com_weapons.h"
 #include "const.h"
@@ -1873,6 +1874,23 @@ void EV_FireShockRifle(event_args_t* args)
 			1, 75 * 0.01, 190 / 255.0, 30, 0, 10,
 			0, 253 / 255.0, 253 / 255.0);
 	}
+}
+
+void EV_FireNailgun(event_args_t* args)
+{
+	const int idx = args->entindex;
+	const int iAnim = args->iparam1;
+	const int iPitch = args->iparam2;
+
+	if (EV_IsLocal(idx))
+	{
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(iAnim, 0);
+		V_PunchAxis(0, -1.0f);
+	}
+
+	gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "weapons/airgun_1.wav",
+		gEngfuncs.pfnRandomFloat(0.95f, 1.0f), ATTN_NORM, 0, iPitch);
 }
 
 void EV_FireSpore(event_args_t* args)

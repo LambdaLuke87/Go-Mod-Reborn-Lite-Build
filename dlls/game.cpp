@@ -392,6 +392,16 @@ DECLARE_SKILL_CVARS(kingpin_head);
 DECLARE_SKILL_CVARS(kingpin_shield);
 DECLARE_SKILL_CVARS(kingpin_shield_reserve);
 
+// Robocop
+DECLARE_SKILL_CVARS(robocop_health);
+DECLARE_SKILL_CVARS(robocop_dmg_mortar);
+DECLARE_SKILL_CVARS(robocop_dmg_fist);
+DECLARE_SKILL_CVARS(robocop_sw_radius);
+
+// Nailgun
+DECLARE_SKILL_CVARS(nail);
+DECLARE_SKILL_CVARS(plr_nail);
+
 // Gene Worm
 DECLARE_SKILL_CVARS(geneworm_health);
 DECLARE_SKILL_CVARS(geneworm_dmg_spit);
@@ -672,10 +682,6 @@ DECLARE_SKILL_CVARS(babygargantua_dmg_stomp);
 
 // Hassault
 //DECLARE_SKILL_CVARS(hass_health);
-
-// Kingpin
-//DECLARE_SKILL_CVARS(kpin_health);
-//DECLARE_SKILL_CVARS(kpin_dmg_tele);
 
 // Panthereye
 DECLARE_SKILL_CVARS(panthereye_health);
@@ -1100,6 +1106,16 @@ void GameDLLInit()
 	REGISTER_SKILL_CVARS(kingpin_head);
 	REGISTER_SKILL_CVARS(kingpin_shield);
 	REGISTER_SKILL_CVARS(kingpin_shield_reserve);
+
+	// Robocop
+	REGISTER_SKILL_CVARS(robocop_health);
+	REGISTER_SKILL_CVARS(robocop_dmg_mortar);
+	REGISTER_SKILL_CVARS(robocop_dmg_fist);
+	REGISTER_SKILL_CVARS(robocop_sw_radius);
+
+	// Nailgun
+	REGISTER_SKILL_CVARS(nail);
+	REGISTER_SKILL_CVARS(plr_nail);
 
 	// Gene Worm
 	REGISTER_SKILL_CVARS(geneworm_health);

@@ -2197,6 +2197,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveNamedItem("weapon_sporelauncher");
 					pPlayer->GiveNamedItem("weapon_hornetgun");
 					pPlayer->GiveNamedItem("weapon_shockrifle");
+					pPlayer->GiveNamedItem("weapon_nailgun");
 
 					// Give the maximum amount of ammunition for each weapon
 					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum
@@ -2216,6 +2217,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveAmmo(SNIPERRIFLE_MAX_CARRY, "762", SNIPERRIFLE_MAX_CARRY);
 					pPlayer->GiveAmmo(SPORELAUNCHER_MAX_CARRY, "spores", SPORELAUNCHER_MAX_CARRY);
 					pPlayer->GiveAmmo(1, "shock", SHOCKRIFLE_MAX_CLIP);
+					pPlayer->GiveAmmo(150, "nails", NAILGUN_MAX_CARRY);
 				}
 
 				pPlayer->GiveNamedItem("weapon_toolbow");
