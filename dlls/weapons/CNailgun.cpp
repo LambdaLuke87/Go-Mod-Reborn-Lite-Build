@@ -18,6 +18,12 @@
 
 #include "CNailgun.h"
 
+#define NAILGUN_MUZZLE_FORWARD 0.0f
+#define NAILGUN_MUZZLE_RIGHT 2.0f
+#define NAILGUN_MUZZLE_UP -4.0f
+#define NAILGUN_INTERP_TIME 0.1f
+#define NAILGUN_MAX_LAG_COMPENSATION 0.25f
+
 //=========================================================
 // Nail projectile (server only)
 //=========================================================
@@ -196,7 +202,8 @@ void CNailgun::PrimaryAttack()
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
+	if (!rule_infammo.value)
+		--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
 
 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
@@ -221,7 +228,24 @@ void CNailgun::PrimaryAttack()
 
 	const Vector vecAiming = gpGlobals->v_forward;
 	const Vector vecGun = m_pPlayer->GetGunPosition();
-	const Vector vecSrc = vecGun + gpGlobals->v_right * 2.0f + gpGlobals->v_up * -4.0f;
+	Vector vecSrc = vecGun + gpGlobals->v_forward * NAILGUN_MUZZLE_FORWARD + gpGlobals->v_right * NAILGUN_MUZZLE_RIGHT + gpGlobals->v_up * NAILGUN_MUZZLE_UP;
+
+	// lag compensation
+	{
+		int ping = 0, packetLoss = 0;
+		g_engfuncs.pfnGetPlayerStats(m_pPlayer->edict(), &ping, &packetLoss);
+
+		float lag = NAILGUN_INTERP_TIME + ping * 0.001f;
+		if (lag > NAILGUN_MAX_LAG_COMPENSATION)
+			lag = NAILGUN_MAX_LAG_COMPENSATION;
+
+		const Vector vecShifted = vecSrc + m_pPlayer->pev->velocity * lag;
+
+		// never move the spawn point through a wall
+		TraceResult trShift;
+		UTIL_TraceLine(vecSrc, vecShifted, ignore_monsters, m_pPlayer->edict(), &trShift);
+		vecSrc = trShift.flFraction < 1.0f ? trShift.vecEndPos - (vecShifted - vecSrc).Normalize() * 2.0f : vecShifted;
+	}
 
 	Vector vecDir = vecAiming;
 
