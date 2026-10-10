@@ -104,6 +104,7 @@ HL1_PARTICLEMAN_OBJS = \
 DLL_OBJS = \
 	$(WEAPONS_OBJ_DIR)/CDisplacer.o \
 	$(WEAPONS_OBJ_DIR)/CEagle.o \
+	$(WEAPONS_OBJ_DIR)/CGlauncher.o \
 	$(WEAPONS_OBJ_DIR)/CGrapple.o \
 	$(WEAPONS_OBJ_DIR)/CGrappleTip.o \
 	$(WEAPONS_OBJ_DIR)/CKnife.o \

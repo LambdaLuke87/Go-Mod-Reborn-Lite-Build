@@ -60,6 +60,8 @@ extern DLL_GLOBAL bool g_fGameOver;
 extern DLL_GLOBAL int g_iSkillLevel;
 DLL_GLOBAL unsigned int g_ulFrameCount;
 
+extern unsigned short g_sTrail;
+
 extern void CopyToBodyQue(entvars_t* pev);
 
 struct spawnlist_t
@@ -180,6 +182,7 @@ spawnlist_t gWeapons[] =
 		{"weapon_knife"},
 		{"weapon_penguin"},
 		{"weapon_nailgun"},
+		{"weapon_m79"},
 		{"item_healthkit"},
 		{"item_battery"},
 		{"item_longjump"},
@@ -2186,6 +2189,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("common/wpn_select.wav");
 	PRECACHE_SOUND("common/wpn_denyselect.wav");
 
+	g_sTrail = PRECACHE_EVENT(1, "events/trail.sc");
 
 	// geiger sounds - now are sentences
 	/* Six Unnecesary Precaches >:(

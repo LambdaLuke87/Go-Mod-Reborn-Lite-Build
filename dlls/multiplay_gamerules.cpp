@@ -2198,6 +2198,7 @@ void CMultiplaySandbox::PlayerSpawn(CBasePlayer* pPlayer)
 					pPlayer->GiveNamedItem("weapon_hornetgun");
 					pPlayer->GiveNamedItem("weapon_shockrifle");
 					pPlayer->GiveNamedItem("weapon_nailgun");
+					pPlayer->GiveNamedItem("weapon_m79");
 
 					// Give the maximum amount of ammunition for each weapon
 					pPlayer->GiveAmmo(182, "9mm", _9MM_MAX_CARRY); // increased to the maximum

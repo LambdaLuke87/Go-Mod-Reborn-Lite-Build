@@ -29,6 +29,7 @@
 #include "weapons/CKnife.h"
 #include "weapons/CPenguin.h"
 #include "weapons/CNailgun.h"
+#include "weapons/CGlauncher.h"
 
 #include "com_weapons.h"
 #include "const.h"
@@ -775,6 +776,35 @@ void EV_FireMP52(event_args_t* args)
 }
 //======================
 //		 MP5 END
+//======================
+
+
+//======================
+//		 GL START
+//======================
+// We only predict the animation and sound
+// The grenade is still launched from the server.
+void EV_GLFire(event_args_t* args)
+{
+	int idx;
+	Vector origin;
+
+	idx = args->entindex;
+	VectorCopy(args->origin, origin);
+
+	if (EV_IsLocal(idx))
+	{
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(GL_FIRE1, 2);
+		V_PunchAxis(0, -10);
+	}
+
+	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/gl_fire.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+
+
+	// gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/m79_fire.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+}
+//======================
+//		 GL END
 //======================
 
 //======================
@@ -2221,6 +2251,66 @@ void EV_ToolBow(event_args_t* args)
 		break;
 	}
 }
+
+//=============================================
+// TRAIL DMC CODE START
+//=============================================
+
+void EV_RocketTrailCallback(struct tempent_s* ent, float frametime, float currenttime)
+{
+	if (currenttime < ent->entity.baseline.fuser1)
+		return;
+
+	if (ent->entity.origin == ent->entity.attachment[0])
+		ent->die = gEngfuncs.GetClientTime();
+	else
+		VectorCopy(ent->entity.origin, ent->entity.attachment[0]);
+
+	// Make the Rocket light up. ( And only rockets, no Grenades ).
+	if (ent->entity.baseline.sequence == 70)
+	{
+		dlight_t* dl = gEngfuncs.pEfxAPI->CL_AllocDlight(0);
+		VectorCopy(ent->entity.origin, dl->origin);
+
+		dl->radius = 160;
+		dl->dark = true;
+		dl->die = gEngfuncs.GetClientTime() + 0.001; // Kill it right away
+
+		dl->color.r = 255;
+		dl->color.g = 255;
+		dl->color.b = 255;
+	}
+}
+
+#define GRENADE_TRAIL 1
+#define ROCKET_TRAIL 2
+
+void EV_Trail(event_args_t* args)
+{
+	int iEntIndex = args->iparam1;
+	TEMPENTITY* pTrailSpawner = NULL;
+
+	pTrailSpawner = gEngfuncs.pEfxAPI->CL_TempEntAllocNoModel(args->origin);
+
+	if (pTrailSpawner != NULL)
+	{
+		pTrailSpawner->flags |= (FTENT_PLYRATTACHMENT | FTENT_COLLIDEKILL | FTENT_CLIENTCUSTOM | FTENT_SMOKETRAIL | FTENT_COLLIDEWORLD);
+		pTrailSpawner->callback = EV_RocketTrailCallback;
+		pTrailSpawner->clientIndex = iEntIndex;
+
+		if (args->iparam2 == GRENADE_TRAIL)
+			pTrailSpawner->entity.baseline.sequence = 69;
+		else if (args->iparam2 == ROCKET_TRAIL)
+			pTrailSpawner->entity.baseline.sequence = 70;
+
+		pTrailSpawner->die = gEngfuncs.GetClientTime() + 10;					 // Just in case
+		pTrailSpawner->entity.baseline.fuser1 = gEngfuncs.GetClientTime() + 0.5; // Don't try to die till 500ms ahead
+	}
+}
+
+//=============================================
+// TRAIL DMC CODE END
+//=============================================
 
 void EV_TrainPitchAdjust(event_args_t* args)
 {

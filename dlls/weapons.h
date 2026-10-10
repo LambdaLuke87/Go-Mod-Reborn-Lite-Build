@@ -42,6 +42,7 @@ public:
 	} SATCHELCODE;
 
 	static CGrenade* ShootTimed(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time);
+	static CGrenade* ShootBouncy(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time);
 	static CGrenade* ShootContact(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity);
 	static CGrenade* ShootSatchelCharge(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity);
 	static void UseSatchelCharges(entvars_t* pevOwner, SATCHELCODE code);
@@ -51,6 +52,7 @@ public:
 	void EXPORT Smoke();
 
 	void EXPORT BounceTouch(CBaseEntity* pOther);
+	void EXPORT BounceExplodeTouch(CBaseEntity* pOther);
 	void EXPORT SlideTouch(CBaseEntity* pOther);
 	void EXPORT ExplodeTouch(CBaseEntity* pOther);
 	void EXPORT DangerSoundThink();
@@ -99,6 +101,7 @@ public:
 #define SNIPERRIFLE_WEIGHT 10
 #define PENGUIN_WEIGHT 5
 #define NAILGUN_WEIGHT 15
+#define M79_WEIGHT 10
 
 
 // weapon clip/carry ammo capacities
@@ -119,6 +122,7 @@ public:
 #define SNIPERRIFLE_MAX_CARRY 15
 #define PENGUIN_MAX_CARRY 9
 #define NAILGUN_MAX_CARRY 200
+#define M79_MAX_CARRY 25
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP -1
@@ -144,6 +148,7 @@ public:
 #define SHOCKRIFLE_MAX_CLIP 10
 #define SNIPERRIFLE_MAX_CLIP 5
 #define PENGUIN_MAX_CLIP 3
+#define M79_MAX_CLIP 5
 
 
 // the default amount of ammo that comes with each gun when it spawns
@@ -169,6 +174,7 @@ public:
 #define SHOCKRIFLE_DEFAULT_GIVE 10
 #define SNIPERRIFLE_DEFAULT_GIVE 5
 #define NAILGUN_DEFAULT_GIVE 50
+#define M79_DEFAULT_GIVE 5
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE 20

@@ -27,9 +27,11 @@
 #include "decals.h"
 #include "game.h"
 
-
 //===================grenade
 
+#define GRENADE_TRAIL 1
+
+unsigned short g_sTrail;
 
 LINK_ENTITY_TO_CLASS(grenade, CGrenade);
 
@@ -232,6 +234,70 @@ void CGrenade::DangerSoundThink()
 	}
 }
 
+void CGrenade::BounceExplodeTouch(CBaseEntity* pOther)
+{
+	// don't hit the guy that launched this grenade
+	if (pOther->edict() == pev->owner)
+		return;
+
+	// only do damage if we're moving fairly fast
+	if (m_flNextAttack < gpGlobals->time && pev->velocity.Length() > 100)
+	{
+
+		entvars_t* pevOwner = VARS(pev->owner);
+		if (pevOwner)
+		{
+			if (pOther->IsAlive()) // we hit a living thing!
+			{
+				TraceResult tresult = UTIL_GetGlobalTrace();
+				ClearMultiDamage();
+				pOther->TraceAttack(pevOwner, gSkillData.plrDmgM203Grenade, gpGlobals->v_forward, &tresult, DMG_BLAST);
+				ApplyMultiDamage(pev, pevOwner);
+				Detonate();
+			}
+		}
+		m_flNextAttack = gpGlobals->time + 1.0; // debounce
+	}
+
+	Vector vecTestVelocity;
+	// pev->avelocity = Vector (300, 300, 300);
+
+	// this is my heuristic for modulating the grenade velocity because grenades dropped purely vertical
+	// or thrown very far tend to slow down too quickly for me to always catch just by testing velocity.
+	// trimming the Z velocity a bit seems to help quite a bit.
+	vecTestVelocity = pev->velocity;
+	vecTestVelocity.z *= 0.45;
+
+	if (!m_fRegisteredSound && vecTestVelocity.Length() <= 60)
+	{
+		// ALERT( at_console, "Grenade Registered!: %f\n", vecTestVelocity.Length() );
+
+		// grenade is moving really slow. It's probably very close to where it will ultimately stop moving.
+		// go ahead and emit the danger sound.
+
+		// register a radius louder than the explosion, so we make sure everyone gets out of the way
+		CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin, pev->dmg / 0.4, 0.3);
+		m_fRegisteredSound = true;
+	}
+
+	if (pev->flags & FL_ONGROUND)
+	{
+		// add a bit of static friction
+		pev->velocity = pev->velocity * 0.8;
+
+		pev->sequence = RANDOM_LONG(1, 1);
+	}
+	else
+	{
+		// play bounce sound
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/bounce.wav", 1, ATTN_NORM);
+	}
+	pev->framerate = pev->velocity.Length() / 200.0;
+	if (pev->framerate > 1.0)
+		pev->framerate = 1;
+	else if (pev->framerate < 0.5)
+		pev->framerate = 0;
+}
 
 void CGrenade::BounceTouch(CBaseEntity* pOther)
 {
@@ -404,6 +470,52 @@ CGrenade* CGrenade::ShootContact(entvars_t* pevOwner, Vector vecStart, Vector ve
 	pGrenade->SetTouch(&CGrenade::ExplodeTouch);
 
 	pGrenade->pev->dmg = gSkillData.plrDmgM203Grenade;
+
+	return pGrenade;
+}
+
+CGrenade* CGrenade::ShootBouncy(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity, float time)
+{
+	CGrenade* pGrenade = GetClassPtr((CGrenade*)NULL);
+
+	UTIL_SetOrigin(pGrenade->pev, vecStart);
+	SET_MODEL(ENT(pGrenade->pev), "models/grenade.mdl");
+	pGrenade->Spawn();
+	pGrenade->pev->classname = MAKE_STRING("grenade_bouncy");
+	pGrenade->pev->owner = ENT(pevOwner);
+	UTIL_SetSize(pGrenade->pev, Vector(-2, -2, -2), Vector(2, 2, 2));
+
+	// Setup
+	pGrenade->pev->movetype = MOVETYPE_BOUNCE;
+	pGrenade->pev->solid = SOLID_BBOX;
+
+	pGrenade->pev->avelocity = Vector(300, 300, 300);
+
+	// Velocity
+	pGrenade->pev->velocity = vecVelocity;
+	pGrenade->pev->angles = UTIL_VecToAngles(vecVelocity);
+	pGrenade->pev->friction = 0.5;
+
+	// Touch
+	pGrenade->SetTouch(&CGrenade::BounceExplodeTouch);
+
+	// Take one second off of the desired detonation time and set the think to PreDetonate. PreDetonate
+	// will insert a DANGER sound into the world sound list and delay detonation for one second so that
+	// the grenade explodes after the exact amount of time specified in the call to ShootTimed().
+
+	pGrenade->pev->dmgtime = gpGlobals->time + time;
+	pGrenade->SetThink(&CGrenade::TumbleThink);
+	pGrenade->pev->nextthink = gpGlobals->time + 2.5;
+	if (time < 0.1)
+	{
+		pGrenade->pev->nextthink = gpGlobals->time;
+		pGrenade->pev->velocity = Vector(0, 0, 0);
+	}
+
+	pGrenade->pev->dmg = gSkillData.plrDmgM203Grenade;
+
+	PLAYBACK_EVENT_FULL(FEV_GLOBAL, pGrenade->edict(), g_sTrail, 0.0,
+		(float*)&g_vecZero, (float*)&g_vecZero, 0.7, 0.0, pGrenade->entindex(), GRENADE_TRAIL, 0, 0);
 
 	return pGrenade;
 }
