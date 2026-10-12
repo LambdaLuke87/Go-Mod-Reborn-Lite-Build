@@ -1,17 +1,17 @@
 /***
-*
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   This source code contains proprietary and confidential information of
-*   Valve LLC and its suppliers.  Access to this code is restricted to
-*   persons who have executed a written SDK license with Valve.  Any access,
-*   use or distribution of this code by or to any unlicensed person is illegal.
-*
-****/
+ *
+ *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+ *
+ *	This product contains software technology licensed from Id
+ *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
+ *	All Rights Reserved.
+ *
+ *   This source code contains proprietary and confidential information of
+ *   Valve LLC and its suppliers.  Access to this code is restricted to
+ *   persons who have executed a written SDK license with Valve.  Any access,
+ *   use or distribution of this code by or to any unlicensed person is illegal.
+ *
+ ****/
 
 /*
 
@@ -31,8 +31,6 @@
 #define ACT_T_TAP 1020
 #define ACT_T_STRIKE 1030
 #define ACT_T_REARIDLE 1040
-
-constexpr int SF_TENTACLE_USE_LOWER_MODEL = 1 << 6;
 
 class CTentacle : public CBaseMonster
 {
@@ -72,7 +70,7 @@ public:
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 
 	MONSTERSTATE GetIdealState() override { return MONSTERSTATE_IDLE; }
-	//TODO: should override base, but has different signature
+	// TODO: should override base, but has different signature
 	bool CanPlaySequence(bool fDisregardState) { return true; }
 
 	int Classify() override;
@@ -259,26 +257,16 @@ void CTentacle::Spawn()
 	pev->health = 75;
 	pev->sequence = 0;
 
-	//Always interpolate tentacles since they don't actually move.
+	// Always interpolate tentacles since they don't actually move.
 	m_EFlags |= EFLAG_SLERP;
 
-	if (pev->spawnflags & SF_TENTACLE_USE_LOWER_MODEL)
-	{
-		SET_MODEL(ENT(pev), "models/tentacle3.mdl");
-	}
-	else
-	{
-		SET_MODEL(ENT(pev), "models/tentacle2.mdl");
-	}
-
+	SET_MODEL(ENT(pev), "models/tentacle2.mdl");
 	UTIL_SetSize(pev, Vector(-32, -32, 0), Vector(32, 32, 64));
 
 	pev->takedamage = DAMAGE_AIM;
 	pev->flags |= FL_MONSTER;
 
 	m_bloodColor = BLOOD_COLOR_GREEN;
-
-	m_RespawnBlackList = true; // spawner tool not allowed
 
 	SetThink(&CTentacle::Start);
 	SetTouch(&CTentacle::HitTouch);
@@ -310,7 +298,6 @@ void CTentacle::Spawn()
 void CTentacle::Precache()
 {
 	PRECACHE_MODEL("models/tentacle2.mdl");
-	PRECACHE_MODEL("models/tentacle3.mdl");
 
 	PRECACHE_SOUND("ambience/flies.wav");
 	PRECACHE_SOUND("ambience/squirm2.wav");
@@ -364,11 +351,11 @@ bool CTentacle::KeyValue(KeyValueData* pkvd)
 
 int CTentacle::Level(float dz)
 {
-	if (dz < 96)
+	if (dz < 216)
 		return 0;
-	if (dz < 150)
+	if (dz < 408)
 		return 1;
-	if (dz < 288)
+	if (dz < 600)
 		return 2;
 	return 3;
 }
@@ -379,11 +366,11 @@ float CTentacle::MyHeight()
 	switch (MyLevel())
 	{
 	case 1:
-		return 136;
+		return 256;
 	case 2:
-		return 190;
+		return 448;
 	case 3:
-		return 328;
+		return 640;
 	}
 	return 0;
 }
@@ -490,8 +477,6 @@ void CTentacle::Cycle()
 
 	DispatchAnimEvents();
 	StudioFrameAdvance();
-
-	UpdateShockEffect();
 
 	ChangeYaw(pev->yaw_speed);
 
@@ -1041,7 +1026,6 @@ bool CTentacle::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 void CTentacle::Killed(entvars_t* pevAttacker, int iGib)
 {
 	m_iGoalAnim = TENTACLE_ANIM_Pit_Idle;
-	ClearShockEffect();
 	return;
 }
 
