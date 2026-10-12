@@ -177,17 +177,51 @@ void CStudioModelRenderer::StudioRenderHands(Vector dir, alight_t lighting)
 
 		if (handmodel)
 		{
+			model_t* pPrevRenderModel = m_pRenderModel;
+			const int prevTopColor = m_nTopColor;
+			const int prevBottomColor = m_nBottomColor;
+
 			m_pStudioHeader = (studiohdr_t*)IEngineStudio.Mod_Extradata(handmodel);
 
 			IEngineStudio.StudioSetHeader(m_pStudioHeader);
+			IEngineStudio.SetRenderModel(handmodel);
 
 			StudioMergeBones(handmodel); // merge both model
 
 			IEngineStudio.StudioSetupLighting(&lighting);
 
+			cl_entity_t* pLocal = gEngfuncs.GetLocalPlayer();
+			if (pLocal && pLocal->index > 0)
+			{
+				player_info_t* pInfo = IEngineStudio.PlayerInfo(pLocal->index - 1);
+				if (pInfo)
+				{
+					int top = pInfo->topcolor;
+					int bottom = pInfo->bottomcolor;
+
+					if (top < 0)
+						top = 0;
+					if (top > 360)
+						top = 360;
+					if (bottom < 0)
+						bottom = 0;
+					if (bottom > 360)
+						bottom = 360;
+
+					m_nTopColor = top;
+					m_nBottomColor = bottom;
+					IEngineStudio.StudioSetRemapColors(top, bottom);
+				}
+			}
+
 			StudioRenderModel();
 
 			StudioCalcAttachments();
+
+			IEngineStudio.SetRenderModel(pPrevRenderModel);
+			m_nTopColor = prevTopColor;
+			m_nBottomColor = prevBottomColor;
+			IEngineStudio.StudioSetRemapColors(prevTopColor, prevBottomColor);
 
 			*m_pCurrentEntity = saveent;
 		}
