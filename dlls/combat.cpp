@@ -2164,16 +2164,6 @@ Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vecto
 					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
 					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Yellow\n");
 				}
-				else if (pMonster->m_bloodColor == BLOOD_COLOR_YELLOW)
-				{
-					pMonster->m_bloodColor = BLOOD_COLOR_BLUE;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Blue\n");
-				}
-				else if (pMonster->m_bloodColor == BLOOD_COLOR_BLUE)
-				{
-					pMonster->m_bloodColor = BLOOD_COLOR_PURPLE;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Purple\n");
-				}
 				else
 				{
 					pMonster->m_bloodColor = BLOOD_COLOR_RED;

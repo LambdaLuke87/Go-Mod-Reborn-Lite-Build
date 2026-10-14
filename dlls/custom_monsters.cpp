@@ -144,16 +144,6 @@ static bool ParseMonsterFile(const std::string& path, CustomMonsterDef& outDef)
 			outDef.bloodColor = BLOOD_COLOR_GREEN;
 			outDef.hasBloodColor = true;
 		}
-		else if (val == "blue")
-		{
-			outDef.bloodColor = BLOOD_COLOR_BLUE;
-			outDef.hasBloodColor = true;
-		}
-		else if (val == "purple")
-		{
-			outDef.bloodColor = BLOOD_COLOR_PURPLE;
-			outDef.hasBloodColor = true;
-		}
 		else
 		{
 			ALERT(at_console, "CustomMonsters: '%s' is an invalid blood_color in %s\n", val.c_str(), path.c_str());
