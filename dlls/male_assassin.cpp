@@ -1165,7 +1165,18 @@ void CMOFAssassin::PainSound()
 //=========================================================
 void CMOFAssassin::DeathSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "HG_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
+	switch (RANDOM_LONG(0, 2))
+	{
+	case 0:
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	case 1:
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	case 2:
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	}
 }
 
 //=========================================================

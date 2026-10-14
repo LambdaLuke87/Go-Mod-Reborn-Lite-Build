@@ -130,27 +130,27 @@ void CDiablo::IdleSound()
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
 	// Play a random idle sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, pitch);
 }
 void CDiablo::AlertSound()
 {
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
 	// Play a random Alert sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, pitch);
 }
 void CDiablo::PainSound()
 {
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
 	// Play a random Pain sound
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, pitch);
 }
 void CDiablo::DeathSound()
 {
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "panthereye/pa_death1.wav", 1.0, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, "panthereye/pa_death1.wav", 1.0, ATTN_NORM, pitch);
 }
 
 void CDiablo::Killed(entvars_t* pevAttacker, int iGib)
@@ -266,16 +266,16 @@ void CDiablo::Precache()
 
 	PRECACHE_SOUND("zombie/claw_miss1.wav");
 	PRECACHE_SOUND("zombie/claw_miss2.wav");
-	PRECACHE_SOUND("panthereye/pa_death1.wav");
-	PRECACHE_SOUND("panthereye/pa_attack1.wav");
+	//PRECACHE_SOUND("panthereye/pa_death1.wav");
+	//PRECACHE_SOUND("panthereye/pa_attack1.wav");
 
 	PRECACHE_SOUND("zombie/claw_strike1.wav");
 	PRECACHE_SOUND("zombie/claw_strike2.wav");
 	PRECACHE_SOUND("zombie/claw_strike3.wav");
 
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
+	//PRECACHE_SOUND_ARRAY(pAlertSounds);
+	//PRECACHE_SOUND_ARRAY(pIdleSounds);
+	//PRECACHE_SOUND_ARRAY(pPainSounds);
 
 
 }
@@ -437,7 +437,7 @@ void CDiablo::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			int pitch = 100 + RANDOM_LONG(-5, 5);
 
-			EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, 0, pitch);
+			GMAudio_Emit(this, CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, pitch);
 			UTIL_MakeVectors(pev->angles);
 			pHurtNormal->pev->velocity = pHurtNormal->pev->velocity + gpGlobals->v_forward * 100 + gpGlobals->v_up * 200;
 			pHurtNormal->TakeDamage(pev, pev, gSkillData.panthereyeDmgClaw, DMG_SLASH);
@@ -457,7 +457,7 @@ void CDiablo::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			int pitch = 100 + RANDOM_LONG(-5, 5);
 
-			EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, 0, pitch);
+			GMAudio_Emit(this, CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, pitch);
 			UTIL_MakeVectors(pev->angles);
 			pHurtBas->pev->velocity = pHurtBas->pev->velocity + gpGlobals->v_forward * 75 + gpGlobals->v_up * 75;
 			pHurtBas->TakeDamage(pev, pev, gSkillData.panthereyeDmgClaw * 0.6, DMG_SLASH);
@@ -477,7 +477,7 @@ void CDiablo::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			int pitch = 100 + RANDOM_LONG(-5, 5);
 
-			EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, 0, pitch);
+			GMAudio_Emit(this, CHAN_VOICE, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, pitch);
 			UTIL_MakeVectors(pev->angles);
 			pHurtLoin->pev->velocity = pHurtLoin->pev->velocity + gpGlobals->v_forward * 100 + gpGlobals->v_up * 200;
 			pHurtLoin->TakeDamage(pev, pev, gSkillData.panthereyeDmgClaw, DMG_SLASH);
@@ -492,7 +492,7 @@ void CDiablo::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case DIABLO_AE_JUMP://jump attack
 		SetTouch(&CDiablo::LeapTouch);
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "panthereye/pa_attack1.wav", 1, ATTN_IDLE, 0, 100);
+		GMAudio_Emit(this, CHAN_WEAPON, "panthereye/pa_attack1.wav", 1.0, ATTN_NORM, PITCH_NORM);
 		Jump();
 		break;
 	}

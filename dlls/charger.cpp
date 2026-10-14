@@ -213,7 +213,7 @@ const char* CFlybee::pDieSounds[] =
 };
 
 #define EMIT_ICKY_SOUND( chan, array ) \
-	EMIT_SOUND_DYN ( ENT(pev), chan , array [ RANDOM_LONG(0,ARRAYSIZE( array )-1) ], 1.0, 0.6, 0, RANDOM_LONG(95,105) ); 
+GMAudio_Emit(this, chan, array[RANDOM_LONG(0, ARRAYSIZE(array) - 1)], 1.0, 0.6, RANDOM_LONG(95, 105));
 
 
 void CFlybee::IdleSound()
@@ -322,12 +322,12 @@ void CFlybee::Precache()
 	PRECACHE_SOUND("debris/beamstart4.wav");
 	PRECACHE_MODEL("sprites/nhth1.spr");
 
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pBiteSounds);
-	PRECACHE_SOUND_ARRAY(pDieSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
+	//PRECACHE_SOUND_ARRAY(pIdleSounds);
+	//PRECACHE_SOUND_ARRAY(pAlertSounds);
+	//PRECACHE_SOUND_ARRAY(pAttackSounds);
+	//PRECACHE_SOUND_ARRAY(pBiteSounds);
+	//PRECACHE_SOUND_ARRAY(pDieSounds);
+	//PRECACHE_SOUND_ARRAY(pPainSounds);
 
 	UTIL_PrecacheOther("flyball");
 

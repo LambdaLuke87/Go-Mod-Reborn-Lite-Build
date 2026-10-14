@@ -524,7 +524,7 @@ void CTor::StartTask(Task_t* pTask)
 {
 	if (pTask->iTask == TASK_MELEE_ATTACK2)
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAttackSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackSounds) - 1)], 1.0, ATTN_NORM, 0, RANDOM_LONG(95, 105));
+		GMAudio_Emit(this, CHAN_VOICE, pAttackSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 	}
 	CSquadMonster::StartTask(pTask);
 }
@@ -539,7 +539,7 @@ void CTor::MonsterThink()
 		{
 			m_nextBeam = gpGlobals->time + 0.05;
 			m_burstShotsFired++;
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "tor/tor-staff-discharge.wav", 1.0, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_VOICE, "tor/tor-staff-discharge.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_GUN_VOLUME, 0.3);
 
 			Vector vecSrc, angles;
@@ -752,26 +752,26 @@ void CTor::Precache()
 
 	PRECACHE_MODEL("models/Tor.mdl");
 
-	for (i = 0; i < ARRAYSIZE(pAttackSounds); i++)
-		PRECACHE_SOUND(pAttackSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
-		PRECACHE_SOUND(pIdleSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
-		PRECACHE_SOUND(pAlertSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
-		PRECACHE_SOUND(pPainSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pDieSounds); i++)
-		PRECACHE_SOUND(pDieSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pAttackSounds); i++)
+	//PRECACHE_SOUND(pAttackSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
+	//PRECACHE_SOUND(pIdleSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
+	//PRECACHE_SOUND(pAlertSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
+	//PRECACHE_SOUND(pPainSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pDieSounds); i++)
+	//PRECACHE_SOUND(pDieSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
 		PRECACHE_SOUND(pAttackHitSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
 		PRECACHE_SOUND(pAttackMissSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pSlamSounds); i++)
-		PRECACHE_SOUND(pSlamSounds[i]);
+	//for (i = 0; i < ARRAYSIZE(pSlamSounds); i++)
+	//PRECACHE_SOUND(pSlamSounds[i]);
 
 	PRECACHE_SOUND("tor/tor-foot.wav");
-	PRECACHE_SOUND("tor/tor-staff-discharge.wav");
-	PRECACHE_SOUND("tor/tor-summon.wav");
+	//PRECACHE_SOUND("tor/tor-staff-discharge.wav");
+	//PRECACHE_SOUND("tor/tor-summon.wav");
 	PRECACHE_SOUND("debris/beamstart8.wav"); // summon portal
 	PRECACHE_SOUND("debris/beamstart7.wav"); // summon spawn
 
@@ -787,22 +787,22 @@ void CTor::Precache()
 void CTor::PainSound()
 {
 	if (RANDOM_LONG(0, 2) == 0)
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 0, RANDOM_LONG(100, 109));
+		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
 }
 
 void CTor::DeathSound()
 {
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CTor::AlertSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, RANDOM_LONG(100, 109));
+	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
 }
 
 void CTor::IdleSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 0, RANDOM_LONG(95, 105));
+	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CTor::SlamAttack()
@@ -836,7 +836,7 @@ void CTor::SlamAttack()
 		}
 	}
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pSlamSounds[RANDOM_LONG(0, ARRAYSIZE(pSlamSounds) - 1)], 1.0, ATTN_NORM, 0, RANDOM_LONG(95, 105));
+	GMAudio_Emit(this, CHAN_WEAPON, pSlamSounds[RANDOM_LONG(0, ARRAYSIZE(pSlamSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 
 	const float radius = (TOR_SLAM_ATTACK_RADIUS + 50) / 0.3f;
 	TorSendBeamCylinder(pev->origin, radius, m_iShockwave, 2, 12, 255, 255, 255, 255);
@@ -892,7 +892,7 @@ void CTor::StartSummon()
 
 	m_nextSummon = gpGlobals->time + RANDOM_FLOAT(5.0f, 10.0f);
 
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "tor/tor-summon.wav", 1.0, ATTN_NORM);
+	GMAudio_Emit(this, CHAN_WEAPON, "tor/tor-summon.wav", 1.0, ATTN_NORM, PITCH_NORM);
 
 	Vector startPos = pev->origin;
 	startPos.z += (pev->maxs.z - pev->mins.z) * 0.75f;

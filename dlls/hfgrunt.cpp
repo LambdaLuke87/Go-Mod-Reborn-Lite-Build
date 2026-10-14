@@ -1184,7 +1184,24 @@ void CHFGrunt::PainSound()
 		}
 #endif
 
-		SENTENCEG_PlayRndSz(ENT(pev), "HG_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
+		switch (RANDOM_LONG(0, 6))
+		{
+		case 0:
+			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain3.wav", 1, ATTN_NORM, PITCH_NORM);
+			break;
+		case 1:
+			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain4.wav", 1, ATTN_NORM, PITCH_NORM);
+			break;
+		case 2:
+			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain5.wav", 1, ATTN_NORM, PITCH_NORM);
+			break;
+		case 3:
+			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain1.wav", 1, ATTN_NORM, PITCH_NORM);
+			break;
+		case 4:
+			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain2.wav", 1, ATTN_NORM, PITCH_NORM);
+			break;
+		}
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1198,13 +1215,13 @@ void CHFGrunt::DeathSound()
 	switch (RANDOM_LONG(0, 2))
 	{
 	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_IDLE);
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_NORM, PITCH_NORM);
 		break;
 	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_IDLE);
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_NORM, PITCH_NORM);
 		break;
 	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_IDLE);
+		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_NORM, PITCH_NORM);
 		break;
 	}
 }

@@ -106,7 +106,11 @@ public:
 
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
+	static const char* pAttackSounds[];
+	static const char* pDieSounds[];
+	static const char* pPainSounds[];
 	static const char* pIdleSounds[];
+	static const char* pAlertSounds[];
 
 	bool m_fCanHornetAttack;
 	float m_flNextHornetAttackCheck;
@@ -148,12 +152,43 @@ const char* CAGrunt::pAttackMissSounds[] =
 		"zombie/claw_miss2.wav",
 };
 
+const char* CAGrunt::pAttackSounds[] =
+	{
+		"agrunt/ag_attack1.wav",
+		"agrunt/ag_attack2.wav",
+		"agrunt/ag_attack3.wav",
+};
+
+const char* CAGrunt::pDieSounds[] =
+	{
+		"agrunt/ag_die1.wav",
+		"agrunt/ag_die4.wav",
+		"agrunt/ag_die5.wav",
+};
+
+const char* CAGrunt::pPainSounds[] =
+	{
+		"agrunt/ag_pain1.wav",
+		"agrunt/ag_pain2.wav",
+		"agrunt/ag_pain3.wav",
+		"agrunt/ag_pain4.wav",
+		"agrunt/ag_pain5.wav",
+};
+
 const char* CAGrunt::pIdleSounds[] =
 	{
 		"agrunt/ag_idle1.wav",
 		"agrunt/ag_idle2.wav",
 		"agrunt/ag_idle3.wav",
 		"agrunt/ag_idle4.wav",
+};
+
+const char* CAGrunt::pAlertSounds[] =
+	{
+		"agrunt/ag_alert1.wav",
+		"agrunt/ag_alert3.wav",
+		"agrunt/ag_alert4.wav",
+		"agrunt/ag_alert5.wav",
 };
 
 //=========================================================
@@ -285,7 +320,7 @@ void CAGrunt::PrescheduleThink()
 			m_iLastWord = num;
 
 			// play a new sound
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, pIdleSounds[num], 1.0, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[num], 1.0, ATTN_NORM, PITCH_NORM);
 
 			// is this word our last?
 			if (RANDOM_LONG(1, 10) <= 1)
@@ -308,7 +343,7 @@ void CAGrunt::DeathSound()
 {
 	StopTalking();
 
-	SENTENCEG_PlayRndSz(ENT(pev), "AG_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pDieSounds), 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -318,7 +353,7 @@ void CAGrunt::AlertSound()
 {
 	StopTalking();
 
-	SENTENCEG_PlayRndSz(ENT(pev), "AG_ALERT", 1, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -328,7 +363,7 @@ void CAGrunt::AttackSound()
 {
 	StopTalking();
 
-	SENTENCEG_PlayRndSz(ENT(pev), "AG_ATTACK", 1, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -345,7 +380,7 @@ void CAGrunt::PainSound()
 
 	StopTalking();
 
-	SENTENCEG_PlayRndSz(ENT(pev), "AG_PAIN", 1, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -607,7 +642,7 @@ void CAGrunt::Precache()
 
 	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
+	//PRECACHE_SOUND_ARRAY(pIdleSounds);
 
 	PRECACHE_SOUND("hassault/hw_shoot1.wav");
 

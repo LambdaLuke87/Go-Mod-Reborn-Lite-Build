@@ -207,9 +207,9 @@ void CKingpinPlasmaBall::Precache()
 
 	PRECACHE_SOUND("debris/beamstart14.wav");
 	PRECACHE_SOUND("kingpin/kingpin_seeker_amb.wav");
-	PRECACHE_SOUND("kingpin/kingpin_seeker1.wav");
-	PRECACHE_SOUND("kingpin/kingpin_seeker2.wav");
-	PRECACHE_SOUND("kingpin/kingpin_seeker3.wav");
+	//PRECACHE_SOUND("kingpin/kingpin_seeker1.wav");
+	//PRECACHE_SOUND("kingpin/kingpin_seeker2.wav");
+	//PRECACHE_SOUND("kingpin/kingpin_seeker3.wav");
 }
 
 void CKingpinPlasmaBall::Activate()

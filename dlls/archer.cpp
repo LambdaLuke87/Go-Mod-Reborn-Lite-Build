@@ -283,7 +283,7 @@ const char* CArcher::pDieSounds[] =
 };
 
 #define EMIT_ARCH_SOUND( chan, array ) \
-	EMIT_SOUND_DYN ( ENT(pev), chan , array [ RANDOM_LONG(0,ARRAYSIZE( array )-1) ], 1.0, 0.6, 0, RANDOM_LONG(95,105) ); 
+	GMAudio_Emit(this, chan, array[RANDOM_LONG(0, ARRAYSIZE(array) - 1)], 1.0, 0.6, RANDOM_LONG(95, 105));
 
 void CArcher::IdleSound()
 {
@@ -677,12 +677,12 @@ void CArcher::Precache()
 	else
 		PRECACHE_MODEL("models/archer.mdl");
 
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pBiteSounds);
-	PRECACHE_SOUND_ARRAY(pDieSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
+	//PRECACHE_SOUND_ARRAY(pIdleSounds);
+	//PRECACHE_SOUND_ARRAY(pAlertSounds);
+	//PRECACHE_SOUND_ARRAY(pAttackSounds);
+	//PRECACHE_SOUND_ARRAY(pBiteSounds);
+	//PRECACHE_SOUND_ARRAY(pDieSounds);
+	//PRECACHE_SOUND_ARRAY(pPainSounds);
 
 	iArcherSpitSprite = PRECACHE_MODEL("sprites/bhit.spr");// client side spittle.
 	PRECACHE_MODEL("sprites/cnt1.spr");// spit projectile.

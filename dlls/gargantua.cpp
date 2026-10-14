@@ -391,7 +391,7 @@ protected:
 	static const char* pFootSounds[];
 	// static const char* pIdleSounds[];
 	static const char* pAlertSounds[];
-	// static const char* pPainSounds[];
+	static const char* pPainSounds[];
 	// static const char* pAttackSounds[];
 	static const char* pStompSounds[];
 	// static const char* pBreatheSounds[];
@@ -493,12 +493,12 @@ const char* CGargantua::pAlertSounds[] =
 		"garg/gar_alert3.wav",
 };
 
-/*const char* CGargantua::pPainSounds[] =
+const char* CGargantua::pPainSounds[] =
 {
 	"garg/gar_pain1.wav",
 	"garg/gar_pain2.wav",
 	"garg/gar_pain3.wav",
-};*/
+};
 
 const char* CGargantua::pStompSounds[] =
 	{
@@ -972,7 +972,7 @@ void CGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	{
 		if (m_painSoundTime < gpGlobals->time)
 		{
-			SENTENCEG_PlayRndSz(ENT(pev), "GA_PAIN", 1, ATTN_GARG, 0, PITCH_NORM);
+			GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1, ATTN_GARG, PITCH_NORM);
 			m_painSoundTime = gpGlobals->time + RANDOM_FLOAT(2.5, 4);
 		}
 	}
@@ -1755,7 +1755,7 @@ void CBabyGargantua::PrecacheSounds()
 	PRECACHE_SOUND_ARRAY(pFootSounds);
 	PRECACHE_SOUND_ARRAY(pIdleSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
+	//PRECACHE_SOUND_ARRAY(pPainSounds);
 	PRECACHE_SOUND_ARRAY(pDeathSounds);
 	PRECACHE_SOUND_ARRAY(pAttackSounds);
 	PRECACHE_SOUND_ARRAY(pStompSounds);
@@ -1884,7 +1884,7 @@ void CBabyGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector 
 
 	if (m_painSoundTime < gpGlobals->time)
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_GARG, 0, PITCH_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, PITCH_NORM);
 		m_painSoundTime = gpGlobals->time + RANDOM_FLOAT(2.5, 4);
 	}
 
