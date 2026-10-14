@@ -633,6 +633,9 @@
     <ClCompile Include="..\..\dlls\weapons\CGlauncher.cpp">
       <Filter>Source Files\dlls\weapons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\gm_audio_server.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -1021,6 +1024,12 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\weapons\CGlauncher.h">
       <Filter>Header Files\dlls\weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\game_shared\gm_audio_shared.h">
+      <Filter>Header Files\game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\gm_audio_server.h">
+      <Filter>Header Files\dlls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

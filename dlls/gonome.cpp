@@ -219,9 +219,9 @@ public:
 	void PainSound() override;
 	void DeathSound() override;
 
-	//static const char* pIdleSounds[];
-	//static const char* pAlertSounds[];
-	//static const char* pPainSounds[];
+	static const char* pIdleSounds[];
+	static const char* pAlertSounds[];
+	static const char* pPainSounds[];
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
 	//static const char* pDeathSounds[];
@@ -268,29 +268,6 @@ LINK_ENTITY_TO_CLASS(monster_gonome, CGonome)
 LINK_ENTITY_TO_CLASS(monster_gonome_melee, CGonome)
 
 
-/*const char* CGonome::pPainSounds[] = {
-	"gonome/gonome_pain1.wav",
-	"gonome/gonome_pain2.wav",
-	"gonome/gonome_pain3.wav",
-	"gonome/gonome_pain4.wav"};
-
-const char* CGonome::pAlertSounds[] =
-	{
-		"zombie/zo_alert10.wav",
-		"zombie/zo_alert20.wav",
-		"zombie/zo_alert30.wav",
-}; 
-
-const char* CGonome::pIdleSounds[] = {
-	"gonome/gonome_idle1.wav",
-	"gonome/gonome_idle2.wav",
-	"gonome/gonome_idle3.wav"};
-
-const char* CGonome::pDeathSounds[] = {
-	"gonome/gonome_death2.wav",
-	"gonome/gonome_death3.wav",
-	"gonome/gonome_death4.wav"};*/
-
 const char* CGonome::pAttackHitSounds[] =
 	{
 		"zombie/claw_strike1.wav",
@@ -302,6 +279,28 @@ const char* CGonome::pAttackMissSounds[] =
 	{
 		"zombie/claw_miss1.wav",
 		"zombie/claw_miss2.wav",
+};
+
+const char* CGonome::pIdleSounds[] =
+	{
+		"gonome/gonome_idle1.wav",
+		"gonome/gonome_idle2.wav",
+		"gonome/gonome_idle3.wav",
+};
+
+const char* CGonome::pAlertSounds[] =
+	{
+		"zombie/zo_alert10.wav",
+		"zombie/zo_alert20.wav",
+		"zombie/zo_alert30.wav",
+};
+
+const char* CGonome::pPainSounds[] =
+	{
+		"gonome/gonome_pain1.wav",
+		"gonome/gonome_pain2.wav",
+		"gonome/gonome_pain3.wav",
+		"gonome/gonome_pain4.wav",
 };
 
 /*
@@ -505,10 +504,9 @@ bool CGonome::CheckMeleeAttack2(float flDot, float flDist)
 
 void CGonome::IdleSound()
 {
-	int pitch = 100 + RANDOM_LONG(-5, 5);
+	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	// Play a random idle sound
-	SENTENCEG_PlayRndSz(ENT(pev), "GO_IDLE", 1, ATTN_NORM, 0, pitch);
+	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
 }
 
 //=========================================================
@@ -519,7 +517,7 @@ void CGonome::PainSound()
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
 	if (RANDOM_LONG(0, 5) < 2)
-		SENTENCEG_PlayRndSz(ENT(pev), "GO_PAIN", 1, ATTN_NORM, 0, pitch);
+		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, pitch);
 }
 
 //=========================================================
@@ -527,9 +525,10 @@ void CGonome::PainSound()
 //=========================================================
 void CGonome::AlertSound()
 {
-	int pitch = 95 + RANDOM_LONG(0, 9);
+	int pitch = 100 + RANDOM_LONG(-5, 5);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ALERT", 1, ATTN_NORM, 0, pitch);
+	// Play a random idle sound
+	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, pitch);
 }
 
 //=========================================================

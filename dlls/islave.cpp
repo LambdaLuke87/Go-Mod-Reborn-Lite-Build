@@ -90,6 +90,8 @@ public:
 
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
+	static const char* pPainSounds[];
+	static const char* pDeathSounds[];
 };
 LINK_ENTITY_TO_CLASS(monster_alien_slave, CISlave);
 LINK_ENTITY_TO_CLASS(monster_alien_slave_melee, CISlave);
@@ -127,6 +129,18 @@ const char* CISlave::pAttackMissSounds[] =
 	{
 		"zombie/claw_miss1.wav",
 		"zombie/claw_miss2.wav",
+};
+
+const char* CISlave::pPainSounds[] =
+	{
+		"aslave/slv_pain1.wav",
+		"aslave/slv_pain2.wav",
+};
+
+const char* CISlave::pDeathSounds[] =
+	{
+		"aslave/slv_die1.wav",
+		"aslave/slv_die2.wav",
 };
 
 //=========================================================
@@ -238,7 +252,10 @@ void CISlave::IdleSound()
 //=========================================================
 void CISlave::PainSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "SLV_PAIN", 1, ATTN_NORM, 0, m_voicePitch);
+	if (RANDOM_LONG(0, 2) == 0)
+	{
+		GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, m_voicePitch);
+	}
 }
 
 //=========================================================
@@ -247,7 +264,7 @@ void CISlave::PainSound()
 
 void CISlave::DeathSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "SLV_DEATH", 1, ATTN_NORM, 0, m_voicePitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), 1.0, ATTN_NORM, m_voicePitch);
 }
 
 

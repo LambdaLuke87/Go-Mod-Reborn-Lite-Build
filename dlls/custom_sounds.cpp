@@ -158,8 +158,8 @@ void CustomSounds_Precache()
 
 			def.pack = pack;
 
-			for (const std::string& s : def.sounds)
-				PRECACHE_SOUND((char*)s.c_str());
+			//for (const std::string& s : def.sounds)
+			//	PRECACHE_SOUND((char*)s.c_str());
 
 			g_CustomSounds.push_back(std::move(def));
 		}

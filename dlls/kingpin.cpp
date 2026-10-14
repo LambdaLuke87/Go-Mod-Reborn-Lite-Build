@@ -1139,14 +1139,14 @@ void CKingpin::Precache()
 	PRECACHE_SOUND("kingpin/kingpin_moveslow.wav");
 	PRECACHE_SOUND("kingpin/kingpin_move.wav");
 
-	for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
+	/* for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
 		PRECACHE_SOUND(pIdleSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
 		PRECACHE_SOUND(pAlertSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
 		PRECACHE_SOUND(pPainSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pDieSounds); i++)
-		PRECACHE_SOUND(pDieSounds[i]);
+		PRECACHE_SOUND(pDieSounds[i]);*/
 	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
 		PRECACHE_SOUND(pAttackHitSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
@@ -1689,23 +1689,23 @@ void CKingpin::UpdatePowerShield()
 
 void CKingpin::IdleSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::AlertSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::PainSound()
 {
 	if (RANDOM_LONG(0, 2) == 0)
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::DeathSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+	GMAudio_Emit(this, CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::UpdateGlows(int target, int speed)

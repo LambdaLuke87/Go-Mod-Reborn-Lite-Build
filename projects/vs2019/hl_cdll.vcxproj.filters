@@ -435,6 +435,12 @@
     <ClCompile Include="..\..\dlls\weapons\CGlauncher.cpp">
       <Filter>Source Files\_hl\dlls\weapons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\gm_audio.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\gm_audio_core.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -787,6 +793,15 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\weapons\CGlauncher.h">
       <Filter>Header Files\_hl\dlls\weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\gm_audio.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\gm_audio_core.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\game_shared\gm_audio_shared.h">
+      <Filter>Header Files\game_shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

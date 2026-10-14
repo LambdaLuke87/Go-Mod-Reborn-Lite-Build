@@ -52,10 +52,10 @@ public:
 	virtual void IdleSound() override;
 	virtual void AttackSound() override;
 
-	//static const char* pAttackSounds[];
-	//static const char* pIdleSounds[];
-	//static const char* pAlertSounds[];
-	//static const char* pPainSounds[];
+	static const char* pAttackSounds[];
+	static const char* pIdleSounds[];
+	static const char* pAlertSounds[];
+	static const char* pPainSounds[];
 	static const char* pAttackHitSounds[];
 	static const char* pAttackMissSounds[];
 
@@ -88,7 +88,7 @@ const char* CZombie::pAttackMissSounds[] =
 		"zombie/claw_miss2.wav",
 };
 
-/* const char* CZombie::pAttackSounds[] =
+const char* CZombie::pAttackSounds[] =
 	{
 		"zombie/zo_attack1.wav",
 		"zombie/zo_attack2.wav",
@@ -113,7 +113,7 @@ const char* CZombie::pPainSounds[] =
 	{
 		"zombie/zo_pain1.wav",
 		"zombie/zo_pain2.wav",
-};*/
+};
 
 //=========================================================
 // Classify - indicates this monster's place in the
@@ -168,28 +168,28 @@ void CZombie::PainSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "ZO_PAIN", 1, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1, ATTN_NORM, pitch);
 }
 
 void CZombie::AlertSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ALERT", 1, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), 1, ATTN_NORM, pitch);
 }
 
 void CZombie::IdleSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "ZO_IDLE", 1, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), 1, ATTN_NORM, pitch);
 }
 
 void CZombie::AttackSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "ZO_ATTACK", 1, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1, ATTN_NORM, pitch);
 }
 
 

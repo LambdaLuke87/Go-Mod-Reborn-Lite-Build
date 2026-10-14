@@ -16,6 +16,7 @@
 #pragma once
 
 #include "skill.h"
+#include "gm_audio_server.h"
 
 /*
 

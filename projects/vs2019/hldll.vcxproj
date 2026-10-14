@@ -181,6 +181,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\geneworm.cpp" />
     <ClCompile Include="..\..\dlls\ggrenade.cpp" />
     <ClCompile Include="..\..\dlls\gman.cpp" />
+    <ClCompile Include="..\..\dlls\gm_audio_server.cpp" />
     <ClCompile Include="..\..\dlls\gonome.cpp" />
     <ClCompile Include="..\..\dlls\handgrenade.cpp" />
     <ClCompile Include="..\..\dlls\hassassin.cpp" />
@@ -372,6 +373,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\dlls\func_break.h" />
     <ClInclude Include="..\..\dlls\game.h" />
     <ClInclude Include="..\..\dlls\gamerules.h" />
+    <ClInclude Include="..\..\dlls\gm_audio_server.h" />
     <ClInclude Include="..\..\dlls\hgrunt.h" />
     <ClInclude Include="..\..\dlls\hornet.h" />
     <ClInclude Include="..\..\dlls\items.h" />
@@ -426,6 +428,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\engine\shake.h" />
     <ClInclude Include="..\..\engine\studio.h" />
     <ClInclude Include="..\..\game_shared\filesystem_utils.h" />
+    <ClInclude Include="..\..\game_shared\gm_audio_shared.h" />
     <ClInclude Include="..\..\pm_shared\pm_debug.h" />
     <ClInclude Include="..\..\pm_shared\pm_defs.h" />
     <ClInclude Include="..\..\pm_shared\pm_info.h" />

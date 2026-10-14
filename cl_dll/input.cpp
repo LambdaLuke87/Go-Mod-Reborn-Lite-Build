@@ -24,6 +24,8 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "gm_audio.h"
+
 
 extern bool g_iAlive;
 
@@ -1053,6 +1055,7 @@ void DLLEXPORT HUD_Shutdown()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 
+	GMAudio_Shutdown();
 
 	FileSystem_FreeFileSystem();
 	CL_UnloadParticleMan();

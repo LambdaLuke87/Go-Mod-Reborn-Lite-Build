@@ -117,6 +117,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/geneworm.o \
 	$(HLDLL_OBJ_DIR)/ggrenade.o \
 	$(HLDLL_OBJ_DIR)/glock.o \
+	$(HLDLL_OBJ_DIR)/gm_audio_server.o \
 	$(HLDLL_OBJ_DIR)/gman.o \
 	$(HLDLL_OBJ_DIR)/gonome.o \
 	$(HLDLL_OBJ_DIR)/h_ai.o \

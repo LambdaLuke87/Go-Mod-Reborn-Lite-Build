@@ -22,6 +22,7 @@
 #include "defaultai.h"
 #include "soundent.h"
 #include "custom_sounds.h"
+#include "gm_audio_server.h"
 
 static bool PlayCustomSound(CBaseMonster* pThis, const char* type)
 {
@@ -33,7 +34,7 @@ static bool PlayCustomSound(CBaseMonster* pThis, const char* type)
 		return false;
 
 	int idx = RANDOM_LONG(0, (int)pGroup->sounds.size() - 1);
-	EMIT_SOUND_DYN(ENT(pThis->pev), CHAN_VOICE, pGroup->sounds[idx].c_str(), pGroup->volume, ATTN_NORM, 0, pGroup->pitch);
+	GMAudio_Emit(pThis, CHAN_VOICE, pGroup->sounds[idx].c_str(), pGroup->volume, ATTN_NORM, pGroup->pitch);
 	return true;
 }
 

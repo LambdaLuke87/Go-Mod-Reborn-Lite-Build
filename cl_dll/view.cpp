@@ -20,6 +20,8 @@
 #include "hltv.h"
 #include "Exports.h"
 
+#include "gm_audio.h"
+
 int CL_IsThirdPerson();
 void CL_CameraOffset(float* ofs);
 
@@ -1759,6 +1761,7 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 	}
 #endif
 */
+	GMAudio_SetListener(pparams->vieworg, pparams->viewangles);
 }
 
 /*

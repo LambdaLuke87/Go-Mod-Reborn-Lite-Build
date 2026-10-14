@@ -18,6 +18,7 @@
 #include "cbase.h"
 #include "shake.h"
 #include "UserMessages.h"
+#include "gm_audio_server.h"
 
 void LinkUserMessages()
 {
@@ -88,4 +89,6 @@ void LinkUserMessages()
 	gmsgTeamFull = g_engfuncs.pfnRegUserMsg("TeamFull", 1);
 	gmsgOldWeapon = g_engfuncs.pfnRegUserMsg("OldWeapon", 1);
 	gmsgCustomIcon = g_engfuncs.pfnRegUserMsg("CustomIcon", -1);
+
+	GMAudio_RegisterMessages();
 }

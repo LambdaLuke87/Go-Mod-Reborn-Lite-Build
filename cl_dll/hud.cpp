@@ -35,6 +35,8 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "gm_audio.h"
+
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
@@ -571,6 +573,8 @@ void CHud::Init()
 		m_pHudList = NULL;
 	}
 
+	GMAudio_Init();
+
 	// In case we get messages before the first update -- time will be valid
 	m_flTime = 1.0;
 
@@ -727,6 +731,8 @@ void CHud::VidInit()
 	m_HUD_number_0 = GetSpriteIndex("number_0");
 
 	m_iFontHeight = m_rgrcRects[m_HUD_number_0].bottom - m_rgrcRects[m_HUD_number_0].top;
+
+	GMAudio_StopAll();
 
 	m_Ammo.VidInit();
 	m_Health.VidInit();
