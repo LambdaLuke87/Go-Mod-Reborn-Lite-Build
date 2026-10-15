@@ -794,7 +794,7 @@ void EV_GLFire(event_args_t* args)
 
 	if (EV_IsLocal(idx))
 	{
-		gEngfuncs.pEventAPI->EV_WeaponAnimation(GL_FIRE1, 2);
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(GL_FIRE1, 0);
 		V_PunchAxis(0, -10);
 	}
 
