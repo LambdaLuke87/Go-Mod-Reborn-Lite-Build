@@ -485,15 +485,19 @@ void CFlybee::HandleAnimEvent(MonsterEvent_t* pEvent)
 	}
 	case FLYBEE_AE_ATTACK1:
 	{
+		if (m_hEnemy == NULL || m_hEnemy->IsDormant())
+			break;
+
 		UTIL_MakeVectors(pev->angles);
 
 		Vector vecSrc = pev->origin + gpGlobals->v_up * 24 + gpGlobals->v_forward * 32;
+		Vector vecRight = gpGlobals->v_right;
 		Vector ang = UTIL_VecToAngles((m_hEnemy->Center() - vecSrc).Normalize());
 
-		CFlyBall::CreateFlyBall(vecSrc + gpGlobals->v_right * 30, ang, pev);
-		CFlyBall::CreateFlyBall(vecSrc + gpGlobals->v_right * 10, ang, pev);
-		CFlyBall::CreateFlyBall(vecSrc - gpGlobals->v_right * 30, ang, pev);
-		CFlyBall::CreateFlyBall(vecSrc - gpGlobals->v_right * 10, ang, pev);
+		CFlyBall::CreateFlyBall(vecSrc + vecRight * 30, ang, pev);
+		CFlyBall::CreateFlyBall(vecSrc + vecRight * 10, ang, pev);
+		CFlyBall::CreateFlyBall(vecSrc - vecRight * 30, ang, pev);
+		CFlyBall::CreateFlyBall(vecSrc - vecRight * 10, ang, pev);
 
 		break;
 	}
@@ -852,6 +856,9 @@ void CFlybee::StartTask(Task_t* pTask)
 		break;
 
 	case TASK_FLYBEE_RANGE_ATTACK2:
+		if (m_hEnemy == NULL || m_hEnemy->IsDormant())
+			break;
+
 		m_vecAttack2 = m_hEnemy->Center();
 		m_IdealActivity = ACT_RANGE_ATTACK2;
 		break;
@@ -907,27 +914,6 @@ void CFlybee::RunTask(Task_t* pTask)
 				vecPos = tr.vecEndPos;
 
 			m_SaveVelocity = m_SaveVelocity * 0.8 + 0.2 * (vecPos - pev->origin).Normalize() * m_flightSpeed;
-
-
-
-			// console
-
-/*			ALERT ( at_console, "%s %c%c%c%c%c%c%c%c%c%c0%c%c%c%c%c%c%c%c%c%c - %i\n",
-
-			HasConditions( bits_COND_ENEMY_FACING_ME ) && m_hEnemy->FVisible( this ) ? "FACING " : "facing ",
-			m_iFear <= -10 ? '|' : '-',	m_iFear <= -9 ? '|' : '-',	m_iFear <= -8 ? '|' : '-',
-			m_iFear <= -7 ? '|' : '-',	m_iFear <= -6 ? '|' : '-',	m_iFear <= -5 ? '|' : '-',
-			m_iFear <= -4 ? '|' : '-',	m_iFear <= -3 ? '|' : '-',	m_iFear <= -2 ? '|' : '-',
-			m_iFear <= -1 ? '|' : '-',	m_iFear >= 1 ? '|' : '-',	m_iFear >= 2 ? '|' : '-',
-			m_iFear >= 3 ? '|' : '-',	m_iFear >= 4 ? '|' : '-',	m_iFear >= 5 ? '|' : '-',
-			m_iFear >= 6 ? '|' : '-',	m_iFear >= 7 ? '|' : '-',	m_iFear >= 8 ? '|' : '-',
-			m_iFear >= 9 ? '|' : '-',	m_iFear >= 10 ? '|' : '-',
-			m_iFear);
-*/
-
-
-// conséquences de la position
-
 
 			if (m_hEnemy->MyMonsterPointer()->FInViewCone(this) && m_hEnemy->FVisible(this))
 			{
@@ -996,6 +982,9 @@ void CFlybee::RunTask(Task_t* pTask)
 
 	case TASK_FLYBEE_RUN_ATTACK:
 	{
+		if (m_hEnemy == NULL || m_hEnemy->IsDormant())
+			break;
+
 		if (m_fSequenceFinished && m_IdealActivity == ACT_CROUCH)
 		{
 			m_IdealActivity = ACT_RUN;
