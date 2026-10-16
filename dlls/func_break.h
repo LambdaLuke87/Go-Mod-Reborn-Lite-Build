@@ -53,6 +53,16 @@ public:
 	// To spark when hit
 	void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType) override;
 
+	// LRC: health ratio for calc_ratio
+	bool CalcRatio(CBaseEntity* pLocus, float* outResult) override
+	{
+		if (pev->health > 0 && pev->max_health > 0)
+			*outResult = pev->health / pev->max_health;
+		else
+			*outResult = 0;
+		return true;
+	}
+
 	bool IsBreakable();
 	bool SparkWhenHit();
 

@@ -207,6 +207,17 @@ public:
 	void SetState(MONSTERSTATE State);
 	virtual void ReportAIState();
 
+	// LRC: health ratio for calc_ratio (needs pev->max_health, which not every monster sets in its Spawn)
+	bool CalcRatio(CBaseEntity* pLocus, float* outResult) override
+	{
+		if (pev->deadflag == DEAD_NO && pev->health > 0 && pev->max_health > 0)
+			*outResult = pev->health / pev->max_health;
+		else
+			*outResult = 0;
+		return true;
+	}
+
+
 	void CheckAttacks(CBaseEntity* pTarget, float flDist);
 	virtual bool CheckEnemy(CBaseEntity* pEnemy);
 	void PushEnemy(CBaseEntity* pEnemy, Vector& vecLastKnownPos);

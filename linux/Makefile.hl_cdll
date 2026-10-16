@@ -48,6 +48,7 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/ammohistory.o \
 	$(HL1_OBJ_DIR)/battery.o \
 	$(HL1_OBJ_DIR)/cdll_int.o \
+	$(HL1_OBJ_DIR)/cl_lrc_fx.o \
 	$(HL1_OBJ_DIR)/com_weapons.o \
 	$(HL1_OBJ_DIR)/death.o \
 	$(HL1_OBJ_DIR)/demo.o \

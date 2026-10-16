@@ -64,7 +64,7 @@ const float GARG_ATTACKDIST = 80.0f;
 
 void SpawnExplosion(Vector center, float randomRange, float time, int magnitude);
 
-class CSmoker;
+// env_smoker (CSmoker) now lives in effects_lrc.cpp
 
 // Spiral Effect
 class CSpiral : public CBaseEntity
@@ -1499,50 +1499,7 @@ Vector CGargantua::StompAttackStartVec()
 	return pev->origin + Vector(0, 0, 60) + 35 * gpGlobals->v_forward;
 }
 
-#define SF_SMOKER_ACTIVE 1
-#define SF_SMOKER_REPEATABLE 4
-#define SF_SMOKER_DIRECTIONAL 8
-#define SF_SMOKER_MAXHEALTH_SET (1 << 24)
-
-class CSmoker : public CBaseEntity
-{
-public:
-	void Spawn() override;
-	void Think() override;
-};
-
-LINK_ENTITY_TO_CLASS(env_smoker, CSmoker);
-
-void CSmoker::Spawn()
-{
-	pev->movetype = MOVETYPE_NONE;
-	pev->nextthink = gpGlobals->time;
-	pev->solid = SOLID_NOT;
-	UTIL_SetSize(pev, g_vecZero, g_vecZero);
-	pev->effects |= EF_NODRAW;
-	pev->angles = g_vecZero;
-}
-
-
-void CSmoker::Think()
-{
-	// lots of smoke
-	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
-	WRITE_BYTE(TE_SMOKE);
-	WRITE_COORD(pev->origin.x + RANDOM_FLOAT(-pev->dmg, pev->dmg));
-	WRITE_COORD(pev->origin.y + RANDOM_FLOAT(-pev->dmg, pev->dmg));
-	WRITE_COORD(pev->origin.z);
-	WRITE_SHORT(g_sModelIndexSmoke);
-	WRITE_BYTE(RANDOM_LONG(pev->scale, pev->scale * 1.1));
-	WRITE_BYTE(RANDOM_LONG(8, 14)); // framerate
-	MESSAGE_END();
-
-	pev->health--;
-	if (pev->health > 0)
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1, 0.2);
-	else
-		UTIL_Remove(this);
-}
+// env_smoker (CSmoker) now lives in effects_lrc.cpp
 
 void CSpiral::Spawn()
 {

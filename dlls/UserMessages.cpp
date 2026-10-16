@@ -20,6 +20,9 @@
 #include "UserMessages.h"
 #include "gm_audio_server.h"
 
+// Defined in effects_lrc.cpp
+void LinkLrcEffectMessages();
+
 void LinkUserMessages()
 {
 	// Already taken care of?
@@ -89,6 +92,9 @@ void LinkUserMessages()
 	gmsgTeamFull = g_engfuncs.pfnRegUserMsg("TeamFull", 1);
 	gmsgOldWeapon = g_engfuncs.pfnRegUserMsg("OldWeapon", 1);
 	gmsgCustomIcon = g_engfuncs.pfnRegUserMsg("CustomIcon", -1);
+
+	// LRC effects (env_streak, env_smoker, particle_shooter), see effects_lrc.cpp
+	LinkLrcEffectMessages();
 
 	GMAudio_RegisterMessages();
 }

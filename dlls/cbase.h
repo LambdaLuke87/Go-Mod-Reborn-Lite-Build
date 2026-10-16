@@ -229,6 +229,12 @@ public:
 	virtual CSquadMonster* MySquadMonsterPointer() { return NULL; }
 	virtual COFSquadTalkMonster* MySquadTalkMonsterPointer() { return nullptr; }
 	virtual int GetToggleState() { return TS_AT_TOP; }
+
+	// LRC / Spirit of Half-Life locus system: entities that can compute a position, a velocity or a ratio (see locus.cpp)
+	virtual bool CalcPosition(CBaseEntity* pLocus, Vector* outResult) { *outResult = pev->origin; return true; }
+	virtual bool CalcVelocity(CBaseEntity* pLocus, Vector* outResult) { *outResult = pev->velocity; return true; }
+	virtual bool CalcRatio(CBaseEntity* pLocus, float* outResult) { *outResult = 0; return true; }
+
 	virtual void AddPoints(int score, bool bAllowNegativeScore) {}
 	virtual void AddPointsToTeam(int score, bool bAllowNegativeScore) {}
 	virtual bool AddPlayerItem(CBasePlayerItem* pItem) { return 0; }

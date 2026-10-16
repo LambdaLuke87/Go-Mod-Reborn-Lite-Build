@@ -448,9 +448,14 @@ void __CmdFunc_ShowMenu()
 	ImGuiMenu_SetOpen(!g_bShowMenu);
 }
 
+// Defined in cl_lrc_fx.cpp
+void HookLrcEffectMessages();
+
 // This is called every time the DLL is loaded
 void CHud::Init()
 {
+	HookLrcEffectMessages();
+
 	HOOK_MESSAGE(Logo);
 	HOOK_MESSAGE(ResetHUD);
 	HOOK_MESSAGE(GameMode);

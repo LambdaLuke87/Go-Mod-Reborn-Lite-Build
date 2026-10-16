@@ -166,6 +166,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\defaultai.cpp" />
     <ClCompile Include="..\..\dlls\doors.cpp" />
     <ClCompile Include="..\..\dlls\effects.cpp" />
+    <ClCompile Include="..\..\dlls\effects_lrc.cpp" />
     <ClCompile Include="..\..\dlls\egon.cpp" />
     <ClCompile Include="..\..\dlls\ehandle.cpp" />
     <ClCompile Include="..\..\dlls\explode.cpp" />
@@ -208,6 +209,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\leech.cpp" />
     <ClCompile Include="..\..\dlls\lights.cpp" />
     <ClCompile Include="..\..\dlls\loader.cpp" />
+    <ClCompile Include="..\..\dlls\locus.cpp" />
     <ClCompile Include="..\..\dlls\male_assassin.cpp" />
     <ClCompile Include="..\..\dlls\maprules.cpp" />
     <ClCompile Include="..\..\dlls\monstermaker.cpp" />
@@ -377,6 +379,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\dlls\hgrunt.h" />
     <ClInclude Include="..\..\dlls\hornet.h" />
     <ClInclude Include="..\..\dlls\items.h" />
+    <ClInclude Include="..\..\dlls\locus.h" />
     <ClInclude Include="..\..\dlls\monsterevent.h" />
     <ClInclude Include="..\..\dlls\monsters.h" />
     <ClInclude Include="..\..\dlls\nodes.h" />
@@ -429,6 +432,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\engine\studio.h" />
     <ClInclude Include="..\..\game_shared\filesystem_utils.h" />
     <ClInclude Include="..\..\game_shared\gm_audio_shared.h" />
+    <ClInclude Include="..\..\game_shared\lrc_fx_flags.h" />
     <ClInclude Include="..\..\pm_shared\pm_debug.h" />
     <ClInclude Include="..\..\pm_shared\pm_defs.h" />
     <ClInclude Include="..\..\pm_shared\pm_info.h" />
