@@ -57,6 +57,7 @@ typedef struct cvar_s cvar_t;
 
 extern int giR, giG, giB;
 extern int giRCritical, giGCritical, giBCritical;
+extern int giNVR, giNVG, giNVB;
 
 extern cvar_t* m_pCvarHudRed;
 extern cvar_t* m_pCvarHudGreen;
@@ -64,6 +65,9 @@ extern cvar_t* m_pCvarHudBlue;
 extern cvar_t* m_pCvarHudRed_Critical;
 extern cvar_t* m_pCvarHudGreen_Critical;
 extern cvar_t* m_pCvarHudBlue_Critical;
+extern cvar_t* m_pCvarNightVisionR;
+extern cvar_t* m_pCvarNightVisionG;
+extern cvar_t* m_pCvarNightVisionB;
 
 #define HUD_ACTIVE 1
 #define HUD_INTERMISSION 2
@@ -680,7 +684,7 @@ public:
 	int DrawHudNumberString(int xpos, int ypos, int iMinX, int iNumber, int r, int g, int b);
 	int GetNumWidth(int iNumber, int iFlags);
 
-	void HUDColorCmd(bool bCritical = false);
+	void HUDColorCmd(int colorType);
 
 	int GetHudNumberWidth(int number, int width, int flags);
 	int DrawHudNumberReverse(int x, int y, int number, int flags, int r, int g, int b);

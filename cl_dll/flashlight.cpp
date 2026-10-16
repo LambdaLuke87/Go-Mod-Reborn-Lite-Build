@@ -164,7 +164,7 @@ bool CHudFlashlight::Draw(float flTime)
 		else if (g_iNightVision == 2)
 			gEngfuncs.pfnFillRGBABlend(0, 0, ScreenWidth, ScreenHeight, 50, 225, 50, 110);
 		else if (g_iNightVision == 3)
-			gEngfuncs.pfnFillRGBABlend(0, 0, ScreenWidth, ScreenHeight, 255, 50, 50, 110); // I SEE RED, I HAVE TO CLEAR
+			gEngfuncs.pfnFillRGBABlend(0, 0, ScreenWidth, ScreenHeight, giNVR, giNVG, giNVB, 110); // I SEE RED, I HAVE TO CLEAR
 	}
 
 	// draw the flashlight energy level

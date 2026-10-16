@@ -42,12 +42,16 @@ extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player
 
 int giR, giG, giB;
 int giRCritical, giGCritical, giBCritical;
+int giNVR, giNVG, giNVB;
 cvar_t* m_pCvarHudRed;
 cvar_t* m_pCvarHudGreen;
 cvar_t* m_pCvarHudBlue;
 cvar_t* m_pCvarHudRed_Critical;
 cvar_t* m_pCvarHudGreen_Critical;
 cvar_t* m_pCvarHudBlue_Critical;
+cvar_t* m_pCvarNightVisionR;
+cvar_t* m_pCvarNightVisionG;
+cvar_t* m_pCvarNightVisionB;
 
 extern int giOldWeapons;
 
@@ -421,12 +425,17 @@ int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
 
 void __CmdFunc_HUDColor()
 {
-	gHUD.HUDColorCmd(false);
+	gHUD.HUDColorCmd(0);
 }
 
 void __CmdFunc_HUDColor_Critical()
 {
-	gHUD.HUDColorCmd(true);
+	gHUD.HUDColorCmd(1);
+}
+
+void __CmdFunc_Custom_NightVision_Color()
+{
+	gHUD.HUDColorCmd(2);
 }
 
 void __CmdFunc_ShowMenu()
@@ -482,6 +491,7 @@ void CHud::Init()
 	HOOK_COMMAND("toggleMapInfoMenu", OpenMapInfoMenu);
 	HOOK_COMMAND("hud_color", HUDColor);
 	HOOK_COMMAND("hud_color_critical", HUDColor_Critical);
+	HOOK_COMMAND("nightvision_color", Custom_NightVision_Color);
 
 	HOOK_MESSAGE(ValClass);
 	HOOK_MESSAGE(TeamNames);
@@ -524,14 +534,19 @@ void CHud::Init()
 
 	int hudR, hudG, hudB;
 	int hudR_Critical, hudG_Critical, hudB_Critical;
+	int CustomNVR, CustomNVG, CustomNVB;
 	UnpackRGB(hudR, hudG, hudB, RGB_YELLOWISH);
 	UnpackRGB(hudR_Critical, hudG_Critical, hudB_Critical, RGB_REDISH);
+	UnpackRGB(CustomNVR, CustomNVG, CustomNVB, RGB_REDISH);
 	m_pCvarHudRed = CVAR_CREATE_INTVALUE("hud_color_r", hudR, FCVAR_ARCHIVE);
 	m_pCvarHudGreen = CVAR_CREATE_INTVALUE("hud_color_g", hudG, FCVAR_ARCHIVE);
 	m_pCvarHudBlue = CVAR_CREATE_INTVALUE("hud_color_b", hudB, FCVAR_ARCHIVE);
 	m_pCvarHudRed_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_r", hudR_Critical, FCVAR_ARCHIVE);
 	m_pCvarHudGreen_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_g", hudG_Critical, FCVAR_ARCHIVE);
 	m_pCvarHudBlue_Critical = CVAR_CREATE_INTVALUE("hud_color_critical_b", hudB_Critical, FCVAR_ARCHIVE);
+	m_pCvarNightVisionR = CVAR_CREATE_INTVALUE("nightvision_color_r", CustomNVR, FCVAR_ARCHIVE);
+	m_pCvarNightVisionG = CVAR_CREATE_INTVALUE("nightvision_color_g", CustomNVG, FCVAR_ARCHIVE);
+	m_pCvarNightVisionB = CVAR_CREATE_INTVALUE("nightvision_color_b", CustomNVB, FCVAR_ARCHIVE);
 
 	m_iLogo = 0;
 	m_iFOV = 0;
@@ -955,17 +970,60 @@ HudSpriteRenderer& CHud::Renderer()
 	return gHUD.hudRenderer.DefaultScale();
 }
 
-void CHud::HUDColorCmd(bool bCritical)
+void CHud::HUDColorCmd(int colorType)
 {
-	const char* cvarR = bCritical ? "hud_color_critical_r" : "hud_color_r";
-	const char* cvarG = bCritical ? "hud_color_critical_g" : "hud_color_g";
-	const char* cvarB = bCritical ? "hud_color_critical_b" : "hud_color_b";
-	const char* cmdName = bCritical ? "hud_color_critical" : "hud_color";
-	const long defaultColor = bCritical ? RGB_REDISH : RGB_YELLOWISH;
+	const char* cvarR;
+	const char* cvarG;
+	const char* cvarB;
+	const char* cmdName;
+	long defaultColor;
 
-	cvar_t* pCvarRed = bCritical ? m_pCvarHudRed_Critical : m_pCvarHudRed;
-	cvar_t* pCvarGreen = bCritical ? m_pCvarHudGreen_Critical : m_pCvarHudGreen;
-	cvar_t* pCvarBlue = bCritical ? m_pCvarHudBlue_Critical : m_pCvarHudBlue;
+	cvar_t* pCvarRed;
+	cvar_t* pCvarGreen;
+	cvar_t* pCvarBlue;
+
+	switch (colorType)
+	{
+	case 0: // Normal HUD
+		cvarR = "hud_color_r";
+		cvarG = "hud_color_g";
+		cvarB = "hud_color_b";
+		cmdName = "hud_color";
+		defaultColor = RGB_YELLOWISH;
+
+		pCvarRed = m_pCvarHudRed;
+		pCvarGreen = m_pCvarHudGreen;
+		pCvarBlue = m_pCvarHudBlue;
+		break;
+
+	case 1: // Critical HUD
+		cvarR = "hud_color_critical_r";
+		cvarG = "hud_color_critical_g";
+		cvarB = "hud_color_critical_b";
+		cmdName = "hud_color_critical";
+		defaultColor = RGB_REDISH;
+
+		pCvarRed = m_pCvarHudRed_Critical;
+		pCvarGreen = m_pCvarHudGreen_Critical;
+		pCvarBlue = m_pCvarHudBlue_Critical;
+		break;
+
+	case 2: // Nightvision HUD
+		cvarR = "nightvision_color_r";
+		cvarG = "nightvision_color_g";
+		cvarB = "nightvision_color_b";
+		cmdName = "nightvision_color";
+		defaultColor = RGB_REDISH;
+
+		pCvarRed = m_pCvarNightVisionR;
+		pCvarGreen = m_pCvarNightVisionG;
+		pCvarBlue = m_pCvarNightVisionB;
+		break;
+
+	default:
+		gEngfuncs.Con_Printf("Invalid HUD color type: %d\n", colorType);
+		return;
+	}
 
 	int r, g, b;
 	bool shouldPrintHelp = false;
@@ -979,6 +1037,7 @@ void CHud::HUDColorCmd(bool bCritical)
 	else if (gEngfuncs.Cmd_Argc() == 2)
 	{
 		const char* param = gEngfuncs.Cmd_Argv(1);
+
 		if (param && *param)
 		{
 			if (strcmp(param, "default") == 0)
@@ -990,6 +1049,7 @@ void CHud::HUDColorCmd(bool bCritical)
 				const bool sharp = *param == '#';
 				const int expectedLength = sharp ? 7 : 8;
 				const int shift = sharp ? 1 : 2;
+
 				if (strlen(param) != expectedLength)
 				{
 					gEngfuncs.Con_Printf("6 hex digits expected after 0x or #\n");
@@ -999,11 +1059,15 @@ void CHud::HUDColorCmd(bool bCritical)
 				{
 					char* endPtr;
 					long color = strtol(param + shift, &endPtr, 16);
-					UnpackRGB(r, g, b, color);
+
 					if (*endPtr != '\0')
 					{
 						gEngfuncs.Con_Printf("Error parsing hex value\n");
 						shouldPrintHelp = true;
+					}
+					else
+					{
+						UnpackRGB(r, g, b, color);
 					}
 				}
 			}
@@ -1032,13 +1096,15 @@ void CHud::HUDColorCmd(bool bCritical)
 		const int hudG = pCvarGreen->value;
 		const int hudB = pCvarBlue->value;
 		const int currentHudColor = ((hudR & 0xFF) << 16) | ((hudG & 0xFF) << 8) | (hudB & 0xFF);
-		gEngfuncs.Con_Printf("Current HUD color: %d %d %d (%06X)\n"
-							 "usage:\n"
-							 "%s RRR GGG BBB\n"
-							 "%s \"RRR GGG BBB\"\n"
-							 "%s 0xRRGGBB\n"
-							 "%s #RRGGBB\n"
-							 "%s default\n",
+
+		gEngfuncs.Con_Printf(
+			"Current HUD color: %d %d %d (%06X)\n"
+			"usage:\n"
+			"%s RRR GGG BBB\n"
+			"%s \"RRR GGG BBB\"\n"
+			"%s 0xRRGGBB\n"
+			"%s #RRGGBB\n"
+			"%s default\n",
 			hudR, hudG, hudB, currentHudColor,
 			cmdName, cmdName, cmdName, cmdName, cmdName);
 	}
@@ -1047,6 +1113,9 @@ void CHud::HUDColorCmd(bool bCritical)
 		gEngfuncs.Cvar_SetValue(cvarR, r);
 		gEngfuncs.Cvar_SetValue(cvarG, g);
 		gEngfuncs.Cvar_SetValue(cvarB, b);
-		gEngfuncs.Con_Printf("Set %s color to (%d, %d, %d)\n", bCritical ? "hud critical" : "hud", r, g, b);
+
+		gEngfuncs.Con_Printf(
+			"Set %s color to (%d, %d, %d)\n",
+			cmdName, r, g, b);
 	}
 }

@@ -180,7 +180,7 @@ static const FlashLightOption g_FlashLightOptions[] = {
 	{"Flashlight", 0},
 	{"OP4 Night Vision", 1},
 	{"CS1.6 Night Vision", 2},
-	{"Red Night Vision", 3},
+	{"Custom Night Vision", 3},
 };
 
 // =====================================================================
@@ -979,7 +979,7 @@ static void DrawColorSettingsTab()
 	ImGui::Spacing();
 
 	int ButtonWidth = 220;
-	int ButtonHeight = 30;
+	int ButtonHeight = 22;
 	ScaleSize(ButtonWidth, ButtonHeight);
 
 	auto ApplyColorCmd = [&](const char* cvar)
@@ -998,21 +998,28 @@ static void DrawColorSettingsTab()
 		const float spacing = ImGui::GetStyle().ItemSpacing.x;
 		const float btnW = (avail - 2.0f * spacing) / 3.0f;
 
-		if (ImGui::Button("Apply for HUD", ImVec2(btnW, (float)ButtonHeight)))
+		ImGui::Text("Apply for:");
+
+		if (ImGui::Button("HUD Color", ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("hud_color");
 
 		ImGui::SameLine();
-		if (ImGui::Button("Apply HUD Critical", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button("HUD Critical Color", ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("hud_color_critical");
 
 		ImGui::SameLine();
-		if (ImGui::Button("Apply FX Color", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button("FX Color", ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("render_color");
+
+		if (ImGui::Button("Night Vision", ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("nightvision_color");
 	}
 
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
+
+	ImGui::Text("Render FX Amount:");
 
 	{
 		static int s_renderAmount = 255;
