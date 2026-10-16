@@ -304,7 +304,7 @@ void CTentacle::Precache()
 
 	PRECACHE_SOUND("tentacle/te_alert1.wav");
 	PRECACHE_SOUND("tentacle/te_alert2.wav");
-	PRECACHE_SOUND("tentacle/te_flies1.wav");
+	//PRECACHE_SOUND("tentacle/te_flies1.wav");
 	PRECACHE_SOUND("tentacle/te_move1.wav");
 	PRECACHE_SOUND("tentacle/te_move2.wav");
 	PRECACHE_SOUND("tentacle/te_roar1.wav");
@@ -313,7 +313,7 @@ void CTentacle::Precache()
 	PRECACHE_SOUND("tentacle/te_search2.wav");
 	PRECACHE_SOUND("tentacle/te_sing1.wav");
 	PRECACHE_SOUND("tentacle/te_sing2.wav");
-	PRECACHE_SOUND("tentacle/te_squirm2.wav");
+	//PRECACHE_SOUND("tentacle/te_squirm2.wav");
 	PRECACHE_SOUND("tentacle/te_strike1.wav");
 	PRECACHE_SOUND("tentacle/te_strike2.wav");
 	PRECACHE_SOUND("tentacle/te_swing1.wav");

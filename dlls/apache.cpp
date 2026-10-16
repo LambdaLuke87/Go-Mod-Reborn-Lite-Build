@@ -170,10 +170,10 @@ void CApache::Precache()
 	else
 		PRECACHE_MODEL("models/apache.mdl");
 
-	PRECACHE_SOUND("apache/ap_rotor1.wav");
+	//PRECACHE_SOUND("apache/ap_rotor1.wav");
 	PRECACHE_SOUND("apache/ap_rotor2.wav");
-	PRECACHE_SOUND("apache/ap_rotor3.wav");
-	PRECACHE_SOUND("apache/ap_whine1.wav");
+	//PRECACHE_SOUND("apache/ap_rotor3.wav");
+	//PRECACHE_SOUND("apache/ap_whine1.wav");
 
 	PRECACHE_SOUND("weapons/mortarhit.wav");
 
