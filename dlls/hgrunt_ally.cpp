@@ -352,43 +352,46 @@ void CHGruntAlly::GibMonster()
 			pMedic->HealMe(nullptr);
 	}
 
-	Vector vecGunPos;
-	Vector vecGunAngles;
+	if (!monster_drops_guns.value)
+	{
+		Vector vecGunPos;
+		Vector vecGunAngles;
 
-	if (m_iWeaponIdx != HGruntAllyWeapon::None)
-	{ // throw a gun if the grunt has one
-		GetAttachment(0, vecGunPos, vecGunAngles);
+		if (m_iWeaponIdx != HGruntAllyWeapon::None)
+		{ // throw a gun if the grunt has one
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun;
-		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Shotgun))
-		{
-			pGun = DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
-		}
-		else if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
-		{
-			pGun = DropItem("weapon_m249", vecGunPos, vecGunAngles);
-		}
-		else
-		{
-			pGun = DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
-		}
-		if (pGun)
-		{
-			pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
-			pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
-		}
-
-		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::GrenadeLauncher))
-		{
-			pGun = DropItem("ammo_ARgrenades", vecGunPos, vecGunAngles);
+			CBaseEntity* pGun;
+			if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Shotgun))
+			{
+				pGun = DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
+			}
+			else if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
+			{
+				pGun = DropItem("weapon_m249", vecGunPos, vecGunAngles);
+			}
+			else
+			{
+				pGun = DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
+			}
 			if (pGun)
 			{
 				pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
 				pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
 			}
-		}
 
-		m_iWeaponIdx = HGruntAllyWeapon::None;
+			if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::GrenadeLauncher))
+			{
+				pGun = DropItem("ammo_ARgrenades", vecGunPos, vecGunAngles);
+				if (pGun)
+				{
+					pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
+					pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+				}
+			}
+
+			m_iWeaponIdx = HGruntAllyWeapon::None;
+		}
 	}
 
 	CBaseMonster::GibMonster();
@@ -1007,34 +1010,39 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case HGRUNT_AE_DROP_GUN:
 	{
-		Vector vecGunPos;
-		Vector vecGunAngles;
-
-		GetAttachment(0, vecGunPos, vecGunAngles);
-
-		// switch to body group with no gun.
-		SetBodygroup(HGruntAllyBodygroup::Weapons, HGruntAllyWeapon::None);
-
-		// now spawn a gun.
-		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Shotgun))
+		if (!monster_drops_guns.value)
 		{
-			DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
-		}
-		else if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
-		{
-			DropItem("weapon_m249", vecGunPos, vecGunAngles);
+			Vector vecGunPos;
+			Vector vecGunAngles;
+
+			GetAttachment(0, vecGunPos, vecGunAngles);
+
+			// switch to body group with no gun.
+			SetBodygroup(HGruntAllyBodygroup::Weapons, HGruntAllyWeapon::None);
+
+			// now spawn a gun.
+			if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Shotgun))
+			{
+				DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
+			}
+			else if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
+			{
+				DropItem("weapon_m249", vecGunPos, vecGunAngles);
+			}
+			else
+			{
+				DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
+			}
+
+			if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::GrenadeLauncher))
+			{
+				DropItem("ammo_ARgrenades", BodyTarget(pev->origin), vecGunAngles);
+			}
+
+			m_iWeaponIdx = HGruntAllyWeapon::None;
 		}
 		else
-		{
-			DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
-		}
-
-		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::GrenadeLauncher))
-		{
-			DropItem("ammo_ARgrenades", BodyTarget(pev->origin), vecGunAngles);
-		}
-
-		m_iWeaponIdx = HGruntAllyWeapon::None;
+			SetBodygroup(HGruntAllyBodygroup::Weapons, HGruntAllyWeapon::None);
 	}
 	break;
 

@@ -3474,6 +3474,10 @@ CBaseEntity* CBaseMonster::DropItem(const char* pszItemName, const Vector& vecPo
 
 bool CBaseMonster::ShouldFadeOnDeath()
 {
+	// cvar utility for vanish corpses
+	if (monster_corpse_vanish.value)
+		return true;
+
 	// if flagged to fade out or I have an owner (I came from a monster spawner)
 	if ((pev->spawnflags & SF_MONSTER_FADECORPSE) != 0 || !FNullEnt(pev->owner))
 		return true;

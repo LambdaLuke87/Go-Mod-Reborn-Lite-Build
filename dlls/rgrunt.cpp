@@ -148,7 +148,7 @@ void CRGrunt::Precache()
 		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
 	else
 		PRECACHE_MODEL("models/rgrunt.mdl");
-	PRECACHE_MODEL("models/computergibs.mdl");
+	//PRECACHE_MODEL("models/computergibs.mdl");
 	PRECACHE_SOUND("turret/tu_die.wav");
 	PRECACHE_SOUND("turret/tu_die2.wav");
 	PRECACHE_SOUND("turret/tu_die3.wav");

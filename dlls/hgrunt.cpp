@@ -175,35 +175,38 @@ int CHGrunt::IRelationship(CBaseEntity* pTarget)
 //=========================================================
 void CHGrunt::GibMonster()
 {
-	Vector vecGunPos;
-	Vector vecGunAngles;
+	if (!monster_drops_guns.value)
+	{
+		Vector vecGunPos;
+		Vector vecGunAngles;
 
-	if (GetBodygroup(2) != 2)
-	{ // throw a gun if the grunt has one
-		GetAttachment(0, vecGunPos, vecGunAngles);
+		if (GetBodygroup(2) != 2)
+		{ // throw a gun if the grunt has one
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun;
-		if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
-		{
-			pGun = DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
-		}
-		else
-		{
-			pGun = DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
-		}
-		if (pGun)
-		{
-			pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
-			pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
-		}
-
-		if (FBitSet(pev->weapons, HGRUNT_GRENADELAUNCHER))
-		{
-			pGun = DropItem("ammo_ARgrenades", vecGunPos, vecGunAngles);
+			CBaseEntity* pGun;
+			if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
+			{
+				pGun = DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
+			}
+			else
+			{
+				pGun = DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
+			}
 			if (pGun)
 			{
 				pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
 				pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+			}
+
+			if (FBitSet(pev->weapons, HGRUNT_GRENADELAUNCHER))
+			{
+				pGun = DropItem("ammo_ARgrenades", vecGunPos, vecGunAngles);
+				if (pGun)
+				{
+					pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
+					pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+				}
 			}
 		}
 	}
@@ -761,17 +764,20 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 			SetBodygroup(GUN_GROUP, GUN_NONE);
 
 			// now spawn a gun.
-			if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
+			if (!monster_drops_guns.value)
 			{
-				DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
-			}
-			else
-			{
-				DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
-			}
-			if (FBitSet(pev->weapons, HGRUNT_GRENADELAUNCHER))
-			{
-				DropItem("ammo_ARgrenades", BodyTarget(pev->origin), vecGunAngles);
+				if (FBitSet(pev->weapons, HGRUNT_SHOTGUN))
+				{
+					DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
+				}
+				else
+				{
+					DropItem("weapon_9mmAR", vecGunPos, vecGunAngles);
+				}
+				if (FBitSet(pev->weapons, HGRUNT_GRENADELAUNCHER))
+				{
+					DropItem("ammo_ARgrenades", BodyTarget(pev->origin), vecGunAngles);
+				}
 			}
 		}
 	}

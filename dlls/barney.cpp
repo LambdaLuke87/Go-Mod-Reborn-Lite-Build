@@ -623,14 +623,19 @@ void CBarney::Killed(entvars_t* pevAttacker, int iGib)
 	{ // drop the gun!
 		if (!m_Beingremoved)
 		{
-			Vector vecGunPos;
-			Vector vecGunAngles;
+			if (monster_drops_guns.value)
+				pev->body = BARNEY_BODY_GUNGONE;
+			else
+			{
+				Vector vecGunPos;
+				Vector vecGunAngles;
 
-			pev->body = BARNEY_BODY_GUNGONE;
+				pev->body = BARNEY_BODY_GUNGONE;
 
-			GetAttachment(0, vecGunPos, vecGunAngles);
+				GetAttachment(0, vecGunPos, vecGunAngles);
 
-			CBaseEntity* pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+				CBaseEntity* pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			}
 		}
 	}
 

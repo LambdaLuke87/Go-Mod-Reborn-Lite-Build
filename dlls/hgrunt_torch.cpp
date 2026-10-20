@@ -333,23 +333,26 @@ void COFTorchAlly::GibMonster()
 			pMedic->HealMe(nullptr);
 	}
 
-	Vector vecGunPos;
-	Vector vecGunAngles;
+	if (!monster_drops_guns.value)
+	{
+		Vector vecGunPos;
+		Vector vecGunAngles;
 
-	if (GetBodygroup(TorchAllyBodygroup::Weapons) == TorchAllyWeapon::DesertEagle)
-	{ // throw a gun if the grunt has one
-		GetAttachment(0, vecGunPos, vecGunAngles);
+		if (GetBodygroup(TorchAllyBodygroup::Weapons) == TorchAllyWeapon::DesertEagle)
+		{ // throw a gun if the grunt has one
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
 
-		if (pGun)
-		{
-			pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
-			pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+			if (pGun)
+			{
+				pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
+				pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+			}
+
+			// Note: this wasn't in the original
+			SetBodygroup(TorchAllyBodygroup::Weapons, TorchAllyWeapon::None);
 		}
-
-		//Note: this wasn't in the original
-		SetBodygroup(TorchAllyBodygroup::Weapons, TorchAllyWeapon::None);
 	}
 
 	if (m_fTorchActive)
@@ -957,19 +960,22 @@ void COFTorchAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case TORCH_AE_DROP_GUN:
 	{
-		//If we don't have a gun equipped
-		if (GetBodygroup(TorchAllyBodygroup::Weapons) == TorchAllyWeapon::DesertEagle)
+		if (!monster_drops_guns.value)
 		{
-			Vector vecGunPos;
-			Vector vecGunAngles;
+			// If we don't have a gun equipped
+			if (GetBodygroup(TorchAllyBodygroup::Weapons) == TorchAllyWeapon::DesertEagle)
+			{
+				Vector vecGunPos;
+				Vector vecGunAngles;
 
-			GetAttachment(0, vecGunPos, vecGunAngles);
+				GetAttachment(0, vecGunPos, vecGunAngles);
 
-			// switch to body group with no gun.
-			SetBodygroup(TorchAllyBodygroup::Weapons, TorchAllyWeapon::None);
+				// switch to body group with no gun.
+				SetBodygroup(TorchAllyBodygroup::Weapons, TorchAllyWeapon::None);
 
-			// now spawn a gun.
-			DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+				// now spawn a gun.
+				DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			}
 		}
 	}
 	break;

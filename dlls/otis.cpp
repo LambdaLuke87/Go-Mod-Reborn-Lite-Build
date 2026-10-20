@@ -27,6 +27,7 @@
 #include "scripted.h"
 #include "weapons.h"
 #include "soundent.h"
+#include "game.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -679,15 +680,23 @@ void COtis::Killed(entvars_t* pevAttacker, int iGib)
 	{ // drop the gun!
 		if (!m_Beingremoved)
 		{
-			Vector vecGunPos;
-			Vector vecGunAngles;
+			if (!monster_drops_guns.value)
+			{
+				Vector vecGunPos;
+				Vector vecGunAngles;
 
-			SetBodygroup(OtisBodyGroup::Weapons, OtisWeapon::None);
-			m_iOtisBody = OtisWeapon::None;
+				SetBodygroup(OtisBodyGroup::Weapons, OtisWeapon::None);
+				m_iOtisBody = OtisWeapon::None;
 
-			GetAttachment(0, vecGunPos, vecGunAngles);
+				GetAttachment(0, vecGunPos, vecGunAngles);
 
-			CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+				CBaseEntity* pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			}
+			else
+			{
+				SetBodygroup(OtisBodyGroup::Weapons, OtisWeapon::None);
+				m_iOtisBody = OtisWeapon::None;
+			}
 		}
 	}
 

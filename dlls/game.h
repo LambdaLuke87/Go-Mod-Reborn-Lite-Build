@@ -83,6 +83,8 @@ extern cvar_t npc_notarget;
 extern cvar_t monster_allied_skins;
 extern cvar_t monster_polem;
 extern cvar_t monster_variation;
+extern cvar_t monster_corpse_vanish;
+extern cvar_t monster_drops_guns;
 extern cvar_t spawn_wpnsetup;
 extern cvar_t worlditems_respawn;
 extern cvar_t respawn_npc_sound;

@@ -366,35 +366,38 @@ void COFMedicAlly::SpeakSentence()
 //=========================================================
 void COFMedicAlly::GibMonster()
 {
-	Vector vecGunPos;
-	Vector vecGunAngles;
+	if (!monster_drops_guns.value)
+	{
+		Vector vecGunPos;
+		Vector vecGunAngles;
 
-	//TODO: probably the wrong logic, but it was in the original
-	if (m_iWeaponIdx != MedicAllyWeapon::None)
-	{ // throw a gun if the grunt has one
-		GetAttachment(0, vecGunPos, vecGunAngles);
+		// TODO: probably the wrong logic, but it was in the original
+		if (m_iWeaponIdx != MedicAllyWeapon::None)
+		{ // throw a gun if the grunt has one
+			GetAttachment(0, vecGunPos, vecGunAngles);
 
-		CBaseEntity* pGun;
+			CBaseEntity* pGun;
 
-		if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
-		{
-			pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
+			{
+				pGun = DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			}
+			else if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
+			{
+				pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			}
+
+			if (nullptr != pGun)
+			{
+				pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
+				pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
+			}
+
+			m_iWeaponIdx = MedicAllyWeapon::None;
+
+			// Note: this wasn't in the original
+			SetBodygroup(MedicAllyBodygroup::Weapons, MedicAllyWeapon::None);
 		}
-		else if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
-		{
-			pGun = DropItem("weapon_eagle", vecGunPos, vecGunAngles);
-		}
-
-		if (nullptr != pGun)
-		{
-			pGun->pev->velocity = Vector(RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(-100, 100), RANDOM_FLOAT(200, 300));
-			pGun->pev->avelocity = Vector(0, RANDOM_FLOAT(200, 400), 0);
-		}
-
-		m_iWeaponIdx = MedicAllyWeapon::None;
-
-		//Note: this wasn't in the original
-		SetBodygroup(MedicAllyBodygroup::Weapons, MedicAllyWeapon::None);
 	}
 
 	COFSquadTalkMonster::GibMonster();
@@ -1002,23 +1005,28 @@ void COFMedicAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case MEDIC_AE_DROP_GUN:
 	{
-		Vector vecGunPos;
-		Vector vecGunAngles;
-
-		GetAttachment(0, vecGunPos, vecGunAngles);
-
-		// switch to body group with no gun.
-		SetBodygroup(MedicAllyBodygroup::Weapons, MedicAllyWeapon::None);
-
-		// now spawn a gun.
-		if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
+		if (!monster_drops_guns.value)
 		{
-			DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			Vector vecGunPos;
+			Vector vecGunAngles;
+
+			GetAttachment(0, vecGunPos, vecGunAngles);
+
+			// switch to body group with no gun.
+			SetBodygroup(MedicAllyBodygroup::Weapons, MedicAllyWeapon::None);
+
+			// now spawn a gun.
+			if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
+			{
+				DropItem("weapon_9mmhandgun", vecGunPos, vecGunAngles);
+			}
+			else
+			{
+				DropItem("weapon_eagle", vecGunPos, vecGunAngles);
+			}
 		}
 		else
-		{
-			DropItem("weapon_eagle", vecGunPos, vecGunAngles);
-		}
+			SetBodygroup(MedicAllyBodygroup::Weapons, MedicAllyWeapon::None);
 
 		m_iWeaponIdx = MedicAllyWeapon::None;
 	}

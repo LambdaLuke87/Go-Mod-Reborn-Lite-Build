@@ -69,6 +69,8 @@ cvar_t npc_notarget = {"gm_notarget", "0", FCVAR_SERVER};
 cvar_t monster_allied_skins = {"gm_allied_monsters_skins", "0", FCVAR_SERVER};
 cvar_t monster_polem = {"gm_monster_polem", "0", FCVAR_SERVER};
 cvar_t monster_variation = {"gm_monster_variation", "1", FCVAR_SERVER};
+cvar_t monster_corpse_vanish = {"gm_monsters_corpses_vanish", "0", FCVAR_SERVER};
+cvar_t monster_drops_guns = {"gm_monster_dont_drops_guns", "0", FCVAR_SERVER};
 cvar_t spawn_wpnsetup = {"gm_weapon_spawn_setup", "0", FCVAR_SERVER};
 cvar_t worlditems_respawn = {"gm_allow_worlditems_respawn", "0", FCVAR_SERVER};
 cvar_t respawn_npc_sound = {"gm_respawn_npc_sound", "1", FCVAR_SERVER};
@@ -800,6 +802,8 @@ void GameDLLInit()
 	CVAR_REGISTER(&monster_allied_skins);
 	CVAR_REGISTER(&monster_polem);
 	CVAR_REGISTER(&monster_variation);
+	CVAR_REGISTER(&monster_corpse_vanish);
+	CVAR_REGISTER(&monster_drops_guns);
 	CVAR_REGISTER(&spawn_wpnsetup);
 	CVAR_REGISTER(&worlditems_respawn);
 	CVAR_REGISTER(&respawn_npc_sound);
