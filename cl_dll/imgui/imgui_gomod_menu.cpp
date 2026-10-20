@@ -6,6 +6,7 @@
 #include "filesystem_utils.h"
 
 #include "imgui.h"
+#include "gm_audio.h"
 
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
@@ -174,6 +175,9 @@ static const VoiceOption g_VoiceOptions[] = {
 	{"Team Fortress Classic", "dmc"},
 	{"Counter-Strike 1.6", "cstrike"},
 	{"Half-Life Alpha", "hlalpha"},
+	{"Barney", "barney"},
+	{"HECU Marine", "hgrunt"},
+	{"Scientist", "scientist"},
 };
 
 static const FlashLightOption g_FlashLightOptions[] = {
@@ -766,7 +770,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 				if (ThumbButton(item, thumb, (int)i) && !item.command.empty())
 				{
 					RunCmd(item.command.c_str());
-					gEngfuncs.pfnPlaySoundByName("!MI_SENTENC5", 1.0f);
+					GMAudio_PlayLocal("gomod/button_new.wav", 1.0f);
 				}
 
 				used += thumb.x;

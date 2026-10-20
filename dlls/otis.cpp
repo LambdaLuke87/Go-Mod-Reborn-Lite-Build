@@ -503,13 +503,13 @@ void COtis::Precache()
 
 	//PRECACHE_SOUND("weapons/de_shot1.wav");
 
-	PRECACHE_SOUND("barney/ba_pain1.wav");
-	PRECACHE_SOUND("barney/ba_pain2.wav");
-	PRECACHE_SOUND("barney/ba_pain3.wav");
+	//PRECACHE_SOUND("barney/ba_pain1.wav");
+	//PRECACHE_SOUND("barney/ba_pain2.wav");
+	//PRECACHE_SOUND("barney/ba_pain3.wav");
 
-	PRECACHE_SOUND("barney/ba_die1.wav");
-	PRECACHE_SOUND("barney/ba_die2.wav");
-	PRECACHE_SOUND("barney/ba_die3.wav");
+	//PRECACHE_SOUND("barney/ba_die1.wav");
+	//PRECACHE_SOUND("barney/ba_die2.wav");
+	//PRECACHE_SOUND("barney/ba_die3.wav");
 
 	// every new otis must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
@@ -611,13 +611,13 @@ void COtis::PainSound()
 	switch (RANDOM_LONG(0, 2))
 	{
 	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain1.wav", 1, ATTN_NORM, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain1.wav", 1, ATTN_NORM, GetVoicePitch());
 		break;
 	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain2.wav", 1, ATTN_NORM, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain2.wav", 1, ATTN_NORM, GetVoicePitch());
 		break;
 	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain3.wav", 1, ATTN_NORM, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain3.wav", 1, ATTN_NORM, GetVoicePitch());
 		break;
 	}
 }
@@ -627,16 +627,16 @@ void COtis::PainSound()
 //=========================================================
 void COtis::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
+	switch (RANDOM_LONG(1, 3))
 	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die1.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
 	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die2.wav", 1, ATTN_NORM, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die1.wav", 1, ATTN_NORM, GetVoicePitch());
 		break;
 	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die3.wav", 1, ATTN_NORM, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die2.wav", 1, ATTN_NORM, GetVoicePitch());
+		break;
+	case 3:
+		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die3.wav", 1, ATTN_NORM, GetVoicePitch());
 		break;
 	}
 }

@@ -20,6 +20,7 @@
 #include "CItemSpawnCTF.h"
 #include "gamerules.h"
 #include "ctfplay_gamerules.h"
+#include "gm_audio_server.h"
 
 const auto SF_ITEMCTF_RANDOM_SPAWN = 1 << 2;
 const auto SF_ITEMCTF_IGNORE_TEAM = 1 << 3;
@@ -396,7 +397,7 @@ void CItemCTF::ThrowItem(CBasePlayer* pPlayer)
 
 	UTIL_SetOrigin(pev, pev->origin);
 
-	EMIT_SOUND(edict(), CHAN_VOICE, "!MI_SENTENC9", VOL_NORM, ATTN_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, "ctf/itemthrow.wav", 1, ATTN_NORM, PITCH_NORM);
 
 	pev->flags &= ~FL_ONGROUND;
 	pev->movetype = MOVETYPE_TOSS;

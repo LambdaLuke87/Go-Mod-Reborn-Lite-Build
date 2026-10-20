@@ -75,7 +75,7 @@ cvar_t respawn_npc_sound = {"gm_respawn_npc_sound", "1", FCVAR_SERVER};
 cvar_t scaler_limit = {"gm_scaler_tool_limited", "1", FCVAR_SERVER};
 
 // Allow Content that handle precaches
-cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
+//cvar_t allow_props = {"gm_allow_props", "0", FCVAR_SERVER};
 cvar_t allow_extra_monsters = {"gm_allow_extra_npcs", "0", FCVAR_SERVER};
 cvar_t allow_powerups = {"gm_allow_powerups", "0", FCVAR_SERVER};
 cvar_t allow_nihilant = {"gm_allow_nihilant", "0", FCVAR_SERVER};
@@ -806,7 +806,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&scaler_limit);
 
 	// Allow Content that handle precaches
-	CVAR_REGISTER(&allow_props);
+	//CVAR_REGISTER(&allow_props);
 	CVAR_REGISTER(&allow_extra_monsters);
 	CVAR_REGISTER(&allow_powerups);
 	CVAR_REGISTER(&allow_nihilant);

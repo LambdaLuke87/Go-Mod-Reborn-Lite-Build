@@ -550,13 +550,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingAChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC12", VOL_NORM, ATTN_NORM);
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC3", VOL_NORM, ATTN_NORM);
 					pPlayer->m_fPlayingAChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingAChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC12");
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC3");
 				pPlayer->m_fPlayingAChargeSound = false;
 			}
 
@@ -579,13 +579,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingHChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11", VOL_NORM, ATTN_NORM);
+					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2", VOL_NORM, ATTN_NORM);
 					pPlayer->m_fPlayingHChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingHChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
+				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
 				pPlayer->m_fPlayingHChargeSound = false;
 			}
 

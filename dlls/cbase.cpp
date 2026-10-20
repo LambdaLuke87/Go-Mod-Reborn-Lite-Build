@@ -806,7 +806,7 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 	DispatchSpawn(pEntity->edict());
 
 	if (respawn_npc_sound.value && !p.glowstick)
-		EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC4", 0.94, ATTN_NORM, 0, PITCH_NORM);
+		EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC1", 0.94, ATTN_NORM, 0, PITCH_NORM);
 
 	return pEntity;
 }

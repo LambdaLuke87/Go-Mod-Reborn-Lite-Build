@@ -1481,12 +1481,36 @@ void CGargantua::PrecacheSounds()
 void CGargantua::BreatheSound()
 {
 	if (m_breatheTime <= gpGlobals->time)
-		SENTENCEG_PlayRndSz(ENT(pev), "GA_BREATHE", 1, ATTN_NORM, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+	{
+		switch (RANDOM_LONG(0, 3))
+		{
+		case 0:
+			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe1.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
+			break;
+		case 1:
+			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe2.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
+			break;
+		case 2:
+			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe3.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
+			break;
+		}
+	}
 }
 
 void CGargantua::AttackSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "GA_ATTACK", 1, ATTN_GARG, 0, PITCH_NORM);
+	switch (RANDOM_LONG(0, 3))
+	{
+	case 0:
+		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack1.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	case 1:
+		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack2.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	case 2:
+		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack3.wav", 1, ATTN_NORM, PITCH_NORM);
+		break;
+	}
 }
 
 float CGargantua::FlameTimeDivider()

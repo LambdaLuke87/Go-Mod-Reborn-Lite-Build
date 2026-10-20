@@ -25,6 +25,7 @@
 #include "ctfplay_gamerules.h"
 #include "skill.h"
 #include "UserMessages.h"
+#include "gm_audio_server.h"
 
 LINK_ENTITY_TO_CLASS(item_ctfregeneration, CItemRegenerationCTF);
 
@@ -60,7 +61,7 @@ bool CItemRegenerationCTF::MyTouch(CBasePlayer* pPlayer)
 				g_engfuncs.pfnWriteString(STRING(pev->classname));
 				g_engfuncs.pfnMessageEnd();
 
-				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!MI_SENTENC10", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "items/ammopickup1.wav", 1, ATTN_NORM, PITCH_NORM);
 
 				if (pPlayer->pev->health < 100.0)
 				{

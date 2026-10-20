@@ -309,7 +309,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingAChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
+					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
 					pPlayer->m_fPlayingAChargeSound = false;
 				}
 			}},
@@ -319,7 +319,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingHChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC11");
+					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
 					pPlayer->m_fPlayingHChargeSound = false;
 				}
 			}},

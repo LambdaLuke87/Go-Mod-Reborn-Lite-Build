@@ -424,7 +424,7 @@ void CBaseTurret::Ping()
 	else if (m_flPingTime <= gpGlobals->time)
 	{
 		m_flPingTime = gpGlobals->time + 1;
-		EMIT_SOUND(ENT(pev), CHAN_ITEM, "!MI_SENTENC15", 1, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, "turret/tu_ping.wav", 1, ATTN_NORM, PITCH_NORM);
 		EyeOn();
 	}
 	else if (m_eyeBrightness > 0)

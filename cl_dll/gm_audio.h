@@ -10,3 +10,4 @@ void GMAudio_Init();	  // CHud::Init(): opens the audio device, hooks the messag
 void GMAudio_Shutdown();  // HUD_Shutdown()
 void GMAudio_StopAll();	  // CHud::VidInit(): new map / reconnect
 void GMAudio_SetListener(const float* origin, const float* viewangles); // V_CalcRefdef(): once per frame
+void GMAudio_PlayLocal(const char* path, float volume = 1.0f, int pitch = 100);

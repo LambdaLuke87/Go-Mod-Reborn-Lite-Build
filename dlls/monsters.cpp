@@ -2683,23 +2683,23 @@ void CBaseMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 		break;
 
 	case SCRIPT_EVENT_SOUND: // Play a named wave file
-		EMIT_SOUND(edict(), CHAN_BODY, pEvent->options, 1.0, ATTN_IDLE);
+		GMAudio_Emit(this, CHAN_BODY, pEvent->options, 1.0, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case SCRIPT_EVENT_SOUND_VOICE:
-		EMIT_SOUND(edict(), CHAN_VOICE, pEvent->options, 1.0, ATTN_IDLE);
+		GMAudio_Emit(this, CHAN_VOICE, pEvent->options, 1.0, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case SCRIPT_EVENT_SOUND_VOICE_BODY:
-		EMIT_SOUND(edict(), CHAN_BODY, pEvent->options, VOL_NORM, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_BODY, pEvent->options, VOL_NORM, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case SCRIPT_EVENT_SOUND_VOICE_VOICE:
-		EMIT_SOUND(edict(), CHAN_VOICE, pEvent->options, VOL_NORM, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, pEvent->options, VOL_NORM, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case SCRIPT_EVENT_SOUND_VOICE_WEAPON:
-		EMIT_SOUND(edict(), CHAN_WEAPON, pEvent->options, VOL_NORM, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_WEAPON, pEvent->options, VOL_NORM, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case SCRIPT_EVENT_SENTENCE_RND1: // Play a named sentence group 33% of the time

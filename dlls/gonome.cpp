@@ -506,7 +506,7 @@ void CGonome::IdleSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, pitch);
+	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), 1, ATTN_NORM, pitch);
 }
 
 //=========================================================
@@ -536,7 +536,7 @@ void CGonome::AlertSound()
 //=========================================================
 void CGonome::DeathSound()
 {
-	SENTENCEG_PlayRndSz(ENT(pev), "GO_DEATH", 1, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 

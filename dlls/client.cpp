@@ -126,10 +126,7 @@ spawnlist_t gMonsters[] =
 		{"monster_zombie"},
 		{"monster_zombie_barney"},
 		{"monster_zombie_soldier"},
-		{"monster_zombie_soldier_dead"}};
-
-spawnlist_t gProps[] =
-	{
+		{"monster_zombie_soldier_dead"},
 		{"prop_c4"},
 		{"prop_chumtoad"},
 		{"prop_grenade"},
@@ -991,19 +988,6 @@ void ClientCommand(edict_t* pEntity)
 					}
 					else
 						GoMod_SpawnMonsterTrace(monsterInfo.classname, pev, pEntity, pPlayer->m_fUseAlliedMode, monsterInfo.floorhigher);
-				}
-			}
-
-			// Spawn Props
-			for (int i = 0; i < ARRAYSIZE(gProps); i++)
-			{
-				spawnlist_t xenpropInfo = gProps[i];
-				if (FStrEq(combinetoprefix, xenpropInfo.classname))
-				{
-					if (allow_props.value)
-						GoMod_SpawnMonsterTrace(xenpropInfo.classname, pev, pEntity, false, false);
-					else
-						ClientPrint(&pEntity->v, HUD_PRINTTALK, "Props Disabled - gm_allow_props required\n");
 				}
 			}
 
@@ -2088,9 +2072,9 @@ void ClientPrecache()
 
 	// PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound
 
-	PRECACHE_SOUND("player/pl_fallpain1.wav");
-	PRECACHE_SOUND("player/pl_fallpain2.wav");
-	PRECACHE_SOUND("player/pl_fallpain3.wav");
+	//PRECACHE_SOUND("player/pl_fallpain1.wav");
+	//PRECACHE_SOUND("player/pl_fallpain2.wav");
+	//PRECACHE_SOUND("player/pl_fallpain3.wav");
 
 	PRECACHE_SOUND("player/pl_step1.wav"); // walk on concrete
 	PRECACHE_SOUND("player/pl_step2.wav");
@@ -2174,10 +2158,10 @@ void ClientPrecache()
 
 	/* player pain sounds
 	PRECACHE_SOUND("player/pl_pain2.wav");
-	PRECACHE_SOUND("player/pl_pain4.wav");*/
+	PRECACHE_SOUND("player/pl_pain4.wav");
 	PRECACHE_SOUND("player/pl_pain5.wav");
 	PRECACHE_SOUND("player/pl_pain6.wav");
-	PRECACHE_SOUND("player/pl_pain7.wav");
+	PRECACHE_SOUND("player/pl_pain7.wav");*/
 
 	PRECACHE_MODEL("models/player.mdl");
 
@@ -2201,6 +2185,7 @@ void ClientPrecache()
 	PRECACHE_SOUND("player/geiger1.wav");*/
 
 	PRECACHE_SOUND("ctf/pow_big_jump.wav");
+	PRECACHE_SOUND("ctf/pow_backpack.wav");
 
 	if (giPrecacheGrunt)
 		UTIL_PrecacheOther("monster_human_grunt");
@@ -2236,15 +2221,6 @@ void ClientPrecache()
 			{
 				spawnlist_t sPowerups = gPowerups[i];
 				UTIL_PrecacheOther(sPowerups.classname);
-			}
-		}
-
-		if (allow_props.value)
-		{
-			for (int i = 0; i < ARRAYSIZE(gProps); i++)
-			{
-				spawnlist_t sXenProps = gProps[i];
-				UTIL_PrecacheOther(sXenProps.classname);
 			}
 		}
 

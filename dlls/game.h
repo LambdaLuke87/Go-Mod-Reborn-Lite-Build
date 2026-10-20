@@ -89,7 +89,7 @@ extern cvar_t respawn_npc_sound;
 extern cvar_t scaler_limit;
 
 // Allow Content that handle precaches
-extern cvar_t allow_props;
+//extern cvar_t allow_props;
 extern cvar_t allow_extra_monsters;
 extern cvar_t allow_powerups;
 extern cvar_t allow_nihilant;

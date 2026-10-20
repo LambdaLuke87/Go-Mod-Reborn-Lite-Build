@@ -431,7 +431,21 @@ void CPitdrone::PainSound()
 {
 	int iPitch = RANDOM_LONG(85, 120);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "PD_PAIN", 1, ATTN_NORM, 0, iPitch);
+	switch (RANDOM_LONG(0, 3))
+	{
+	case 0:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain1.wav", 1, ATTN_NORM, iPitch);
+		break;
+	case 1:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain2.wav", 1, ATTN_NORM, iPitch);
+		break;
+	case 2:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain3.wav", 1, ATTN_NORM, iPitch);
+		break;
+	case 3:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain4.wav", 1, ATTN_NORM, iPitch);
+		break;
+	}
 }
 
 //=========================================================
@@ -441,7 +455,18 @@ void CPitdrone::AlertSound()
 {
 	int iPitch = RANDOM_LONG(140, 160);
 
-	SENTENCEG_PlayRndSz(ENT(pev), "PD_ALERT", 1, ATTN_NORM, 0, iPitch);
+	switch (RANDOM_LONG(0, 2))
+	{
+	case 0:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert1.wav", 1, ATTN_NORM, iPitch);
+		break;
+	case 1:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert2.wav", 1, ATTN_NORM, iPitch);
+		break;
+	case 2:
+		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert3.wav", 1, ATTN_NORM, iPitch);
+		break;
+	}
 }
 
 //=========================================================

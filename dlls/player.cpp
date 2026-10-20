@@ -180,7 +180,26 @@ void CBasePlayer::Pain()
 	if (RANDOM_FLOAT(0.0f, 100.0f) <= 35.0f)
 	{
 		if (0 == strcmp(PlayerSFXString, "cstrike"))
-			SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+		{
+			switch (RANDOM_LONG(1, 5))
+			{
+			case 1:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 2:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 3:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 4:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 5:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			}
+		}
 		else if (0 == strcmp(PlayerSFXString, "hlalpha"))
 		{
 			float flRndSound; // sound randomizer
@@ -188,11 +207,11 @@ void CBasePlayer::Pain()
 			flRndSound = RANDOM_FLOAT(0, 1);
 
 			if (flRndSound <= 0.33)
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			else if (flRndSound <= 0.66)
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain6.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			else
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain7.wav", 1.0, ATTN_NORM, PITCH_NORM);
 		}
 	}
 }
@@ -287,30 +306,128 @@ void CBasePlayer::DeathSound()
 	if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
 	{
 		char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
-		if (0 == strcmp(PlayerSFXString, "hlalpha"))
+		if (0 == strcmp(PlayerSFXString, "barney"))
 		{
 			switch (RANDOM_LONG(1, 3))
 			{
 			case 1:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die1.wav", 1.0, ATTN_NORM, PITCH_NORM);
 				break;
 			case 2:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die2.wav", 1.0, ATTN_NORM, PITCH_NORM);
 				break;
 			case 3:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			}
+		}
+		else if (0 == strcmp(PlayerSFXString, "hgrunt"))
+		{
+			switch (RANDOM_LONG(0, 7))
+			{
+			case 0:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death1.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			case 1:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death2.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			case 2:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death3.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			case 3:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death4.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			case 4:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death5.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			case 5:
+				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death6.wav", 1, ATTN_NORM, PITCH_NORM);
+				break;
+			}
+		}
+		else if (0 == strcmp(PlayerSFXString, "hlalpha"))
+		{
+			switch (RANDOM_LONG(1, 3))
+			{
+			case 1:
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 2:
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain6.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 3:
+				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain7.wav", 1.0, ATTN_NORM, PITCH_NORM);
 				break;
 			}
 		}
 		else if (0 == strcmp(PlayerSFXString, "dmc"))
 		{
 			if (m_bitsDamageType == DMG_DROWN)
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "!PL_DROWNDIEDMC", 1, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_drown_death.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			else
-				SENTENCEG_PlayRndSz(ENT(pev), "PL_DIEDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+			{
+				switch (RANDOM_LONG(1, 5))
+				{
+				case 1:
+					GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_death1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+					break;
+				case 2:
+					GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_death2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+					break;
+				case 3:
+					GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_death3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+					break;
+				case 4:
+					GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_death4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+					break;
+				case 5:
+					GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_death5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+					break;
+				}
+			}
 		}
 		else if (0 == strcmp(PlayerSFXString, "cstrike"))
-			SENTENCEG_PlayRndSz(ENT(pev), "PL_DIECSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+		{
+			switch (RANDOM_LONG(1, 3))
+			{
+			case 1:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_death1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 2:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_death2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 3:
+				GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_death3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			}
+		}
+		else if (0 == strcmp(PlayerSFXString, "scientist"))
+		{
+			switch (RANDOM_LONG(1, 7))
+			{
+			case 1:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/scream5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 2:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/scream21.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 3:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_die1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 4:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_die2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 5:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_die3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 6:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_die4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			case 7:
+				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_dragoff.wav", 1.0, ATTN_NORM, PITCH_NORM);
+				break;
+			}
+		}
 		else
 			DefaultDeathSound();
 	}
@@ -330,16 +447,16 @@ void CBasePlayer::DefaultDeathSound()
 	*/
 
 	// temporarily using pain sounds for death sounds
-	switch (RANDOM_LONG(1, 5))
+	switch (RANDOM_LONG(1, 3))
 	{
 	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
 		break;
 	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain6.wav", 1.0, ATTN_NORM, PITCH_NORM);
 		break;
 	case 3:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain7.wav", 1.0, ATTN_NORM, PITCH_NORM);
 		break;
 	}
 
@@ -461,7 +578,7 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 		{
 			flDamage *= 1.6;
 
-			EMIT_SOUND(edict(), CHAN_STATIC, "!MI_SENTENC15", VOL_NORM, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_VOICE, "turret/tu_ping.wav", 1, ATTN_NORM, PITCH_NORM);
 		}
 		if (m_pFlag)
 		{
@@ -552,31 +669,146 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 			char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
 			if ((bitsDamage & DMG_FALL) != 0)
 			{
-				if (0 == strcmp(PlayerSFXString, "cstrike"))
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINCSTRIKE", 1, ATTN_NORM, 0, PITCH_NORM);
+				if (0 == strcmp(PlayerSFXString, "barney"))
+				{
+					switch (RANDOM_LONG(1, 3))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "cstrike"))
+				{
+					switch (RANDOM_LONG(1, 5))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 4:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 5:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "hgrunt"))
+				{
+					switch (RANDOM_LONG(0, 7))
+					{
+					case 0:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 4:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 5:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
 				else if (0 == strcmp(PlayerSFXString, "hlalpha"))
 				{
 					switch (RANDOM_LONG(1, 2))
 					{
 					case 1:
-						EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain1.wav", 1, ATTN_NORM);
+						GMAudio_Emit(this, CHAN_VOICE, "player/pl_fallpain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
 						break;
 					case 2:
-						EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain2.wav", 1, ATTN_NORM);
+						GMAudio_Emit(this, CHAN_VOICE, "player/pl_fallpain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "scientist"))
+				{
+					switch (RANDOM_LONG(1, 3))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
 						break;
 					}
 				}
 				else
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
+					GMAudio_Emit(this, CHAN_VOICE, "player/pl_fallpain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			}
 			else if (0 == strcmp(PlayerSFXString, "dmc"))
 			{
 				if ((bitsDamage & DMG_BURN) != 0)
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_BURNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+				{
+					switch (RANDOM_LONG(1, 2))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_burn1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_burn2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
 				else if ((bitsDamage & DMG_DROWN) != 0)
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_DROWNDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+				{
+					switch (RANDOM_LONG(1, 2))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_drown1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_drown2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
 				else
-					SENTENCEG_PlayRndSz(ENT(pev), "PL_PAINDMC", 1, ATTN_NORM, 0, PITCH_NORM);
+				{
+					switch (RANDOM_LONG(1, 6))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 4:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 5:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 6:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/dmc_pain6.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
 			}
 			else
 				Pain();
@@ -585,7 +817,7 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 	else
 	{
 		if ((bitsDamage & DMG_FALL) != 0)
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_VOICE, "player/pl_fallpain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
 	}
 
 	while (fTookDamage && (!ftrivial || (bitsDamage & DMG_TIMEBASED) != 0) && ffound && 0 != bitsDamage)

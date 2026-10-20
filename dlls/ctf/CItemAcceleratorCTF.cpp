@@ -19,6 +19,7 @@
 #include "game.h"
 #include "UserMessages.h"
 #include "CItemAcceleratorCTF.h"
+#include "gm_audio_server.h"
 
 LINK_ENTITY_TO_CLASS(item_ctfaccelerator, CItemAcceleratorCTF);
 
@@ -73,7 +74,7 @@ bool CItemAcceleratorCTF::MyTouch(CBasePlayer* pPlayer)
 				MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, nullptr, pPlayer->edict());
 				WRITE_STRING(STRING(pev->classname));
 				MESSAGE_END();
-				EMIT_SOUND(edict(), CHAN_VOICE, "!MI_SENTENC10", VOL_NORM, ATTN_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "items/ammopickup1.wav", 1, ATTN_NORM, PITCH_NORM);
 				return true;
 			}
 		}

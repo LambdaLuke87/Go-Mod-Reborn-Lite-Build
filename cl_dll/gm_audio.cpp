@@ -282,6 +282,11 @@ void GMAudio_Shutdown()
 	}
 }
 
+void GMAudio_PlayLocal(const char* path, float volume, int pitch)
+{
+	PlayRequest(0, 0, 0, volume, 0.0f, pitch, GMVec3(), path);
+}
+
 void GMAudio_StopAll()
 {
 	AudioLock lock;
