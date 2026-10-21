@@ -23,6 +23,7 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/mmui.h"
 
 #include "gm_audio.h"
 
@@ -1051,6 +1052,7 @@ void DLLEXPORT HUD_Shutdown()
 
 	ShutdownInput();
 
+	MMUI_Shutdown(); // removes the SDL_GL_SwapWindow hook before client.dll unloads
 	GoModMenu_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();

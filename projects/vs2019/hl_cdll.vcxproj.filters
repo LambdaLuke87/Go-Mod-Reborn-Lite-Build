@@ -420,6 +420,15 @@
     <ClCompile Include="..\..\cl_dll\imgui\imgui_impl_opengl3.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_core.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_createserver.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_swaphook.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\cl_dll\imgui\imgui_gomod_menu.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
@@ -762,6 +771,12 @@
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\imgui\imgui_internal.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\mmui.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\mmui_swaphook.h">
       <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\imgui\imgui.h">

@@ -41,6 +41,9 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/imgui/imgui_impl_opengl3.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_tables.o \
 	$(HL1_OBJ_DIR)/imgui/imgui_widgets.o \
+	$(HL1_OBJ_DIR)/imgui/mmui_core.o \
+	$(HL1_OBJ_DIR)/imgui/mmui_createserver.o \
+	$(HL1_OBJ_DIR)/imgui/mmui_swaphook.o \
 	$(HL1_OBJ_DIR)/hud.o \
 	$(HL1_OBJ_DIR)/inputw32.o \
 	$(HL1_OBJ_DIR)/ammo.o \

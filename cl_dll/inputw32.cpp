@@ -258,8 +258,13 @@ void MousePos_ThreadFunction()
 IN_ActivateMouse
 ===========
 */
+// false while the engine has the mouse released (GameUI / console open). Used by mmui_core.cpp
+bool g_bInputMouseActive = false;
+
 void DLLEXPORT IN_ActivateMouse()
 {
+	g_bInputMouseActive = true;
+
 	if (mouseinitialized)
 	{
 #ifdef WIN32
@@ -295,6 +300,8 @@ IN_DeactivateMouse
 */
 void DLLEXPORT IN_DeactivateMouse()
 {
+	g_bInputMouseActive = false;
+
 	if (mouseinitialized)
 	{
 #ifdef WIN32

@@ -1712,8 +1712,13 @@ extern cvar_t* cl_pred_physgun;
 extern void RenderFog();
 extern int g_iWaterLevel;
 
+// copy of the last refdef params, used by the main menu UI (mmui_core.cpp) to know if the game is paused
+ref_params_t g_refparams = {};
+
 void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 {
+	g_refparams = *pparams;
+
 	RenderFog();
 	g_iWaterLevel = pparams->waterlevel;
 	//	RecClCalcRefdef(pparams);

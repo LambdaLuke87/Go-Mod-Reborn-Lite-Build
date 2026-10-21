@@ -30,6 +30,8 @@
 #include "world.h"
 #include "UserMessages.h"
 
+#include <string>
+
 extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 
 CBasePlayerItem* CGameRules::FindNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon)
@@ -536,14 +538,123 @@ void CGameRules::RefreshSkillData()
 }
 
 //=========================================================
+// Go-Mod: Reborn - Create Server menu (cl_dll/imgui/mmui_createserver.cpp)
+//
+// The menu leaves the chosen cvars in the client cvars _gm_cs_pending1..8
+// as "name=value;name=value;". We apply them here, BEFORE the gamerules are
+// created and BEFORE anything is precached (ClientPrecache runs later in
+// CWorld::Precache), so cvars that control precaches always match.
+// This also works in a clean session where our cvars didn't exist yet when
+// the menu was used.
+//=========================================================
+
+static std::string g_szCreateServerReapply;
+
+// the client escapes ';' as %3B and '%' as %25
+static std::string UnescapePendingValue(const std::string& s)
+{
+	std::string r;
+	for (size_t i = 0; i < s.size(); i++)
+	{
+		if (s[i] == '%' && i + 2 < s.size())
+		{
+			const std::string hex = s.substr(i + 1, 2);
+			if (hex == "3B" || hex == "3b")
+			{
+				r += ';';
+				i += 2;
+				continue;
+			}
+			if (hex == "25")
+			{
+				r += '%';
+				i += 2;
+				continue;
+			}
+		}
+		r += s[i];
+	}
+	return r;
+}
+
+static void ApplyCreateServerCvars()
+{
+	g_szCreateServerReapply.clear();
+
+	int applied = 0;
+
+	for (int i = 1; i <= 8; i++)
+	{
+		char pendingName[32];
+		snprintf(pendingName, sizeof(pendingName), "_gm_cs_pending%d", i);
+
+		cvar_t* pending = CVAR_GET_POINTER(pendingName);
+		if (!pending || !pending->string || '\0' == pending->string[0])
+			continue;
+
+		const std::string data = pending->string;
+		CVAR_SET_STRING(pendingName, ""); // consumed, a changelevel won't apply them again
+
+		size_t pos = 0;
+		while (pos < data.size())
+		{
+			size_t end = data.find(';', pos);
+			if (end == std::string::npos)
+				end = data.size();
+
+			const std::string entry = data.substr(pos, end - pos);
+			pos = end + 1;
+
+			const size_t eq = entry.find('=');
+			if (eq == std::string::npos || eq == 0)
+				continue;
+
+			const std::string name = entry.substr(0, eq);
+			const std::string value = UnescapePendingValue(entry.substr(eq + 1));
+
+			// engine commands (maxplayers) or cvars that don't exist are skipped
+			if (!CVAR_GET_POINTER(name.c_str()))
+				continue;
+
+			CVAR_SET_STRING(name.c_str(), value.c_str());
+			g_szCreateServerReapply += name + " \"" + value + "\"\n";
+			applied++;
+		}
+	}
+
+	if (applied > 0)
+		ALERT(at_console, "Create Server: %d cvars applied before precache\n", applied);
+}
+
+//=========================================================
 // instantiate the proper game rules object
 //=========================================================
+
+static CGameRules* CreateGameRules(CBaseEntity* pWorld);
 
 CGameRules* InstallGameRules(CBaseEntity* pWorld)
 {
 	SERVER_COMMAND("exec game.cfg\n");
 	SERVER_EXECUTE();
 
+	// Create Server menu values win over game.cfg
+	ApplyCreateServerCvars();
+
+	CGameRules* rules = CreateGameRules(pWorld);
+
+	// the multiplayer gamerules queue "exec listenserver.cfg" (it runs after the precache).
+	// queue the menu values again after it, so an old config can't undo them
+	if (!g_szCreateServerReapply.empty())
+	{
+		SERVER_COMMAND((char*)g_szCreateServerReapply.c_str());
+		g_szCreateServerReapply.clear();
+	}
+
+	return rules;
+}
+
+static CGameRules* CreateGameRules(CBaseEntity* pWorld)
+{
 	if (1 == current_gamemode.value)
 	{
 		g_teamplay = false;

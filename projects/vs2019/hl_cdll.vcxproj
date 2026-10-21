@@ -157,6 +157,9 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_core.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_createserver.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\mmui_swaphook.cpp" />
     <ClCompile Include="..\..\cl_dll\input.cpp" />
     <ClCompile Include="..\..\cl_dll\inputw32.cpp" />
     <ClCompile Include="..\..\cl_dll\interpolation.cpp" />
@@ -261,6 +264,8 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\mmui.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\mmui_swaphook.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imstb_truetype.h" />

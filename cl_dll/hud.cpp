@@ -34,6 +34,7 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/mmui.h"
 
 #include "gm_audio.h"
 
@@ -528,6 +529,9 @@ void CHud::Init()
 	ImGui::CreateContext();
 
 	ImGui_ImplOpenGL3_Init("#version 120");
+
+	// Main menu / pause menu ImGui (Create Server, ...)
+	MMUI_Init();
 
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
