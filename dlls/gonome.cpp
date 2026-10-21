@@ -27,6 +27,8 @@
 #include "animation.h"
 #include "studio.h"
 #include "game.h"
+#include "npc_sounds.h"
+#include "gm_audio_server.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -117,17 +119,9 @@ void COFGonomeGuts::Touch(CBaseEntity* pOther)
 	// splat sound
 	const auto iPitch = RANDOM_FLOAT(90, 110);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "bullchicken/bc_acid1.wav", 1, ATTN_NORM, 0, iPitch);
+	NPCSounds_Emit(this, "monster_gonome", "spit_acid", CHAN_VOICE, 1, ATTN_NORM, iPitch);
 
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit1.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit2.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_gonome", "spit_hit", CHAN_WEAPON, 1, ATTN_NORM, iPitch);
 
 	if (0 == pOther->pev->takedamage)
 	{
@@ -219,11 +213,6 @@ public:
 	void PainSound() override;
 	void DeathSound() override;
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
 	//static const char* pDeathSounds[];
 
 	bool CheckMeleeAttack2(float flDot, float flDist) override;
@@ -267,41 +256,6 @@ IMPLEMENT_SAVERESTORE(CGonome, CBaseMonster)
 LINK_ENTITY_TO_CLASS(monster_gonome, CGonome)
 LINK_ENTITY_TO_CLASS(monster_gonome_melee, CGonome)
 
-
-const char* CGonome::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CGonome::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
-
-const char* CGonome::pIdleSounds[] =
-	{
-		"gonome/gonome_idle1.wav",
-		"gonome/gonome_idle2.wav",
-		"gonome/gonome_idle3.wav",
-};
-
-const char* CGonome::pAlertSounds[] =
-	{
-		"zombie/zo_alert10.wav",
-		"zombie/zo_alert20.wav",
-		"zombie/zo_alert30.wav",
-};
-
-const char* CGonome::pPainSounds[] =
-	{
-		"gonome/gonome_pain1.wav",
-		"gonome/gonome_pain2.wav",
-		"gonome/gonome_pain3.wav",
-		"gonome/gonome_pain4.wav",
-};
 
 /*
  * Hack to ignore activity weights when choosing melee attack animation
@@ -506,7 +460,7 @@ void CGonome::IdleSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), 1, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_gonome", "idle", CHAN_VOICE, 1, ATTN_NORM, pitch);
 }
 
 //=========================================================
@@ -517,7 +471,7 @@ void CGonome::PainSound()
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
 	if (RANDOM_LONG(0, 5) < 2)
-		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, pitch);
+		NPCSounds_Emit(this, "monster_gonome", "pain", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 }
 
 //=========================================================
@@ -528,7 +482,7 @@ void CGonome::AlertSound()
 	int pitch = 100 + RANDOM_LONG(-5, 5);
 
 	// Play a random idle sound
-	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_gonome", "alert", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 }
 
 //=========================================================
@@ -536,7 +490,7 @@ void CGonome::AlertSound()
 //=========================================================
 void CGonome::DeathSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_gonome", "idle", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 
@@ -558,7 +512,7 @@ void CGonome::HandleAnimEvent(MonsterEvent_t* pEvent)
 	{
 	case GONOME_SCRIPT_EVENT_SOUND:
 		if (m_Activity != ACT_MELEE_ATTACK1)
-			EMIT_SOUND(ENT(pev), CHAN_BODY, pEvent->options, 1, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_BODY, pEvent->options, 1, ATTN_NORM, PITCH_NORM); // sound of the model event
 		break;
 
 	case ZOMBIE_AE_ATTACK_GUTS_GRAB:
@@ -644,11 +598,11 @@ void CGonome::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 5;
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 25;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_gonome", "attack_hit", CHAN_WEAPON, 1, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_gonome", "attack_miss", CHAN_WEAPON, 1, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
@@ -664,11 +618,11 @@ void CGonome::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 5;
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * -25;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_gonome", "attack_hit", CHAN_WEAPON, 1, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_gonome", "attack_miss", CHAN_WEAPON, 1, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
@@ -686,15 +640,7 @@ void CGonome::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			// croonchy bite sound
 			iPitch = RANDOM_FLOAT(90, 110);
-			switch (RANDOM_LONG(0, 1))
-			{
-			case 0:
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite2.wav", 1, ATTN_NORM, 0, iPitch);
-				break;
-			case 1:
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite3.wav", 1, ATTN_NORM, 0, iPitch);
-				break;
-			}
+			NPCSounds_Emit(this, "monster_gonome", "bite", CHAN_WEAPON, 1, ATTN_NORM, iPitch);
 
 			if (FBitSet(pHurt->pev->flags, FL_MONSTER | FL_CLIENT))
 			{
@@ -712,7 +658,6 @@ void CGonome::HandleAnimEvent(MonsterEvent_t* pEvent)
 		}
 	}
 	break;
-
 
 
 	default:
@@ -797,22 +742,10 @@ void CGonome::Precache()
 	//PRECACHE_SOUND("gonome/gonome_melee1.wav");
 	//PRECACHE_SOUND("gonome/gonome_melee2.wav");
 
-	//PRECACHE_SOUND_ARRAY(pIdleSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
 	//PRECACHE_SOUND_ARRAY(pDeathSounds);
-	//PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
-	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 
 	PRECACHE_SOUND("gonome/gonome_run.wav");
 
-	PRECACHE_SOUND("bullchicken/bc_acid1.wav");
-
-	PRECACHE_SOUND("bullchicken/bc_bite2.wav");
-	PRECACHE_SOUND("bullchicken/bc_bite3.wav");
-
-	PRECACHE_SOUND("bullchicken/bc_spithit1.wav");
-	PRECACHE_SOUND("bullchicken/bc_spithit2.wav");
 
 	PRECACHE_SOUND("gonome/gonome_step1.wav");
 	PRECACHE_SOUND("gonome/gonome_step2.wav");
@@ -985,16 +918,7 @@ void CGonome::RunTask(Task_t* pTask)
 	{
 		if (!m_playedAttackSound)
 		{
-			const char* sample = NULL;
-			if (m_meleeAttack2)
-			{
-				sample = "!GO_MELEE1";
-			}
-			else
-			{
-				sample = "!GO_MELEE0";
-			}
-			EMIT_SOUND(ENT(pev), CHAN_BODY, sample, 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_gonome", m_meleeAttack2 ? "melee_attack2" : "melee_attack1", CHAN_BODY, 1, ATTN_NORM, PITCH_NORM);
 			m_playedAttackSound = true;
 		}
 	}

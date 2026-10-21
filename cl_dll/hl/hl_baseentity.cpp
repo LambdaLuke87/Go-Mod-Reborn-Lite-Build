@@ -29,6 +29,8 @@ This file contains "stubs" of class member implementations so that we can predic
 #include "nodes.h"
 #include "soundent.h"
 #include "skill.h"
+#include "gm_audio_server.h"
+#include "npc_sounds.h"
 
 void EMIT_SOUND_DYN(edict_t* entity, int channel, const char* sample, float volume, float attenuation, int flags, int pitch) {}
 
@@ -342,3 +344,17 @@ void CBasePlayerWeapon::RetireWeapon() {}
 void CBasePlayerWeapon::DoRetireWeapon() {}
 void CSoundEnt::InsertSound(int iType, const Vector& vecOrigin, int iVolume, float flDuration) {}
 void RadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType) {}
+
+// Go-Mod audio system: the server sends the sounds, the client copy of the weapon code doesn't
+void GMAudio_Emit(CBaseEntity* pEntity, int channel, const char* path, float volume, float attenuation, int pitch) {}
+void GMAudio_Stop(CBaseEntity* pEntity, int channel) {}
+void GMAudio_EmitAmbient(const Vector& origin, const char* path, float volume, float attenuation, int pitch) {}
+void GMAudio_EmitPredicted(CBaseEntity* pPlayer, int channel, const char* path, float volume, float attenuation, int pitch) {}
+bool GMAudio_IsNPC(CBaseEntity* pEntity) { return false; }
+bool NPCSounds_Emit(CBaseEntity* pEntity, const char* config, const char* group, int channel, float volume, float attenuation, int pitch) { return false; }
+bool NPCSounds_EmitIndex(CBaseEntity* pEntity, const char* config, const char* group, int index, int channel, float volume, float attenuation, int pitch) { return false; }
+bool NPCSounds_EmitAmbient(const Vector& origin, const char* config, const char* group, float volume, float attenuation, int pitch) { return false; }
+int NPCSounds_Count(const char* config, const char* group) { return 0; }
+const char* NPCSounds_Random(const char* config, const char* group) { return nullptr; }
+const char* NPCSounds_Get(const char* config, const char* group, int index) { return nullptr; }
+void NPCSounds_ClearCache() {}

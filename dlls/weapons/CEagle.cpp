@@ -22,6 +22,7 @@
 #include "CEagleLaser.h"
 
 #include "CEagle.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION CEagle::m_SaveData[] =
@@ -254,7 +255,7 @@ void CEagle::SecondaryAttack()
 
 			m_pLaser = nullptr;
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC27", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+			GMAudio_Emit(this, CHAN_WEAPON, "!WP_GUNMISC27", VOL_NORM, ATTN_NORM, PITCH_NORM);
 		}
 	}
 #endif
@@ -302,7 +303,7 @@ void CEagle::UpdateLaser()
 		{
 			m_pLaser = CEagleLaser::CreateSpot();
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC26", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+			GMAudio_Emit(this, CHAN_WEAPON, "weapons/desert_eagle_sight.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 		}
 
 		UTIL_MakeVectors(m_pPlayer->pev->v_angle);

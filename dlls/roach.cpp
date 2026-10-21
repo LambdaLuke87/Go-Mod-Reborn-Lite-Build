@@ -23,6 +23,7 @@
 #include "schedule.h"
 #include "soundent.h"
 #include "decals.h"
+#include "npc_sounds.h"
 
 #define ROACH_IDLE 0
 #define ROACH_BORED 1
@@ -149,9 +150,6 @@ void CRoach::Precache()
 {
 	PRECACHE_MODEL("models/roach.mdl");
 
-	PRECACHE_SOUND("roach/rch_die.wav");
-	PRECACHE_SOUND("roach/rch_walk.wav");
-	PRECACHE_SOUND("roach/rch_smash.wav");
 }
 
 
@@ -167,11 +165,11 @@ void CRoach::Killed(entvars_t* pevAttacker, int iGib)
 	//random sound
 	if (RANDOM_LONG(0, 4) == 1)
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "roach/rch_die.wav", 0.8, ATTN_NORM, 0, 80 + RANDOM_LONG(0, 39));
+		NPCSounds_Emit(this, "monster_cockroach", "death", CHAN_VOICE, 0.8, ATTN_NORM, 80 + RANDOM_LONG(0, 39));
 	}
 	else
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "roach/rch_smash.wav", 0.7, ATTN_NORM, 0, 80 + RANDOM_LONG(0, 39));
+		NPCSounds_Emit(this, "monster_cockroach", "smash", CHAN_BODY, 0.7, ATTN_NORM, 80 + RANDOM_LONG(0, 39));
 	}
 
 	CSoundEnt::InsertSound(bits_SOUND_WORLD, pev->origin, 128, 1);
@@ -344,7 +342,7 @@ void CRoach::PickNewDest(int iCondition)
 	if (RANDOM_LONG(0, 9) == 1)
 	{
 		// every once in a while, a roach will play a skitter sound when they decide to run
-		EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "roach/rch_walk.wav", 1, ATTN_NORM, 0, 80 + RANDOM_LONG(0, 39));
+		NPCSounds_Emit(this, "monster_cockroach", "walk", CHAN_BODY, 1, ATTN_NORM, 80 + RANDOM_LONG(0, 39));
 	}
 }
 

@@ -32,6 +32,7 @@
 #include "scripted.h"
 #include "gamerules.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Gargantua Monster
@@ -384,17 +385,9 @@ protected:
 
 	void HandleSlashAnim(float damage, float punch, float velocity);
 
-	static const char* pAttackHitSounds[];
-	static const char* pBeamAttackSounds[];
-	static const char* pAttackMissSounds[];
 	static const char* pRicSounds[];
-	static const char* pFootSounds[];
 	// static const char* pIdleSounds[];
 	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	// static const char* pAttackSounds[];
-	static const char* pStompSounds[];
-	// static const char* pBreatheSounds[];
 
 	CBaseEntity* GargantuaCheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
 
@@ -428,25 +421,6 @@ TYPEDESCRIPTION CGargantua::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CGargantua, CBaseMonster)
 
-const char* CGargantua::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CGargantua::pBeamAttackSounds[] =
-	{
-		"garg/gar_flameoff1.wav",
-		"garg/gar_flameon1.wav",
-		"garg/gar_flamerun1.wav",
-};
-
-const char* CGargantua::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
 
 const char* CGargantua::pRicSounds[] =
 	{
@@ -464,11 +438,6 @@ const char* CGargantua::pRicSounds[] =
 #endif
 };
 
-const char* CGargantua::pFootSounds[] =
-	{
-		"garg/gar_step1.wav",
-		"garg/gar_step2.wav",
-};
 
 /*const char* CGargantua::pIdleSounds[] =
 {
@@ -493,17 +462,6 @@ const char* CGargantua::pAlertSounds[] =
 		"garg/gar_alert3.wav",
 };
 
-const char* CGargantua::pPainSounds[] =
-{
-	"garg/gar_pain1.wav",
-	"garg/gar_pain2.wav",
-	"garg/gar_pain3.wav",
-};
-
-const char* CGargantua::pStompSounds[] =
-	{
-		"garg/gar_stomp1.wav",
-};
 
 /*const char* CGargantua::pBreatheSounds[] =
 {
@@ -666,8 +624,8 @@ void CGargantua::FlameCreate()
 			CSoundEnt::InsertSound(bits_SOUND_COMBAT, posGun, 384, 0.3);
 		}
 	}
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, pBeamAttackSounds[1], 1.0, ATTN_NORM, 0, PITCH_NORM);
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pBeamAttackSounds[2], 1.0, ATTN_NORM, 0, PITCH_NORM);
+	NPCSounds_EmitIndex(this, "monster_gargantua", "beam_attack", 1, CHAN_BODY, 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_EmitIndex(this, "monster_gargantua", "beam_attack", 2, CHAN_WEAPON, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CGargantua::FlameControls(float angleX, float angleY)
@@ -826,7 +784,7 @@ void CGargantua::FlameDestroy()
 
 void CGargantua::FlameOffSound()
 {
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pBeamAttackSounds[0], 1.0, ATTN_NORM, 0, PITCH_NORM);
+	NPCSounds_EmitIndex(this, "monster_gargantua", "beam_attack", 0, CHAN_WEAPON, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CGargantua::PrescheduleThink()
@@ -972,7 +930,7 @@ void CGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	{
 		if (m_painSoundTime < gpGlobals->time)
 		{
-			GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1, ATTN_GARG, PITCH_NORM);
+			NPCSounds_Emit(this, "monster_gargantua", "pain", CHAN_VOICE, 1, ATTN_GARG, PITCH_NORM);
 			m_painSoundTime = gpGlobals->time + RANDOM_FLOAT(2.5, 4);
 		}
 	}
@@ -1138,10 +1096,10 @@ void CGargantua::HandleSlashAnim(float damage, float punch, float velocity)
 			// UTIL_MakeVectors( pev->angles );	// called by CheckTraceHullAttack
 			pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_right * velocity;
 		}
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, 50 + RANDOM_LONG(0, 15));
+		NPCSounds_Emit(this, "monster_gargantua", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 50 + RANDOM_LONG(0, 15));
 	}
 	else // Play a random attack miss sound
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, 50 + RANDOM_LONG(0, 15));
+		NPCSounds_Emit(this, "monster_gargantua", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 50 + RANDOM_LONG(0, 15));
 
 	Vector forward;
 	UTIL_MakeVectorsPrivate(pev->angles, forward, NULL, NULL);
@@ -1439,13 +1397,13 @@ int CGargantua::MaxEyeBrightness()
 void CGargantua::FootEffect()
 {
 	UTIL_ScreenShake(pev->origin, 4.0, 3.0, 1.0, 750);
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, RANDOM_SOUND_ARRAY(pFootSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+	NPCSounds_Emit(this, "monster_gargantua", "foot", CHAN_BODY, 1.0, ATTN_GARG, PITCH_NORM + RANDOM_LONG(-10, 10));
 }
 
 void CGargantua::StompEffect()
 {
 	UTIL_ScreenShake(pev->origin, 12.0, 100.0, 2.0, 1000);
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pStompSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+	NPCSounds_Emit(this, "monster_gargantua", "stomp", CHAN_WEAPON, 1.0, ATTN_GARG, PITCH_NORM + RANDOM_LONG(-10, 10));
 }
 
 float CGargantua::FlameLength()
@@ -1465,52 +1423,24 @@ int CGargantua::SmallFlameScale()
 
 void CGargantua::PrecacheSounds()
 {
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
-	PRECACHE_SOUND_ARRAY(pBeamAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 	PRECACHE_SOUND_ARRAY(pRicSounds);
-	PRECACHE_SOUND_ARRAY(pFootSounds);
 	// PRECACHE_SOUND_ARRAY(pIdleSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	// PRECACHE_SOUND_ARRAY(pPainSounds);
-	// PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pStompSounds);
-	// PRECACHE_SOUND_ARRAY(pBreatheSounds);
 }
 
 void CGargantua::BreatheSound()
 {
 	if (m_breatheTime <= gpGlobals->time)
 	{
-		switch (RANDOM_LONG(0, 3))
-		{
-		case 0:
-			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe1.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
-			break;
-		case 1:
-			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe2.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
-			break;
-		case 2:
-			GMAudio_Emit(this, CHAN_VOICE, "garg/gar_breathe3.wav", 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
-			break;
-		}
+		if (RANDOM_LONG(0, 3) < 3) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_gargantua", "breathe", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM + RANDOM_LONG(-10, 10));
 	}
 }
 
 void CGargantua::AttackSound()
 {
-	switch (RANDOM_LONG(0, 3))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "garg/gar_attack3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	if (RANDOM_LONG(0, 3) < 3) // the original switch had silent cases
+		NPCSounds_Emit(this, "monster_gargantua", "attack", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 float CGargantua::FlameTimeDivider()
@@ -1635,14 +1565,8 @@ public:
 	void AttackSound() override;
 
 	static const char* pBeamAttackSounds[];
-	static const char* pFootSounds[];
 	static const char* pIdleSounds[];
 	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pDeathSounds[];
-	static const char* pAttackSounds[];
-	static const char* pStompSounds[];
-	static const char* pBreatheSounds[];
 
 protected:
 	void PrecacheSounds();
@@ -1674,11 +1598,6 @@ const char* CBabyGargantua::pBeamAttackSounds[] =
 		"garg/gar_flamerun1.wav",
 };
 
-const char* CBabyGargantua::pFootSounds[] =
-	{
-		"babygarg/gar_step1.wav",
-		"babygarg/gar_step2.wav",
-};
 
 const char* CBabyGargantua::pIdleSounds[] =
 	{
@@ -1689,12 +1608,6 @@ const char* CBabyGargantua::pIdleSounds[] =
 		"babygarg/gar_idle5.wav",
 };
 
-const char* CBabyGargantua::pAttackSounds[] =
-	{
-		"babygarg/gar_attack1.wav",
-		"babygarg/gar_attack2.wav",
-		"babygarg/gar_attack3.wav",
-};
 
 const char* CBabyGargantua::pAlertSounds[] =
 	{
@@ -1703,44 +1616,12 @@ const char* CBabyGargantua::pAlertSounds[] =
 		"babygarg/gar_alert3.wav",
 };
 
-const char* CBabyGargantua::pPainSounds[] =
-	{
-		"babygarg/gar_pain1.wav",
-		"babygarg/gar_pain2.wav",
-		"babygarg/gar_pain3.wav",
-};
-
-const char* CBabyGargantua::pDeathSounds[] =
-	{
-		"babygarg/gar_die1.wav",
-		"babygarg/gar_die2.wav",
-};
-
-const char* CBabyGargantua::pStompSounds[] =
-	{
-		"babygarg/gar_stomp1.wav",
-};
-
-const char* CBabyGargantua::pBreatheSounds[] =
-	{
-		"babygarg/gar_breathe1.wav",
-		"babygarg/gar_breathe2.wav",
-		"babygarg/gar_breathe3.wav",
-};
 
 void CBabyGargantua::PrecacheSounds()
 {
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pBeamAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
-	PRECACHE_SOUND_ARRAY(pFootSounds);
 	PRECACHE_SOUND_ARRAY(pIdleSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pDeathSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pStompSounds);
-	PRECACHE_SOUND_ARRAY(pBreatheSounds);
 }
 
 void CBabyGargantua::StartTask(Task_t* pTask)
@@ -1786,10 +1667,10 @@ void CBabyGargantua::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 20;
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_up * 100 + gpGlobals->v_forward * 200;
 			}
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, 50 + RANDOM_LONG(0, 15));
+			NPCSounds_Emit(this, "monster_gargantua", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 50 + RANDOM_LONG(0, 15));
 		}
 		else // Play a random attack miss sound
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, 50 + RANDOM_LONG(0, 15));
+			NPCSounds_Emit(this, "monster_gargantua", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 50 + RANDOM_LONG(0, 15));
 	}
 	break;
 	default:
@@ -1800,7 +1681,7 @@ void CBabyGargantua::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 void CBabyGargantua::DeathSound()
 {
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), 1.0, ATTN_NORM);
+	NPCSounds_Emit(this, "monster_babygarg", "death", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 float CBabyGargantua::DefaultHealth()
@@ -1865,7 +1746,7 @@ void CBabyGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector 
 
 	if (m_painSoundTime < gpGlobals->time)
 	{
-		GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, PITCH_NORM);
+		NPCSounds_Emit(this, "monster_babygarg", "pain", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 		m_painSoundTime = gpGlobals->time + RANDOM_FLOAT(2.5, 4);
 	}
 
@@ -1875,13 +1756,13 @@ void CBabyGargantua::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector 
 void CBabyGargantua::FootEffect()
 {
 	UTIL_ScreenShake(pev->origin, 2.0, 3.0, 1.0, 400);
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, RANDOM_SOUND_ARRAY(pFootSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+	NPCSounds_Emit(this, "monster_babygarg", "foot", CHAN_BODY, 1.0, ATTN_GARG, PITCH_NORM + RANDOM_LONG(-10, 10));
 }
 
 void CBabyGargantua::StompEffect()
 {
 	UTIL_ScreenShake(pev->origin, 6.0, 100.0, 1.5, 600);
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pStompSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+	NPCSounds_Emit(this, "monster_babygarg", "stomp", CHAN_WEAPON, 1.0, ATTN_GARG, PITCH_NORM + RANDOM_LONG(-10, 10));
 }
 
 float CBabyGargantua::FlameLength()
@@ -1902,12 +1783,12 @@ int CBabyGargantua::SmallFlameScale()
 void CBabyGargantua::BreatheSound()
 {
 	if (m_breatheTime <= gpGlobals->time)
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, RANDOM_SOUND_ARRAY(pBreatheSounds), 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10, 10));
+		NPCSounds_Emit(this, "monster_babygarg", "breathe", CHAN_VOICE, 1.0, ATTN_GARG, PITCH_NORM + RANDOM_LONG(-10, 10));
 }
 
 void CBabyGargantua::AttackSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_GARG, 0, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_babygarg", "attack", CHAN_VOICE, 1.0, ATTN_GARG, PITCH_NORM);
 }
 
 float CBabyGargantua::FlameTimeDivider()

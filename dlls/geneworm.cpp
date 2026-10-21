@@ -18,6 +18,7 @@
 #include "skill.h"
 #include "effects.h"
 #include "weapons.h"
+#include "npc_sounds.h"
 
 const int AE_GENEWORM_SPIT_START = 0;
 const int AE_GENEWORM_LAUNCH_SPAWN = 2;
@@ -389,7 +390,7 @@ void COFGeneWormSpawn::RunGeneWormSpawn(float frames)
 				m_bWarping = true;
 				m_flWarpTime = gpGlobals->time + 3.0;
 
-				EMIT_SOUND(edict(), CHAN_WEAPON, "debris/beamstart2.wav", VOL_NORM, ATTN_NORM);
+				NPCSounds_Emit(this, "monster_geneworm", "spawn_beam", CHAN_WEAPON, VOL_NORM, ATTN_NORM, PITCH_NORM);
 			}
 		}
 		else
@@ -610,8 +611,6 @@ public:
 
 	void TrackHead();
 
-	static const char* pIdleSounds[];
-	static const char* pSpawnSounds[];
 
 	float m_flNextPainSound;
 
@@ -693,16 +692,6 @@ IMPLEMENT_SAVERESTORE(COFGeneWorm, CBaseMonster);
 
 LINK_ENTITY_TO_CLASS(monster_geneworm, COFGeneWorm);
 
-const char* COFGeneWorm::pIdleSounds[] =
-	{
-		"geneworm/geneworm_idle1.wav",
-		"geneworm/geneworm_idle2.wav",
-		"geneworm/geneworm_idle3.wav",
-		"geneworm/geneworm_idle4.wav"};
-
-const char* COFGeneWorm::pSpawnSounds[] =
-	{
-		"debris/beamstart7.wav"};
 
 void COFGeneWorm::Precache()
 {
@@ -722,30 +711,12 @@ void COFGeneWorm::Precache()
 	PRECACHE_SOUND("bullchicken/bc_spithit1.wav");
 	PRECACHE_SOUND("bullchicken/bc_spithit2.wav");
 
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pSpawnSounds);
 
-	PRECACHE_SOUND("debris/beamstart7.wav");
-	PRECACHE_SOUND("debris/beamstart2.wav");
 
 	PRECACHE_MODEL("sprites/xspark4.spr");
 	PRECACHE_MODEL("sprites/ballsmoke.spr");
 
-	PRECACHE_SOUND("geneworm/geneworm_attack_mounted_gun.wav");
-	PRECACHE_SOUND("geneworm/geneworm_attack_mounted_rocket.wav");
 
-	PRECACHE_SOUND("geneworm/geneworm_beam_attack.wav");
-	PRECACHE_SOUND("geneworm/geneworm_big_attack_forward.wav");
-
-	PRECACHE_SOUND("geneworm/geneworm_death.wav");
-
-	PRECACHE_SOUND("geneworm/geneworm_final_pain1.wav");
-	PRECACHE_SOUND("geneworm/geneworm_final_pain2.wav");
-	PRECACHE_SOUND("geneworm/geneworm_final_pain3.wav");
-	PRECACHE_SOUND("geneworm/geneworm_final_pain4.wav");
-	PRECACHE_SOUND("geneworm/geneworm_shot_in_eye.wav");
-
-	PRECACHE_SOUND("geneworm/geneworm_entry.wav");
 }
 
 void COFGeneWorm::Spawn()
@@ -906,22 +877,22 @@ void COFGeneWorm::HuntThink()
 		if (!m_fRightEyeHit)
 		{
 			pev->sequence = FindTransition(pev->sequence, LookupSequence("eyepain1"), &piDir);
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_shot_in_eye.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "eye_hit", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 		}
 		else if (!m_fLeftEyeHit)
 		{
 			pev->sequence = FindTransition(pev->sequence, LookupSequence("eyepain2"), &piDir);
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_shot_in_eye.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "eye_hit", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 		}
 		else if (m_fOrificeHit)
 		{
 			pev->sequence = FindTransition(pev->sequence, LookupSequence("bigpain3"), &piDir);
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_final_pain3.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "final_pain3", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 		}
 		else
 		{
 			pev->sequence = FindTransition(pev->sequence, LookupSequence("bigpain1"), &piDir);
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_final_pain1.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "final_pain1", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 			Vector vecOrigin, vecAngles;
 			GetAttachment(1, vecOrigin, vecAngles);
@@ -1107,7 +1078,7 @@ void COFGeneWorm::DyingThink()
 
 		ResetSequenceInfo();
 
-		EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_death.wav", VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_geneworm", "death", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 		m_flDeathStart = gpGlobals->time;
 
@@ -1225,7 +1196,7 @@ void COFGeneWorm::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_
 		pev->solid = SOLID_BBOX;
 
 		UTIL_SetOrigin(pev, pev->origin);
-		EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_entry.wav", VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_geneworm", "entry", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 	}
 }
 
@@ -1262,7 +1233,7 @@ void COFGeneWorm::NextActivity()
 		if (gpGlobals->time <= m_flOrificeOpenTime && !m_fOrificeHit)
 		{
 			pev->sequence = LookupSequence("bigpain2");
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_final_pain2.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "final_pain2", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 			return;
 		}
 
@@ -1271,7 +1242,7 @@ void COFGeneWorm::NextActivity()
 		if (!m_fSpawningTrooper)
 		{
 			pev->sequence = LookupSequence("bigpain4");
-			EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_final_pain4.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_geneworm", "final_pain4", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 			m_fSpawningTrooper = true;
 			return;
 		}
@@ -1311,7 +1282,7 @@ void COFGeneWorm::NextActivity()
 		break;
 	}
 
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], VOL_NORM, 0.1, 0, RANDOM_LONG(-5, 5) + 100);
+	NPCSounds_Emit(this, "monster_geneworm", "idle", CHAN_BODY, VOL_NORM, 0.1, RANDOM_LONG(-5, 5) + 100);
 }
 
 bool COFGeneWorm::ClawAttack()
@@ -1343,7 +1314,7 @@ bool COFGeneWorm::ClawAttack()
 					else
 						pev->sequence = LookupSequence("dattack3");
 
-					EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_beam_attack.wav", VOL_NORM, 0.1);
+					NPCSounds_Emit(this, "monster_geneworm", "beam_attack", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 					m_flNextRangeTime = RANDOM_FLOAT(10, 15) + gpGlobals->time;
 
@@ -1360,17 +1331,17 @@ bool COFGeneWorm::ClawAttack()
 					else if (yawDelta >= 10.0)
 					{
 						pev->sequence = LookupSequence("melee1");
-						EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_attack_mounted_rocket.wav", VOL_NORM, 0.1);
+						NPCSounds_Emit(this, "monster_geneworm", "attack_mounted_rocket", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 					}
 					else if (yawDelta > -2.0)
 					{
 						pev->sequence = LookupSequence("melee3");
-						EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_big_attack_forward.wav", VOL_NORM, 0.1);
+						NPCSounds_Emit(this, "monster_geneworm", "big_attack_forward", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 					}
 					else
 					{
 						pev->sequence = LookupSequence("melee2");
-						EMIT_SOUND(edict(), CHAN_VOICE, "geneworm/geneworm_attack_mounted_gun.wav", VOL_NORM, 0.1);
+						NPCSounds_Emit(this, "monster_geneworm", "attack_mounted_gun", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 					}
 
 					m_flNextMeleeTime = RANDOM_FLOAT(3, 5) + gpGlobals->time;
@@ -1625,7 +1596,7 @@ void COFGeneWorm::HandleAnimEvent(MonsterEvent_t* pEvent)
 			GetAttachment(1, vecPos, vecAng);
 			UTIL_MakeVectors(pev->angles);
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pSpawnSounds[RANDOM_LONG(0, ARRAYSIZE(pSpawnSounds) - 1)], VOL_NORM, 0.1, 0, RANDOM_LONG(-5, 5) + 100);
+			NPCSounds_Emit(this, "monster_geneworm", "spawn", CHAN_WEAPON, VOL_NORM, 0.1, RANDOM_LONG(-5, 5) + 100);
 
 			m_orificeGlow->LaunchSpawn(vecPos, gpGlobals->v_forward, RANDOM_LONG(0, 50) + 300, edict(), 2);
 

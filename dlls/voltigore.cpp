@@ -26,6 +26,7 @@
 #include "soundent.h"
 #include "hornet.h"
 #include "decals.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // monster-specific schedule types
@@ -57,7 +58,6 @@ enum
 
 #define VOLTIGORE_AE_LEFT_PUNCH (12)
 #define VOLTIGORE_AE_RIGHT_PUNCH (13)
-
 
 
 #define VOLTIGORE_MELEE_DIST 128
@@ -376,10 +376,7 @@ public:
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
 	static const char* pPainSounds[];
-	static const char* pAlertSounds[];
 
 	EHANDLE m_pBeam[VOLTIGORE_BEAM_COUNT];
 	int m_iBeams;
@@ -415,18 +412,6 @@ TYPEDESCRIPTION COFVoltigore::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(COFVoltigore, CSquadMonster);
 
-const char* COFVoltigore::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* COFVoltigore::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
 
 const char* COFVoltigore::pPainSounds[] =
 	{
@@ -436,12 +421,6 @@ const char* COFVoltigore::pPainSounds[] =
 		"voltigore/voltigore_pain4.wav",
 };
 
-const char* COFVoltigore::pAlertSounds[] =
-	{
-		"voltigore/voltigore_alert1.wav",
-		"voltigore/voltigore_alert2.wav",
-		"voltigore/voltigore_alert3.wav",
-};
 
 //=========================================================
 // IRelationship - overridden because Human Grunts are
@@ -525,7 +504,7 @@ void COFVoltigore::AlertSound()
 {
 	StopTalking();
 
-	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_alien_voltigore", "alert", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -542,7 +521,7 @@ void COFVoltigore::PainSound()
 
 	StopTalking();
 
-	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_EmitIndex(this, "monster_alien_voltigore", "alert", RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1), CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -633,7 +612,7 @@ void COFVoltigore::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 250;
 			}
 
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_alien_voltigore", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 			Vector vecArmPos, vecArmAng;
 			GetAttachment(0, vecArmPos, vecArmAng);
@@ -642,7 +621,7 @@ void COFVoltigore::HandleAnimEvent(MonsterEvent_t* pEvent)
 		else
 		{
 			// Play a random attack miss sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_alien_voltigore", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
@@ -663,7 +642,7 @@ void COFVoltigore::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * -250;
 			}
 
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_alien_voltigore", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 			Vector vecArmPos, vecArmAng;
 			GetAttachment(0, vecArmPos, vecArmAng);
@@ -672,7 +651,7 @@ void COFVoltigore::HandleAnimEvent(MonsterEvent_t* pEvent)
 		else
 		{
 			// Play a random attack miss sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_alien_voltigore", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
@@ -722,18 +701,11 @@ void COFVoltigore::Spawn()
 //=========================================================
 void COFVoltigore::Precache()
 {
-	int i;
-
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
 	else
 		PRECACHE_MODEL("models/voltigore.mdl");
 
-	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
-		PRECACHE_SOUND((char*)pAttackHitSounds[i]);
-
-	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
-		PRECACHE_SOUND((char*)pAttackMissSounds[i]);
 
 	//PRECACHE_SOUND("voltigore/voltigore_attack_melee1.wav");
 	//PRECACHE_SOUND("voltigore/voltigore_attack_melee2.wav");
@@ -747,16 +719,9 @@ void COFVoltigore::Precache()
 	//PRECACHE_SOUND("voltigore/voltigore_die2.wav");
 	//PRECACHE_SOUND("voltigore/voltigore_die3.wav");
 
-	PRECACHE_SOUND("voltigore/voltigore_footstep1.wav");
-	PRECACHE_SOUND("voltigore/voltigore_footstep2.wav");
-	PRECACHE_SOUND("voltigore/voltigore_footstep3.wav");
 
-	PRECACHE_SOUND("voltigore/voltigore_run_grunt1.wav");
-	PRECACHE_SOUND("voltigore/voltigore_run_grunt2.wav");
 
-	PRECACHE_SOUND("hassault/hw_shoot1.wav");
 
-	PRECACHE_SOUND("debris/beamstart2.wav");
 
 	UTIL_PrecacheOther("charged_bolt");
 
@@ -1082,7 +1047,7 @@ void COFVoltigore::StartTask(Task_t* pTask)
 
 		UTIL_SetOrigin(m_pChargedBolt->pev, vecConverge);
 
-		UTIL_EmitAmbientSound(edict(), pev->origin, "debris/beamstart2.wav", 0.5, ATTN_NORM, 0, RANDOM_LONG(140, 160));
+		NPCSounds_EmitAmbient(pev->origin, "monster_alien_voltigore", "beam_start", 0.5, ATTN_NORM, RANDOM_LONG(140, 160));
 		CBaseMonster::StartTask(pTask);
 	}
 	break;
@@ -1385,7 +1350,7 @@ const GibData VoltigoreGibs = {"models/vgibs.mdl", 0, 9, VoltigoreGibLimits};
 
 void COFVoltigore::GibMonster()
 {
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);
+	NPCSounds_Emit(this, "monster_alien_voltigore", "gib", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 	pev->renderfx = kRenderFxExplode;
 

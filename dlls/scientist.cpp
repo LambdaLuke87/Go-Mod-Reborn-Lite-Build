@@ -27,6 +27,7 @@
 #include "animation.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 
 #define NUM_SCIENTIST_HEADS 4			 // four heads available for scientist model
@@ -324,7 +325,6 @@ Schedule_t slScientistCover[] =
 			0,
 			"ScientistCover"},
 };
-
 
 
 Task_t tlScientistHide[] =
@@ -721,11 +721,6 @@ void CScientist::Precache()
 		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
 	else
 		PRECACHE_MODEL(GetScientistModel());
-	PRECACHE_SOUND("scientist/sci_pain1.wav");
-	PRECACHE_SOUND("scientist/sci_pain2.wav");
-	PRECACHE_SOUND("scientist/sci_pain3.wav");
-	PRECACHE_SOUND("scientist/sci_pain4.wav");
-	PRECACHE_SOUND("scientist/sci_pain5.wav");
 
 	// every new scientist must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
@@ -830,24 +825,7 @@ void CScientist::PainSound()
 
 	m_painTime = gpGlobals->time + RANDOM_FLOAT(0.5, 0.75);
 
-	switch (RANDOM_LONG(0, 4))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "scientist/sci_pain1.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "scientist/sci_pain2.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "scientist/sci_pain3.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 3:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "scientist/sci_pain4.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 4:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "scientist/sci_pain5.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	}
+	NPCSounds_Emit(this, "monster_scientist", "pain", CHAN_VOICE, 1, ATTN_NORM, GetVoicePitch());
 }
 
 //=========================================================
@@ -1361,7 +1339,6 @@ int CSittingScientist::FriendNumber(int arrayNumber)
 		return array[arrayNumber];
 	return arrayNumber;
 }
-
 
 
 //=========================================================

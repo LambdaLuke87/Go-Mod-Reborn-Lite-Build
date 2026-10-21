@@ -12,13 +12,38 @@ enum
 	GM_SND_STOP = 1 // stop whatever this entity is playing on this channel
 };
 
+// Sentence from sound/sentences.txt: "!NAME" (letters, numbers and '_', max 40 chars)
+inline bool GMAudio_IsSentence(const char* path)
+{
+	if (!path || path[0] != '!')
+		return false;
+
+	const size_t len = strlen(path);
+	if (len < 2 || len > 41)
+		return false;
+
+	for (size_t i = 1; i < len; ++i)
+	{
+		const unsigned char c = (unsigned char)path[i];
+		const bool ok = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
+		if (!ok)
+			return false;
+	}
+
+	return true;
+}
+
 // Valid: letters, numbers, '_' '-' '/' '.', no "..", no leading '/', max 100 chars, must end in ".wav".
 // Both "zombie/zo_idle1.wav" and "sound/zombie/zo_idle1.wav" are accepted.
+// A sentence "!NAME" (sound/sentences.txt) is valid too.
 // The server doesn't trust itself and the client doesn't trust the server: both call this.
 inline bool GMAudio_IsValidSoundPath(const char* path)
 {
 	if (!path)
 		return false;
+
+	if (path[0] == '!')
+		return GMAudio_IsSentence(path);
 
 	const size_t len = strlen(path);
 

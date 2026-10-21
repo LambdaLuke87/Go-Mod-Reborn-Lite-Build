@@ -26,6 +26,7 @@
 #include "pm_defs.h"
 #include "pm_materials.h"
 #include "pm_shared.h"
+#include "gm_audio_server.h"
 
 static char* memfgets(byte* pMemFile, int fileSize, int& filePos, char* pBuffer, int bufferSize);
 
@@ -1167,6 +1168,18 @@ int SENTENCEG_GetIndex(const char* szgroupname)
 	return -1;
 }
 
+// Sentences of the NPCs go through the Go-Mod audio system (no engine channel, mouth moved by the client).
+// Players (HEV) and everything else keep using the engine.
+static void PlayGroupSentence(edict_t* entity, const char* name, float volume, float attenuation, int flags, int pitch)
+{
+	CBaseEntity* pEntity = CBaseEntity::Instance(entity);
+
+	if (GMAudio_IsNPC(pEntity) && (flags & (SND_STOP | SND_CHANGE_VOL | SND_CHANGE_PITCH)) == 0)
+		GMAudio_Emit(pEntity, CHAN_VOICE, name, volume, attenuation, pitch);
+	else
+		EMIT_SOUND_DYN(entity, CHAN_VOICE, name, volume, attenuation, flags, pitch);
+}
+
 // given sentence group index, play random sentence for given entity.
 // returns ipick - which sentence was picked to
 // play from the group. Ipick is only needed if you plan on stopping
@@ -1185,7 +1198,7 @@ int SENTENCEG_PlayRndI(edict_t* entity, int isentenceg,
 
 	ipick = USENTENCEG_Pick(isentenceg, name);
 	if (ipick > 0 && name)
-		EMIT_SOUND_DYN(entity, CHAN_VOICE, name, volume, attenuation, flags, pitch);
+		PlayGroupSentence(entity, name, volume, attenuation, flags, pitch);
 	return ipick;
 }
 
@@ -1212,7 +1225,7 @@ int SENTENCEG_PlayRndSz(edict_t* entity, const char* szgroupname,
 
 	ipick = USENTENCEG_Pick(isentenceg, name);
 	if (ipick >= 0 && '\0' != name[0])
-		EMIT_SOUND_DYN(entity, CHAN_VOICE, name, volume, attenuation, flags, pitch);
+		PlayGroupSentence(entity, name, volume, attenuation, flags, pitch);
 
 	return ipick;
 }
@@ -1237,7 +1250,7 @@ int SENTENCEG_PlaySequentialSz(edict_t* entity, const char* szgroupname,
 
 	ipicknext = USENTENCEG_PickSequential(isentenceg, name, ipick, freset);
 	if (ipicknext >= 0 && '\0' != name[0])
-		EMIT_SOUND_DYN(entity, CHAN_VOICE, name, volume, attenuation, flags, pitch);
+		PlayGroupSentence(entity, name, volume, attenuation, flags, pitch);
 	return ipicknext;
 }
 
@@ -1262,6 +1275,10 @@ void SENTENCEG_Stop(edict_t* entity, int isentenceg, int ipick)
 	strcat(buffer, sznum);
 
 	STOP_SOUND(entity, CHAN_VOICE, buffer);
+
+	CBaseEntity* pEntity = CBaseEntity::Instance(entity);
+	if (GMAudio_IsNPC(pEntity))
+		GMAudio_Stop(pEntity, CHAN_VOICE);
 }
 
 // open sentences.txt, scan for groups, build rgsentenceg

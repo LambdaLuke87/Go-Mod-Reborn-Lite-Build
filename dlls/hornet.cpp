@@ -24,6 +24,7 @@
 #include "soundent.h"
 #include "hornet.h"
 #include "gamerules.h"
+#include "npc_sounds.h"
 
 
 int iHornetTrail;
@@ -123,13 +124,6 @@ void CHornet::Precache()
 	//PRECACHE_SOUND("agrunt/ag_fire2.wav");
 	//PRECACHE_SOUND("agrunt/ag_fire3.wav");
 
-	PRECACHE_SOUND("hornet/ag_buzz1.wav");
-	PRECACHE_SOUND("hornet/ag_buzz2.wav");
-	PRECACHE_SOUND("hornet/ag_buzz3.wav");
-
-	PRECACHE_SOUND("hornet/ag_hornethit1.wav");
-	PRECACHE_SOUND("hornet/ag_hornethit2.wav");
-	PRECACHE_SOUND("hornet/ag_hornethit3.wav");
 
 	iHornetPuff = PRECACHE_MODEL("sprites/muz1.spr");
 	iHornetTrail = PRECACHE_MODEL("sprites/laserbeam.spr");
@@ -290,18 +284,7 @@ void CHornet::TrackTarget()
 
 	if (flDelta < 0.5)
 	{ // hafta turn wide again. play sound
-		switch (RANDOM_LONG(0, 2))
-		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz1.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz2.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-			break;
-		case 2:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz3.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-			break;
-		}
+		NPCSounds_Emit(this, "hornet", "buzz", CHAN_VOICE, HORNET_BUZZ_VOLUME, ATTN_NORM, PITCH_NORM);
 	}
 
 	if (flDelta <= 0 && m_iHornetType == HORNET_TYPE_RED)
@@ -353,18 +336,7 @@ void CHornet::TrackTarget()
 			WRITE_BYTE(128); // brightness
 			MESSAGE_END();
 
-			switch (RANDOM_LONG(0, 2))
-			{
-			case 0:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz1.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-				break;
-			case 1:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz2.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-				break;
-			case 2:
-				EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_buzz3.wav", HORNET_BUZZ_VOLUME, ATTN_NORM);
-				break;
-			}
+			NPCSounds_Emit(this, "hornet", "buzz", CHAN_VOICE, HORNET_BUZZ_VOLUME, ATTN_NORM, PITCH_NORM);
 			pev->velocity = pev->velocity * 2;
 			pev->nextthink = gpGlobals->time + 1.0;
 			// don't attack again
@@ -414,18 +386,7 @@ void CHornet::DieTouch(CBaseEntity* pOther)
 	if (pOther && 0 != pOther->pev->takedamage && nullptr != pev->owner)
 	{ // do the damage
 
-		switch (RANDOM_LONG(0, 2))
-		{ // buzz when you plug someone
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_hornethit1.wav", 1, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_hornethit2.wav", 1, ATTN_NORM);
-			break;
-		case 2:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "hornet/ag_hornethit3.wav", 1, ATTN_NORM);
-			break;
-		}
+		NPCSounds_Emit(this, "hornet", "hit", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		pOther->TakeDamage(pev, VARS(pev->owner), pev->dmg, DMG_BULLET);
 	}

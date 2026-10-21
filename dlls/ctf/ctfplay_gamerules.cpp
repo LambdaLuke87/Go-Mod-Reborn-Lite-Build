@@ -38,6 +38,7 @@
 #include "CItemRegenerationCTF.h"
 
 #include "pm_shared.h"
+#include "gm_audio_server.h"
 
 extern DLL_GLOBAL bool g_fGameOver;
 
@@ -309,7 +310,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingAChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
+					GMAudio_Stop(pPlayer, GM_CHAN_ARMOR_CHARGE);
 					pPlayer->m_fPlayingAChargeSound = false;
 				}
 			}},
@@ -319,7 +320,7 @@ const ItemData CTFItems[] =
 			{
 				if (pPlayer->m_fPlayingHChargeSound)
 				{
-					STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
+					GMAudio_Stop(pPlayer, GM_CHAN_HEALTH_CHARGE);
 					pPlayer->m_fPlayingHChargeSound = false;
 				}
 			}},

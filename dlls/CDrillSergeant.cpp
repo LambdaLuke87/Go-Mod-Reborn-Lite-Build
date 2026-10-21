@@ -23,6 +23,7 @@
 #include "scripted.h"
 #include "weapons.h"
 #include "soundent.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -371,18 +372,7 @@ void CDrillSergeant::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector 
 
 void CDrillSergeant::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die1.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die2.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_die3.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	}
+	NPCSounds_Emit(this, "monster_drillsergeant", "death", CHAN_VOICE, 1, ATTN_NORM, GetVoicePitch());
 }
 
 void CDrillSergeant::Spawn()
@@ -494,18 +484,7 @@ void CDrillSergeant::PainSound()
 
 	m_painTime = gpGlobals->time + RANDOM_FLOAT(0.5, 0.75);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain1.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain2.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "barney/ba_pain3.wav", 1, ATTN_NORM, 0, GetVoicePitch());
-		break;
-	}
+	NPCSounds_Emit(this, "monster_drillsergeant", "pain", CHAN_VOICE, 1, ATTN_NORM, GetVoicePitch());
 }
 
 bool CDrillSergeant::CheckRangeAttack1(float flDot, float flDist)
@@ -577,15 +556,7 @@ void CDrillSergeant::Precache()
 	PRECACHE_MODEL("models/drill.mdl");
 
 	PRECACHE_SOUND("barney/ba_attack1.wav");
-	PRECACHE_SOUND("barney/ba_attack2.wav");
 
-	PRECACHE_SOUND("barney/ba_pain1.wav");
-	PRECACHE_SOUND("barney/ba_pain2.wav");
-	PRECACHE_SOUND("barney/ba_pain3.wav");
-
-	PRECACHE_SOUND("barney/ba_die1.wav");
-	PRECACHE_SOUND("barney/ba_die2.wav");
-	PRECACHE_SOUND("barney/ba_die3.wav");
 
 	// every new barney must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
@@ -614,7 +585,7 @@ void CDrillSergeant::BarneyFirePistol()
 		pitchShift = 0;
 	else
 		pitchShift -= 5;
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "barney/ba_attack2.wav", 1, ATTN_NORM, 0, 100 + pitchShift);
+	NPCSounds_Emit(this, "monster_drillsergeant", "pistol_fire", CHAN_WEAPON, 1, ATTN_NORM, 100 + pitchShift);
 
 	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 

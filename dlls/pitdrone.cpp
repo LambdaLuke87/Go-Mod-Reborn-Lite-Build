@@ -26,6 +26,7 @@
 #include "decals.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 #define SQUID_SPRINT_DIST 256 // how close the squid has to get before starting to sprint and refusing to swerve
 
@@ -139,12 +140,12 @@ void CPitdroneSpike::SpikeTouch(CBaseEntity* pOther)
 
 	if (0 == pOther->pev->takedamage)
 	{
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!WP_GUNMISC10", VOL_NORM, ATTN_NORM, 0, iPitch);
+		NPCSounds_Emit(this, "monster_pitdrone", "spike_hit_world", CHAN_VOICE, VOL_NORM, ATTN_NORM, iPitch);
 	}
 	else
 	{
 		pOther->TakeDamage(pev, pev, gSkillData.pitdroneDmgSpit, DMG_GENERIC);
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!WP_GUNMISC8", VOL_NORM, ATTN_NORM, 0, iPitch);
+		NPCSounds_Emit(this, "monster_pitdrone", "spike_hit_body", CHAN_VOICE, VOL_NORM, ATTN_NORM, iPitch);
 	}
 
 	SetTouch(nullptr);
@@ -431,21 +432,7 @@ void CPitdrone::PainSound()
 {
 	int iPitch = RANDOM_LONG(85, 120);
 
-	switch (RANDOM_LONG(0, 3))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain1.wav", 1, ATTN_NORM, iPitch);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain2.wav", 1, ATTN_NORM, iPitch);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain3.wav", 1, ATTN_NORM, iPitch);
-		break;
-	case 3:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_pain4.wav", 1, ATTN_NORM, iPitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_pitdrone", "pain", CHAN_VOICE, 1, ATTN_NORM, iPitch);
 }
 
 //=========================================================
@@ -455,18 +442,7 @@ void CPitdrone::AlertSound()
 {
 	int iPitch = RANDOM_LONG(140, 160);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert1.wav", 1, ATTN_NORM, iPitch);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert2.wav", 1, ATTN_NORM, iPitch);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "pitdrone/pit_drone_alert3.wav", 1, ATTN_NORM, iPitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_pitdrone", "alert", CHAN_VOICE, 1, ATTN_NORM, iPitch);
 }
 
 //=========================================================
@@ -618,15 +594,7 @@ void CPitdrone::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			// croonchy bite sound
 			iPitch = RANDOM_FLOAT(90, 110);
-			switch (RANDOM_LONG(0, 1))
-			{
-			case 0:
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite2.wav", 1, ATTN_NORM, 0, iPitch);
-				break;
-			case 1:
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite3.wav", 1, ATTN_NORM, 0, iPitch);
-				break;
-			}
+			NPCSounds_Emit(this, "monster_pitdrone", "bite", CHAN_WEAPON, 1, ATTN_NORM, iPitch);
 
 
 			//pHurt->pev->punchangle.x = RANDOM_LONG(0,34) - 5;
@@ -732,12 +700,6 @@ void CPitdrone::Precache()
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 
 	/* PRECACHE_SOUND("pitdrone/pit_drone_alert1.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_alert2.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_alert3.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain1.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain2.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain3.wav");
-	PRECACHE_SOUND("pitdrone/pit_drone_pain4.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_attack_spike2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_communicate1.wav");
@@ -756,8 +718,6 @@ void CPitdrone::Precache()
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack1.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_melee_attack2.wav");
 	PRECACHE_SOUND("pitdrone/pit_drone_run_on_grate.wav");*/
-	PRECACHE_SOUND("bullchicken/bc_bite2.wav");
-	PRECACHE_SOUND("bullchicken/bc_bite3.wav");
 }
 
 //========================================================
@@ -1213,7 +1173,7 @@ const GibData PitDroneGibs = {"models/pit_drone_gibs.mdl", 0, 7};
 
 void CPitdrone::GibMonster()
 {
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);
+	NPCSounds_Emit(this, "monster_pitdrone", "gib", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 	if (CVAR_GET_FLOAT("violence_agibs") != 0) // Should never get here, but someone might call it directly
 	{

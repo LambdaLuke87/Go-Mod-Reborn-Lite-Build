@@ -43,6 +43,7 @@
 #include "customentity.h"
 #include "game.h"
 #include "hgrunt.h"
+#include "npc_sounds.h"
 
 int g_fGruntQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -495,7 +496,6 @@ bool CHGrunt::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -784,7 +784,7 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case HGRUNT_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_human_grunt", "reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
@@ -803,7 +803,7 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case HGRUNT_AE_GREN_LAUNCH:
 	{
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE14", 0.8, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_human_grunt", "grenade_launch", CHAN_WEAPON, 0.8, ATTN_NORM, PITCH_NORM);
 		CGrenade::ShootContact(pev, GetGunPosition(), m_vecTossVelocity);
 		m_fThrowGrenade = false;
 		if (g_iSkillLevel == SKILL_HARD)
@@ -827,20 +827,13 @@ void CHGrunt::HandleAnimEvent(MonsterEvent_t* pEvent)
 			Shoot();
 
 			// the first round of the three round burst plays the sound and puts a sound in the world sound list.
-			if (RANDOM_LONG(0, 1))
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE27", 1, ATTN_NORM);
-			}
-			else
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE28", 1, ATTN_NORM);
-			}
+			NPCSounds_Emit(this, "monster_human_grunt", "mp5_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 		else
 		{
 			Shotgun();
 
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE7", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_grunt", "shotgun_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
@@ -980,14 +973,7 @@ void CHGrunt::Precache()
 	//PRECACHE_SOUND("hgrunt/gr_mgun2.wav");
 
 	/* Less Precache :)
-	PRECACHE_SOUND("hgrunt/gr_die1.wav");
-	PRECACHE_SOUND("hgrunt/gr_die2.wav");
-	PRECACHE_SOUND("hgrunt/gr_die3.wav");
 
-	PRECACHE_SOUND("hgrunt/gr_pain1.wav");
-	PRECACHE_SOUND("hgrunt/gr_pain2.wav");
-	PRECACHE_SOUND("hgrunt/gr_pain3.wav");
-	PRECACHE_SOUND("hgrunt/gr_pain4.wav");
 	PRECACHE_SOUND("hgrunt/gr_pain5.wav");*/
 
 	//PRECACHE_SOUND("hgrunt/gr_reload1.wav");
@@ -1105,24 +1091,8 @@ void CHGrunt::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 6))
-		{
-		case 0:
-			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 1:
-			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 2:
-			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 3:
-			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain1.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 4:
-			GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_pain2.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		}
+		if (RANDOM_LONG(0, 6) < 5) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_human_grunt", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1133,18 +1103,7 @@ void CHGrunt::PainSound()
 //=========================================================
 void CHGrunt::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_grunt", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 float CHGrunt::SentenceVolume()
@@ -2326,7 +2285,6 @@ void CHGruntRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 
 	UTIL_Remove(this);
 }
-
 
 
 //=========================================================

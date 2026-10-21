@@ -46,6 +46,7 @@
 #include "customentity.h"
 #include "explode.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 int g_fTorchAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -657,7 +658,6 @@ bool COFTorchAlly::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -935,7 +935,7 @@ void COFTorchAlly::Shoot()
 
 	const auto pitch = random <= 10 ? random + 95 : 100;
 
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNFIRE10", VOL_NORM, ATTN_NORM, 0, pitch);
+	NPCSounds_Emit(this, "monster_human_torch_ally", "eagle_fire", CHAN_WEAPON, VOL_NORM, ATTN_NORM, pitch);
 
 	pev->effects |= EF_MUZZLEFLASH;
 
@@ -981,7 +981,7 @@ void COFTorchAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case TORCH_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC25", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_human_torch_ally", "eagle_reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
@@ -1217,7 +1217,6 @@ void COFTorchAlly::Precache()
 
 	PRECACHE_SOUND("fgrunt/torch_light.wav");
 	PRECACHE_SOUND("fgrunt/torch_cut_loop.wav");
-	PRECACHE_SOUND("fgrunt/medic.wav");
 
 	// get voice pitch
 	m_voicePitch = 95;
@@ -1322,27 +1321,8 @@ void COFTorchAlly::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 7))
-		{
-		case 0:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 1:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 2:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 3:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 4:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 5:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		}
+		if (RANDOM_LONG(0, 7) < 6) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_human_torch_ally", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1353,27 +1333,7 @@ void COFTorchAlly::PainSound()
 //=========================================================
 void COFTorchAlly::DeathSound()
 {
-	switch (RANDOM_LONG(0, 5))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 3:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death4.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 4:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death5.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 5:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death6.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_torch_ally", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -2428,7 +2388,7 @@ Schedule_t* COFTorchAlly::GetSchedule()
 					{
 						ALERT(at_aiconsole, "Injured Grunt called for Medic\n");
 
-						EMIT_SOUND_DYN(edict(), CHAN_VOICE, "fgrunt/medic.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+						NPCSounds_Emit(this, "monster_human_torch_ally", "medic", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 						JustSpoke();
 						m_flMedicWaitTime = gpGlobals->time + 5.0;

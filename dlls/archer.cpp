@@ -10,6 +10,7 @@
 #include	"monsters.h"
 #include	"schedule.h"
 #include    "flyingmonster.h"
+#include "npc_sounds.h"
 #include	"nodes.h"
 #include	"soundent.h"
 #include	"animation.h"
@@ -35,7 +36,6 @@ public:
 	bool Save(CSave& save) override;
 	bool Restore(CRestore& restore) override;
 	static	TYPEDESCRIPTION m_SaveData[];
-
 
 
 	int  m_maxFrame;
@@ -102,17 +102,9 @@ void CArcherSpit::Touch(CBaseEntity* pOther)
 	// splat sound
 	iPitch = RANDOM_FLOAT(90, 110);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "bullchicken/bc_acid1.wav", 1, ATTN_NORM, 0, iPitch);
+	NPCSounds_Emit(this, "monster_archer", "spit_acid", CHAN_VOICE, 1, ATTN_NORM, iPitch);
 
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit1.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit2.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_archer", "spit_hit", CHAN_WEAPON, 1, ATTN_NORM, iPitch);
 
 	if (!pOther->pev->takedamage)
 	{
@@ -144,8 +136,6 @@ void CArcherSpit::Touch(CBaseEntity* pOther)
 	SetThink(&CArcherSpit::SUB_Remove);
 	pev->nextthink = gpGlobals->time;
 }
-
-
 
 
 //=====================================================
@@ -218,12 +208,6 @@ public:
 
 	float m_flNextSpitTime;// last time the bullsquid used the spit attack.
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pAttackSounds[];
-	static const char* pBiteSounds[];
-	static const char* pDieSounds[];
-	static const char* pPainSounds[];
 
 	void IdleSound() override;
 	void AlertSound() override;
@@ -243,76 +227,35 @@ TYPEDESCRIPTION	CArcher::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CArcher, CFlyingMonster);
 
-const char* CArcher::pIdleSounds[] =
-{
-	"archer/arch_idle1.wav",
-	"archer/arch_idle2.wav",
-	"archer/arch_idle3.wav",
-};
-
-const char* CArcher::pAlertSounds[] =
-{
-	"archer/arch_alert1.wav",
-	"archer/arch_alert2.wav",
-};
-
-const char* CArcher::pAttackSounds[] =
-{
-	"archer/arch_plasma.wav",
-};
-
-const char* CArcher::pBiteSounds[] =
-{
-	"archer/arch_bite1.wav",
-	"archer/arch_bite2.wav",
-};
-
-const char* CArcher::pPainSounds[] =
-{
-	"archer/arch_pain2.wav",
-	"archer/arch_pain3.wav",
-	"archer/arch_pain1.wav",
-	"archer/arch_pain4.wav",
-};
-
-const char* CArcher::pDieSounds[] =
-{
-	"archer/arch_die2.wav",
-	"archer/arch_die1.wav",
-	"archer/arch_die3.wav",
-};
-
-#define EMIT_ARCH_SOUND( chan, array ) \
-	GMAudio_Emit(this, chan, array[RANDOM_LONG(0, ARRAYSIZE(array) - 1)], 1.0, 0.6, RANDOM_LONG(95, 105));
 
 void CArcher::IdleSound()
 {
-	EMIT_ARCH_SOUND(CHAN_VOICE, pIdleSounds);
+	NPCSounds_Emit(this, "monster_archer", "idle", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CArcher::AlertSound()
 {
-	EMIT_ARCH_SOUND(CHAN_VOICE, pAlertSounds);
+	NPCSounds_Emit(this, "monster_archer", "alert", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CArcher::AttackSound()
 {
-	EMIT_ARCH_SOUND(CHAN_VOICE, pAttackSounds);
+	NPCSounds_Emit(this, "monster_archer", "attack", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CArcher::BiteSound()
 {
-	EMIT_ARCH_SOUND(CHAN_WEAPON, pBiteSounds);
+	NPCSounds_Emit(this, "monster_archer", "bite", CHAN_WEAPON, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CArcher::DeathSound()
 {
-	EMIT_ARCH_SOUND(CHAN_VOICE, pDieSounds);
+	NPCSounds_Emit(this, "monster_archer", "die", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CArcher::PainSound()
 {
-	EMIT_ARCH_SOUND(CHAN_VOICE, pPainSounds);
+	NPCSounds_Emit(this, "monster_archer", "pain", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 //=========================================================
@@ -519,7 +462,6 @@ void CArcher::SetYawSpeed()
 }
 
 
-
 //=========================================================
 // Killed - overrides CFlyingMonster.
 //
@@ -562,7 +504,7 @@ void CArcher::HandleAnimEvent(MonsterEvent_t* pEvent)
 					pHurt->pev->punchangle.x = 5;
 				}
 				// Play a random attack hit sound
-				EMIT_ARCH_SOUND(CHAN_VOICE, pBiteSounds);
+				NPCSounds_Emit(this, "monster_archer", "bite", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 			}
 			bDidAttack = true;
 	}
@@ -677,12 +619,6 @@ void CArcher::Precache()
 	else
 		PRECACHE_MODEL("models/archer.mdl");
 
-	//PRECACHE_SOUND_ARRAY(pIdleSounds);
-	//PRECACHE_SOUND_ARRAY(pAlertSounds);
-	//PRECACHE_SOUND_ARRAY(pAttackSounds);
-	//PRECACHE_SOUND_ARRAY(pBiteSounds);
-	//PRECACHE_SOUND_ARRAY(pDieSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
 
 	iArcherSpitSprite = PRECACHE_MODEL("sprites/bhit.spr");// client side spittle.
 	PRECACHE_MODEL("sprites/cnt1.spr");// spit projectile.
@@ -754,7 +690,6 @@ Schedule_t * CArcher::GetScheduleOfType(int Type)
 
 	return CBaseMonster::GetScheduleOfType(Type);
 }
-
 
 
 //=========================================================

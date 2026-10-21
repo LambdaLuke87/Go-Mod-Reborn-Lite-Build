@@ -34,6 +34,7 @@
 #include "soundent.h"
 #include "gamerules.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 #define MONSTER_CUT_CORNER_DIST 8 // 8 means the monster's bounding box is contained without the box of the node in WC
 
@@ -509,7 +510,6 @@ CSound* CBaseMonster::PBestScent()
 #endif
 	return NULL;
 }
-
 
 
 //=========================================================
@@ -2440,7 +2440,6 @@ bool CBaseMonster::BuildNearestRoute(Vector vecThreat, Vector vecViewOffset, flo
 }
 
 
-
 //=========================================================
 // BestVisibleEnemy - this functions searches the link
 // list whose head is the caller's m_pLink field, and returns
@@ -2733,35 +2732,21 @@ void CBaseMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case MONSTER_EVENT_BODYDROP_HEAVY:
 		if ((pev->flags & FL_ONGROUND) != 0)
 		{
-			if (RANDOM_LONG(0, 1) == 0)
-			{
-				EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "common/bodydrop3.wav", 1, ATTN_NORM, 0, 90);
-			}
-			else
-			{
-				EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "common/bodydrop4.wav", 1, ATTN_NORM, 0, 90);
-			}
+			NPCSounds_Emit(this, "monster_common", "body_drop", CHAN_BODY, 1, ATTN_NORM, 90);
 		}
 		break;
 
 	case MONSTER_EVENT_BODYDROP_LIGHT:
 		if ((pev->flags & FL_ONGROUND) != 0)
 		{
-			if (RANDOM_LONG(0, 1) == 0)
-			{
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "common/bodydrop3.wav", 1, ATTN_NORM);
-			}
-			else
-			{
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "common/bodydrop4.wav", 1, ATTN_NORM);
-			}
+			NPCSounds_Emit(this, "monster_common", "body_drop", CHAN_BODY, 1, ATTN_NORM, PITCH_NORM);
 		}
 		break;
 
 	case MONSTER_EVENT_SWISHSOUND:
 	{
 		// NO MONSTER may use this anim event unless that monster's precache precaches this sound!!!
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "zombie/claw_miss2.wav", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_common", "swish", CHAN_BODY, 1, ATTN_NORM, PITCH_NORM);
 		break;
 	}
 
@@ -2787,15 +2772,9 @@ Vector CBaseMonster::GetGunPosition()
 }
 
 
-
-
-
 //=========================================================
 // NODE GRAPH
 //=========================================================
-
-
-
 
 
 //=========================================================
@@ -3250,7 +3229,6 @@ Vector CBaseMonster::ShootAtEnemy(const Vector& shootOrigin)
 	else
 		return gpGlobals->v_forward;
 }
-
 
 
 //=========================================================

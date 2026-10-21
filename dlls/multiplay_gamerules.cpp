@@ -31,6 +31,7 @@
 #include "UserMessages.h"
 
 #include "ctf/ctfplay_gamerules.h"
+#include "gm_audio_server.h"
 
 // longest the intermission can last, in seconds
 #define MAX_INTERMISSION_TIME 120
@@ -550,13 +551,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingAChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC3", VOL_NORM, ATTN_NORM);
+					GMAudio_Emit(pPlayer, GM_CHAN_ARMOR_CHARGE, "ctf/pow_armor_charge.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 					pPlayer->m_fPlayingAChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingAChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC3");
+				GMAudio_Stop(pPlayer, GM_CHAN_ARMOR_CHARGE);
 				pPlayer->m_fPlayingAChargeSound = false;
 			}
 
@@ -579,13 +580,13 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 
 				if (!pPlayer->m_fPlayingHChargeSound)
 				{
-					EMIT_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2", VOL_NORM, ATTN_NORM);
+					GMAudio_Emit(pPlayer, GM_CHAN_HEALTH_CHARGE, "ctf/pow_health_charge.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 					pPlayer->m_fPlayingHChargeSound = true;
 				}
 			}
 			else if (pPlayer->m_fPlayingHChargeSound)
 			{
-				STOP_SOUND(pPlayer->edict(), CHAN_STATIC, "!MI_SENTENC2");
+				GMAudio_Stop(pPlayer, GM_CHAN_HEALTH_CHARGE);
 				pPlayer->m_fPlayingHChargeSound = false;
 			}
 

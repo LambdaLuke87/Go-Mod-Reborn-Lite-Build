@@ -22,6 +22,7 @@
 #include "scripted.h"
 #include "soundent.h"
 #include "animation.h"
+#include "gm_audio_server.h"
 
 //=========================================================
 // Talking monster base class
@@ -1142,7 +1143,7 @@ void CTalkMonster::PlaySentenceCore(const char* pszSentence, float duration, flo
 
 	CTalkMonster::g_talkWaitTime = gpGlobals->time + duration + 2.0;
 	if (pszSentence[0] == '!')
-		EMIT_SOUND_DYN(edict(), CHAN_VOICE, pszSentence, volume, attenuation, 0, GetVoicePitch());
+		GMAudio_Emit(this, CHAN_VOICE, pszSentence, volume, attenuation, GetVoicePitch()); // sentence through the Go-Mod audio system
 	else
 		SENTENCEG_PlayRndSz(edict(), pszSentence, volume, attenuation, 0, GetVoicePitch());
 

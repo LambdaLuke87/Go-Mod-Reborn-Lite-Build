@@ -22,6 +22,7 @@
 #include "game.h"
 
 #include "CSpore.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION CSpore::m_SaveData[] =
@@ -253,7 +254,7 @@ void CSpore::MyBounceTouch(CBaseEntity* pOther)
 			}
 			else
 			{
-				EMIT_SOUND_DYN(edict(), CHAN_VOICE, "!WP_GUNMISC16", 0.25, ATTN_NORM, 0, PITCH_NORM);
+				GMAudio_Emit(this, CHAN_VOICE, "weapons/splauncher_bounce.wav", 0.25, ATTN_NORM, PITCH_NORM);
 			}
 		}
 	}

@@ -21,6 +21,7 @@
 #include "UserMessages.h"
 
 #include "CSniperRifle.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION CSniperRifle::m_SaveData[] =
@@ -159,7 +160,7 @@ void CSniperRifle::PrimaryAttack()
 
 void CSniperRifle::SecondaryAttack()
 {
-	EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC11", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_Emit(m_pPlayer, CHAN_ITEM, "weapons/sniper_zoom.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 	ToggleZoom();
 

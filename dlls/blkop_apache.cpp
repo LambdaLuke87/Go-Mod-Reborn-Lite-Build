@@ -20,6 +20,7 @@
 #include "weapons.h"
 #include "effects.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 extern DLL_GLOBAL int g_iSkillLevel;
 
@@ -164,11 +165,9 @@ void COFBlackOpsApache::Precache()
 	PRECACHE_SOUND("apache/ap_rotor3.wav");
 	PRECACHE_SOUND("apache/ap_whine1.wav");
 
-	PRECACHE_SOUND("weapons/mortarhit.wav");
 
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/white.spr");
 
-	PRECACHE_SOUND("turret/tu_fire1.wav");
 
 	PRECACHE_MODEL("sprites/lgtning.spr");
 
@@ -177,7 +176,6 @@ void COFBlackOpsApache::Precache()
 
 	UTIL_PrecacheOther("hvr_blkop_rocket");
 }
-
 
 
 void COFBlackOpsApache::NullThink()
@@ -361,7 +359,7 @@ void COFBlackOpsApache::DyingThink()
 			WRITE_BYTE(0);	 // speed
 			MESSAGE_END();
 
-			EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
+			NPCSounds_Emit(this, "monster_blkop_apache", "explode", CHAN_STATIC, 1.0, 0.3, PITCH_NORM);
 
 			RadiusDamage(pev->origin, pev, pev, 300, CLASS_NONE, DMG_BLAST);
 
@@ -443,7 +441,6 @@ void COFBlackOpsApache::CrashTouch(CBaseEntity* pOther)
 		pev->nextthink = gpGlobals->time;
 	}
 }
-
 
 
 void COFBlackOpsApache::GibMonster()
@@ -820,7 +817,6 @@ void COFBlackOpsApache::FireRocket()
 }
 
 
-
 bool COFBlackOpsApache::FireGun()
 {
 	UTIL_MakeAimVectors(pev->angles);
@@ -868,7 +864,7 @@ bool COFBlackOpsApache::FireGun()
 	{
 #if 1
 		FireBullets(1, posGun, vecGun, VECTOR_CONE_4DEGREES, 8192, BULLET_MONSTER_12MM, 1);
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "turret/tu_fire1.wav", 1, 0.3);
+		NPCSounds_Emit(this, "monster_blkop_apache", "gun_fire", CHAN_WEAPON, 1, 0.3, PITCH_NORM);
 #else
 		static float flNext;
 		TraceResult tr;
@@ -901,7 +897,6 @@ bool COFBlackOpsApache::FireGun()
 	}
 	return false;
 }
-
 
 
 void COFBlackOpsApache::ShowDamage()
@@ -971,7 +966,6 @@ bool COFBlackOpsApache::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttack
 }
 
 
-
 void COFBlackOpsApache::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
 {
 	// ALERT( at_console, "%d %.0f\n", ptr->iHitgroup, flDamage );
@@ -994,9 +988,6 @@ void COFBlackOpsApache::TraceAttack(entvars_t* pevAttacker, float flDamage, Vect
 		UTIL_Ricochet(ptr->vecEndPos, 2.0);
 	}
 }
-
-
-
 
 
 class COFBlackOpsApacheHVR : public CGrenade
@@ -1051,7 +1042,6 @@ void COFBlackOpsApacheHVR::Precache()
 {
 	PRECACHE_MODEL("models/HVR.mdl");
 	m_iTrail = PRECACHE_MODEL("sprites/smoke.spr");
-	PRECACHE_SOUND("weapons/rocket1.wav");
 }
 
 
@@ -1063,7 +1053,7 @@ void COFBlackOpsApacheHVR::IgniteThink()
 	pev->effects |= EF_LIGHT;
 
 	// make rocket sound
-	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/rocket1.wav", 1, 0.5);
+	NPCSounds_Emit(this, "monster_blkop_apache", "rocket_ignite", CHAN_VOICE, 1, 0.5, PITCH_NORM);
 
 	// rocket trail
 	MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);

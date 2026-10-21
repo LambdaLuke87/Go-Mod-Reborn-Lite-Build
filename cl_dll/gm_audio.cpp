@@ -19,6 +19,7 @@
 #undef HSPRITE
 #endif
 
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -110,6 +111,268 @@ static std::shared_ptr<const GMSoundData> LoadSound(const char* path)
 	return sound;
 }
 
+// ---------------------------------------------------------------------------------------
+//  Sentences (sound/sentences.txt): "!NAME" plays the words one after the other
+//    NAME dir/word1 word2(p110 v80) word3, word4.
+//    - the directory of the first word is used by the next words (default "vox/")
+//    - "(...)" alone (or right after "dir/") changes the defaults for the rest of the sentence
+//    - "word(...)" changes only that word.  v = volume %, p = pitch %, s = start %, e = end %
+//    - ',' and '.' are short pauses
+// ---------------------------------------------------------------------------------------
+
+struct SentenceWord
+{
+	std::string path;	// relative to sound/, empty = pause
+	float pause = 0.0f; // seconds, for ',' and '.'
+	int volume = 100;
+	int pitch = 100;
+	int start = 0;
+	int end = 100;
+};
+
+static std::unordered_map<std::string, std::vector<SentenceWord>> g_Sentences; // key: NAME in upper case
+static bool g_SentencesLoaded = false;
+
+static std::string UpperCase(const std::string& s)
+{
+	std::string r = s;
+	for (char& c : r)
+		c = (char)toupper((unsigned char)c);
+	return r;
+}
+
+struct SentenceMods
+{
+	int volume = 100, pitch = 100, start = 0, end = 100;
+};
+
+static void ParseMods(const std::string& text, SentenceMods& mods)
+{
+	size_t i = 0;
+	while (i < text.size())
+	{
+		const char key = (char)tolower((unsigned char)text[i]);
+		i++;
+
+		if (key != 'v' && key != 'p' && key != 's' && key != 'e' && key != 't')
+			continue;
+
+		size_t j = i;
+		while (j < text.size() && isdigit((unsigned char)text[j]))
+			j++;
+
+		if (j == i)
+			continue;
+
+		const int value = atoi(text.substr(i, j - i).c_str());
+		i = j;
+
+		switch (key)
+		{
+		case 'v': mods.volume = value; break;
+		case 'p': mods.pitch = value; break;
+		case 's': mods.start = value; break;
+		case 'e': mods.end = value; break;
+		default: break; // 't' (time compression) is not supported, ignored
+		}
+	}
+}
+
+static void ParseSentence(const std::string& text, std::vector<SentenceWord>& out)
+{
+	std::string dir = "vox/";
+	SentenceMods defaults;
+	bool first = true;
+
+	const size_t n = text.size();
+	size_t i = 0;
+
+	while (i < n)
+	{
+		while (i < n && isspace((unsigned char)text[i]))
+			i++;
+		if (i >= n)
+			break;
+
+		// a token ends at a space that is not inside (...)
+		std::string token;
+		int depth = 0;
+		while (i < n && (depth > 0 || !isspace((unsigned char)text[i])))
+		{
+			if (text[i] == '(')
+				depth++;
+			else if (text[i] == ')' && depth > 0)
+				depth--;
+			token += text[i++];
+		}
+
+		// split "word(mods)punct"
+		std::string word, mods, tail;
+		const size_t open = token.find('(');
+		if (open != std::string::npos)
+		{
+			const size_t close = token.find(')', open);
+			word = token.substr(0, open);
+			mods = token.substr(open + 1, (close == std::string::npos ? token.size() : close) - open - 1);
+			if (close != std::string::npos)
+				tail = token.substr(close + 1);
+		}
+		else
+		{
+			word = token;
+		}
+
+		float pauseAfter = 0.0f;
+		auto takePunct = [&](std::string& w)
+		{
+			while (!w.empty() && (w.back() == ',' || w.back() == '.'))
+			{
+				pauseAfter += (w.back() == ',') ? 0.25f : 0.5f;
+				w.pop_back();
+			}
+		};
+		takePunct(word);
+		takePunct(tail);
+
+		if (first && word.find('/') != std::string::npos)
+		{
+			const size_t slash = word.rfind('/');
+			dir = word.substr(0, slash + 1);
+			word = word.substr(slash + 1);
+		}
+		first = false;
+
+		if (word.empty())
+		{
+			if (!mods.empty())
+				ParseMods(mods, defaults); // "(p110)" alone: defaults for the rest
+		}
+		else
+		{
+			SentenceMods m = defaults;
+			if (!mods.empty())
+				ParseMods(mods, m);
+
+			SentenceWord w;
+			w.path = (word.find('/') != std::string::npos ? word : dir + word) + ".wav";
+			w.volume = m.volume;
+			w.pitch = m.pitch;
+			w.start = m.start;
+			w.end = m.end;
+			out.push_back(w);
+		}
+
+		if (pauseAfter > 0.0f)
+		{
+			SentenceWord p;
+			p.pause = pauseAfter;
+			out.push_back(p);
+		}
+	}
+}
+
+static void LoadSentences()
+{
+	g_Sentences.clear();
+	g_SentencesLoaded = true;
+
+	int len = 0;
+	byte* file = gEngfuncs.COM_LoadFile((char*)"sound/sentences.txt", 5, &len);
+	if (!file)
+	{
+		gEngfuncs.Con_Printf("GMAudio: sound/sentences.txt not found\n");
+		return;
+	}
+
+	const std::string text((const char*)file, (size_t)len);
+	gEngfuncs.COM_FreeFile(file);
+
+	size_t pos = 0;
+	while (pos < text.size())
+	{
+		size_t eol = text.find('\n', pos);
+		if (eol == std::string::npos)
+			eol = text.size();
+
+		std::string line = text.substr(pos, eol - pos);
+		pos = eol + 1;
+
+		const size_t comment = line.find("//");
+		if (comment != std::string::npos)
+			line = line.substr(0, comment);
+
+		size_t a = 0;
+		while (a < line.size() && isspace((unsigned char)line[a]))
+			a++;
+		size_t b = a;
+		while (b < line.size() && !isspace((unsigned char)line[b]))
+			b++;
+
+		if (b <= a)
+			continue;
+
+		const std::string name = UpperCase(line.substr(a, b - a));
+
+		std::vector<SentenceWord> words;
+		ParseSentence(line.substr(b), words);
+
+		if (!words.empty())
+			g_Sentences[name] = std::move(words);
+	}
+}
+
+static std::shared_ptr<const GMSoundData> Silence(float seconds)
+{
+	auto data = std::make_shared<GMSoundData>();
+	data->rate = 22050;
+	data->samples.assign((size_t)(seconds * 22050.0f) + 1, 0.0f);
+	return data;
+}
+
+// "!NAME" -> the segments to play. false if the sentence doesn't exist
+static bool BuildSentence(const char* name, std::vector<GMSegment>& segments)
+{
+	if (!g_SentencesLoaded)
+		LoadSentences();
+
+	auto it = g_Sentences.find(UpperCase(name + 1));
+	if (it == g_Sentences.end())
+	{
+		static int reported = 0;
+		if (reported++ < 10)
+			gEngfuncs.Con_Printf("GMAudio: sentence %s not found in sound/sentences.txt\n", name);
+		return false;
+	}
+
+	for (const SentenceWord& w : it->second)
+	{
+		GMSegment seg;
+
+		if (w.path.empty())
+		{
+			seg.sound = Silence(w.pause);
+		}
+		else
+		{
+			if (!GMAudio_IsValidSoundPath(w.path.c_str()))
+				continue;
+
+			seg.sound = LoadSound(w.path.c_str());
+			if (!seg.sound)
+				continue;
+
+			seg.volume = (float)w.volume / 100.0f;
+			seg.pitch = (float)w.pitch / 100.0f;
+			seg.start = (float)w.start / 100.0f;
+			seg.end = (float)w.end / 100.0f;
+		}
+
+		segments.push_back(std::move(seg));
+	}
+
+	return !segments.empty();
+}
+
 static void PlayRequest(int flags, int entity, int channel, float volume, float attenuation, int pitch,
 	const GMVec3& origin, const char* path)
 {
@@ -132,9 +395,21 @@ static void PlayRequest(int flags, int entity, int channel, float volume, float 
 		return;
 	}
 
-	std::shared_ptr<const GMSoundData> sound = LoadSound(path);
-	if (!sound)
-		return;
+	std::vector<GMSegment> segments;
+
+	if (path[0] == '!')
+	{
+		if (!BuildSentence(path, segments))
+			return;
+	}
+	else
+	{
+		GMSegment seg;
+		seg.sound = LoadSound(path);
+		if (!seg.sound)
+			return;
+		segments.push_back(std::move(seg));
+	}
 
 	GMVoiceParams params;
 	params.entity = entity;
@@ -149,7 +424,7 @@ static void PlayRequest(int flags, int entity, int channel, float volume, float 
 	params.global = (entity > 0 && local && entity == local->index);
 
 	AudioLock lock;
-	g_Mixer.Play(sound, params);
+	g_Mixer.Play(segments, params);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -287,10 +562,38 @@ void GMAudio_PlayLocal(const char* path, float volume, int pitch)
 	PlayRequest(0, 0, 0, volume, 0.0f, pitch, GMVec3(), path);
 }
 
+void GMAudio_PlayEntity(int entity, const float* origin, int channel, const char* path, float volume, float attenuation, int pitch)
+{
+	GMVec3 pos;
+	if (origin)
+	{
+		pos.x = origin[0];
+		pos.y = origin[1];
+		pos.z = origin[2];
+	}
+	else if (cl_entity_t* ent = gEngfuncs.GetEntityByIndex(entity))
+	{
+		pos.x = ent->origin[0];
+		pos.y = ent->origin[1];
+		pos.z = ent->origin[2];
+	}
+
+	PlayRequest(0, entity, channel, volume, attenuation, pitch, pos, path);
+}
+
+void GMAudio_StopEntity(int entity, int channel)
+{
+	PlayRequest(GM_SND_STOP, entity, channel, 0.0f, 0.0f, 100, GMVec3(), "stop.wav");
+}
+
 void GMAudio_StopAll()
 {
-	AudioLock lock;
-	g_Mixer.StopAll();
+	{
+		AudioLock lock;
+		g_Mixer.StopAll();
+	}
+
+	g_SentencesLoaded = false; // read sentences.txt again on the next map (the mod may have changed it)
 }
 
 void GMAudio_SetListener(const float* origin, const float* viewangles)
@@ -342,8 +645,48 @@ void GMAudio_SetListener(const float* origin, const float* viewangles)
 	listenerRight.y = right[1];
 	listenerRight.z = right[2];
 
-	AudioLock lock;
-	for (const auto& m : moved)
-		g_Mixer.SetEntityOrigin(m.first, m.second);
-	g_Mixer.SetListener(listener, listenerRight, master);
+	std::vector<std::pair<int, float>> voices;
+	{
+		AudioLock lock;
+		for (const auto& m : moved)
+			g_Mixer.SetEntityOrigin(m.first, m.second);
+		g_Mixer.SetListener(listener, listenerRight, master);
+		g_Mixer.GetVoiceLevels(voices);
+	}
+
+	// 3) mouths: the engine only moves them for its own sounds, so do it for ours (CHAN_VOICE)
+	static std::vector<int> s_OpenMouths;
+
+	for (int e : s_OpenMouths)
+	{
+		bool stillTalking = false;
+		for (const auto& v : voices)
+		{
+			if (v.first == e)
+			{
+				stillTalking = true;
+				break;
+			}
+		}
+
+		if (!stillTalking)
+		{
+			if (cl_entity_t* ent = gEngfuncs.GetEntityByIndex(e))
+				ent->mouth.mouthopen = 0;
+		}
+	}
+
+	s_OpenMouths.clear();
+
+	for (const auto& v : voices)
+	{
+		cl_entity_t* ent = gEngfuncs.GetEntityByIndex(v.first);
+		if (!ent)
+			continue;
+
+		// the renderer opens the mouth fully at 64
+		const int open = (int)(v.second * 600.0f);
+		ent->mouth.mouthopen = (byte)(open > 255 ? 255 : open);
+		s_OpenMouths.push_back(v.first);
+	}
 }

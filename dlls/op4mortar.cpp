@@ -19,6 +19,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "decals.h"
+#include "npc_sounds.h"
 
 class CMortarShell : public CGrenade
 {
@@ -60,7 +61,6 @@ void CMortarShell::Precache()
 	PRECACHE_MODEL("models/mortarshell.mdl");
 	m_iTrail = PRECACHE_MODEL("sprites/wep_smoke_01.spr");
 	//PRECACHE_SOUND("weapons/gauss2.wav");
-	PRECACHE_SOUND("weapons/ofmortar.wav");
 }
 
 void CMortarShell::Spawn()
@@ -128,7 +128,7 @@ void CMortarShell::FlyThink()
 	if (pev->velocity.z < 20.0 && !m_iSoundedOff)
 	{
 		m_iSoundedOff = true;
-		EMIT_SOUND(edict(), CHAN_VOICE, "weapons/ofmortar.wav", RANDOM_FLOAT(0.8, 0.9), ATTN_NONE);
+		NPCSounds_Emit(this, "op4mortar", "shell_fly", CHAN_VOICE, RANDOM_FLOAT(0.8, 0.9), ATTN_NONE, PITCH_NORM);
 	}
 
 	pev->nextthink = gpGlobals->time + 0.1;
@@ -188,18 +188,7 @@ void CMortarShell::MortarExplodeTouch(CBaseEntity* pOther)
 	//TODO: never used?
 	//g_engfuncs.pfnRandomFloat( 0.0, 1.0 );
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(edict(), CHAN_VOICE, "weapons/debris1.wav", 0.55, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(edict(), CHAN_VOICE, "weapons/debris2.wav", 0.55, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(edict(), CHAN_VOICE, "weapons/debris3.wav", 0.55, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "op4mortar", "debris", CHAN_VOICE, 0.55, ATTN_NORM, PITCH_NORM);
 
 	pev->effects |= EF_NODRAW;
 
@@ -370,8 +359,6 @@ void COp4Mortar::Precache()
 {
 	PRECACHE_MODEL("models/mortar.mdl");
 	UTIL_PrecacheOther("mortar_shell");
-	PRECACHE_SOUND("weapons/mortarhit.wav");
-	PRECACHE_SOUND("player/pl_grate1.wav");
 }
 
 void COp4Mortar::Spawn()
@@ -473,7 +460,7 @@ void COp4Mortar::MortarThink()
 				{
 					if (gpGlobals->time - m_fireLast > m_fireDelay)
 					{
-						EMIT_SOUND(edict(), CHAN_VOICE, "weapons/mortarhit.wav", VOL_NORM, ATTN_NORM);
+						NPCSounds_Emit(this, "op4mortar", "explode", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 						UTIL_ScreenShake(pev->origin, 12.0, 100.0, 2.0, 1000.0);
 
 						Vector vecPos, vecAngle;
@@ -514,7 +501,7 @@ bool COp4Mortar::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, flo
 
 void COp4Mortar::PlaySound()
 {
-	EMIT_SOUND(edict(), CHAN_VOICE, "player/pl_grate1.wav", VOL_NORM, ATTN_NORM);
+	NPCSounds_Emit(this, "op4mortar", "move", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 }
 
 void COp4Mortar::Off()
@@ -760,7 +747,7 @@ void COp4Mortar::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 		if ((pev->spawnflags & SF_MORTAR_ACTIVE) == 0 && (pev->spawnflags & SF_MORTAR_CONTROLLABLE) != 0)
 		{
 			//Player fired a mortar
-			EMIT_SOUND(edict(), CHAN_VOICE, "weapons/mortarhit.wav", VOL_NORM, ATTN_NONE);
+			NPCSounds_Emit(this, "op4mortar", "explode", CHAN_VOICE, VOL_NORM, ATTN_NONE, PITCH_NORM);
 			UTIL_ScreenShake(pev->origin, 12.0, 100.0, 2.0, 1000.0);
 
 			Vector pos, angle;

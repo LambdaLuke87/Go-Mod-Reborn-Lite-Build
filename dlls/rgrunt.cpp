@@ -9,6 +9,7 @@
 #include	"decals.h"
 #include    "hgrunt.h"
 #include    "game.h"
+#include "npc_sounds.h"
 
 #define	GRUNT_CLIP_SIZE					36
 #define GRUNT_ATTN ATTN_NORM // attenutation of grunt sentences
@@ -149,16 +150,7 @@ void CRGrunt::Precache()
 	else
 		PRECACHE_MODEL("models/rgrunt.mdl");
 	//PRECACHE_MODEL("models/computergibs.mdl");
-	PRECACHE_SOUND("turret/tu_die.wav");
-	PRECACHE_SOUND("turret/tu_die2.wav");
-	PRECACHE_SOUND("turret/tu_die3.wav");
 
-	PRECACHE_SOUND("buttons/spark1.wav");
-	PRECACHE_SOUND("buttons/spark2.wav");
-	PRECACHE_SOUND("buttons/spark3.wav");
-	PRECACHE_SOUND("buttons/spark4.wav");
-	PRECACHE_SOUND("buttons/spark5.wav");
-	PRECACHE_SOUND("buttons/spark6.wav");
 
 	m_voicePitch = 115;
 
@@ -168,18 +160,7 @@ void CRGrunt::Precache()
 
 void CRGrunt::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "turret/tu_die.wav", 1.0, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "turret/tu_die2.wav", 1.0, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "turret/tu_die3.wav", 1.0, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_robogrunt", "death", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CRGrunt::PainSound()
@@ -353,27 +334,7 @@ void CRGrunt::DoSpark(const Vector& sparkLocation, float flVolume)
 {
 	UTIL_Sparks(sparkLocation);
 
-	switch (RANDOM_LONG(0, 5))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark1.wav", flVolume, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark2.wav", flVolume, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark3.wav", flVolume, ATTN_NORM);
-		break;
-	case 3:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark4.wav", flVolume, ATTN_NORM);
-		break;
-	case 4:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark5.wav", flVolume, ATTN_NORM);
-		break;
-	case 5:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "buttons/spark6.wav", flVolume, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_robogrunt", "spark", CHAN_BODY, flVolume, ATTN_NORM, PITCH_NORM);
 }
 
 class CRGruntRepel : public CHGruntRepel

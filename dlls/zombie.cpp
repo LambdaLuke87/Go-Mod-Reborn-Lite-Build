@@ -23,6 +23,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "schedule.h"
+#include "npc_sounds.h"
 
 
 //=========================================================
@@ -52,12 +53,6 @@ public:
 	virtual void IdleSound() override;
 	virtual void AttackSound() override;
 
-	static const char* pAttackSounds[];
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
 
 	virtual float OneSlashDamage() { return gSkillData.zombieDmgOneSlash; }
 	virtual float BothSlashDamage() { return gSkillData.zombieDmgBothSlash; }
@@ -75,45 +70,6 @@ protected:
 
 LINK_ENTITY_TO_CLASS(monster_zombie, CZombie);
 
-const char* CZombie::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CZombie::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
-
-const char* CZombie::pAttackSounds[] =
-	{
-		"zombie/zo_attack1.wav",
-		"zombie/zo_attack2.wav",
-};
-
-const char* CZombie::pIdleSounds[] =
-	{
-		"zombie/zo_idle1.wav",
-		"zombie/zo_idle2.wav",
-		"zombie/zo_idle3.wav",
-		"zombie/zo_idle4.wav",
-};
-
-const char* CZombie::pAlertSounds[] =
-	{
-		"zombie/zo_alert10.wav",
-		"zombie/zo_alert20.wav",
-		"zombie/zo_alert30.wav",
-};
-
-const char* CZombie::pPainSounds[] =
-	{
-		"zombie/zo_pain1.wav",
-		"zombie/zo_pain2.wav",
-};
 
 //=========================================================
 // Classify - indicates this monster's place in the
@@ -168,28 +124,28 @@ void CZombie::PainSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_zombie", "pain", CHAN_VOICE, 1, ATTN_NORM, pitch);
 }
 
 void CZombie::AlertSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), 1, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_zombie", "alert", CHAN_VOICE, 1, ATTN_NORM, pitch);
 }
 
 void CZombie::IdleSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), 1, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_zombie", "idle", CHAN_VOICE, 1, ATTN_NORM, pitch);
 }
 
 void CZombie::AttackSound()
 {
 	int pitch = 95 + RANDOM_LONG(0, 9);
 
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1, ATTN_NORM, pitch);
+	NPCSounds_Emit(this, "monster_zombie", "attack", CHAN_VOICE, 1, ATTN_NORM, pitch);
 }
 
 
@@ -212,10 +168,10 @@ void CZombie::SlashAttack(float dmg, float rightScalar, float forwardScalar, flo
 			pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * rightScalar + gpGlobals->v_forward * forwardScalar;
 		}
 		// Play a random attack hit sound
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+		NPCSounds_Emit(this, "monster_zombie", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 	}
 	else // Play a random attack miss sound
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+		NPCSounds_Emit(this, "monster_zombie", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 	if (RANDOM_LONG(0, 1))
 		BaseAttackSound();
@@ -286,20 +242,13 @@ void CZombie::Precache()
 
 void CZombie::PrecacheSounds()
 {
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
-	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 
 	// Removed, Now are sentences
-	// PRECACHE_SOUND_ARRAY(pAttackSounds);
-	// PRECACHE_SOUND_ARRAY(pIdleSounds);
-	// PRECACHE_SOUND_ARRAY(pAlertSounds);
-	// PRECACHE_SOUND_ARRAY(pPainSounds);
 }
 
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
-
 
 
 int CZombie::IgnoreConditions()

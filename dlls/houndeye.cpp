@@ -26,6 +26,7 @@
 #include "squadmonster.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 // houndeye does 20 points of damage spread over a sphere 384 units in diameter, and each additional
 // squad member increases the BASE damage by 110%, per the spec.
@@ -306,11 +307,11 @@ void CHoundeye::HandleAnimEvent(MonsterEvent_t* pEvent)
 		break;
 
 	case HOUND_AE_ANGERSOUND1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_pain3.wav", 1, ATTN_NORM, PITCH_NORM);
+		NPCSounds_Emit(this, "monster_houndeye", "anger1", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case HOUND_AE_ANGERSOUND2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_pain1.wav", 1, ATTN_NORM, PITCH_NORM);
+		NPCSounds_Emit(this, "monster_houndeye", "anger2", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 		break;
 
 	case HOUND_AE_CLOSE_EYE:
@@ -365,20 +366,9 @@ void CHoundeye::Precache()
 		PRECACHE_MODEL("models/houndeye.mdl");
 
 	/*
-	PRECACHE_SOUND("houndeye/he_alert1.wav");
-	PRECACHE_SOUND("houndeye/he_alert2.wav");
-	PRECACHE_SOUND("houndeye/he_alert3.wav");
 
-	PRECACHE_SOUND("houndeye/he_die1.wav");
-	PRECACHE_SOUND("houndeye/he_die2.wav");
-	PRECACHE_SOUND("houndeye/he_die3.wav");
 
-	PRECACHE_SOUND("houndeye/he_idle1.wav");
-	PRECACHE_SOUND("houndeye/he_idle2.wav");
-	PRECACHE_SOUND("houndeye/he_idle3.wav");
 
-	PRECACHE_SOUND("houndeye/he_hunt1.wav");
-	PRECACHE_SOUND("houndeye/he_hunt2.wav");
 	PRECACHE_SOUND("houndeye/he_hunt3.wav");*/
 
 	//PRECACHE_SOUND("houndeye/he_pain1.wav");
@@ -401,18 +391,7 @@ void CHoundeye::Precache()
 //=========================================================
 void CHoundeye::IdleSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_idle1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_idle2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_idle3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "idle", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -420,15 +399,7 @@ void CHoundeye::IdleSound()
 //=========================================================
 void CHoundeye::WarmUpSound()
 {
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_attack1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_attack3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "warmup", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -436,18 +407,7 @@ void CHoundeye::WarmUpSound()
 //=========================================================
 void CHoundeye::WarnSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_hunt1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_hunt2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_hunt3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "warn", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -461,18 +421,7 @@ void CHoundeye::AlertSound()
 		return; // only leader makes ALERT sound.
 	}
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_alert1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_alert2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_alert3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "alert", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -480,18 +429,7 @@ void CHoundeye::AlertSound()
 //=========================================================
 void CHoundeye::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_die1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_die2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_die3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -499,18 +437,7 @@ void CHoundeye::DeathSound()
 //=========================================================
 void CHoundeye::PainSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -571,18 +498,7 @@ void CHoundeye::SonicAttack()
 	float flAdjustedDamage;
 	float flDist;
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_blast1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_blast2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "houndeye/he_blast3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_houndeye", "blast", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 	// blast circles
 	MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, pev->origin);

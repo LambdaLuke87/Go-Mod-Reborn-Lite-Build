@@ -22,6 +22,7 @@
 #include "gamerules.h"
 #include "game.h"
 #include "pm_shared.h"
+#include "gm_audio_server.h"
 
 void EntvarsKeyvalue(entvars_t* pev, KeyValueData* pkvd);
 
@@ -806,7 +807,7 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 	DispatchSpawn(pEntity->edict());
 
 	if (respawn_npc_sound.value && !p.glowstick)
-		EMIT_SOUND_DYN(ENT(pent), CHAN_WEAPON, "!MI_SENTENC1", 0.94, ATTN_NORM, 0, PITCH_NORM);
+		GMAudio_Emit(CBaseEntity::Instance(pent), CHAN_WEAPON, "fwill/summon.wav", 0.94, ATTN_NORM, PITCH_NORM);
 
 	return pEntity;
 }

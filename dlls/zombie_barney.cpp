@@ -23,6 +23,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "schedule.h"
+#include "npc_sounds.h"
 
 
 //=========================================================
@@ -55,8 +56,6 @@ public:
 	static const char* pIdleSounds[];
 	static const char* pAlertSounds[];
 	static const char* pPainSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
 
 	// No range attacks
 	bool CheckRangeAttack1(float flDot, float flDist) override { return false; }
@@ -66,18 +65,6 @@ public:
 
 LINK_ENTITY_TO_CLASS(monster_zombie_barney, CZombieBarney);
 
-const char* CZombieBarney::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CZombieBarney::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
 
 const char* CZombieBarney::pAttackSounds[] =
 	{
@@ -206,10 +193,10 @@ void CZombieBarney::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_right * 100;
 			}
 			// Play a random attack hit sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else // Play a random attack miss sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 		if (RANDOM_LONG(0, 1))
 			AttackSound();
@@ -229,10 +216,10 @@ void CZombieBarney::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 5;
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 100;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 		if (RANDOM_LONG(0, 1))
 			AttackSound();
@@ -250,10 +237,10 @@ void CZombieBarney::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 5;
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_forward * -100;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_zombie_barney", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 
 		if (RANDOM_LONG(0, 1))
 			AttackSound();
@@ -297,11 +284,6 @@ void CZombieBarney::Precache()
 
 	PRECACHE_MODEL("models/zombie_barney.mdl");
 
-	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
-		PRECACHE_SOUND((char*)pAttackHitSounds[i]);
-
-	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
-		PRECACHE_SOUND((char*)pAttackMissSounds[i]);
 
 	for (i = 0; i < ARRAYSIZE(pAttackSounds); i++)
 		PRECACHE_SOUND((char*)pAttackSounds[i]);
@@ -319,7 +301,6 @@ void CZombieBarney::Precache()
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
-
 
 
 int CZombieBarney::IgnoreConditions()

@@ -60,6 +60,7 @@ extern engine_studio_api_t IEngineStudio;
 static int tracerCount[MAX_PLAYERS];
 
 #include "pm_shared.h"
+#include "gm_audio.h"
 
 void V_PunchAxis(int axis, float punch);
 void VectorAngles(const float* forward, float* angles);
@@ -527,7 +528,7 @@ void EV_FireGlock1(event_args_t* args)
 
 	EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHELL);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE2", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 98 + gEngfuncs.pfnRandomLong(0, 3));
 
 	EV_GetGunPosition(args, vecSrc, origin);
 
@@ -626,7 +627,7 @@ void EV_FireShotGunDouble(event_args_t* args)
 		EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHOTSHELL);
 	}
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE6", gEngfuncs.pfnRandomFloat(0.98, 1.0), ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/dbarrel1.wav", gEngfuncs.pfnRandomFloat(0.98, 1.0), ATTN_NORM, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
 
 	EV_GetGunPosition(args, vecSrc, origin);
 	VectorCopy(forward, vecAiming);
@@ -676,7 +677,7 @@ void EV_FireShotGunSingle(event_args_t* args)
 
 	EV_EjectBrass(ShellOrigin, ShellVelocity, angles[YAW], shell, TE_BOUNCE_SHOTSHELL);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE7", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0, 0x1f));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/sbarrel1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 93 + gEngfuncs.pfnRandomLong(0, 0x1f));
 
 	EV_GetGunPosition(args, vecSrc, origin);
 	VectorCopy(forward, vecAiming);
@@ -735,10 +736,10 @@ void EV_FireMP5(event_args_t* args)
 	switch (gEngfuncs.pfnRandomLong(0, 1))
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE3", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE4", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
 		break;
 	}
 
@@ -767,10 +768,10 @@ void EV_FireMP52(event_args_t* args)
 	switch (gEngfuncs.pfnRandomLong(0, 1))
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE14", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/glauncher.wav", 1, ATTN_NORM, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE15", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/glauncher2.wav", 1, ATTN_NORM, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
 		break;
 	}
 }
@@ -847,10 +848,10 @@ void EV_FirePython(event_args_t* args)
 	switch (gEngfuncs.pfnRandomLong(0, 1))
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE8", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM);
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/357_shot1.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, PITCH_NORM);
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE9", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM);
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/357_shot2.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, PITCH_NORM);
 		break;
 	}
 
@@ -956,7 +957,7 @@ void EV_FireGauss(event_args_t* args)
 			g_flApplyVel = flDamage;
 	}
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE12", 0.5 + flDamage * (1.0 / 400.0), ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5 + flDamage * (1.0 / 400.0), ATTN_NORM, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
 
 	while (flDamage > 10 && nMaxHits > 0)
 	{
@@ -1249,7 +1250,7 @@ void EV_FireCrossbow2(event_args_t* args)
 
 	VectorMA(vecSrc, 8192, forward, vecEnd);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE11", 1, ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/xbow_fire1.wav", 1, ATTN_NORM, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
 	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_ITEM, "weapons/xbow_reload1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
 
 	if (EV_IsLocal(idx))
@@ -1279,17 +1280,17 @@ void EV_FireCrossbow2(event_args_t* args)
 			switch (gEngfuncs.pfnRandomLong(0, 1))
 			{
 			case 0:
-				gEngfuncs.pEventAPI->EV_PlaySound(idx, tr.endpos, CHAN_BODY, "!WP_GUNMISC8", 1, ATTN_NORM, 0, PITCH_NORM);
+				GMAudio_PlayEntity(idx, tr.endpos, CHAN_BODY, "weapons/xbow_hitbod1.wav", 1, ATTN_NORM, PITCH_NORM);
 				break;
 			case 1:
-				gEngfuncs.pEventAPI->EV_PlaySound(idx, tr.endpos, CHAN_BODY, "!WP_GUNMISC9", 1, ATTN_NORM, 0, PITCH_NORM);
+				GMAudio_PlayEntity(idx, tr.endpos, CHAN_BODY, "weapons/xbow_hitbod2.wav", 1, ATTN_NORM, PITCH_NORM);
 				break;
 			}
 		}
 		//Stick to world but don't stick to glass, it might break and leave the bolt floating. It can still stick to other non-transparent breakables though.
 		else if (pe->rendermode == kRenderNormal)
 		{
-			gEngfuncs.pEventAPI->EV_PlaySound(0, tr.endpos, CHAN_BODY, "!WP_GUNMISC10", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, PITCH_NORM);
+			GMAudio_PlayEntity(0, tr.endpos, CHAN_BODY, "weapons/xbow_hit1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, PITCH_NORM);
 
 			//Not underwater, do some sparks...
 			if (gEngfuncs.PM_PointContents(tr.endpos, NULL) != CONTENTS_WATER)
@@ -1324,7 +1325,7 @@ void EV_FireCrossbow(event_args_t* args)
 	idx = args->entindex;
 	VectorCopy(args->origin, origin);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE11", 1, ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/xbow_fire1.wav", 1, ATTN_NORM, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
 	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_ITEM, "weapons/xbow_reload1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0, 0xF));
 
 	//Only play the weapon anims if I shot it.
@@ -1353,8 +1354,8 @@ void EV_FireRpg(event_args_t* args)
 	idx = args->entindex;
 	VectorCopy(args->origin, origin);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE13", 0.9, ATTN_NORM, 0, PITCH_NORM);
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_ITEM, "!WP_GUNFIRE14", 0.7, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "weapons/rocketfire1.wav", 0.9, ATTN_NORM, PITCH_NORM);
+	GMAudio_PlayEntity(idx, origin, CHAN_ITEM, "weapons/glauncher.wav", 0.7, ATTN_NORM, PITCH_NORM);
 
 	//Only play the weapon anims if I shot it.
 	if (EV_IsLocal(idx))
@@ -1531,13 +1532,13 @@ void EV_HornetGunFire(event_args_t* args)
 	switch (gEngfuncs.pfnRandomLong(0, 2))
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE22", 1, ATTN_NORM, 0, 100);
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "agrunt/ag_fire1.wav", 1, ATTN_NORM, 100);
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE23", 1, ATTN_NORM, 0, 100);
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "agrunt/ag_fire2.wav", 1, ATTN_NORM, 100);
 		break;
 	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "!WP_GUNFIRE24", 1, ATTN_NORM, 0, 100);
+		GMAudio_PlayEntity(idx, origin, CHAN_WEAPON, "agrunt/ag_fire3.wav", 1, ATTN_NORM, 100);
 		break;
 	}
 }
@@ -1658,10 +1659,7 @@ void EV_FireEagle(event_args_t* args)
 
 	EV_EjectBrass(ShellOrigin, ShellVelocity, args->angles[1], iShell, TE_BOUNCE_SHELL);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(
-		args->entindex,
-		args->origin, CHAN_WEAPON, "!WP_GUNFIRE10",
-		gEngfuncs.pfnRandomFloat(0.92, 1), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
+	GMAudio_PlayEntity(args->entindex, args->origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.92, 1), ATTN_NORM, 98 + gEngfuncs.pfnRandomLong(0, 3));
 
 	Vector vecSrc;
 
@@ -1798,10 +1796,7 @@ void EV_FireM249(event_args_t* args)
 
 	EV_EjectBrass(ShellOrigin, ShellVelocity, args->angles[1], iShell, TE_BOUNCE_SHELL);
 
-	gEngfuncs.pEventAPI->EV_PlaySound(
-		args->entindex,
-		args->origin, CHAN_WEAPON, "!WP_GUNFIRE16",
-		VOL_NORM, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 15));
+	GMAudio_PlayEntity(args->entindex, args->origin, CHAN_WEAPON, "weapons/saw_fire1.wav", VOL_NORM, ATTN_NORM, 94 + gEngfuncs.pfnRandomLong(0, 15));
 
 	Vector vecSrc;
 
@@ -1890,7 +1885,7 @@ void EV_FireDisplacer(event_args_t* args)
 
 void EV_FireShockRifle(event_args_t* args)
 {
-	gEngfuncs.pEventAPI->EV_PlaySound(args->entindex, args->origin, CHAN_WEAPON, "!WP_GUNFIRE21", 0.9, ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_PlayEntity(args->entindex, args->origin, CHAN_WEAPON, "weapons/shock_fire.wav", 0.9, ATTN_NORM, PITCH_NORM);
 
 	if (EV_IsLocal(args->entindex))
 		gEngfuncs.pEventAPI->EV_WeaponAnimation(SHOCKRIFLE_FIRE, 0);
@@ -1925,11 +1920,7 @@ void EV_FireNailgun(event_args_t* args)
 
 void EV_FireSpore(event_args_t* args)
 {
-	gEngfuncs.pEventAPI->EV_PlaySound(
-		args->entindex, args->origin,
-		CHAN_WEAPON, "!WP_GUNFIRE20",
-		0.9,
-		ATTN_NORM, 0, PITCH_NORM);
+	GMAudio_PlayEntity(args->entindex, args->origin, CHAN_WEAPON, "weapons/splauncher_fire.wav", 0.9, ATTN_NORM, PITCH_NORM);
 
 	if (EV_IsLocal(args->entindex))
 	{
@@ -1972,9 +1963,7 @@ void EV_SniperRifle(event_args_t* args)
 		V_PunchAxis(0, -2.0);
 	}
 
-	gEngfuncs.pEventAPI->EV_PlaySound(idx, vecOrigin,
-		CHAN_WEAPON, "!WP_GUNFIRE19",
-		gEngfuncs.pfnRandomFloat(0.9f, 1.0f), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong(0, 3));
+	GMAudio_PlayEntity(idx, vecOrigin, CHAN_WEAPON, "weapons/sniper_fire.wav", gEngfuncs.pfnRandomFloat(0.9f, 1.0f), ATTN_NORM, 98 + gEngfuncs.pfnRandomLong(0, 3));
 
 	Vector vecSrc;
 	Vector vecAiming = forward;
@@ -2111,7 +2100,7 @@ void EV_PhysGun(event_args_t* args)
 
 		gEngfuncs.pEfxAPI->R_BeamEntPoint(idx | 0x1000, targpos, m_iBeam, 0.1, 0.4, 0.4, 1, 0.4, 0, 1, 1, 1, 0);
 
-		gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "!WP_GUNFIRE12", 0.5, ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
+		GMAudio_PlayEntity(idx, args->origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5, ATTN_NORM, 85 + gEngfuncs.pfnRandomLong(0, 0x1f));
 	}
 }
 //======================

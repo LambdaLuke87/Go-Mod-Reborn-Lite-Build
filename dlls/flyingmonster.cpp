@@ -18,6 +18,7 @@
 #include "monsters.h"
 #include "schedule.h"
 #include "flyingmonster.h"
+#include "gm_audio_server.h"
 
 #define FLYING_AE_FLAP (8)
 #define FLYING_AE_FLAPSOUND (9)
@@ -138,7 +139,7 @@ void CFlyingMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case FLYING_AE_FLAPSOUND:
 		if (m_pFlapSound)
-			EMIT_SOUND(edict(), CHAN_BODY, m_pFlapSound, 1, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_BODY, m_pFlapSound, 1, ATTN_NORM, PITCH_NORM); // no precache needed
 		break;
 
 	default:

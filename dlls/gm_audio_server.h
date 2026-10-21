@@ -7,6 +7,12 @@
 // because it is not in the precache list): ship it with the mod / the pack.
 
 class CBaseEntity;
+class Vector;
+
+// Extra channels (the engine has 0-7, this system accepts 0-255). Same rule: a new sound replaces the
+// previous one of that entity + channel, so the CTF charge sounds can be stopped one by one.
+#define GM_CHAN_ARMOR_CHARGE 8
+#define GM_CHAN_HEALTH_CHARGE 9
 
 // Call from LinkUserMessages() (player.cpp), next to the other REG_USER_MSG
 void GMAudio_RegisterMessages();
@@ -18,3 +24,13 @@ void GMAudio_Emit(CBaseEntity* pEntity, int channel, const char* path, float vol
 
 // Like STOP_SOUND(entity, channel)
 void GMAudio_Stop(CBaseEntity* pEntity, int channel);
+
+// Sound at a fixed point of the world, not attached to an entity (like UTIL_EmitAmbientSound)
+void GMAudio_EmitAmbient(const Vector& origin, const char* path, float volume, float attenuation, int pitch);
+
+// Like EMIT_SOUND_PREDICTED: if the player predicts its weapons (cl_lw 1) it already played the
+// sound by itself (client weapon code), so it's sent to everyone else.
+void GMAudio_EmitPredicted(CBaseEntity* pPlayer, int channel, const char* path, float volume, float attenuation, int pitch);
+
+// true for monsters (not players): their sentences / sounds go through this system
+bool GMAudio_IsNPC(CBaseEntity* pEntity);

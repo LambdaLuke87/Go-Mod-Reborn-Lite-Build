@@ -24,6 +24,7 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 #include "game.h"
+#include "gm_audio_server.h"
 
 LINK_ENTITY_TO_CLASS(weapon_gauss, CGauss);
 
@@ -180,7 +181,7 @@ void CGauss::SecondaryAttack()
 	{
 		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		{
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "!WP_GUNMISC3", 0.8, ATTN_NORM);
+			GMAudio_Emit(m_pPlayer, CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM, PITCH_NORM);
 			m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 			return;
 		}

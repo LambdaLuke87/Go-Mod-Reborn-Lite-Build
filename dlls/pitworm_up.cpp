@@ -22,6 +22,7 @@
 #include "weapons.h"
 #include "decals.h"
 #include "animation.h"
+#include "npc_sounds.h"
 
 const auto PITWORM_UP_AE_HITGROUND = 1;
 const auto PITWORM_UP_AE_SHOOTBEAM = 2;
@@ -132,11 +133,6 @@ public:
 
 	void LockTopLevel();
 
-	static const char* pAttackSounds[];
-	static const char* pAttackVoiceSounds[];
-	static const char* pShootSounds[];
-	static const char* pPainSounds[];
-	static const char* pHitGroundSounds[];
 	static const char* pIdleSounds[];
 
 	float m_flNextPainSound;
@@ -252,32 +248,6 @@ TYPEDESCRIPTION COFPitWormUp::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(COFPitWormUp, CBaseMonster);
 
-const char* COFPitWormUp::pAttackSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav"};
-
-const char* COFPitWormUp::pAttackVoiceSounds[] =
-	{
-		"pitworm/pit_worm_attack_swipe1.wav",
-		"pitworm/pit_worm_attack_swipe2.wav",
-		"pitworm/pit_worm_attack_swipe3.wav"};
-
-const char* COFPitWormUp::pShootSounds[] =
-	{
-		"debris/beamstart3.wav",
-		"debris/beamstart8.wav"};
-
-const char* COFPitWormUp::pPainSounds[] =
-	{
-		"pitworm/pit_worm_flinch1.wav",
-		"pitworm/pit_worm_flinch2.wav"};
-
-const char* COFPitWormUp::pHitGroundSounds[] =
-	{
-		"tentacle/te_strike1.wav",
-		"tentacle/te_strike2.wav"};
 
 const char* COFPitWormUp::pIdleSounds[] =
 	{
@@ -290,32 +260,18 @@ void COFPitWormUp::Precache()
 	PRECACHE_MODEL("models/pit_worm_up.mdl");
 	PRECACHE_MODEL("sprites/tele1.spr");
 
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAttackVoiceSounds);
-	PRECACHE_SOUND_ARRAY(pShootSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pHitGroundSounds);
 	PRECACHE_SOUND_ARRAY(pIdleSounds);
 
-	PRECACHE_SOUND("debris/beamstart7.wav");
 
 	PRECACHE_SOUND("pitworm/clang1.wav");
 	PRECACHE_SOUND("pitworm/clang2.wav");
 	PRECACHE_SOUND("pitworm/clang3.wav");
 
-	PRECACHE_SOUND("pitworm/pit_worm_alert.wav");
 
-	PRECACHE_SOUND("pitworm/pit_worm_attack_eyeblast.wav");
 	PRECACHE_SOUND("pitworm/pit_worm_attack_eyeblast_impact.wav");
 
-	PRECACHE_SOUND("pitworm/pit_worm_attack_swipe1.wav");
-	PRECACHE_SOUND("pitworm/pit_worm_attack_swipe2.wav");
-	PRECACHE_SOUND("pitworm/pit_worm_attack_swipe3.wav");
 
-	PRECACHE_SOUND("pitworm/pit_worm_death.wav");
 
-	PRECACHE_SOUND("pitworm/pit_worm_flinch1.wav");
-	PRECACHE_SOUND("pitworm/pit_worm_flinch2.wav");
 
 	PRECACHE_MODEL("models/pit_worm_gibs.mdl");
 
@@ -628,7 +584,7 @@ void COFPitWormUp::DyingThink()
 
 		ClearShockEffect();
 
-		EMIT_SOUND(edict(), CHAN_VOICE, "pitworm/pit_worm_death.wav", VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_pitworm_up", "death", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 		m_flDeathStartTime = gpGlobals->time;
 
@@ -671,7 +627,7 @@ void COFPitWormUp::HitTouch(CBaseEntity* pOther)
 		pOther->pev->flags &= ~FL_ONGROUND;
 
 
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pAttackSounds[RANDOM_LONG(0, 2)], VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(-5, 5) + 100);
+		NPCSounds_Emit(this, "monster_pitworm_up", "attack", CHAN_WEAPON, VOL_NORM, ATTN_NORM, RANDOM_LONG(-5, 5) + 100);
 
 		if (tr.iHitgroup == 2)
 			pOther->TakeDamage(pev, pev, 10, DMG_CRUSH | DMG_SLASH);
@@ -832,7 +788,7 @@ void COFPitWormUp::ShootBeam()
 
 			m_flIdealHeadYaw += m_flBeamDir * 50.0;
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pShootSounds[RANDOM_LONG(0, ARRAYSIZE(pShootSounds) - 1)], VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(-5, 5) + 100);
+			NPCSounds_Emit(this, "monster_pitworm_up", "shoot", CHAN_WEAPON, VOL_NORM, ATTN_NORM, RANDOM_LONG(-5, 5) + 100);
 			MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
 			WRITE_BYTE(TE_ELIGHT);
 			WRITE_SHORT(entindex() | (1 << 12));
@@ -1003,7 +959,7 @@ void COFPitWormUp::NextActivity()
 
 		if (m_hEnemy)
 		{
-			EMIT_SOUND(edict(), CHAN_VOICE, "pitworm/pit_worm_alert.wav", VOL_NORM, 0.1);
+			NPCSounds_Emit(this, "monster_pitworm_up", "alert", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 		}
 	}
 
@@ -1095,7 +1051,7 @@ bool COFPitWormUp::ClawAttack()
 			}
 		}
 
-		EMIT_SOUND(edict(), CHAN_VOICE, pAttackVoiceSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackVoiceSounds) - 1)], VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_pitworm_up", "attack_voice", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 		m_fLockHeight = true;
 		m_fLockYaw = true;
@@ -1186,11 +1142,11 @@ bool COFPitWormUp::ClawAttack()
 
 	if (pev->sequence == PITWORM_ANIM_RangeAttack)
 	{
-		EMIT_SOUND(edict(), CHAN_VOICE, "pitworm/pit_worm_attack_eyeblast.wav", VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_pitworm_up", "eyeblast", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 	}
 	else
 	{
-		EMIT_SOUND(edict(), CHAN_VOICE, pAttackVoiceSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackVoiceSounds) - 1)], VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_pitworm_up", "attack_voice", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 	}
 
 	m_fAttacking = true;
@@ -1215,7 +1171,7 @@ void COFPitWormUp::LockTopLevel()
 
 void COFPitWormUp::IdleSound()
 {
-	EMIT_SOUND(edict(), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], VOL_NORM, 0.1);
+	NPCSounds_Emit(this, "monster_pitworm_up", "pain", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 }
 
 void COFPitWormUp::PainSound()
@@ -1224,7 +1180,7 @@ void COFPitWormUp::PainSound()
 	{
 		m_flNextPainSound = RANDOM_FLOAT(2, 5) + gpGlobals->time;
 
-		EMIT_SOUND(edict(), CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], VOL_NORM, 0.1);
+		NPCSounds_Emit(this, "monster_pitworm_up", "pain", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 	}
 }
 
@@ -1261,7 +1217,7 @@ void COFPitWormUp::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector ve
 					if (pAttacker && pAttacker->MyMonsterPointer())
 					{
 						m_hEnemy = pAttacker;
-						EMIT_SOUND(edict(), CHAN_VOICE, "pitworm/pit_worm_alert.wav", VOL_NORM, 0.1);
+						NPCSounds_Emit(this, "monster_pitworm_up", "alert", CHAN_VOICE, VOL_NORM, 0.1, PITCH_NORM);
 
 						if (!m_fFirstSighting)
 						{
@@ -1317,7 +1273,7 @@ void COFPitWormUp::HandleAnimEvent(MonsterEvent_t* pEvent)
 	switch (pEvent->event)
 	{
 	case PITWORM_UP_AE_HITGROUND:
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pHitGroundSounds[RANDOM_LONG(0, ARRAYSIZE(pHitGroundSounds) - 1)], VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(-5, 5) + 100);
+		NPCSounds_Emit(this, "monster_pitworm_up", "hit_ground", CHAN_WEAPON, VOL_NORM, ATTN_NORM, RANDOM_LONG(-5, 5) + 100);
 
 		if (pev->sequence == PITWORM_ANIM_Level2AttackCenter)
 			UTIL_ScreenShake(pev->origin, 12.0, 100.0, 2.0, 1000.0);
@@ -1759,10 +1715,8 @@ public:
 	static const char* pSackSounds[];
 	static const char* pDeathSounds[];
 	static const char* pAttackSounds[];
-	static const char* pAttackHitSounds[];
 	static const char* pBirthSounds[];
 	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
 	static const char* pFootSounds[];
 
 	float m_nodeTime;
@@ -1835,12 +1789,6 @@ const char* COFPitWorm::pAttackSounds[] =
 		"gonarch/gon_attack2.wav",
 		"gonarch/gon_attack3.wav",
 };
-const char* COFPitWorm::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
 
 const char* COFPitWorm::pBirthSounds[] =
 	{
@@ -1856,12 +1804,6 @@ const char* COFPitWorm::pAlertSounds[] =
 		"gonarch/gon_alert3.wav",
 };
 
-const char* COFPitWorm::pPainSounds[] =
-	{
-		"gonarch/gon_pain2.wav",
-		"gonarch/gon_pain4.wav",
-		"gonarch/gon_pain5.wav",
-};
 
 const char* COFPitWorm::pFootSounds[] =
 	{
@@ -1898,10 +1840,8 @@ void COFPitWorm::Precache()
 	PRECACHE_SOUND_ARRAY(pSackSounds);
 	PRECACHE_SOUND_ARRAY(pDeathSounds);
 	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
 	PRECACHE_SOUND_ARRAY(pBirthSounds);
 	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
 	PRECACHE_SOUND_ARRAY(pFootSounds);
 
 	g_engfuncs.pfnPrecacheModel("sprites/xspark1.spr");
@@ -2040,7 +1980,7 @@ void COFPitWorm::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 	else if (gpGlobals->time > m_painSoundTime)
 	{
 		m_painSoundTime = gpGlobals->time + RANDOM_LONG(1, 3);
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pPainSounds);
+		NPCSounds_Emit(this, "monster_pitworm", "pain", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 
 		if (gpGlobals->time > m_slowTime)
 		{
@@ -2314,7 +2254,7 @@ void COFPitWorm::HandleAnimEvent(MonsterEvent_t* pEvent)
 			pHurt->pev->velocity = pHurt->pev->velocity + (forward * 220) + Vector(0, 0, 200);
 
 			pHurt->pev->flags &= ~FL_ONGROUND;
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_pitworm", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;

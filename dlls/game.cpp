@@ -18,6 +18,7 @@
 #include "client.h"
 #include "game.h"
 #include "filesystem_utils.h"
+#include "npc_sounds.h"
 
 cvar_t displaysoundlist = {"displaysoundlist", "0"};
 
@@ -1421,6 +1422,10 @@ void GameDLLInit()
 	CVAR_REGISTER(&sv_pushable_fixed_tick_fudge);
 
 	InitMapLoadingUtils();
+
+	// NPC sounds (sound_configs/*.json) are read again on the next use
+	g_engfuncs.pfnAddServerCommand("gm_reload_sound_configs", []()
+		{ NPCSounds_ClearCache(); });
 
 	SERVER_COMMAND("exec skills/halflife.cfg\n");
 	SERVER_COMMAND("exec skills/opfor.cfg\n");

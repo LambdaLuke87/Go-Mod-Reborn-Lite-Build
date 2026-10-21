@@ -25,6 +25,7 @@
 #include "schedule.h"
 #include "weapons.h"
 #include "squadmonster.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -80,11 +81,6 @@ public:
 	void AttackSound() override;
 	void DeathSound() override;
 
-	static const char* pAttackSounds[];
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pDeathSounds[];
 
 	bool TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
 	void Killed(entvars_t* pevAttacker, int iGib) override;
@@ -112,43 +108,6 @@ TYPEDESCRIPTION CController::m_SaveData[] =
 		DEFINE_FIELD(CController, m_vecEstVelocity, FIELD_VECTOR),
 };
 IMPLEMENT_SAVERESTORE(CController, CSquadMonster);
-
-
-const char* CController::pAttackSounds[] =
-	{
-		"controller/con_attack1.wav",
-		"controller/con_attack2.wav",
-		"controller/con_attack3.wav",
-};
-
-const char* CController::pIdleSounds[] =
-	{
-		"controller/con_idle1.wav",
-		"controller/con_idle2.wav",
-		"controller/con_idle3.wav",
-		"controller/con_idle4.wav",
-		"controller/con_idle5.wav",
-};
-
-const char* CController::pAlertSounds[] =
-	{
-		"controller/con_alert1.wav",
-		"controller/con_alert2.wav",
-		"controller/con_alert3.wav",
-};
-
-const char* CController::pPainSounds[] =
-	{
-		"controller/con_pain1.wav",
-		"controller/con_pain2.wav",
-		"controller/con_pain3.wav",
-};
-
-const char* CController::pDeathSounds[] =
-	{
-		"controller/con_die1.wav",
-		"controller/con_die2.wav",
-};
 
 
 //=========================================================
@@ -234,32 +193,30 @@ void CController::GibMonster()
 }
 
 
-
-
 void CController::PainSound()
 {
 	if (RANDOM_LONG(0, 5) < 2)
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pPainSounds);
+		NPCSounds_Emit(this, "monster_alien_controller", "pain", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CController::AlertSound()
 {
-	EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pAlertSounds);
+	NPCSounds_Emit(this, "monster_alien_controller", "alert", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CController::IdleSound()
 {
-	EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pIdleSounds);
+	NPCSounds_Emit(this, "monster_alien_controller", "idle", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CController::AttackSound()
 {
-	EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pAttackSounds);
+	NPCSounds_Emit(this, "monster_alien_controller", "attack", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CController::DeathSound()
 {
-	EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pDeathSounds);
+	NPCSounds_Emit(this, "monster_alien_controller", "death", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 //=========================================================
@@ -391,11 +348,6 @@ void CController::Precache()
 	else
 		PRECACHE_MODEL("models/controller.mdl");
 
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pIdleSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pDeathSounds);
 
 	PRECACHE_MODEL("sprites/xspark4.spr");
 
@@ -425,7 +377,6 @@ Schedule_t slControllerChaseEnemy[] =
 			0,
 			"ControllerChaseEnemy"},
 };
-
 
 
 Task_t tlControllerStrafe[] =
@@ -482,7 +433,6 @@ Schedule_t slControllerFail[] =
 };
 
 
-
 DEFINE_CUSTOM_SCHEDULES(CController){
 	slControllerChaseEnemy,
 	slControllerStrafe,
@@ -491,7 +441,6 @@ DEFINE_CUSTOM_SCHEDULES(CController){
 };
 
 IMPLEMENT_CUSTOM_SCHEDULES(CController, CSquadMonster);
-
 
 
 //=========================================================
@@ -760,7 +709,6 @@ Schedule_t* CController::GetSchedule()
 }
 
 
-
 //=========================================================
 //=========================================================
 Schedule_t* CController::GetScheduleOfType(int Type)
@@ -783,9 +731,6 @@ Schedule_t* CController::GetScheduleOfType(int Type)
 
 	return CBaseMonster::GetScheduleOfType(Type);
 }
-
-
-
 
 
 //=========================================================
@@ -832,7 +777,6 @@ void CController::SetActivity(Activity NewActivity)
 		break;
 	}
 }
-
 
 
 //=========================================================
@@ -1076,7 +1020,6 @@ void CController::Move(float flInterval)
 }
 
 
-
 bool CController::ShouldAdvanceRoute(float flWaypointDist)
 {
 	if (flWaypointDist <= 32)
@@ -1130,8 +1073,6 @@ void CController::MoveExecute(CBaseEntity* pTargetEnt, const Vector& vecDir, flo
 }
 
 
-
-
 //=========================================================
 // Controller bouncy ball attack
 //=========================================================
@@ -1150,7 +1091,6 @@ class CControllerHeadBall : public CBaseMonster
 	EHANDLE m_hOwner;
 };
 LINK_ENTITY_TO_CLASS(controller_head_ball, CControllerHeadBall);
-
 
 
 void CControllerHeadBall::Spawn()
@@ -1187,7 +1127,6 @@ void CControllerHeadBall::Precache()
 {
 	PRECACHE_MODEL("sprites/xspark1.spr");
 	PRECACHE_SOUND("debris/zap4.wav");
-	PRECACHE_SOUND("weapons/electro4.wav");
 }
 
 
@@ -1254,7 +1193,7 @@ void CControllerHeadBall::HuntThink()
 		WRITE_BYTE(10);	 // speed
 		MESSAGE_END();
 
-		UTIL_EmitAmbientSound(ENT(pev), tr.vecEndPos, "weapons/electro4.wav", 0.5, ATTN_NORM, 0, RANDOM_LONG(140, 160));
+		NPCSounds_EmitAmbient(tr.vecEndPos, "monster_alien_controller", "zap_hit", 0.5, ATTN_NORM, RANDOM_LONG(140, 160));
 
 		m_flNextAttack = gpGlobals->time + 3.0;
 
@@ -1289,7 +1228,6 @@ void CControllerHeadBall::MovetoTarget(Vector vecTarget)
 	m_vecIdeal = m_vecIdeal + (vecTarget - pev->origin).Normalize() * 100;
 	pev->velocity = m_vecIdeal;
 }
-
 
 
 void CControllerHeadBall::Crawl()
@@ -1331,8 +1269,6 @@ void CControllerHeadBall::BounceTouch(CBaseEntity* pOther)
 
 	m_vecIdeal = vecDir * m_vecIdeal.Length();
 }
-
-
 
 
 class CControllerZapBall : public CBaseMonster
@@ -1416,7 +1352,7 @@ void CControllerZapBall::ExplodeTouch(CBaseEntity* pOther)
 		pOther->TraceAttack(pevOwner, gSkillData.controllerDmgBall, pev->velocity.Normalize(), &tr, DMG_ENERGYBEAM);
 		ApplyMultiDamage(pevOwner, pevOwner);
 
-		UTIL_EmitAmbientSound(ENT(pev), tr.vecEndPos, "weapons/electro4.wav", 0.3, ATTN_NORM, 0, RANDOM_LONG(90, 99));
+		NPCSounds_EmitAmbient(tr.vecEndPos, "monster_alien_controller", "zap_hit", 0.3, ATTN_NORM, RANDOM_LONG(90, 99));
 	}
 
 	UTIL_Remove(this);

@@ -32,6 +32,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "gamerules.h"
+#include "npc_sounds.h"
 #include "teamplay_gamerules.h"
 #include "ctf/ctfplay_gamerules.h"
 #include "world.h"
@@ -523,6 +524,8 @@ void CWorld::Precache()
 	}
 
 	g_pLastSpawn = NULL;
+
+	NPCSounds_ClearCache(); // new map: read sound_configs/*.json again
 
 #if 1
 	CVAR_SET_STRING("sv_gravity", "800"); // 67ft/sec

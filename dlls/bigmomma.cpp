@@ -24,6 +24,7 @@
 #include "decals.h"
 #include "weapons.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 #define SF_INFOBM_RUN 0x0001
 #define SF_INFOBM_WAIT 0x0002
@@ -145,7 +146,6 @@ IMPLEMENT_SAVERESTORE(CBMortar, CBaseEntity);
 #define BIG_AE_ATTACK_SOUND 16	 // attack sound
 #define BIG_AE_BIRTH_SOUND 17	 // birth sound
 #define BIG_AE_EARLY_TARGET 50	 // Fire target early
-
 
 
 // User defined conditions
@@ -295,15 +295,6 @@ public:
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	static const char* pChildDieSounds[];
-	static const char* pSackSounds[];
-	static const char* pDeathSounds[];
-	static const char* pAttackSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pBirthSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pFootSounds[];
 
 	CUSTOM_SCHEDULES;
 
@@ -326,67 +317,6 @@ TYPEDESCRIPTION CBigMomma::m_SaveData[] =
 };
 
 IMPLEMENT_SAVERESTORE(CBigMomma, CBaseMonster);
-
-const char* CBigMomma::pChildDieSounds[] =
-	{
-		"gonarch/gon_childdie1.wav",
-		"gonarch/gon_childdie2.wav",
-		"gonarch/gon_childdie3.wav",
-};
-
-const char* CBigMomma::pSackSounds[] =
-	{
-		"gonarch/gon_sack1.wav",
-		"gonarch/gon_sack2.wav",
-		"gonarch/gon_sack3.wav",
-};
-
-const char* CBigMomma::pDeathSounds[] =
-	{
-		"gonarch/gon_die1.wav",
-};
-
-const char* CBigMomma::pAttackSounds[] =
-	{
-		"gonarch/gon_attack1.wav",
-		"gonarch/gon_attack2.wav",
-		"gonarch/gon_attack3.wav",
-};
-const char* CBigMomma::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CBigMomma::pBirthSounds[] =
-	{
-		"gonarch/gon_birth1.wav",
-		"gonarch/gon_birth2.wav",
-		"gonarch/gon_birth3.wav",
-};
-
-const char* CBigMomma::pAlertSounds[] =
-	{
-		"gonarch/gon_alert1.wav",
-		"gonarch/gon_alert2.wav",
-		"gonarch/gon_alert3.wav",
-};
-
-const char* CBigMomma::pPainSounds[] =
-	{
-		"gonarch/gon_pain2.wav",
-		"gonarch/gon_pain4.wav",
-		"gonarch/gon_pain5.wav",
-};
-
-const char* CBigMomma::pFootSounds[] =
-	{
-		"gonarch/gon_step1.wav",
-		"gonarch/gon_step2.wav",
-		"gonarch/gon_step3.wav",
-};
-
 
 
 bool CBigMomma::KeyValue(KeyValueData* pkvd)
@@ -488,44 +418,44 @@ void CBigMomma::HandleAnimEvent(MonsterEvent_t* pEvent)
 			}
 
 			pHurt->pev->flags &= ~FL_ONGROUND;
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_bigmomma", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
 
 	case BIG_AE_SCREAM:
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pAlertSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "alert", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_PAIN_SOUND:
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pPainSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "pain", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_ATTACK_SOUND:
-		EMIT_SOUND_ARRAY_DYN(CHAN_WEAPON, pAttackSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "attack", CHAN_WEAPON, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_BIRTH_SOUND:
-		EMIT_SOUND_ARRAY_DYN(CHAN_BODY, pBirthSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "birth", CHAN_BODY, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_SACK:
 		if (RANDOM_LONG(0, 100) < 30)
-			EMIT_SOUND_ARRAY_DYN(CHAN_BODY, pSackSounds);
+			NPCSounds_Emit(this, "monster_bigmomma", "sack", CHAN_BODY, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_DEATHSOUND:
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pDeathSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "death", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_STEP1: // Footstep left
 	case BIG_AE_STEP3: // Footstep back left
-		EMIT_SOUND_ARRAY_DYN(CHAN_ITEM, pFootSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "foot", CHAN_ITEM, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_STEP4: // Footstep back right
 	case BIG_AE_STEP2: // Footstep right
-		EMIT_SOUND_ARRAY_DYN(CHAN_BODY, pFootSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "foot", CHAN_BODY, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 		break;
 
 	case BIG_AE_MORTAR_ATTACK1:
@@ -577,7 +507,7 @@ void CBigMomma::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDi
 	else if (gpGlobals->time > m_painSoundTime)
 	{
 		m_painSoundTime = gpGlobals->time + RANDOM_LONG(1, 3);
-		EMIT_SOUND_ARRAY_DYN(CHAN_VOICE, pPainSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "pain", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 	}
 
 
@@ -639,10 +569,9 @@ void CBigMomma::LayHeadcrab()
 	UTIL_TraceLine(pev->origin, pev->origin - Vector(0, 0, 100), ignore_monsters, edict(), &tr);
 	UTIL_DecalTrace(&tr, DECAL_MOMMABIRTH);
 
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pBirthSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+	NPCSounds_Emit(this, "monster_bigmomma", "birth", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 	m_crabCount++;
 }
-
 
 
 void CBigMomma::DeathNotice(entvars_t* pevChild)
@@ -652,7 +581,7 @@ void CBigMomma::DeathNotice(entvars_t* pevChild)
 	if (IsAlive())
 	{
 		// Make the "my baby's dead" noise!
-		EMIT_SOUND_ARRAY_DYN(CHAN_WEAPON, pChildDieSounds);
+		NPCSounds_Emit(this, "monster_bigmomma", "child_die", CHAN_WEAPON, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 	}
 }
 
@@ -664,7 +593,7 @@ void CBigMomma::LaunchMortar()
 	Vector startPos = pev->origin;
 	startPos.z += 180;
 
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pSackSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+	NPCSounds_Emit(this, "monster_bigmomma", "sack", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 	CBMortar* pBomb = CBMortar::Shoot(edict(), startPos, pev->movedir);
 	pBomb->pev->gravity = 1.0;
 	MortarSpray(startPos, Vector(0, 0, 1), gSpitSprite, 24);
@@ -704,15 +633,6 @@ void CBigMomma::Precache()
 	else
 		PRECACHE_MODEL("models/big_mom.mdl");
 
-	PRECACHE_SOUND_ARRAY(pChildDieSounds);
-	PRECACHE_SOUND_ARRAY(pSackSounds);
-	PRECACHE_SOUND_ARRAY(pDeathSounds);
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
-	PRECACHE_SOUND_ARRAY(pBirthSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
-	PRECACHE_SOUND_ARRAY(pPainSounds);
-	PRECACHE_SOUND_ARRAY(pFootSounds);
 
 	UTIL_PrecacheOther(BIG_CHILDCLASS);
 
@@ -721,9 +641,6 @@ void CBigMomma::Precache()
 	gSpitSprite = PRECACHE_MODEL("sprites/mommaspout.spr"); // client side spittle.
 	gSpitDebrisSprite = PRECACHE_MODEL("sprites/mommablob.spr");
 
-	PRECACHE_SOUND("bullchicken/bc_acid1.wav");
-	PRECACHE_SOUND("bullchicken/bc_spithit1.wav");
-	PRECACHE_SOUND("bullchicken/bc_spithit2.wav");
 }
 
 
@@ -895,8 +812,6 @@ DEFINE_CUSTOM_SCHEDULES(CBigMomma){
 IMPLEMENT_CUSTOM_SCHEDULES(CBigMomma, CBaseMonster);
 
 
-
-
 Schedule_t* CBigMomma::GetScheduleOfType(int Type)
 {
 	switch (Type)
@@ -923,7 +838,6 @@ bool CBigMomma::ShouldGoToNode()
 	}
 	return false;
 }
-
 
 
 Schedule_t* CBigMomma::GetSchedule()
@@ -1036,7 +950,7 @@ void CBigMomma::StartTask(Task_t* pTask)
 
 	case TASK_MELEE_ATTACK1:
 		// Play an attack sound here
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_NORM, 0, PITCH_NORM);
+		NPCSounds_Emit(this, "monster_bigmomma", "attack", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 		CBaseMonster::StartTask(pTask);
 		break;
 
@@ -1100,7 +1014,6 @@ void CBigMomma::RunTask(Task_t* pTask)
 }
 
 
-
 Vector VecCheckSplatToss(entvars_t* pev, const Vector& vecSpot1, Vector vecSpot2, float maxHeight)
 {
 	TraceResult tr;
@@ -1143,8 +1056,6 @@ Vector VecCheckSplatToss(entvars_t* pev, const Vector& vecSpot1, Vector vecSpot2
 
 	return vecGrenadeVel;
 }
-
-
 
 
 // ---------------------------------
@@ -1232,17 +1143,9 @@ void CBMortar::Touch(CBaseEntity* pOther)
 	// splat sound
 	iPitch = RANDOM_FLOAT(90, 110);
 
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "bullchicken/bc_acid1.wav", 1, ATTN_NORM, 0, iPitch);
+	NPCSounds_Emit(this, "monster_bigmomma", "spit_acid", CHAN_VOICE, 1, ATTN_NORM, iPitch);
 
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit1.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "bullchicken/bc_spithit2.wav", 1, ATTN_NORM, 0, iPitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_bigmomma", "spit_hit", CHAN_WEAPON, 1, ATTN_NORM, iPitch);
 
 	if (pOther->IsBSPModel())
 	{

@@ -20,6 +20,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "decals.h"
+#include "npc_sounds.h"
 
 // TODO (inherited from the original):
 // range attack if can't reach target
@@ -196,14 +197,6 @@ private:
 
 	friend class CTorSummonPoint;
 
-	static const char* pAttackSounds[];
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pDieSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
-	static const char* pSlamSounds[];
 };
 
 LINK_ENTITY_TO_CLASS(monster_alien_tor, CTor);
@@ -253,55 +246,7 @@ IMPLEMENT_SAVERESTORE(CTorSummonPoint, CPointEntity);
 //=========================================================
 // Sounds
 //=========================================================
-const char* CTor::pAttackSounds[] =
-	{
-		"tor/tor-attack1.wav",
-		"tor/tor-attack2.wav",
-};
 
-const char* CTor::pIdleSounds[] =
-	{
-		"tor/tor-idle.wav",
-		"tor/tor-idle2.wav",
-		"tor/tor-idle3.wav",
-};
-
-const char* CTor::pAlertSounds[] =
-	{
-		"tor/tor-alerted.wav",
-};
-
-const char* CTor::pPainSounds[] =
-	{
-		"tor/tor-pain.wav",
-		"tor/tor-pain2.wav",
-};
-
-const char* CTor::pDieSounds[] =
-	{
-		"tor/tor-die.wav",
-		"tor/tor-die2.wav",
-};
-
-const char* CTor::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CTor::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
-
-const char* CTor::pSlamSounds[] =
-	{
-		"houndeye/he_blast1.wav",
-		"houndeye/he_blast2.wav",
-		"houndeye/he_blast3.wav",
-};
 
 //=========================================================
 // Schedules
@@ -403,12 +348,12 @@ void CTor::MeleeHit(CBaseEntity* pHurt)
 	if (pHurt)
 	{
 		m_failedMelees = 0;
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+		NPCSounds_Emit(this, "monster_alien_tor", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 	}
 	else
 	{
 		m_failedMelees++;
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+		NPCSounds_Emit(this, "monster_alien_tor", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 	}
 }
 
@@ -478,7 +423,7 @@ void CTor::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case EVENT_STEP_LEFT:
 	case EVENT_STEP_RIGHT:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "tor/tor-foot.wav", 1.0, ATTN_NORM, 0, RANDOM_LONG(90, 110));
+		NPCSounds_Emit(this, "monster_alien_tor", "step", CHAN_BODY, 1.0, ATTN_NORM, RANDOM_LONG(90, 110));
 		break;
 
 	default:
@@ -524,7 +469,7 @@ void CTor::StartTask(Task_t* pTask)
 {
 	if (pTask->iTask == TASK_MELEE_ATTACK2)
 	{
-		GMAudio_Emit(this, CHAN_VOICE, pAttackSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
+		NPCSounds_Emit(this, "monster_alien_tor", "attack", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 	}
 	CSquadMonster::StartTask(pTask);
 }
@@ -539,7 +484,7 @@ void CTor::MonsterThink()
 		{
 			m_nextBeam = gpGlobals->time + 0.05;
 			m_burstShotsFired++;
-			GMAudio_Emit(this, CHAN_VOICE, "tor/tor-staff-discharge.wav", 1.0, ATTN_NORM, PITCH_NORM);
+			NPCSounds_Emit(this, "monster_alien_tor", "staff_discharge", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 			CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_GUN_VOLUME, 0.3);
 
 			Vector vecSrc, angles;
@@ -748,32 +693,13 @@ void CTor::Spawn()
 
 void CTor::Precache()
 {
-	int i;
-
 	PRECACHE_MODEL("models/Tor.mdl");
 
-	//for (i = 0; i < ARRAYSIZE(pAttackSounds); i++)
-	//PRECACHE_SOUND(pAttackSounds[i]);
-	//for (i = 0; i < ARRAYSIZE(pIdleSounds); i++)
-	//PRECACHE_SOUND(pIdleSounds[i]);
-	//for (i = 0; i < ARRAYSIZE(pAlertSounds); i++)
-	//PRECACHE_SOUND(pAlertSounds[i]);
-	//for (i = 0; i < ARRAYSIZE(pPainSounds); i++)
-	//PRECACHE_SOUND(pPainSounds[i]);
-	//for (i = 0; i < ARRAYSIZE(pDieSounds); i++)
-	//PRECACHE_SOUND(pDieSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
-		PRECACHE_SOUND(pAttackHitSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
-		PRECACHE_SOUND(pAttackMissSounds[i]);
-	//for (i = 0; i < ARRAYSIZE(pSlamSounds); i++)
-	//PRECACHE_SOUND(pSlamSounds[i]);
 
-	PRECACHE_SOUND("tor/tor-foot.wav");
 	//PRECACHE_SOUND("tor/tor-staff-discharge.wav");
 	//PRECACHE_SOUND("tor/tor-summon.wav");
-	PRECACHE_SOUND("debris/beamstart8.wav"); // summon portal
-	PRECACHE_SOUND("debris/beamstart7.wav"); // summon spawn
+	// summon portal
+	// summon spawn
 
 	m_iXenoBeam = PRECACHE_MODEL("sprites/xenobeam.spr");
 	m_iShockwave = PRECACHE_MODEL("sprites/shockwave.spr");
@@ -787,22 +713,22 @@ void CTor::Precache()
 void CTor::PainSound()
 {
 	if (RANDOM_LONG(0, 2) == 0)
-		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
+		NPCSounds_Emit(this, "monster_alien_tor", "pain", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
 }
 
 void CTor::DeathSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_alien_tor", "die", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CTor::AlertSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
+	NPCSounds_Emit(this, "monster_alien_tor", "alert", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(100, 109));
 }
 
 void CTor::IdleSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
+	NPCSounds_Emit(this, "monster_alien_tor", "idle", CHAN_VOICE, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CTor::SlamAttack()
@@ -836,7 +762,7 @@ void CTor::SlamAttack()
 		}
 	}
 
-	GMAudio_Emit(this, CHAN_WEAPON, pSlamSounds[RANDOM_LONG(0, ARRAYSIZE(pSlamSounds) - 1)], 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
+	NPCSounds_Emit(this, "monster_alien_tor", "slam", CHAN_WEAPON, 1.0, ATTN_NORM, RANDOM_LONG(95, 105));
 
 	const float radius = (TOR_SLAM_ATTACK_RADIUS + 50) / 0.3f;
 	TorSendBeamCylinder(pev->origin, radius, m_iShockwave, 2, 12, 255, 255, 255, 255);
@@ -892,7 +818,7 @@ void CTor::StartSummon()
 
 	m_nextSummon = gpGlobals->time + RANDOM_FLOAT(5.0f, 10.0f);
 
-	GMAudio_Emit(this, CHAN_WEAPON, "tor/tor-summon.wav", 1.0, ATTN_NORM, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_alien_tor", "summon", CHAN_WEAPON, 1.0, ATTN_NORM, PITCH_NORM);
 
 	Vector startPos = pev->origin;
 	startPos.z += (pev->maxs.z - pev->mins.z) * 0.75f;
@@ -919,7 +845,7 @@ void CTor::StartSummon()
 	summonPoint->pev->nextthink = gpGlobals->time + 2.0f;
 	summonPoint->pev->dmgtime = gpGlobals->time;
 
-	EMIT_SOUND(ENT(summonPoint->pev), CHAN_ITEM, "debris/beamstart8.wav", 1.0, ATTN_NORM);
+	NPCSounds_Emit(summonPoint, "monster_alien_tor", "summon_beam", CHAN_ITEM, 1.0, ATTN_NORM, PITCH_NORM);
 }
 
 void CTorSummonPoint::SummonThink()
@@ -1006,7 +932,7 @@ void CTorSummonPoint::SummonThink()
 			mon->PushEnemy(pTor->m_hEnemy, pTor->m_vecEnemyLKP);
 		}
 
-		EMIT_SOUND(pOwner->edict(), CHAN_ITEM, "debris/beamstart7.wav", 1.0, ATTN_NORM);
+		NPCSounds_Emit(pOwner, "monster_alien_tor", "summon_point", CHAN_ITEM, 1.0, ATTN_NORM, PITCH_NORM);
 		pTor->m_numChildren++;
 	}
 

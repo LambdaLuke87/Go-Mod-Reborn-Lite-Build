@@ -24,6 +24,7 @@
 #endif
 
 #include "CSporeLauncher.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION CSporeLauncher::m_SaveData[] =
@@ -144,7 +145,7 @@ void CSporeLauncher::WeaponIdle()
 				iAnim = SPLAUNCHER_FIDGET;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 4;
 
-				EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC18", 0.7, ATTN_NORM);
+				GMAudio_Emit(m_pPlayer, CHAN_ITEM, "weapons/splauncher_pet.wav", 0.7, ATTN_NORM, PITCH_NORM);
 			}
 
 			SendWeaponAnim(iAnim);
@@ -288,7 +289,7 @@ void CSporeLauncher::Reload()
 		// was waiting for gun to move to side
 		m_ReloadState = ReloadState::RELOAD_ONE;
 
-		EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC17", 0.7, ATTN_NORM);
+		GMAudio_Emit(m_pPlayer, CHAN_ITEM, "weapons/splauncher_reload.wav", 0.7, ATTN_NORM, PITCH_NORM);
 
 		SendWeaponAnim(SPLAUNCHER_RELOAD);
 

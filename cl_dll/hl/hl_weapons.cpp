@@ -41,6 +41,7 @@
 #include "cl_dll.h"
 #include "../com_weapons.h"
 #include "../demo.h"
+#include "gm_audio.h"
 
 cvar_t rule_infammo;
 cvar_t rule_grapple_hook;
@@ -240,7 +241,7 @@ bool CBasePlayerWeapon::PlayEmptySound()
 {
 	if (m_iPlayEmptySound)
 	{
-		HUD_PlaySound("!WP_GUNMISC3", 0.8);
+		GMAudio_PlayLocal("weapons/357_cock1.wav", 0.8f);
 		m_iPlayEmptySound = false;
 		return false;
 	}

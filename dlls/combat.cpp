@@ -32,6 +32,7 @@
 #include "game.h"
 #include "player.h"
 #include "studio.h"
+#include "gm_audio_server.h"
 
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 
@@ -1817,7 +1818,7 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 
 					if (tr.pHit && tr.pHit->v.takedamage != DAMAGE_NO)
 					{
-						EMIT_SOUND_DYN(tr.pHit, CHAN_BODY, "!WP_GUNMISC9", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+						GMAudio_Emit(CBaseEntity::Instance(tr.pHit), CHAN_BODY, "weapons/xbow_hitbod2.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 						auto pHitEntity = Instance(tr.pHit);
 

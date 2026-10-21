@@ -9,7 +9,6 @@
 */
 
 
-
 //---------------------------------------------------------
 // inclusions
 
@@ -23,7 +22,7 @@
 #include	"flyingmonster.h"
 #include	"nodes.h"
 #include	"soundent.h"
-
+#include "npc_sounds.h"
 
 
 #define FLYBEE_SPEED		150
@@ -121,12 +120,6 @@ public:
 	float m_flNextAlert;
 	float m_flNextAttack;
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pAttackSounds[];
-	static const char* pBiteSounds[];
-	static const char* pDieSounds[];
-	static const char* pPainSounds[];
 
 	void IdleSound();
 	void AlertSound();
@@ -154,7 +147,6 @@ TYPEDESCRIPTION	CFlybee::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CFlybee, CFlyingMonster);
 
 
-
 class CFlyBall : public CBaseMonster
 {
 public:
@@ -171,79 +163,34 @@ public:
 LINK_ENTITY_TO_CLASS(flyball, CFlyBall);
 
 
-
-
-const char* CFlybee::pIdleSounds[] =
-{
-	"ichy/ichy_idle1.wav",
-	"ichy/ichy_idle2.wav",
-	"ichy/ichy_idle3.wav",
-	"ichy/ichy_idle4.wav",
-};
-
-const char* CFlybee::pAlertSounds[] =
-{
-	"ichy/ichy_alert2.wav",
-	"ichy/ichy_alert3.wav",
-};
-
-const char* CFlybee::pAttackSounds[] =
-{
-	"ichy/ichy_attack1.wav",
-	"ichy/ichy_attack2.wav",
-};
-
-const char* CFlybee::pBiteSounds[] =
-{
-	"ichy/ichy_bite1.wav",
-	"ichy/ichy_bite2.wav",
-};
-
-const char* CFlybee::pPainSounds[] =
-{
-	"ichy/ichy_pain2.wav",
-	"ichy/ichy_pain3.wav",
-	"ichy/ichy_pain5.wav",
-};
-
-const char* CFlybee::pDieSounds[] =
-{
-	"ichy/ichy_die2.wav",
-	"ichy/ichy_die4.wav",
-};
-
-#define EMIT_ICKY_SOUND( chan, array ) \
-GMAudio_Emit(this, chan, array[RANDOM_LONG(0, ARRAYSIZE(array) - 1)], 1.0, 0.6, RANDOM_LONG(95, 105));
-
-
 void CFlybee::IdleSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pIdleSounds);
+	NPCSounds_Emit(this, "monster_charger", "idle", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CFlybee::AlertSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pAlertSounds);
+	NPCSounds_Emit(this, "monster_charger", "alert", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CFlybee::AttackSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pAttackSounds);
+	NPCSounds_Emit(this, "monster_charger", "attack", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CFlybee::BiteSound()
 {
-	EMIT_ICKY_SOUND(CHAN_WEAPON, pBiteSounds);
+	NPCSounds_Emit(this, "monster_charger", "bite", CHAN_WEAPON, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CFlybee::DeathSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pDieSounds);
+	NPCSounds_Emit(this, "monster_charger", "die", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CFlybee::PainSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pPainSounds);
+	NPCSounds_Emit(this, "monster_charger", "pain", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 /*
@@ -319,21 +266,13 @@ void CFlybee::Precache()
 	//PRECACHE_MODEL("models/gibs/flybee_gibs.mdl");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav");
-	PRECACHE_SOUND("debris/beamstart4.wav");
 	PRECACHE_MODEL("sprites/nhth1.spr");
 
-	//PRECACHE_SOUND_ARRAY(pIdleSounds);
-	//PRECACHE_SOUND_ARRAY(pAlertSounds);
-	//PRECACHE_SOUND_ARRAY(pAttackSounds);
-	//PRECACHE_SOUND_ARRAY(pBiteSounds);
-	//PRECACHE_SOUND_ARRAY(pDieSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
 
 	UTIL_PrecacheOther("flyball");
 
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/shockwave.spr");
 }
-
 
 
 //=========================================================
@@ -393,7 +332,6 @@ void CFlybee::SetYawSpeed(void)
 {
 	pev->yaw_speed = 100;
 }
-
 
 
 //=========================================================
@@ -479,7 +417,7 @@ void CFlybee::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		RadiusDamage(vecEnd, pev, pev, gSkillData.chargerDmgProjectile, CLASS_ALIEN_MONSTER, DMG_SHOCK);
 
-		UTIL_EmitAmbientSound(ENT(pev), vecEnd, "debris/beamstart4.wav", 0.9, ATTN_NORM, 0, RANDOM_LONG(90, 99));
+		NPCSounds_EmitAmbient(vecEnd, "monster_charger", "beam_start", 0.9, ATTN_NORM, RANDOM_LONG(90, 99));
 
 		break;
 	}
@@ -656,7 +594,6 @@ Schedule_t slFlybeeRunAttack[] =
 };
 
 
-
 Task_t	tlFlybeeMeleeAttack[] =
 {
 	{ TASK_FLYBEE_STOP_MOVING,	(float)0		},
@@ -801,7 +738,6 @@ Schedule_t* CFlybee::GetScheduleOfType(int Type)
 
 	return CBaseMonster::GetScheduleOfType(Type);
 }
-
 
 
 //=========================================================
@@ -1021,7 +957,6 @@ void CFlybee::RunTask(Task_t* pTask)
 	}
 
 
-
 	case TASK_FLYBEE_SWIM:
 		if (m_fSequenceFinished)
 		{
@@ -1054,7 +989,6 @@ void CFlybee::RunTask(Task_t* pTask)
 		break;
 	}
 }
-
 
 
 float CFlybee::VectorToPitch(const Vector& vec)
@@ -1365,8 +1299,6 @@ Vector CFlybee::DoProbe(const Vector& Probe)
 }
 
 
-
-
 //--------------------------------------------------------------------------
 
 
@@ -1442,7 +1374,6 @@ int CFlyBall::Classify(void)
 void CFlyBall::Precache(void)
 {
 	PRECACHE_MODEL("sprites/xspark3.spr");
-	PRECACHE_SOUND("weapons/electro4.wav");
 
 	m_iSprite = PRECACHE_MODEL("sprites/muz7.spr");
 }
@@ -1509,7 +1440,7 @@ void CFlyBall::ExplodeTouch(CBaseEntity* pOther)
 		}
 	}
 
-	UTIL_EmitAmbientSound(ENT(pev), trace.vecEndPos, "weapons/electro4.wav", 0.3, ATTN_NORM, 0, RANDOM_LONG(90, 99));
+	NPCSounds_EmitAmbient(trace.vecEndPos, "monster_charger", "zap_hit", 0.3, ATTN_NORM, RANDOM_LONG(90, 99));
 
 	UTIL_Remove(this);
 }

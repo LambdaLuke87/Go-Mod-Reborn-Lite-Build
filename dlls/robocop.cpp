@@ -15,6 +15,8 @@
 #include "customentity.h"
 #include "decals.h"
 #include "weapons.h" // g_sModelIndexFireball
+#include "npc_sounds.h"
+#include "gm_audio_server.h"
 
 //=========================================================
 // Fire trail: short-lived bouncing fireball emitter spawned when Robocop explodes
@@ -395,7 +397,7 @@ void CRoboCop::FistAttack()
 	}
 
 	UTIL_ScreenShake(pev->origin, 12.0f, 100.0f, 2.0f, 1000);
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "robocop/rc_fist.wav", 1.0f, ATTN_NORM, 0, RANDOM_LONG(90, 110));
+	NPCSounds_Emit(this, "monster_robocop", "fist", CHAN_WEAPON, 1.0f, ATTN_NORM, RANDOM_LONG(90, 110));
 }
 
 void CRoboCop::CreateLaser()
@@ -608,12 +610,6 @@ void CRoboCop::Precache()
 	PRECACHE_MODEL("sprites/gargeye1.spr");
 	PRECACHE_MODEL("sprites/smoke.spr");
 
-	PRECACHE_SOUND("ambience/sparks.wav");
-	PRECACHE_SOUND("robocop/rc_charge.wav");
-	PRECACHE_SOUND("robocop/rc_fist.wav");
-	PRECACHE_SOUND("robocop/rc_laser.wav");
-	PRECACHE_SOUND("robocop/rc_step1.wav");
-	PRECACHE_SOUND("robocop/rc_step2.wav");
 
 	// spark sounds, as in the spark_shower entity
 	PRECACHE_SOUND("buttons/spark1.wav");
@@ -715,7 +711,7 @@ void CRoboCop::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case ROBOCOP_AE_RIGHT_FOOT:
 	case ROBOCOP_AE_LEFT_FOOT:
 		UTIL_ScreenShake(pev->origin, 4.0f, 3.0f, 1.0f, 250.0f);
-		EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, RANDOM_LONG(0, 1) == 0 ? "robocop/rc_step1.wav" : "robocop/rc_step2.wav", 1.0f, ATTN_NORM, 0, RANDOM_LONG(90, 110));
+		NPCSounds_Emit(this, "monster_robocop", "step", CHAN_BODY, 1.0f, ATTN_NORM, RANDOM_LONG(90, 110));
 		break;
 	case ROBOCOP_AE_FIST:
 		FistAttack();
@@ -743,11 +739,7 @@ Schedule_t* CRoboCop::GetScheduleOfType(int Type)
 
 void CRoboCop::EmitSparkSound()
 {
-	static const char* const sparkSounds[] = {
-		"buttons/spark1.wav", "buttons/spark2.wav", "buttons/spark3.wav",
-		"buttons/spark4.wav", "buttons/spark5.wav", "buttons/spark6.wav"};
-
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, sparkSounds[RANDOM_LONG(0, ARRAYSIZE(sparkSounds) - 1)], 0.6f, ATTN_NORM, 0, RANDOM_LONG(95, 105));
+	NPCSounds_Emit(this, "monster_robocop", "spark", CHAN_VOICE, 0.6f, ATTN_NORM, RANDOM_LONG(95, 105));
 }
 
 void CRoboCop::StartTask(Task_t* pTask)
@@ -756,7 +748,7 @@ void CRoboCop::StartTask(Task_t* pTask)
 	{
 	case TASK_ROBOCOP_LASER_CHARGE:
 	{
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "robocop/rc_charge.wav", 1.0f, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_robocop", "laser_charge", CHAN_BODY, 1.0f, ATTN_NORM, PITCH_NORM);
 		m_iLaserFlags = (LF_ROBOCOP_LASER | LF_ROBOCOP_HIGHBRIGHTNESS);
 		m_flWaitFinished = gpGlobals->time + pTask->flData;
 		m_flFistTime = m_flLaserTime = gpGlobals->time + 9.0f;
@@ -796,7 +788,7 @@ void CRoboCop::StartTask(Task_t* pTask)
 	}
 	break;
 	case TASK_ROBOCOP_LASER_SOUND:
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "robocop/rc_laser.wav", 1.0f, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_robocop", "laser_fire", CHAN_BODY, 1.0f, ATTN_NORM, PITCH_NORM);
 		TaskComplete();
 		break;
 	case TASK_ROBOCOP_LASER_OFF:
@@ -808,7 +800,7 @@ void CRoboCop::StartTask(Task_t* pTask)
 		m_flLaserTime = gpGlobals->time + 1.0f;
 
 		// stop the charge sound
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "common/null.wav", 1.0f, ATTN_NORM);
+		GMAudio_Stop(this, CHAN_BODY);
 		TaskComplete();
 	}
 	break;
@@ -829,7 +821,7 @@ void CRoboCop::StartTask(Task_t* pTask)
 		pev->rendercolor = Vector(67, 85, 255);
 
 		pev->health = 0;
-		EMIT_SOUND(ENT(pev), CHAN_ITEM, "ambience/sparks.wav", 1.0f, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_robocop", "sparks", CHAN_ITEM, 1.0f, ATTN_NORM, PITCH_NORM);
 		m_flSparkTime = gpGlobals->time + 0.3f;
 		[[fallthrough]];
 	default:
@@ -908,7 +900,7 @@ void CRoboCop::RunTask(Task_t* pTask)
 			if (m_fSequenceFinished && pev->frame >= 255.0f)
 			{
 				// stop the death sound
-				EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/null.wav", 1.0, ATTN_NORM);
+				GMAudio_Stop(this, CHAN_ITEM);
 
 				MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, pev->origin);
 				WRITE_BYTE(TE_BREAKMODEL);

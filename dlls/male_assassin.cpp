@@ -42,6 +42,7 @@
 #include "effects.h"
 #include "customentity.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 extern DLL_GLOBAL int g_iSkillLevel;
 
@@ -642,7 +643,6 @@ bool CMOFAssassin::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -872,7 +872,7 @@ void CMOFAssassin::HandleAnimEvent(MonsterEvent_t* pEvent)
 	break;
 
 	case MASSASSIN_AE_RELOAD:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_male_assassin", "reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
 		break;
@@ -891,7 +891,7 @@ void CMOFAssassin::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case MASSASSIN_AE_GREN_LAUNCH:
 	{
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE14", 0.8, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_male_assassin", "grenade_launch", CHAN_WEAPON, 0.8, ATTN_NORM, PITCH_NORM);
 		CGrenade::ShootContact(pev, GetGunPosition(), m_vecTossVelocity);
 		m_fThrowGrenade = false;
 		if (g_iSkillLevel == SKILL_HARD)
@@ -915,18 +915,11 @@ void CMOFAssassin::HandleAnimEvent(MonsterEvent_t* pEvent)
 		if (FBitSet(pev->weapons, MAssassinWeaponFlag::MP5))
 		{
 			// the first round of the three round burst plays the sound and puts a sound in the world sound list.
-			if (RANDOM_LONG(0, 1))
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE27", 1, ATTN_NORM);
-			}
-			else
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE28", 1, ATTN_NORM);
-			}
+			NPCSounds_Emit(this, "monster_male_assassin", "mp5_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 		else
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE19", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_male_assassin", "sniper_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
@@ -1173,18 +1166,7 @@ void CMOFAssassin::PainSound()
 //=========================================================
 void CMOFAssassin::DeathSound()
 {
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "hgrunt/gr_die3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_male_assassin", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -2294,7 +2276,6 @@ void CMOFAssassinRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, 
 
 	UTIL_Remove(this);
 }
-
 
 
 //=========================================================

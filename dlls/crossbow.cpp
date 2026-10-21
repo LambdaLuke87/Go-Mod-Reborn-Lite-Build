@@ -21,6 +21,7 @@
 #include "player.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 #define BOLT_AIR_VELOCITY 2000
@@ -124,10 +125,10 @@ void CCrossbowBolt::BoltTouch(CBaseEntity* pOther)
 		switch (RANDOM_LONG(0, 1))
 		{
 		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "!WP_GUNMISC8", 1, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_BODY, "weapons/xbow_hitbod1.wav", 1, ATTN_NORM, PITCH_NORM);
 			break;
 		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "!WP_GUNMISC9", 1, ATTN_NORM);
+			GMAudio_Emit(this, CHAN_BODY, "weapons/xbow_hitbod2.wav", 1, ATTN_NORM, PITCH_NORM);
 			break;
 		}
 
@@ -138,7 +139,7 @@ void CCrossbowBolt::BoltTouch(CBaseEntity* pOther)
 	}
 	else
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "!WP_GUNMISC10", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 98 + RANDOM_LONG(0, 7));
+		GMAudio_Emit(this, CHAN_BODY, "weapons/xbow_hit1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 98 + RANDOM_LONG(0, 7));
 
 		SetThink(&CCrossbowBolt::SUB_Remove);
 		pev->nextthink = gpGlobals->time; // this will get changed below if the bolt is allowed to stick in what it hit.
@@ -457,7 +458,7 @@ void CCrossbow::Reload()
 
 	if (DefaultReload(5, CROSSBOW_RELOAD, 4.5))
 	{
-		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "!WP_GUNMISC7", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0, 0xF));
+		GMAudio_Emit(m_pPlayer, CHAN_ITEM, "weapons/xbow_reload1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 93 + RANDOM_LONG(0, 0xF));
 	}
 }
 

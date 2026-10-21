@@ -15,6 +15,7 @@
 #include "effects.h"
 #include "customentity.h"
 #include "decals.h"
+#include "npc_sounds.h"
 
 #define KINGPIN_AE_LEFT 1
 #define KINGPIN_AE_RIGHT 2
@@ -205,7 +206,6 @@ void CKingpinPlasmaBall::Precache()
 	m_iTrailSprite = PRECACHE_MODEL("sprites/smoke.spr");
 	m_iShockwave = PRECACHE_MODEL("sprites/shockwave.spr");
 
-	PRECACHE_SOUND("debris/beamstart14.wav");
 	PRECACHE_SOUND("kingpin/kingpin_seeker_amb.wav");
 	//PRECACHE_SOUND("kingpin/kingpin_seeker1.wav");
 	//PRECACHE_SOUND("kingpin/kingpin_seeker2.wav");
@@ -286,7 +286,7 @@ void CKingpinPlasmaBall::Explode(CBaseEntity* pEnemy)
 	KingpinSendBeamWave(TE_BEAMDISK, pev->origin, 600, m_iShockwave, 0.2f, 32, 10, 255, 200, 255, 255);
 	KingpinSendBeamWave(TE_BEAMCYLINDER, pev->origin, 750, m_iShockwave, 0.2f, 32, 10, 255, 200, 255, 255);
 
-	UTIL_EmitAmbientSound(ENT(0), pev->origin, "debris/beamstart14.wav", 0.5f, ATTN_NORM, 0, RANDOM_LONG(140, 160));
+	NPCSounds_EmitAmbient(pev->origin, "monster_kingpin", "plasma_explode", 0.5f, ATTN_NORM, RANDOM_LONG(140, 160));
 
 	RemoveMySelf();
 }
@@ -457,11 +457,6 @@ void CKingpinPlasmaCluster::Precache()
 	PRECACHE_MODEL("sprites/plasma.spr");
 	PRECACHE_MODEL("sprites/flare1.spr");
 
-	PRECACHE_SOUND("debris/beamstart1.wav");
-	PRECACHE_SOUND("debris/beamstart14.wav");
-	PRECACHE_SOUND("debris/zap1.wav");
-	PRECACHE_SOUND("debris/zap3.wav");
-	PRECACHE_SOUND("debris/zap8.wav");
 }
 
 void CKingpinPlasmaCluster::Start()
@@ -482,7 +477,7 @@ void CKingpinPlasmaCluster::Start()
 	SetThink(&CKingpinPlasmaCluster::AnimateThink);
 	pev->nextthink = gpGlobals->time;
 
-	EMIT_SOUND(ENT(pev), CHAN_BODY, "debris/beamstart1.wav", 1.0f, ATTN_STATIC);
+	NPCSounds_Emit(this, "monster_kingpin", "cluster_start", CHAN_BODY, 1.0f, ATTN_STATIC, PITCH_NORM);
 }
 
 void CKingpinPlasmaCluster::StartUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
@@ -551,7 +546,7 @@ void CKingpinPlasmaCluster::Explode()
 	SetThink(&CKingpinPlasmaCluster::DisperseThink);
 	pev->nextthink = gpGlobals->time + 0.05f;
 
-	EMIT_SOUND(ENT(pev), CHAN_BODY, "debris/beamstart14.wav", 1.0f, ATTN_STATIC);
+	NPCSounds_Emit(this, "monster_kingpin", "plasma_explode", CHAN_BODY, 1.0f, ATTN_STATIC, PITCH_NORM);
 }
 
 void CKingpinPlasmaCluster::MakeParticleBurst()
@@ -595,9 +590,8 @@ void CKingpinPlasmaCluster::MakeParticleBurst()
 
 void CKingpinPlasmaCluster::EmitZapSound(float volume, bool useAltChannel, CBaseEntity* pSource)
 {
-	static const char* const zapSounds[] = {"debris/zap1.wav", "debris/zap3.wav", "debris/zap8.wav"};
-	edict_t* pSourceEdict = pSource ? pSource->edict() : edict();
-	EMIT_SOUND_DYN(pSourceEdict, useAltChannel ? CHAN_WEAPON : CHAN_ITEM, zapSounds[RANDOM_LONG(0, 2)], volume, ATTN_STATIC, 0, 120);
+	CBaseEntity* pEmitter = pSource ? pSource : this;
+	NPCSounds_Emit(pEmitter, "monster_kingpin", "plasma_zap", useAltChannel ? CHAN_WEAPON : CHAN_ITEM, volume, ATTN_STATIC, 120);
 }
 
 void CKingpinPlasmaCluster::BeamDamage(float flDamage)
@@ -918,12 +912,6 @@ protected:
 	int m_iLightning;
 	int m_iPlasma;
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pDieSounds[];
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
 };
 
 LINK_ENTITY_TO_CLASS(monster_kingpin, CKingpin);
@@ -944,45 +932,6 @@ TYPEDESCRIPTION CKingpin::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CKingpin, CSquadMonster);
 
-const char* CKingpin::pIdleSounds[] =
-	{
-		"kingpin/kingpin_idle1.wav",
-		"kingpin/kingpin_idle2.wav",
-		"kingpin/kingpin_idle3.wav",
-};
-
-const char* CKingpin::pAlertSounds[] =
-	{
-		"kingpin/kingpin_alert1.wav",
-		"kingpin/kingpin_alert2.wav",
-		"kingpin/kingpin_alert3.wav",
-};
-
-const char* CKingpin::pPainSounds[] =
-	{
-		"kingpin/kingpin_pain1.wav",
-		"kingpin/kingpin_pain2.wav",
-		"kingpin/kingpin_pain3.wav",
-};
-
-const char* CKingpin::pDieSounds[] =
-	{
-		"kingpin/kingpin_death1.wav",
-		"kingpin/kingpin_death2.wav",
-};
-
-const char* CKingpin::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CKingpin::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
 
 bool CKingpin::KeyValue(KeyValueData* pkvd)
 {
@@ -1127,8 +1076,6 @@ void CKingpin::Spawn()
 
 void CKingpin::Precache()
 {
-	int i;
-
 	PRECACHE_MODEL("models/kingpin.mdl");
 	PRECACHE_MODEL("models/stickygibpink.mdl");
 	PRECACHE_MODEL("sprites/boss_glow.spr");
@@ -1147,16 +1094,7 @@ void CKingpin::Precache()
 		PRECACHE_SOUND(pPainSounds[i]);
 	for (i = 0; i < ARRAYSIZE(pDieSounds); i++)
 		PRECACHE_SOUND(pDieSounds[i]);*/
-	for (i = 0; i < ARRAYSIZE(pAttackHitSounds); i++)
-		PRECACHE_SOUND(pAttackHitSounds[i]);
-	for (i = 0; i < ARRAYSIZE(pAttackMissSounds); i++)
-		PRECACHE_SOUND(pAttackMissSounds[i]);
 
-	PRECACHE_SOUND("ambience/port_suckin1.wav");
-	PRECACHE_SOUND("debris/beamstart7.wav");
-	PRECACHE_SOUND("ambience/particle_suck1.wav");
-	PRECACHE_SOUND("ambience/alien_humongo.wav");
-	PRECACHE_SOUND("debris/beamstart10.wav");
 
 	m_iShockwave = PRECACHE_MODEL("sprites/shockwave.spr");
 	m_iLightning = PRECACHE_MODEL("sprites/lgtning.spr");
@@ -1194,11 +1132,11 @@ void CKingpin::HandleAnimEvent(MonsterEvent_t* pEvent)
 				// CheckTraceHullAttack already built the aim vectors
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 100 * side;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_kingpin", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 		else
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackMissSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackMissSounds) - 1)], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
+			NPCSounds_Emit(this, "monster_kingpin", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, 100 + RANDOM_LONG(-5, 5));
 		}
 	}
 	break;
@@ -1279,7 +1217,7 @@ bool CKingpin::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float
 		if (pev->armorvalue <= 0)
 		{
 			pev->armorvalue = 0;
-			EMIT_SOUND_DYN(ENT(pev), CHAN_ITEM, "debris/beamstart7.wav", 0.8f, ATTN_NORM, 0, 130);
+			NPCSounds_Emit(this, "monster_kingpin", "teleport", CHAN_ITEM, 0.8f, ATTN_NORM, 130);
 		}
 	}
 
@@ -1398,7 +1336,7 @@ void CKingpin::StartTask(Task_t* pTask)
 		CSprite* enterTeleportSprite = KingpinCreateOneShotSprite("sprites/b-tele1.spr", Center() + Vector(0, 0, pev->size.z / 2), 1.0f, 255, 255, 255, 255, 15.0f);
 		if (enterTeleportSprite)
 		{
-			EMIT_SOUND(enterTeleportSprite->edict(), CHAN_BODY, "ambience/port_suckin1.wav", 1.0f, ATTN_NORM);
+			NPCSounds_Emit(enterTeleportSprite, "monster_kingpin", "suck_in", CHAN_BODY, 1.0f, ATTN_NORM, PITCH_NORM);
 		}
 		break;
 	}
@@ -1411,7 +1349,7 @@ void CKingpin::StartTask(Task_t* pTask)
 			CSprite* escapeSprite = KingpinCreateOneShotSprite("sprites/d-tele1.spr", Center() + Vector(0, 0, pev->size.z / 2), 2.5f, 170, 170, 255, 70, 10.0f);
 			if (escapeSprite)
 			{
-				EMIT_SOUND(escapeSprite->edict(), CHAN_ITEM, "ambience/particle_suck1.wav", 1.0f, ATTN_NORM);
+				NPCSounds_Emit(escapeSprite, "monster_kingpin", "particle_suck", CHAN_ITEM, 1.0f, ATTN_NORM, PITCH_NORM);
 			}
 		}
 		else
@@ -1491,7 +1429,7 @@ void CKingpin::RunTask(Task_t* pTask)
 					CSprite* exitTeleportSprite = KingpinCreateOneShotSprite("sprites/b-tele1.spr", Center() + Vector(0, 0, pev->size.z / 4), 1.0f, 255, 255, 255, 255, 15.0f);
 					if (exitTeleportSprite)
 					{
-						EMIT_SOUND(exitTeleportSprite->edict(), CHAN_BODY, "debris/beamstart7.wav", 1.0f, ATTN_STATIC);
+						NPCSounds_Emit(exitTeleportSprite, "monster_kingpin", "teleport", CHAN_BODY, 1.0f, ATTN_STATIC, PITCH_NORM);
 					}
 
 					if (m_canUseSecondChance && HasMemory(bits_MEMORY_GOING_TO_USE_SECOND_CHANCE))
@@ -1529,7 +1467,7 @@ void CKingpin::RunTask(Task_t* pTask)
 				CSprite* escapeFlare = KingpinCreateOneShotSprite("sprites/xflare3.spr", Center() + Vector(0, 0, pev->size.z / 2), 1.25f, 170, 255, 127, 255, 10.0f);
 				if (escapeFlare)
 				{
-					EMIT_SOUND_DYN(escapeFlare->edict(), CHAN_ITEM, "ambience/alien_humongo.wav", 1.0f, ATTN_NORM, 0, 150);
+					NPCSounds_Emit(escapeFlare, "monster_kingpin", "humongo", CHAN_ITEM, 1.0f, ATTN_NORM, 150);
 				}
 
 				const float escapeDamage = gSkillData.kingpinPlasmaBlast / 2;
@@ -1689,23 +1627,23 @@ void CKingpin::UpdatePowerShield()
 
 void CKingpin::IdleSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pIdleSounds[RANDOM_LONG(0, ARRAYSIZE(pIdleSounds) - 1)], 1.0, ATTN_NORM, 100);
+	NPCSounds_Emit(this, "monster_kingpin", "idle", CHAN_VOICE, 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::AlertSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 100);
+	NPCSounds_Emit(this, "monster_kingpin", "alert", CHAN_VOICE, 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::PainSound()
 {
 	if (RANDOM_LONG(0, 2) == 0)
-		GMAudio_Emit(this, CHAN_VOICE, pPainSounds[RANDOM_LONG(0, ARRAYSIZE(pPainSounds) - 1)], 1.0, ATTN_NORM, 100);
+		NPCSounds_Emit(this, "monster_kingpin", "pain", CHAN_VOICE, 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::DeathSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, pDieSounds[RANDOM_LONG(0, ARRAYSIZE(pDieSounds) - 1)], 1.0, ATTN_NORM, 100);
+	NPCSounds_Emit(this, "monster_kingpin", "die", CHAN_VOICE, 1.0, ATTN_NORM, 100);
 }
 
 void CKingpin::UpdateGlows(int target, int speed)
@@ -1818,7 +1756,7 @@ void CKingpin::TryMakePlasmaCluster(const Vector& pos)
 
 			if (eyeAttachmentIndex > 0)
 			{
-				EMIT_SOUND(ENT(pev), CHAN_ITEM, "debris/beamstart10.wav", 0.7f, ATTN_NORM);
+				NPCSounds_Emit(this, "monster_kingpin", "cluster_spawn", CHAN_ITEM, 0.7f, ATTN_NORM, PITCH_NORM);
 				KingpinSendBeamEntPoint(entindex(), eyeAttachmentIndex, pos, m_iPlasma, 10, 1.0f, 40, 80, 180, 70, 140, 220, 10);
 			}
 		}

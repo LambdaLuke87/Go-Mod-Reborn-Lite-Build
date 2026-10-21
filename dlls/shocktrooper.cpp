@@ -43,6 +43,7 @@
 #include "customentity.h"
 #include "weapons/CSpore.h"
 #include "weapons/CShockBeam.h"
+#include "npc_sounds.h"
 
 int g_fShockTrooperQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 static int iShockTrooperMuzzleFlash;
@@ -314,7 +315,7 @@ void CShockTrooper::GibMonster()
 		//TODO: change body group
 	}
 
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);
+	NPCSounds_Emit(this, "monster_shocktrooper", "gib", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 	if (CVAR_GET_FLOAT("violence_agibs") != 0) // Should never get here, but someone might call it directly
 	{
@@ -607,7 +608,6 @@ bool CShockTrooper::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -889,7 +889,7 @@ void CShockTrooper::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		Shoot();
 
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE21", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_shocktrooper", "fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 	}
@@ -994,11 +994,6 @@ void CShockTrooper::Precache()
 	PRECACHE_SOUND("shocktrooper/shock_trooper_die3.wav");
 	PRECACHE_SOUND("shocktrooper/shock_trooper_die4.wav");
 
-	PRECACHE_SOUND("shocktrooper/shock_trooper_pain1.wav");
-	PRECACHE_SOUND("shocktrooper/shock_trooper_pain2.wav");
-	PRECACHE_SOUND("shocktrooper/shock_trooper_pain3.wav");
-	PRECACHE_SOUND("shocktrooper/shock_trooper_pain4.wav");
-	PRECACHE_SOUND("shocktrooper/shock_trooper_pain5.wav");
 
 	// get voice pitch
 	if (RANDOM_LONG(0, 1))
@@ -1108,25 +1103,8 @@ void CShockTrooper::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 6))
-		{
-		case 0:
-			//TODO: the directory names should be lowercase
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "ShockTrooper/shock_trooper_pain3.wav", 1, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "ShockTrooper/shock_trooper_pain4.wav", 1, ATTN_NORM);
-			break;
-		case 2:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "ShockTrooper/shock_trooper_pain5.wav", 1, ATTN_NORM);
-			break;
-		case 3:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "ShockTrooper/shock_trooper_pain1.wav", 1, ATTN_NORM);
-			break;
-		case 4:
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "ShockTrooper/shock_trooper_pain2.wav", 1, ATTN_NORM);
-			break;
-		}
+		if (RANDOM_LONG(0, 6) < 5) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_shocktrooper", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -2309,7 +2287,6 @@ void CShockTrooperRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller,
 
 	UTIL_Remove(this);
 }
-
 
 
 //=========================================================

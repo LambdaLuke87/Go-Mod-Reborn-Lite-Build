@@ -25,6 +25,7 @@
 #endif
 
 #include "CShockRifle.h"
+#include "gm_audio_server.h"
 
 #ifndef CLIENT_DLL
 TYPEDESCRIPTION CShockRifle::m_SaveData[] =
@@ -168,7 +169,7 @@ void CShockRifle::PrimaryAttack()
 		//Water goes zap.
 		const float flVolume = RANDOM_FLOAT(0.8, 0.9);
 
-		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "!WP_GUNMISC21", flVolume, ATTN_NONE, 0, PITCH_NORM);
+		GMAudio_Emit(m_pPlayer, CHAN_ITEM, "weapons/shock_discharge.wav", flVolume, ATTN_NONE, PITCH_NORM);
 
 		RadiusDamage(
 			pev->origin,
@@ -274,7 +275,7 @@ void CShockRifle::RechargeAmmo(bool bLoud)
 
 		if (bLoud)
 		{
-			EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "!WP_GUNMISC20", VOL_NORM, ATTN_NORM);
+			GMAudio_Emit(m_pPlayer, CHAN_WEAPON, "weapons/shock_recharge.wav", VOL_NORM, ATTN_NORM, PITCH_NORM);
 		}
 
 		if (!UTIL_IsSandbox() && UTIL_IsMultiplayer())

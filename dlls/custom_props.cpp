@@ -18,6 +18,7 @@
 #include	"effects.h"
 #include	"customentity.h"
 #include    "game.h"
+#include "gm_audio_server.h"
 
 class CChikenAnimal : public CBaseMonster
 {
@@ -79,7 +80,7 @@ void CChikenAnimal::Killed(entvars_t* pevAttacker, int iGib)
 	if (!m_Beingremoved)
 	{
 		GibMonster();
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "!PL_VOICEFRST21", 1.0, ATTN_NORM, 0, PITCH_NORM);
+		GMAudio_Emit(this, CHAN_VOICE, "misc/killChicken.wav", 1.0, ATTN_NORM, PITCH_NORM);
 	}
 }
 

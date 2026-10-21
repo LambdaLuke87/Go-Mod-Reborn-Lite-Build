@@ -26,6 +26,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // monster-specific schedule types
@@ -217,15 +218,7 @@ void CHAssassin::Shoot()
 	EjectBrass(pev->origin + gpGlobals->v_up * 32 + gpGlobals->v_forward * 12, vecShellVelocity, pev->angles.y, m_iShell, TE_BOUNCE_SHELL);
 	FireBullets(1, vecShootOrigin, vecShootDir, Vector(m_flDiviation, m_flDiviation, m_flDiviation), 2048, BULLET_MONSTER_9MM); // shoot +-8 degrees
 
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE0", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE1", RANDOM_FLOAT(0.6, 0.8), ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_assassin", "fire", CHAN_WEAPON, RANDOM_FLOAT(0.6, 0.8), ATTN_NORM, PITCH_NORM);
 
 	pev->effects |= EF_MUZZLEFLASH;
 
@@ -320,11 +313,9 @@ void CHAssassin::Precache()
 	//PRECACHE_SOUND("weapons/pl_gun1.wav");
 	//PRECACHE_SOUND("weapons/pl_gun2.wav");
 
-	PRECACHE_SOUND("debris/beamstart1.wav");
 
 	m_iShell = PRECACHE_MODEL("models/shell.mdl"); // brass shell
 }
-
 
 
 //=========================================================
@@ -468,9 +459,6 @@ Schedule_t slAssassinTakeCoverFromBestSound[] =
 };
 
 
-
-
-
 //=========================================================
 // AlertIdle Schedules
 //=========================================================
@@ -497,7 +485,6 @@ Schedule_t slAssassinHide[] =
 			bits_SOUND_DANGER,
 			"AssassinHide"},
 };
-
 
 
 //=========================================================
@@ -713,7 +700,7 @@ void CHAssassin::RunAI()
 	{
 		if (pev->renderamt == 255)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "debris/beamstart1.wav", 0.2, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_assassin", "cloak", CHAN_BODY, 0.2, ATTN_NORM, PITCH_NORM);
 		}
 
 		pev->renderamt = V_max(pev->renderamt - 50, m_iTargetRanderamt);
@@ -732,21 +719,7 @@ void CHAssassin::RunAI()
 		iStep = !iStep;
 		if (iStep)
 		{
-			switch (RANDOM_LONG(0, 3))
-			{
-			case 0:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_step1.wav", 0.5, ATTN_NORM);
-				break;
-			case 1:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_step3.wav", 0.5, ATTN_NORM);
-				break;
-			case 2:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_step2.wav", 0.5, ATTN_NORM);
-				break;
-			case 3:
-				EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_step4.wav", 0.5, ATTN_NORM);
-				break;
-			}
+			NPCSounds_Emit(this, "monster_human_assassin", "step", CHAN_BODY, 0.5, ATTN_NORM, PITCH_NORM);
 		}
 	}
 }

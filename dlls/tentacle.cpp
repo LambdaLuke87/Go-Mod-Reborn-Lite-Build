@@ -25,6 +25,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "soundent.h"
+#include "npc_sounds.h"
 
 
 #define ACT_T_IDLE 1010
@@ -103,11 +104,7 @@ public:
 	Vector m_vecPrevSound;
 	float m_flPrevSoundTime;
 
-	static const char* pHitSilo[];
-	static const char* pHitDirt[];
-	static const char* pHitWater[];
 };
-
 
 
 bool CTentacle::g_fFlySound;
@@ -120,28 +117,6 @@ LINK_ENTITY_TO_CLASS(monster_tentacle, CTentacle);
 #define TE_SILO 0
 #define TE_DIRT 1
 #define TE_WATER 2
-
-const char* CTentacle::pHitSilo[] =
-	{
-		"tentacle/te_strike1.wav",
-		"tentacle/te_strike2.wav",
-};
-
-const char* CTentacle::pHitDirt[] =
-	{
-		"player/pl_dirt1.wav",
-		"player/pl_dirt2.wav",
-		"player/pl_dirt3.wav",
-		"player/pl_dirt4.wav",
-};
-
-const char* CTentacle::pHitWater[] =
-	{
-		"player/pl_slosh1.wav",
-		"player/pl_slosh2.wav",
-		"player/pl_slosh3.wav",
-		"player/pl_slosh4.wav",
-};
 
 
 TYPEDESCRIPTION CTentacle::m_SaveData[] =
@@ -232,9 +207,6 @@ typedef enum
 } TENTACLE_ANIM;
 
 
-
-
-
 //=========================================================
 // Classify - indicates this monster's place in the
 // relationship table.
@@ -299,29 +271,12 @@ void CTentacle::Precache()
 {
 	PRECACHE_MODEL("models/tentacle2.mdl");
 
-	PRECACHE_SOUND("ambience/flies.wav");
-	PRECACHE_SOUND("ambience/squirm2.wav");
 
-	PRECACHE_SOUND("tentacle/te_alert1.wav");
-	PRECACHE_SOUND("tentacle/te_alert2.wav");
 	//PRECACHE_SOUND("tentacle/te_flies1.wav");
-	PRECACHE_SOUND("tentacle/te_move1.wav");
-	PRECACHE_SOUND("tentacle/te_move2.wav");
-	PRECACHE_SOUND("tentacle/te_roar1.wav");
-	PRECACHE_SOUND("tentacle/te_roar2.wav");
-	PRECACHE_SOUND("tentacle/te_search1.wav");
-	PRECACHE_SOUND("tentacle/te_search2.wav");
-	PRECACHE_SOUND("tentacle/te_sing1.wav");
-	PRECACHE_SOUND("tentacle/te_sing2.wav");
 	//PRECACHE_SOUND("tentacle/te_squirm2.wav");
-	PRECACHE_SOUND("tentacle/te_strike1.wav");
-	PRECACHE_SOUND("tentacle/te_strike2.wav");
 	PRECACHE_SOUND("tentacle/te_swing1.wav");
 	PRECACHE_SOUND("tentacle/te_swing2.wav");
 
-	PRECACHE_SOUND_ARRAY(pHitSilo);
-	PRECACHE_SOUND_ARRAY(pHitDirt);
-	PRECACHE_SOUND_ARRAY(pHitWater);
 }
 
 
@@ -346,7 +301,6 @@ bool CTentacle::KeyValue(KeyValueData* pkvd)
 
 	return CBaseMonster::KeyValue(pkvd);
 }
-
 
 
 int CTentacle::Level(float dz)
@@ -454,7 +408,6 @@ void CTentacle::Test()
 }
 
 
-
 //
 // TentacleThink
 //
@@ -516,20 +469,8 @@ void CTentacle::Cycle()
 		// ALERT( at_console, "sound %d %.0f\n", m_iSoundLevel, m_flSoundYaw );
 		if (m_flSoundTime < gpGlobals->time)
 		{
-			// play "I hear new something" sound
-			const char* sound;
-
-			switch (RANDOM_LONG(0, 1))
-			{
-			case 0:
-				sound = "tentacle/te_alert1.wav";
-				break;
-			case 1:
-				sound = "tentacle/te_alert2.wav";
-				break;
-			}
-
-			// UTIL_EmitAmbientSound(ENT(pev), pev->origin + Vector( 0, 0, MyHeight()), sound, 1.0, ATTN_NORM, 0, 100);
+			// play "I hear new something" sound (disabled)
+			// NPCSounds_EmitAmbient(pev->origin + Vector(0, 0, MyHeight()), "monster_tentacle", "alert", 1.0, ATTN_NORM, 100);
 		}
 		m_flSoundTime = gpGlobals->time + RANDOM_FLOAT(5.0, 10.0);
 	}
@@ -617,19 +558,7 @@ void CTentacle::Cycle()
 				if (m_flNextSong < gpGlobals->time)
 				{
 					// play "I hear new something" sound
-					const char* sound;
-
-					switch (RANDOM_LONG(0, 1))
-					{
-					case 0:
-						sound = "tentacle/te_sing1.wav";
-						break;
-					case 1:
-						sound = "tentacle/te_sing2.wav";
-						break;
-					}
-
-					EMIT_SOUND(ENT(pev), CHAN_VOICE, sound, 1.0, ATTN_NORM);
+					NPCSounds_Emit(this, "monster_tentacle", "sing", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 
 					m_flNextSong = gpGlobals->time + RANDOM_FLOAT(10, 20);
 				}
@@ -716,7 +645,6 @@ void CTentacle::Cycle()
 }
 
 
-
 void CTentacle::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	// ALERT( at_console, "%s triggered %d\n", STRING( pev->targetname ), useType );
@@ -743,7 +671,6 @@ void CTentacle::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TY
 		break;
 	}
 }
-
 
 
 void CTentacle::DieThink()
@@ -822,8 +749,6 @@ void CTentacle::DieThink()
 
 void CTentacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 {
-	const char* sound;
-
 	switch (pEvent->event)
 	{
 	case 1: // bang
@@ -838,15 +763,15 @@ void CTentacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 		switch (m_iTapSound)
 		{
 		case TE_SILO:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitSilo), 1.0, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_silo", 1.0, ATTN_NORM, 100);
 			break;
 		case TE_NONE:
 			break;
 		case TE_DIRT:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitDirt), 1.0, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_dirt", 1.0, ATTN_NORM, 100);
 			break;
 		case TE_WATER:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitWater), 1.0, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_water", 1.0, ATTN_NORM, 100);
 			break;
 		}
 		gpGlobals->force_retouch++;
@@ -878,15 +803,15 @@ void CTentacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 		switch (m_iTapSound)
 		{
 		case TE_SILO:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitSilo), flVol, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_silo", flVol, ATTN_NORM, 100);
 			break;
 		case TE_NONE:
 			break;
 		case TE_DIRT:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitDirt), flVol, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_dirt", flVol, ATTN_NORM, 100);
 			break;
 		case TE_WATER:
-			UTIL_EmitAmbientSound(ENT(pev), vecSrc, RANDOM_SOUND_ARRAY(pHitWater), flVol, ATTN_NORM, 0, 100);
+			NPCSounds_EmitAmbient(vecSrc, "monster_tentacle", "hit_water", flVol, ATTN_NORM, 100);
 			break;
 		}
 	}
@@ -894,48 +819,15 @@ void CTentacle::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 
 	case 7: // roar
-		switch (RANDOM_LONG(0, 1))
-		{
-		default:
-		case 0:
-			sound = "tentacle/te_roar1.wav";
-			break;
-		case 1:
-			sound = "tentacle/te_roar2.wav";
-			break;
-		}
-
-		UTIL_EmitAmbientSound(ENT(pev), pev->origin + Vector(0, 0, MyHeight()), sound, 1.0, ATTN_NORM, 0, 100);
+		NPCSounds_EmitAmbient(pev->origin + Vector(0, 0, MyHeight()), "monster_tentacle", "roar", 1.0, ATTN_NORM, 100);
 		break;
 
 	case 8: // search
-		switch (RANDOM_LONG(0, 1))
-		{
-		default:
-		case 0:
-			sound = "tentacle/te_search1.wav";
-			break;
-		case 1:
-			sound = "tentacle/te_search2.wav";
-			break;
-		}
-
-		UTIL_EmitAmbientSound(ENT(pev), pev->origin + Vector(0, 0, MyHeight()), sound, 1.0, ATTN_NORM, 0, 100);
+		NPCSounds_EmitAmbient(pev->origin + Vector(0, 0, MyHeight()), "monster_tentacle", "search", 1.0, ATTN_NORM, 100);
 		break;
 
 	case 9: // swing
-		switch (RANDOM_LONG(0, 1))
-		{
-		default:
-		case 0:
-			sound = "tentacle/te_move1.wav";
-			break;
-		case 1:
-			sound = "tentacle/te_move2.wav";
-			break;
-		}
-
-		UTIL_EmitAmbientSound(ENT(pev), pev->origin + Vector(0, 0, MyHeight()), sound, 1.0, ATTN_NORM, 0, 100);
+		NPCSounds_EmitAmbient(pev->origin + Vector(0, 0, MyHeight()), "monster_tentacle", "swing", 1.0, ATTN_NORM, 100);
 		break;
 
 	default:
@@ -954,20 +846,18 @@ void CTentacle::Start()
 
 	if (!g_fFlySound)
 	{
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "ambience/flies.wav", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_tentacle", "flies", CHAN_BODY, 1, ATTN_NORM, PITCH_NORM);
 		g_fFlySound = true;
 		//		pev->nextthink = gpGlobals-> time + 0.1;
 	}
 	else if (!g_fSquirmSound)
 	{
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "ambience/squirm2.wav", 1, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_tentacle", "squirm", CHAN_BODY, 1, ATTN_NORM, PITCH_NORM);
 		g_fSquirmSound = true;
 	}
 
 	pev->nextthink = gpGlobals->time + 0.1;
 }
-
-
 
 
 void CTentacle::HitTouch(CBaseEntity* pOther)
@@ -1021,14 +911,11 @@ bool CTentacle::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 }
 
 
-
-
 void CTentacle::Killed(entvars_t* pevAttacker, int iGib)
 {
 	m_iGoalAnim = TENTACLE_ANIM_Pit_Idle;
 	return;
 }
-
 
 
 class CTentacleMaw : public CBaseMonster

@@ -46,6 +46,7 @@
 #include "customentity.h"
 #include "explode.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 int g_fMedicAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -699,7 +700,6 @@ bool COFMedicAlly::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -963,24 +963,24 @@ void COFMedicAlly::Shoot()
 
 	UTIL_MakeVectors(pev->angles);
 
-	const char* pszSoundName;
+	const char* pszSoundGroup = "glock_fire";
 
 	if ((pev->weapons & MedicAllyWeaponFlag::Glock) != 0)
 	{
 		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM); // shoot +-5 degrees
-		pszSoundName = "!WP_GUNFIRE2";
+		pszSoundGroup = "glock_fire";
 	}
 	else if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
 	{
 		FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_PLAYER_357); // shoot +-5 degrees
-		pszSoundName = "!WP_GUNFIRE10";
+		pszSoundGroup = "eagle_fire";
 	}
 
 	const auto random = RANDOM_LONG(0, 20);
 
 	const auto pitch = random <= 10 ? random + 95 : 100;
 
-	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, pszSoundName, VOL_NORM, ATTN_NORM, 0, pitch);
+	NPCSounds_Emit(this, "monster_human_medic_ally", pszSoundGroup, CHAN_WEAPON, VOL_NORM, ATTN_NORM, pitch);
 
 	pev->effects |= EF_MUZZLEFLASH;
 
@@ -1036,11 +1036,11 @@ void COFMedicAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		if ((pev->weapons & MedicAllyWeaponFlag::DesertEagle) != 0)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC25", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_medic_ally", "eagle_reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 		else
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_medic_ally", "reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 
 		m_cAmmoLoaded = m_cClipSize;
@@ -1262,7 +1262,6 @@ void COFMedicAlly::Precache()
 	//PRECACHE_SOUND("weapons/sbarrel1.wav");
 
 	PRECACHE_SOUND("fgrunt/medic_give_shot.wav");
-	PRECACHE_SOUND("fgrunt/medical.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 
@@ -1471,27 +1470,8 @@ void COFMedicAlly::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 7))
-		{
-		case 0:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 1:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 2:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 3:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 4:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 5:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		}
+		if (RANDOM_LONG(0, 7) < 6) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_human_medic_ally", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1502,27 +1482,7 @@ void COFMedicAlly::PainSound()
 //=========================================================
 void COFMedicAlly::DeathSound()
 {
-	switch (RANDOM_LONG(0, 5))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 3:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death4.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 4:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death5.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 5:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death6.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_medic_ally", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -2661,7 +2621,7 @@ Schedule_t* COFMedicAlly::GetSchedule()
 					{
 						ALERT(at_aiconsole, "Injured Grunt called for Medic\n");
 
-						EMIT_SOUND_DYN(edict(), CHAN_VOICE, "fgrunt/medic.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+						NPCSounds_Emit(this, "monster_human_medic_ally", "medic", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 						JustSpoke();
 						m_flMedicWaitTime = gpGlobals->time + 5.0;
@@ -3090,7 +3050,7 @@ void COFMedicAlly::HealerActivate(CBaseMonster* pTarget)
 
 		ClearSchedule();
 
-		EMIT_SOUND(edict(), CHAN_VOICE, "fgrunt/medical.wav", VOL_NORM, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_human_medic_ally", "medical", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 		ChangeSchedule(slMedicAllyDrawNeedle);
 	}

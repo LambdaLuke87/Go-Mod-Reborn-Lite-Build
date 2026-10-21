@@ -22,6 +22,7 @@
 #include "monsters.h"
 #include "schedule.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -96,12 +97,6 @@ public:
 
 	CUSTOM_SCHEDULES;
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pPainSounds[];
-	static const char* pAttackSounds[];
-	static const char* pDeathSounds[];
-	static const char* pBiteSounds[];
 
 protected:
 	virtual const char* DefaultModel();
@@ -116,39 +111,6 @@ DEFINE_CUSTOM_SCHEDULES(CHeadCrab){
 
 IMPLEMENT_CUSTOM_SCHEDULES(CHeadCrab, CBaseMonster);
 
-const char* CHeadCrab::pIdleSounds[] =
-	{
-		"headcrab/hc_idle1.wav",
-		"headcrab/hc_idle2.wav",
-		"headcrab/hc_idle3.wav",
-};
-const char* CHeadCrab::pAlertSounds[] =
-	{
-		"headcrab/hc_alert1.wav",
-};
-const char* CHeadCrab::pPainSounds[] =
-	{
-		"headcrab/hc_pain1.wav",
-		"headcrab/hc_pain2.wav",
-		"headcrab/hc_pain3.wav",
-};
-const char* CHeadCrab::pAttackSounds[] =
-	{
-		"headcrab/hc_attack1.wav",
-		"headcrab/hc_attack2.wav",
-		"headcrab/hc_attack3.wav",
-};
-
-const char* CHeadCrab::pDeathSounds[] =
-	{
-		"headcrab/hc_die1.wav",
-		"headcrab/hc_die2.wav",
-};
-
-const char* CHeadCrab::pBiteSounds[] =
-	{
-		"headcrab/hc_headbite.wav",
-};
 
 //=========================================================
 // Classify - indicates this monster's place in the
@@ -262,7 +224,7 @@ void CHeadCrab::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 		int iSound = RANDOM_LONG(0, 2);
 		if (iSound != 0)
-			GMAudio_Emit(this, CHAN_VOICE, pAttackSounds[iSound], GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+			NPCSounds_EmitIndex(this, "monster_headcrab", "attack", iSound, CHAN_VOICE, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 
 		pev->velocity = vecJumpDir;
 		m_flNextAttack = gpGlobals->time + 2;
@@ -307,12 +269,6 @@ void CHeadCrab::Spawn()
 //=========================================================
 void CHeadCrab::Precache()
 {
-	//PRECACHE_SOUND_ARRAY(pIdleSounds);
-	//PRECACHE_SOUND_ARRAY(pAlertSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
-	//PRECACHE_SOUND_ARRAY(pAttackSounds);
-	//PRECACHE_SOUND_ARRAY(pDeathSounds);
-	//PRECACHE_SOUND_ARRAY(pBiteSounds);
 
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
@@ -365,7 +321,7 @@ void CHeadCrab::LeapTouch(CBaseEntity* pOther)
 	// Don't hit if back on ground
 	if (!FBitSet(pev->flags, FL_ONGROUND))
 	{
-		GMAudio_Emit(this, CHAN_WEAPON, RANDOM_SOUND_ARRAY(pBiteSounds), GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+		NPCSounds_Emit(this, "monster_headcrab", "bite", CHAN_WEAPON, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 
 		pOther->TakeDamage(pev, pev, GetDamageAmount(), DMG_SLASH);
 	}
@@ -393,7 +349,7 @@ void CHeadCrab::StartTask(Task_t* pTask)
 	{
 	case TASK_RANGE_ATTACK1:
 	{
-		GMAudio_Emit(this, CHAN_WEAPON, pAttackSounds[0], GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+		NPCSounds_EmitIndex(this, "monster_headcrab", "attack", 0, CHAN_WEAPON, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 		m_IdealActivity = ACT_RANGE_ATTACK1;
 		SetTouch(&CHeadCrab::LeapTouch);
 		break;
@@ -449,7 +405,7 @@ bool CHeadCrab::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 #define CRAB_ATTN_IDLE (float)1.5
 void CHeadCrab::IdleSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pIdleSounds), GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+	NPCSounds_Emit(this, "monster_headcrab", "idle", CHAN_VOICE, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 }
 
 //=========================================================
@@ -457,7 +413,7 @@ void CHeadCrab::IdleSound()
 //=========================================================
 void CHeadCrab::AlertSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+	NPCSounds_Emit(this, "monster_headcrab", "alert", CHAN_VOICE, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 }
 
 //=========================================================
@@ -465,7 +421,7 @@ void CHeadCrab::AlertSound()
 //=========================================================
 void CHeadCrab::PainSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+	NPCSounds_Emit(this, "monster_headcrab", "pain", CHAN_VOICE, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 }
 
 //=========================================================
@@ -473,7 +429,7 @@ void CHeadCrab::PainSound()
 //=========================================================
 void CHeadCrab::DeathSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), GetSoundVolue(), ATTN_NORM, GetVoicePitch());
+	NPCSounds_Emit(this, "monster_headcrab", "death", CHAN_VOICE, GetSoundVolue(), ATTN_NORM, GetVoicePitch());
 }
 
 const char* CHeadCrab::DefaultModel()

@@ -54,6 +54,7 @@
 
 #include "custom_monsters.h"
 #include "custom_sounds.h"
+#include "gm_audio_server.h"
 
 extern DLL_GLOBAL unsigned int g_ulModelIndexPlayer;
 extern DLL_GLOBAL bool g_fGameOver;
@@ -267,15 +268,37 @@ tbow_helper_t gRenderFXType[] =
 		{"glow_shell", "Glow Shell"}};
 
 
-struct voices_t
-{
-	const char* commandPrefix;
-	const char* sentencePrefix;
-	int count;
+// Voices: "voice_say1" plays the first one, etc. (Go-Mod audio system, nothing is precached)
+static const char* const gVoiceSounds[] =
+	{
+		"voice/hey.wav",
+		"voice/yo.wav",
+		"voice/there_he_is.wav",
+		"voice/target_located.wav",
+		"voice/what_the.wav",
+		"voice/gogogo.wav",
+		"voice/female_fire_death.wav",
+		"voice/fire_death_scream.wav",
+		"barney/dobettertogether.wav",
+		"barney/imwithyou.wav",
+		"barney/teamup1.wav",
+		"barney/gladtolendhand.wav",
+		"barney/letsgo.wav",
+		"barney/letsmoveit.wav",
+		"barney/helpothers.wav",
+		"barney/iwaithere.wav",
+		"barney/slowingyoudown.wav",
+		"barney/illwait.wav",
+		"barney/seeya.wav",
+		"barney/standguard.wav",
+		"voice/aaaaaauuugh.wav",
+		"misc/killChicken.wav",
+		"voice/freeze.wav",
+		"voice/hoot3.wav",
+		"voice/hoot4.wav",
+		"voice/hoot5.wav",
+		"voice/hoot6.wav",
 };
-
-// Voices
-voices_t gVoices = {"voice_say", "!PL_VOICEFRST", 27};
 
 // GM6 Spawn Monster Trace
 CBaseEntity* GoMod_SpawnMonsterTrace(const char* sClassname, entvars_t* pev, edict_t* pEntity, bool IsAllied, bool floorhigher)
@@ -1311,17 +1334,14 @@ void ClientCommand(edict_t* pEntity)
 				}
 			}
 
-			for (int i = 1; i <= gVoices.count; i++)
+			for (int i = 1; i <= (int)ARRAYSIZE(gVoiceSounds); i++)
 			{
 				char voiceCommand[32];
-				char voiceSentence[32];
-
-				sprintf(voiceCommand, "%s%d", gVoices.commandPrefix, i);
-				sprintf(voiceSentence, "%s%d", gVoices.sentencePrefix, i - 1);
+				sprintf(voiceCommand, "voice_say%d", i);
 
 				if (FStrEq(pcmd, voiceCommand))
 				{
-					EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, voiceSentence, VOL_NORM, ATTN_NONE, 0, PITCH_NORM);
+					GMAudio_Emit(CBaseEntity::Instance(pEntity), CHAN_VOICE, gVoiceSounds[i - 1], VOL_NORM, ATTN_NONE, PITCH_NORM);
 					break;
 				}
 			}

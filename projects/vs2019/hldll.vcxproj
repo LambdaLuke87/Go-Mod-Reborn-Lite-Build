@@ -217,6 +217,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\monsterstate.cpp" />
     <ClCompile Include="..\..\dlls\monster_camera.cpp" />
     <ClCompile Include="..\..\dlls\monster_sounds.cpp" />
+    <ClCompile Include="..\..\dlls\npc_sounds.cpp" />
     <ClCompile Include="..\..\dlls\mortar.cpp" />
     <ClCompile Include="..\..\dlls\mp5.cpp" />
     <ClCompile Include="..\..\dlls\multiplay_gamerules.cpp" />
@@ -376,6 +377,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\dlls\game.h" />
     <ClInclude Include="..\..\dlls\gamerules.h" />
     <ClInclude Include="..\..\dlls\gm_audio_server.h" />
+    <ClInclude Include="..\..\dlls\npc_sounds.h" />
     <ClInclude Include="..\..\dlls\hgrunt.h" />
     <ClInclude Include="..\..\dlls\hornet.h" />
     <ClInclude Include="..\..\dlls\items.h" />

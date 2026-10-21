@@ -40,8 +40,7 @@
 #include "util.h"
 #include "cbase.h"
 #include "monsters.h"
-
-
+#include "npc_sounds.h"
 
 
 // Animation events
@@ -59,7 +58,6 @@
 #define LEECH_TURN_RATE 90
 #define LEECH_SIZEX 10
 #define LEECH_FRAMETIME 0.1
-
 
 
 #define DEBUG_BEAMS 0
@@ -118,8 +116,6 @@ public:
 	bool Restore(CRestore& restore) override;
 	static TYPEDESCRIPTION m_SaveData[];
 
-	static const char* pAttackSounds[];
-	static const char* pAlertSounds[];
 
 private:
 	// UNDONE: Remove unused boid vars, do group behavior
@@ -143,7 +139,6 @@ private:
 };
 
 
-
 LINK_ENTITY_TO_CLASS(monster_leech, CLeech);
 
 TYPEDESCRIPTION CLeech::m_SaveData[] =
@@ -163,20 +158,6 @@ TYPEDESCRIPTION CLeech::m_SaveData[] =
 };
 
 IMPLEMENT_SAVERESTORE(CLeech, CBaseMonster);
-
-
-const char* CLeech::pAttackSounds[] =
-	{
-		"leech/leech_bite1.wav",
-		"leech/leech_bite2.wav",
-		"leech/leech_bite3.wav",
-};
-
-const char* CLeech::pAlertSounds[] =
-	{
-		"leech/leech_alert1.wav",
-		"leech/leech_alert2.wav",
-};
 
 
 void CLeech::Spawn()
@@ -214,7 +195,6 @@ void CLeech::Activate()
 {
 	RecalculateWaterlevel();
 }
-
 
 
 void CLeech::RecalculateWaterlevel()
@@ -274,12 +254,11 @@ int CLeech::IRelationship(CBaseEntity* pTarget)
 }
 
 
-
 void CLeech::AttackSound()
 {
 	if (gpGlobals->time > m_attackSoundTime)
 	{
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAttackSounds), 1.0, ATTN_NORM, 0, PITCH_NORM);
+		NPCSounds_Emit(this, "monster_leech", "attack", CHAN_VOICE, 1.0, ATTN_NORM, PITCH_NORM);
 		m_attackSoundTime = gpGlobals->time + 0.5;
 	}
 }
@@ -287,7 +266,7 @@ void CLeech::AttackSound()
 
 void CLeech::AlertSound()
 {
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, RANDOM_SOUND_ARRAY(pAlertSounds), 1.0, ATTN_NORM * 0.5, 0, PITCH_NORM);
+	NPCSounds_Emit(this, "monster_leech", "alert", CHAN_VOICE, 1.0, ATTN_NORM * 0.5, PITCH_NORM);
 }
 
 
@@ -296,8 +275,6 @@ void CLeech::Precache()
 	//PRECACHE_MODEL("models/icky.mdl");
 	PRECACHE_MODEL("models/leech.mdl");
 
-	PRECACHE_SOUND_ARRAY(pAttackSounds);
-	PRECACHE_SOUND_ARRAY(pAlertSounds);
 }
 
 
@@ -450,7 +427,6 @@ void CLeech::DeadThink()
 		}
 	}
 }
-
 
 
 void CLeech::UpdateMotion()

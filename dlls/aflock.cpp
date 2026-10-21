@@ -20,6 +20,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "squadmonster.h"
+#include "npc_sounds.h"
 
 #define AFLOCK_MAX_RECRUIT_RADIUS 1024
 #define AFLOCK_FLY_SPEED 125
@@ -170,11 +171,7 @@ void CFlockingFlyerFlock::Precache()
 
 void CFlockingFlyerFlock::PrecacheFlockSounds()
 {
-	PRECACHE_SOUND("boid/boid_alert1.wav");
-	PRECACHE_SOUND("boid/boid_alert2.wav");
 
-	PRECACHE_SOUND("boid/boid_idle1.wav");
-	PRECACHE_SOUND("boid/boid_idle2.wav");
 }
 
 //=========================================================
@@ -252,29 +249,13 @@ void CFlockingFlyer::MakeSound()
 	if (m_flAlertTime > gpGlobals->time)
 	{
 		// make agitated sounds
-		switch (RANDOM_LONG(0, 1))
-		{
-		case 0:
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "boid/boid_alert1.wav", 1, ATTN_NORM);
-			break;
-		case 1:
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "boid/boid_alert2.wav", 1, ATTN_NORM);
-			break;
-		}
+		NPCSounds_Emit(this, "monster_flyer", "alert", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 		return;
 	}
 
 	// make normal sound
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "boid/boid_idle1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "boid/boid_idle2.wav", 1, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_flyer", "idle", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================

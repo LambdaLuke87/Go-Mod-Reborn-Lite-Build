@@ -21,6 +21,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "schedule.h"
+#include "npc_sounds.h"
 
 #define BARNACLE_BODY_HEIGHT 44 // how 'tall' the barnacle's model is.
 #define BARNACLE_PULL_SPEED 8
@@ -195,7 +196,7 @@ void CBarnacle::BarnacleThink()
 				// prey has just been lifted into position ( if the victim origin + eye height + 8 is higher than the bottom of the barnacle, it is assumed that the head is within barnacle's body )
 				m_fLiftingPrey = false;
 
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_bite3.wav", 1, ATTN_NORM);
+				NPCSounds_Emit(this, "monster_barnacle", "bite", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 				pVictim = m_hEnemy->MyMonsterPointer();
 
@@ -231,18 +232,7 @@ void CBarnacle::BarnacleThink()
 			// bite prey every once in a while
 			if (pVictim && (RANDOM_LONG(0, 49) == 0))
 			{
-				switch (RANDOM_LONG(0, 2))
-				{
-				case 0:
-					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew1.wav", 1, ATTN_NORM);
-					break;
-				case 1:
-					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew2.wav", 1, ATTN_NORM);
-					break;
-				case 2:
-					EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew3.wav", 1, ATTN_NORM);
-					break;
-				}
+				NPCSounds_Emit(this, "monster_barnacle", "chew", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 				pVictim->BarnacleVictimBitten(pev);
 			}
@@ -268,18 +258,7 @@ void CBarnacle::BarnacleThink()
 			CGib::SpawnRandomGibs(pev, 1, true);
 			m_cGibs--;
 
-			switch (RANDOM_LONG(0, 2))
-			{
-			case 0:
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew1.wav", 1, ATTN_NORM);
-				break;
-			case 1:
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew2.wav", 1, ATTN_NORM);
-				break;
-			case 2:
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_chew3.wav", 1, ATTN_NORM);
-				break;
-			}
+			NPCSounds_Emit(this, "monster_barnacle", "chew", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 
 		pTouchEnt = TongueTouchEnt(&flLength);
@@ -289,7 +268,7 @@ void CBarnacle::BarnacleThink()
 			// tongue is fully extended, and is touching someone.
 			if (pTouchEnt->FBecomeProne())
 			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_alert2.wav", 1, ATTN_NORM);
+				NPCSounds_Emit(this, "monster_barnacle", "alert", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 				SetSequenceByName("attack1");
 				m_flTongueAdj = -20;
@@ -357,15 +336,7 @@ void CBarnacle::Killed(entvars_t* pevAttacker, int iGib)
 
 	//	CGib::SpawnRandomGibs( pev, 4, 1 );
 
-	switch (RANDOM_LONG(0, 1))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_die1.wav", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "barnacle/bcl_die3.wav", 1, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_barnacle", "death", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 	SetActivity(ACT_DIESIMPLE);
 	SetBoneController(0, 0);
@@ -400,13 +371,8 @@ void CBarnacle::Precache()
 {
 	PRECACHE_MODEL("models/barnacle.mdl");
 
-	PRECACHE_SOUND("barnacle/bcl_alert2.wav"); //happy, lifting food up
-	PRECACHE_SOUND("barnacle/bcl_bite3.wav");  //just got food to mouth
-	PRECACHE_SOUND("barnacle/bcl_chew1.wav");
-	PRECACHE_SOUND("barnacle/bcl_chew2.wav");
-	PRECACHE_SOUND("barnacle/bcl_chew3.wav");
-	PRECACHE_SOUND("barnacle/bcl_die1.wav");
-	PRECACHE_SOUND("barnacle/bcl_die3.wav");
+	//happy, lifting food up
+	//just got food to mouth
 }
 
 //=========================================================

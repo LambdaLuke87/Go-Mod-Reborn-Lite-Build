@@ -30,6 +30,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "effects.h"
+#include "npc_sounds.h"
 
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 
@@ -273,18 +274,10 @@ void CBaseTurret::Spawn()
 
 void CBaseTurret::Precache()
 {
-	PRECACHE_SOUND("turret/tu_fire1.wav");
 	//PRECACHE_SOUND("turret/tu_ping.wav");
 	PRECACHE_SOUND("turret/tu_active2.wav");
-	PRECACHE_SOUND("turret/tu_die.wav");
-	PRECACHE_SOUND("turret/tu_die2.wav");
-	PRECACHE_SOUND("turret/tu_die3.wav");
 	// PRECACHE_SOUND ("turret/tu_retract.wav"); // just use deploy sound to save memory
-	PRECACHE_SOUND("turret/tu_deploy.wav");
-	PRECACHE_SOUND("turret/tu_spinup.wav");
-	PRECACHE_SOUND("turret/tu_spindown.wav");
 	PRECACHE_SOUND("turret/tu_search.wav");
-	PRECACHE_SOUND("turret/tu_alert.wav");
 }
 
 #define TURRET_GLOW_SPRITE "sprites/flare3.spr"
@@ -424,7 +417,7 @@ void CBaseTurret::Ping()
 	else if (m_flPingTime <= gpGlobals->time)
 	{
 		m_flPingTime = gpGlobals->time + 1;
-		GMAudio_Emit(this, CHAN_VOICE, "turret/tu_ping.wav", 1, ATTN_NORM, PITCH_NORM);
+		NPCSounds_Emit(this, STRING(pev->classname), "ping", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 		EyeOn();
 	}
 	else if (m_eyeBrightness > 0)
@@ -620,7 +613,7 @@ void CBaseTurret::ActiveThink()
 void CTurret::Shoot(Vector& vecSrc, Vector& vecDirToEnemy)
 {
 	FireBullets(1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_12MM, 1);
-	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "turret/tu_fire1.wav", 1, 0.6);
+	NPCSounds_Emit(this, "monster_turret", "fire", CHAN_WEAPON, 1, 0.6, PITCH_NORM);
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
 }
 
@@ -629,18 +622,7 @@ void CMiniTurret::Shoot(Vector& vecSrc, Vector& vecDirToEnemy)
 {
 	FireBullets(1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_9MM, 1);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE3", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE4", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE5", 1, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_miniturret", "fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
 }
 
@@ -654,7 +636,7 @@ void CBaseTurret::Deploy()
 	{
 		m_iOn = true;
 		SetTurretAnim(TURRET_ANIM_DEPLOY);
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_deploy.wav", TURRET_MACHINE_VOLUME, ATTN_NORM);
+		NPCSounds_Emit(this, STRING(pev->classname), "deploy", CHAN_BODY, TURRET_MACHINE_VOLUME, ATTN_NORM, PITCH_NORM);
 		SUB_UseTargets(this, USE_ON, 0);
 	}
 
@@ -704,7 +686,7 @@ void CBaseTurret::Retire()
 		else if (pev->sequence != TURRET_ANIM_RETIRE)
 		{
 			SetTurretAnim(TURRET_ANIM_RETIRE);
-			EMIT_SOUND_DYN(ENT(pev), CHAN_BODY, "turret/tu_deploy.wav", TURRET_MACHINE_VOLUME, ATTN_NORM, 0, 120);
+			NPCSounds_Emit(this, STRING(pev->classname), "deploy", CHAN_BODY, TURRET_MACHINE_VOLUME, ATTN_NORM, 120);
 			SUB_UseTargets(this, USE_OFF, 0);
 		}
 		else if (m_fSequenceFinished)
@@ -744,7 +726,7 @@ void CTurret::SpinUpCall()
 		if (!m_iStartSpin)
 		{
 			pev->nextthink = gpGlobals->time + 1.0; // spinup delay
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_spinup.wav", TURRET_MACHINE_VOLUME, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_turret", "spin_up", CHAN_BODY, TURRET_MACHINE_VOLUME, ATTN_NORM, PITCH_NORM);
 			m_iStartSpin = true;
 			pev->framerate = 0.1;
 		}
@@ -778,7 +760,7 @@ void CTurret::SpinDownCall()
 		if (pev->framerate == 1.0)
 		{
 			EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, "turret/tu_active2.wav", 0, 0, SND_STOP, 100);
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "turret/tu_spindown.wav", TURRET_MACHINE_VOLUME, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_turret", "spin_down", CHAN_ITEM, TURRET_MACHINE_VOLUME, ATTN_NORM, PITCH_NORM);
 		}
 		pev->framerate -= 0.02;
 		if (pev->framerate <= 0)
@@ -923,7 +905,7 @@ void CBaseTurret::AutoSearchThink()
 	if (m_hEnemy != NULL)
 	{
 		SetThink(&CBaseTurret::Deploy);
-		EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_alert.wav", TURRET_MACHINE_VOLUME, ATTN_NORM);
+		NPCSounds_Emit(this, STRING(pev->classname), "alert", CHAN_BODY, TURRET_MACHINE_VOLUME, ATTN_NORM, PITCH_NORM);
 	}
 }
 
@@ -941,12 +923,7 @@ void CBaseTurret::TurretDeath()
 
 		float flRndSound = RANDOM_FLOAT(0, 1);
 
-		if (flRndSound <= 0.33)
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die.wav", 1.0, ATTN_NORM);
-		else if (flRndSound <= 0.66)
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die2.wav", 1.0, ATTN_NORM);
-		else
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die3.wav", 1.0, ATTN_NORM);
+		NPCSounds_Emit(this, STRING(pev->classname), "death", CHAN_BODY, 1.0, ATTN_NORM, PITCH_NORM);
 
 		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, "turret/tu_active2.wav", 0, 0, SND_STOP, 100);
 
@@ -993,7 +970,6 @@ void CBaseTurret::TurretDeath()
 		SetThink(NULL);
 	}
 }
-
 
 
 void CBaseTurret::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)
@@ -1148,8 +1124,6 @@ int CBaseTurret::Classify()
 }
 
 
-
-
 //=========================================================
 // Sentry gun - smallest turret, placed near grunt entrenchments
 //=========================================================
@@ -1199,18 +1173,7 @@ void CSentry::Shoot(Vector& vecSrc, Vector& vecDirToEnemy)
 {
 	FireBullets(1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_MP5, 1);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE3", 1, ATTN_NORM);
-		break;
-	case 1:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE4", 1, ATTN_NORM);
-		break;
-	case 2:
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE5", 1, ATTN_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_sentry", "fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
 }
 
@@ -1269,12 +1232,7 @@ void CSentry::SentryDeath()
 
 		float flRndSound = RANDOM_FLOAT(0, 1);
 
-		if (flRndSound <= 0.33)
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die.wav", 1.0, ATTN_NORM);
-		else if (flRndSound <= 0.66)
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die2.wav", 1.0, ATTN_NORM);
-		else
-			EMIT_SOUND(ENT(pev), CHAN_BODY, "turret/tu_die3.wav", 1.0, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_sentry", "death", CHAN_BODY, 1.0, ATTN_NORM, PITCH_NORM);
 
 		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, "turret/tu_active2.wav", 0, 0, SND_STOP, 100);
 

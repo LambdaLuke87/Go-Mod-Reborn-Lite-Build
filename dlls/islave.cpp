@@ -26,6 +26,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -88,10 +89,6 @@ public:
 
 	EHANDLE m_hDead;
 
-	static const char* pAttackHitSounds[];
-	static const char* pAttackMissSounds[];
-	static const char* pPainSounds[];
-	static const char* pDeathSounds[];
 };
 LINK_ENTITY_TO_CLASS(monster_alien_slave, CISlave);
 LINK_ENTITY_TO_CLASS(monster_alien_slave_melee, CISlave);
@@ -115,33 +112,6 @@ TYPEDESCRIPTION CISlave::m_SaveData[] =
 
 IMPLEMENT_SAVERESTORE(CISlave, CSquadMonster);
 
-
-
-
-const char* CISlave::pAttackHitSounds[] =
-	{
-		"zombie/claw_strike1.wav",
-		"zombie/claw_strike2.wav",
-		"zombie/claw_strike3.wav",
-};
-
-const char* CISlave::pAttackMissSounds[] =
-	{
-		"zombie/claw_miss1.wav",
-		"zombie/claw_miss2.wav",
-};
-
-const char* CISlave::pPainSounds[] =
-	{
-		"aslave/slv_pain1.wav",
-		"aslave/slv_pain2.wav",
-};
-
-const char* CISlave::pDeathSounds[] =
-	{
-		"aslave/slv_die1.wav",
-		"aslave/slv_die2.wav",
-};
 
 //=========================================================
 // Classify - indicates this monster's place in the
@@ -243,7 +213,7 @@ void CISlave::IdleSound()
 		WRITE_BYTE( 0 );		// decay * 0.1
 	MESSAGE_END( );
 
-	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "debris/zap1.wav", 1, ATTN_NORM, 0, 100 );
+	NPCSounds_Emit(this, "monster_alien_slave", "idle", CHAN_WEAPON, 1, ATTN_NORM, 100);
 #endif
 }
 
@@ -254,7 +224,7 @@ void CISlave::PainSound()
 {
 	if (RANDOM_LONG(0, 2) == 0)
 	{
-		GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pPainSounds), 1.0, ATTN_NORM, m_voicePitch);
+		NPCSounds_Emit(this, "monster_alien_slave", "pain", CHAN_VOICE, 1.0, ATTN_NORM, m_voicePitch);
 	}
 }
 
@@ -264,7 +234,7 @@ void CISlave::PainSound()
 
 void CISlave::DeathSound()
 {
-	GMAudio_Emit(this, CHAN_VOICE, RANDOM_SOUND_ARRAY(pDeathSounds), 1.0, ATTN_NORM, m_voicePitch);
+	NPCSounds_Emit(this, "monster_alien_slave", "death", CHAN_VOICE, 1.0, ATTN_NORM, m_voicePitch);
 }
 
 
@@ -337,12 +307,12 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.x = 5;
 			}
 			// Play a random attack hit sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, m_voicePitch);
+			NPCSounds_Emit(this, "monster_alien_slave", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, m_voicePitch);
 		}
 		else
 		{
 			// Play a random attack miss sound
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, m_voicePitch);
+			NPCSounds_Emit(this, "monster_alien_slave", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, m_voicePitch);
 		}
 	}
 	break;
@@ -357,11 +327,11 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 				pHurt->pev->punchangle.z = -18;
 				pHurt->pev->punchangle.x = 5;
 			}
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackHitSounds), 1.0, ATTN_NORM, 0, m_voicePitch);
+			NPCSounds_Emit(this, "monster_alien_slave", "attack_hit", CHAN_WEAPON, 1.0, ATTN_NORM, m_voicePitch);
 		}
 		else
 		{
-			EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pAttackMissSounds), 1.0, ATTN_NORM, 0, m_voicePitch);
+			NPCSounds_Emit(this, "monster_alien_slave", "attack_miss", CHAN_WEAPON, 1.0, ATTN_NORM, m_voicePitch);
 		}
 	}
 	break;
@@ -432,7 +402,7 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 				WackBeam(-1, pNew);
 				WackBeam(1, pNew);
 				UTIL_Remove(m_hDead);
-				EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "hassault/hw_shoot1.wav", 1, ATTN_NORM, 0, RANDOM_LONG(130, 160));
+				NPCSounds_Emit(this, "monster_alien_slave", "zap_shoot", CHAN_WEAPON, 1, ATTN_NORM, RANDOM_LONG(130, 160));
 
 				/*
 					CBaseEntity *pEffect = Create( "test_effect", pNew->Center(), pev->angles );
@@ -448,7 +418,7 @@ void CISlave::HandleAnimEvent(MonsterEvent_t* pEvent)
 		ZapBeam(-1);
 		ZapBeam(1);
 
-		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "hassault/hw_shoot1.wav", 1, ATTN_NORM, 0, RANDOM_LONG(130, 160));
+		NPCSounds_Emit(this, "monster_alien_slave", "zap_shoot", CHAN_WEAPON, 1, ATTN_NORM, RANDOM_LONG(130, 160));
 		// STOP_SOUND( ENT(pev), CHAN_WEAPON, "debris/zap4.wav" );
 		ApplyMultiDamage(pev, pev);
 
@@ -593,16 +563,11 @@ void CISlave::Precache()
 	else
 		PRECACHE_MODEL("models/islave.mdl");
 	PRECACHE_MODEL("sprites/lgtning.spr");
-	PRECACHE_SOUND("debris/zap1.wav");
 	PRECACHE_SOUND("debris/zap4.wav");
-	PRECACHE_SOUND("weapons/electro4.wav");
-	PRECACHE_SOUND("hassault/hw_shoot1.wav");
 	//PRECACHE_SOUND("zombie/zo_pain2.wav");
 	//PRECACHE_SOUND("headcrab/hc_headbite.wav");
 	PRECACHE_SOUND("weapons/cbar_miss1.wav");
 
-	PRECACHE_SOUND_ARRAY(pAttackHitSounds);
-	PRECACHE_SOUND_ARRAY(pAttackMissSounds);
 
 	UTIL_PrecacheOther("test_effect");
 }
@@ -635,7 +600,6 @@ void CISlave::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir,
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
-
 
 
 // primary range attack
@@ -895,7 +859,7 @@ void CISlave::ZapBeam(int side)
 	{
 		pEntity->TraceAttack(pev, gSkillData.slaveDmgZap, vecAim, &tr, DMG_SHOCK);
 	}
-	UTIL_EmitAmbientSound(ENT(pev), tr.vecEndPos, "weapons/electro4.wav", 0.5, ATTN_NORM, 0, RANDOM_LONG(140, 160));
+	NPCSounds_EmitAmbient(tr.vecEndPos, "monster_alien_slave", "zap_hit", 0.5, ATTN_NORM, RANDOM_LONG(140, 160));
 }
 
 

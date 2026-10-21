@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 #include "parsemsg.h"
+#include "gm_audio.h"
 
 DECLARE_MESSAGE(m_Geiger, Geiger)
 
@@ -174,9 +175,9 @@ bool CHudGeiger::Draw(float flTime)
 			if (i > 2)
 				j += rand() & 1;
 
-			// Now are sentences, no precaches pls
-			sprintf(sz, "!PL_GEIGER%d", j + 1);
-			PlaySound(sz, flvol);
+			// Go-Mod audio system: no precache
+			sprintf(sz, "player/geiger%d.wav", j + 1);
+			GMAudio_PlayLocal(sz, flvol);
 		}
 	}
 

@@ -20,6 +20,7 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+#include "npc_sounds.h"
 
 typedef struct
 {
@@ -28,7 +29,6 @@ typedef struct
 	Vector vecOrigin;
 	Vector vecAngles;
 } t_ospreygrunt;
-
 
 
 #define SF_WAITFORTRIGGER 0x40
@@ -192,7 +192,6 @@ void CBlackOpsOsprey::Precache()
 	PRECACHE_MODEL("models/HVR.mdl");
 
 	PRECACHE_SOUND("apache/ap_rotor4.wav");
-	PRECACHE_SOUND("weapons/mortarhit.wav");
 
 	m_iSpriteTexture = PRECACHE_MODEL("sprites/rope.spr");
 
@@ -263,7 +262,6 @@ void CBlackOpsOsprey::DeployThink()
 	SetThink(&CBlackOpsOsprey::HoverThink);
 	pev->nextthink = gpGlobals->time + 0.1;
 }
-
 
 
 bool CBlackOpsOsprey::HasDead()
@@ -522,7 +520,6 @@ int CBlackOpsOsprey::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker
 */
 
 
-
 void CBlackOpsOsprey::Killed(entvars_t* pevAttacker, int iGib)
 {
 	ClearShockEffect();
@@ -633,7 +630,6 @@ void CBlackOpsOsprey::DyingThink()
 		MESSAGE_END();
 
 
-
 		// don't stop it we touch a entity
 		pev->flags &= ~FL_ONGROUND;
 		pev->nextthink = gpGlobals->time + 0.2;
@@ -700,7 +696,7 @@ void CBlackOpsOsprey::DyingThink()
 		WRITE_BYTE(0);	 // speed
 		MESSAGE_END();
 
-		EMIT_SOUND(ENT(pev), CHAN_STATIC, "weapons/mortarhit.wav", 1.0, 0.3);
+		NPCSounds_Emit(this, "monster_blkop_osprey", "explode", CHAN_STATIC, 1.0, 0.3, PITCH_NORM);
 
 		RadiusDamage(pev->origin, pev, pev, 300, CLASS_NONE, DMG_BLAST);
 

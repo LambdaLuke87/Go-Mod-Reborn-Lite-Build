@@ -28,6 +28,7 @@
 #include "weapons.h"
 #include "soundent.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -269,8 +270,6 @@ void COtis::RunTask(Task_t* pTask)
 }
 
 
-
-
 //=========================================================
 // ISoundMask - returns a bit mask indicating which types
 // of sounds this monster regards.
@@ -394,7 +393,7 @@ void COtis::OtisFirePistol()
 		pitchShift = 0;
 	else
 		pitchShift -= 5;
-	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE25", 1, ATTN_NORM, 0, 100 + pitchShift);
+	NPCSounds_Emit(this, "monster_otis", "pistol_fire", CHAN_WEAPON, 1, ATTN_NORM, 100 + pitchShift);
 
 	CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
 
@@ -609,18 +608,7 @@ void COtis::PainSound()
 
 	m_painTime = gpGlobals->time + RANDOM_FLOAT(0.5, 0.75);
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain1.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain2.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain3.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	}
+	NPCSounds_Emit(this, "monster_otis", "pain", CHAN_VOICE, 1, ATTN_NORM, GetVoicePitch());
 }
 
 //=========================================================
@@ -628,18 +616,7 @@ void COtis::PainSound()
 //=========================================================
 void COtis::DeathSound()
 {
-	switch (RANDOM_LONG(1, 3))
-	{
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die1.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die2.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	case 3:
-		GMAudio_Emit(this, CHAN_VOICE, "barney/ba_die3.wav", 1, ATTN_NORM, GetVoicePitch());
-		break;
-	}
+	NPCSounds_Emit(this, "monster_otis", "death", CHAN_VOICE, 1, ATTN_NORM, GetVoicePitch());
 }
 
 
@@ -844,7 +821,6 @@ MONSTERSTATE COtis::GetIdealState()
 }
 
 
-
 void COtis::DeclineFollowing()
 {
 	PlaySentence("OT_POK", 2, VOL_NORM, ATTN_NORM);
@@ -865,7 +841,6 @@ bool COtis::KeyValue(KeyValueData* pkvd)
 
 	return CBaseMonster::KeyValue(pkvd);
 }
-
 
 
 //=========================================================

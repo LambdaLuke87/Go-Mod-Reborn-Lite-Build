@@ -20,6 +20,7 @@
 #include "gamerules.h"
 #ifndef CLIENT_DLL
 #include "game.h"
+#include "gm_audio_server.h"
 
 extern edict_t* EntSelectSpawnPoint(CBasePlayer* pPlayer);
 #endif
@@ -748,7 +749,7 @@ void CToolbow::UpdateLaser()
 		{
 			m_pLaser = CToolbowLaser::CreateSpot();
 
-			EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNMISC26", VOL_NORM, ATTN_NORM, 0, PITCH_HIGH);
+			GMAudio_Emit(this, CHAN_WEAPON, "weapons/desert_eagle_sight.wav", VOL_NORM, ATTN_NORM, PITCH_HIGH);
 		}
 
 		UTIL_MakeVectors(m_pPlayer->pev->v_angle);

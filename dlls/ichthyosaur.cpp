@@ -28,6 +28,7 @@
 #include "animation.h"
 #include "effects.h"
 #include "weapons.h"
+#include "npc_sounds.h"
 
 #define SEARCH_RETRY 16
 
@@ -38,7 +39,6 @@
 #define EYE_CLOSED 2
 #define EYE_BACK 3
 #define EYE_LOOK 4
-
 
 
 //=========================================================
@@ -110,12 +110,6 @@ public:
 	float m_flLastPitchTime; // Last frame time pitch was changed
 	float m_flLastZYawTime;	 // Last frame time Z was changed when yaw was changed
 
-	static const char* pIdleSounds[];
-	static const char* pAlertSounds[];
-	static const char* pAttackSounds[];
-	static const char* pBiteSounds[];
-	static const char* pDieSounds[];
-	static const char* pPainSounds[];
 
 	void IdleSound() override;
 	void AlertSound() override;
@@ -143,77 +137,34 @@ TYPEDESCRIPTION CIchthyosaur::m_SaveData[] =
 IMPLEMENT_SAVERESTORE(CIchthyosaur, CFlyingMonster);
 
 
-const char* CIchthyosaur::pIdleSounds[] =
-	{
-		"ichy/ichy_idle1.wav",
-		"ichy/ichy_idle2.wav",
-		"ichy/ichy_idle3.wav",
-		"ichy/ichy_idle4.wav",
-};
-
-const char* CIchthyosaur::pAlertSounds[] =
-	{
-		"ichy/ichy_alert2.wav",
-		"ichy/ichy_alert3.wav",
-};
-
-const char* CIchthyosaur::pAttackSounds[] =
-	{
-		"ichy/ichy_attack1.wav",
-		"ichy/ichy_attack2.wav",
-};
-
-const char* CIchthyosaur::pBiteSounds[] =
-	{
-		"ichy/ichy_bite1.wav",
-		"ichy/ichy_bite2.wav",
-};
-
-const char* CIchthyosaur::pPainSounds[] =
-	{
-		"ichy/ichy_pain2.wav",
-		"ichy/ichy_pain3.wav",
-		"ichy/ichy_pain5.wav",
-};
-
-const char* CIchthyosaur::pDieSounds[] =
-	{
-		"ichy/ichy_die2.wav",
-		"ichy/ichy_die4.wav",
-};
-
-#define EMIT_ICKY_SOUND(chan, array) \
-	GMAudio_Emit(this, chan, array[RANDOM_LONG(0, ARRAYSIZE(array) - 1)], 1.0, 0.6, RANDOM_LONG(95, 105));
-
-
 void CIchthyosaur::IdleSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pIdleSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "idle", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CIchthyosaur::AlertSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pAlertSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "alert", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CIchthyosaur::AttackSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pAttackSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "attack", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CIchthyosaur::BiteSound()
 {
-	EMIT_ICKY_SOUND(CHAN_WEAPON, pBiteSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "bite", CHAN_WEAPON, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CIchthyosaur::DeathSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pDieSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "die", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 void CIchthyosaur::PainSound()
 {
-	EMIT_ICKY_SOUND(CHAN_VOICE, pPainSounds);
+	NPCSounds_Emit(this, "monster_ichthyosaur", "pain", CHAN_VOICE, 1.0, 0.6, RANDOM_LONG(95, 105));
 }
 
 //=========================================================
@@ -393,7 +344,6 @@ void CIchthyosaur::SetYawSpeed()
 }
 
 
-
 //=========================================================
 // Killed - overrides CFlyingMonster.
 //
@@ -523,12 +473,6 @@ void CIchthyosaur::Precache()
 	else
 		PRECACHE_MODEL("models/icky.mdl");
 
-	//PRECACHE_SOUND_ARRAY(pIdleSounds);
-	//PRECACHE_SOUND_ARRAY(pAlertSounds);
-	//PRECACHE_SOUND_ARRAY(pAttackSounds);
-	//PRECACHE_SOUND_ARRAY(pBiteSounds);
-	//PRECACHE_SOUND_ARRAY(pDieSounds);
-	//PRECACHE_SOUND_ARRAY(pPainSounds);
 }
 
 //=========================================================
@@ -602,7 +546,6 @@ Schedule_t* CIchthyosaur::GetScheduleOfType(int Type)
 
 	return CBaseMonster::GetScheduleOfType(Type);
 }
-
 
 
 //=========================================================
@@ -767,7 +710,6 @@ void CIchthyosaur::RunTask(Task_t* pTask)
 		break;
 	}
 }
-
 
 
 float CIchthyosaur::VectorToPitch(const Vector& vec)

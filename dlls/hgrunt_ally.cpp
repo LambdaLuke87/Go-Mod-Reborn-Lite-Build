@@ -45,6 +45,7 @@
 #include "effects.h"
 #include "customentity.h"
 #include "game.h"
+#include "npc_sounds.h"
 
 int g_fGruntAllyQuestion; // true if an idle grunt asked a question. Cleared when someone answers.
 
@@ -695,7 +696,6 @@ bool CHGruntAlly::CheckRangeAttack2(float flDot, float flDist)
 	}
 
 
-
 	return m_fThrowGrenade;
 }
 
@@ -1049,10 +1049,10 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 	case HGRUNT_AE_RELOAD:
 		if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
 		{
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC22", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_grunt_ally", "saw_reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 		else
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNMISC24", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_grunt_ally", "reload", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 
 		m_cAmmoLoaded = m_cClipSize;
 		ClearConditions(bits_COND_NO_AMMO_LOADED);
@@ -1072,7 +1072,7 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 
 	case HGRUNT_AE_GREN_LAUNCH:
 	{
-		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE14", 0.8, ATTN_NORM);
+		NPCSounds_Emit(this, "monster_human_grunt_ally", "grenade_launch", CHAN_WEAPON, 0.8, ATTN_NORM, PITCH_NORM);
 		CGrenade::ShootContact(pev, GetGunPosition(), m_vecTossVelocity);
 		m_fThrowGrenade = false;
 		if (g_iSkillLevel == SKILL_HARD)
@@ -1096,14 +1096,7 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 			Shoot();
 
 			// the first round of the three round burst plays the sound and puts a sound in the world sound list.
-			if (RANDOM_LONG(0, 1))
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE27", 1, ATTN_NORM);
-			}
-			else
-			{
-				EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE28", 1, ATTN_NORM);
-			}
+			NPCSounds_Emit(this, "monster_human_grunt_ally", "mp5_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 		else if (FBitSet(pev->weapons, HGruntAllyWeaponFlag::Saw))
 		{
@@ -1113,7 +1106,7 @@ void CHGruntAlly::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			Shotgun();
 
-			EMIT_SOUND(ENT(pev), CHAN_WEAPON, "!WP_GUNFIRE7", 1, ATTN_NORM);
+			NPCSounds_Emit(this, "monster_human_grunt_ally", "shotgun_fire", CHAN_WEAPON, 1, ATTN_NORM, PITCH_NORM);
 		}
 
 		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, 384, 0.3);
@@ -1314,7 +1307,6 @@ void CHGruntAlly::Precache()
 
 	//PRECACHE_SOUND("weapons/sbarrel1.wav");
 
-	PRECACHE_SOUND("fgrunt/medic.wav");
 
 	PRECACHE_SOUND("zombie/claw_miss2.wav"); // because we use the basemonster SWIPE animation event
 
@@ -1424,27 +1416,8 @@ void CHGruntAlly::PainSound()
 			}
 		}
 #endif
-		switch (RANDOM_LONG(0, 7))
-		{
-		case 0:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 1:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 2:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 3:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 4:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		case 5:
-			GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
-			break;
-		}
+		if (RANDOM_LONG(0, 7) < 6) // the original switch had silent cases
+			NPCSounds_Emit(this, "monster_human_grunt_ally", "pain", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 
 		m_flNextPainTime = gpGlobals->time + 1;
 	}
@@ -1455,27 +1428,7 @@ void CHGruntAlly::PainSound()
 //=========================================================
 void CHGruntAlly::DeathSound()
 {
-	switch (RANDOM_LONG(0, 5))
-	{
-	case 0:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death1.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 1:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death2.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 2:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death3.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 3:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death4.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 4:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death5.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	case 5:
-		GMAudio_Emit(this, CHAN_VOICE, "fgrunt/death6.wav", 1, ATTN_NORM, PITCH_NORM);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_grunt_ally", "death", CHAN_VOICE, 1, ATTN_NORM, PITCH_NORM);
 }
 
 //=========================================================
@@ -2576,7 +2529,7 @@ Schedule_t* CHGruntAlly::GetSchedule()
 					{
 						ALERT(at_aiconsole, "Injured Grunt called for Medic\n");
 
-						EMIT_SOUND_DYN(edict(), CHAN_VOICE, "fgrunt/medic.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
+						NPCSounds_Emit(this, "monster_human_grunt_ally", "medic", CHAN_VOICE, VOL_NORM, ATTN_NORM, PITCH_NORM);
 
 						JustSpoke();
 						m_flMedicWaitTime = gpGlobals->time + 5.0;
@@ -2884,18 +2837,7 @@ void CHGruntAlly::ShootSaw()
 
 	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_5DEGREES, 8192, BULLET_PLAYER_556, 2); // shoot +-5 degrees
 
-	switch (RANDOM_LONG(0, 2))
-	{
-	case 0:
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNFIRE16", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNFIRE17", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94);
-		break;
-	case 2:
-		EMIT_SOUND_DYN(edict(), CHAN_WEAPON, "!WP_GUNFIRE18", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 15) + 94);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_human_grunt_ally", "saw_fire", CHAN_WEAPON, VOL_NORM, ATTN_NORM, RANDOM_LONG(0, 15) + 94);
 
 	pev->effects |= EF_MUZZLEFLASH;
 
@@ -3055,7 +2997,6 @@ void CHGruntAllyRepel::RepelUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 		UTIL_Remove(this);
 	}
 }
-
 
 
 //=========================================================

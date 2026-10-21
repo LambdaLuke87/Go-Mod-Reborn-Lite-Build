@@ -214,7 +214,36 @@ static bool ChannelReplaces(int channel)
 
 void GMMixer::Play(std::shared_ptr<const GMSoundData> sound, const GMVoiceParams& params)
 {
-	if (!sound || sound->samples.empty())
+	GMSegment seg;
+	seg.sound = std::move(sound);
+
+	std::vector<GMSegment> segments;
+	segments.push_back(std::move(seg));
+	Play(segments, params);
+}
+
+static size_t SegmentStart(const GMSegment& seg)
+{
+	const size_t count = seg.sound->samples.size();
+	return std::min(count, (size_t)((double)count * std::min(1.0f, std::max(0.0f, seg.start))));
+}
+
+static size_t SegmentEnd(const GMSegment& seg)
+{
+	const size_t count = seg.sound->samples.size();
+	return std::min(count, (size_t)((double)count * std::min(1.0f, std::max(0.0f, seg.end))));
+}
+
+void GMMixer::Play(const std::vector<GMSegment>& segments, const GMVoiceParams& params)
+{
+	std::vector<GMSegment> valid;
+	for (const GMSegment& seg : segments)
+	{
+		if (seg.sound && !seg.sound->samples.empty() && SegmentEnd(seg) > SegmentStart(seg))
+			valid.push_back(seg);
+	}
+
+	if (valid.empty())
 		return;
 
 	if (ChannelReplaces(params.channel))
@@ -242,7 +271,9 @@ void GMMixer::Play(std::shared_ptr<const GMSoundData> sound, const GMVoiceParams
 	}
 
 	Voice v;
-	v.sound = std::move(sound);
+	v.segments = std::move(valid);
+	v.segment = 0;
+	v.pos = (double)SegmentStart(v.segments[0]);
 	v.params = params;
 	v.params.volume = std::min(1.0f, std::max(0.0f, v.params.volume));
 	v.params.pitch = std::min(4.0f, std::max(0.05f, v.params.pitch));
@@ -289,6 +320,31 @@ void GMMixer::GetEntities(std::vector<int>& out) const
 	}
 }
 
+void GMMixer::GetVoiceLevels(std::vector<std::pair<int, float>>& out) const
+{
+	out.clear();
+
+	for (const Voice& v : m_Voices)
+	{
+		if (v.params.entity <= 0 || v.params.channel != 2) // CHAN_VOICE
+			continue;
+
+		bool found = false;
+		for (auto& e : out)
+		{
+			if (e.first == v.params.entity)
+			{
+				e.second = std::max(e.second, v.level);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+			out.emplace_back(v.params.entity, v.level);
+	}
+}
+
 void GMMixer::Mix(float* out, int frames)
 {
 	if (frames <= 0)
@@ -319,35 +375,58 @@ void GMMixer::Mix(float* out, int frames)
 		const float dR = (tgtR - v.curR) / (float)frames;
 		float gL = v.curL, gR = v.curR;
 
-		const float* s = v.sound->samples.data();
-		const size_t count = v.sound->samples.size();
-		const double step = ((double)v.sound->rate / (double)m_OutputRate) * (double)v.params.pitch;
-		double pos = v.pos;
-
+		float sumAbs = 0.0f;
+		int mixed = 0;
 		int f = 0;
-		for (; f < frames; ++f)
+
+		while (f < frames && v.segment < v.segments.size())
 		{
-			const size_t idx = (size_t)pos;
-			if (idx >= count)
-				break;
+			const GMSegment& seg = v.segments[v.segment];
+			const float* s = seg.sound->samples.data();
+			const size_t end = SegmentEnd(seg);
+			const double step = ((double)seg.sound->rate / (double)m_OutputRate) * (double)v.params.pitch *
+								(double)std::min(4.0f, std::max(0.05f, seg.pitch));
+			const float segVolume = std::min(2.0f, std::max(0.0f, seg.volume));
+			double pos = v.pos;
 
-			const float s0 = s[idx];
-			const float s1 = (idx + 1 < count) ? s[idx + 1] : s0;
-			const float smp = s0 + (s1 - s0) * (float)(pos - (double)idx);
+			for (; f < frames; ++f)
+			{
+				const size_t idx = (size_t)pos;
+				if (idx >= end)
+					break;
 
-			out[2 * f] += smp * gL;
-			out[2 * f + 1] += smp * gR;
+				const float s0 = s[idx];
+				const float s1 = (idx + 1 < end) ? s[idx + 1] : s0;
+				const float smp = (s0 + (s1 - s0) * (float)(pos - (double)idx)) * segVolume;
 
-			gL += dL;
-			gR += dR;
-			pos += step;
+				out[2 * f] += smp * gL;
+				out[2 * f + 1] += smp * gR;
+
+				sumAbs += std::fabs(smp);
+				mixed++;
+
+				gL += dL;
+				gR += dR;
+				pos += step;
+			}
+
+			v.pos = pos;
+
+			if ((size_t)pos >= end) // this segment is over: next word
+			{
+				v.segment++;
+				if (v.segment < v.segments.size())
+					v.pos = (double)SegmentStart(v.segments[v.segment]);
+			}
 		}
 
-		v.pos = pos;
+		const float blockLevel = mixed > 0 ? (sumAbs / (float)mixed) * v.params.volume : 0.0f;
+		v.level = v.level * 0.5f + blockLevel * 0.5f;
+
 		v.curL = tgtL;
 		v.curR = tgtR;
 
-		if (f < frames || (size_t)pos >= count)
+		if (v.segment >= v.segments.size())
 			m_Voices.erase(m_Voices.begin() + (std::ptrdiff_t)i); // finished
 		else
 			++i;

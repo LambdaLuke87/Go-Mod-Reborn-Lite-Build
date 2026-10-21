@@ -21,6 +21,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "schedule.h"
+#include "npc_sounds.h"
 
 
 //=========================================================
@@ -91,17 +92,8 @@ void CBloater::PainSound()
 #if 0	
 	int pitch = 95 + RANDOM_LONG(0,9);
 
-	switch (RANDOM_LONG(0,5))
-	{
-	case 0: 
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_pain1.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_pain2.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	default:
-		break;
-	}
+	if (RANDOM_LONG(0, 5) < 2) // the original switch had silent cases
+		NPCSounds_Emit(this, "monster_bloater", "pain", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 #endif
 }
 
@@ -110,18 +102,7 @@ void CBloater::AlertSound()
 #if 0
 	int pitch = 95 + RANDOM_LONG(0,9);
 
-	switch (RANDOM_LONG(0,2))
-	{
-	case 0: 
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_alert10.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_alert20.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_alert30.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_bloater", "alert", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 #endif
 }
 
@@ -130,18 +111,7 @@ void CBloater::IdleSound()
 #if 0
 	int pitch = 95 + RANDOM_LONG(0,9);
 
-	switch (RANDOM_LONG(0,2))
-	{
-	case 0: 
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_idle1.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_idle2.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 2:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_idle3.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_bloater", "idle", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 #endif
 }
 
@@ -150,15 +120,7 @@ void CBloater::AttackSnd()
 #if 0
 	int pitch = 95 + RANDOM_LONG(0,9);
 
-	switch (RANDOM_LONG(0,1))
-	{
-	case 0: 
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_attack1.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	case 1:
-		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "zombie/zo_attack2.wav", 1.0, ATTN_NORM, 0, pitch);
-		break;
-	}
+	NPCSounds_Emit(this, "monster_bloater", "attack", CHAN_VOICE, 1.0, ATTN_NORM, pitch);
 #endif
 }
 
