@@ -205,6 +205,8 @@ void GMMixer::SetOutputRate(int rate)
 {
 	if (rate >= 8000 && rate <= 192000)
 		m_OutputRate = rate;
+
+	m_Reverb.SetRate(m_OutputRate);
 }
 
 static bool ChannelReplaces(int channel)
@@ -300,6 +302,46 @@ void GMMixer::SetListener(const GMVec3& origin, const GMVec3& right, float maste
 	m_Master = std::min(1.0f, std::max(0.0f, masterVolume));
 }
 
+void GMMixer::SetListenerForward(const GMVec3& forward)
+{
+	m_ListenerForward = forward;
+}
+
+void GMMixer::SetEffects(const GMEffects& fx)
+{
+	m_Fx = fx;
+}
+
+void GMMixer::GetSources(std::vector<GMVoiceSource>& out) const
+{
+	out.clear();
+	out.reserve(m_Voices.size());
+
+	for (const Voice& v : m_Voices)
+	{
+		GMVoiceSource src;
+		src.serial = v.serial;
+		src.entity = v.params.entity;
+		src.origin = v.params.origin;
+		src.attenuation = v.params.attenuation;
+		src.global = v.params.global;
+		out.push_back(src);
+	}
+}
+
+void GMMixer::SetVoiceFx(unsigned long long serial, float occlusion, float doppler)
+{
+	for (Voice& v : m_Voices)
+	{
+		if (v.serial == serial)
+		{
+			v.occlusion = std::min(1.0f, std::max(0.0f, occlusion));
+			v.doppler = std::min(2.0f, std::max(0.5f, doppler));
+			return;
+		}
+	}
+}
+
 void GMMixer::SetEntityOrigin(int entity, const GMVec3& origin)
 {
 	for (Voice& v : m_Voices)
@@ -345,6 +387,232 @@ void GMMixer::GetVoiceLevels(std::vector<std::pair<int, float>>& out) const
 	}
 }
 
+static inline float Lerp(float a, float b, float t)
+{
+	return a + (b - a) * t;
+}
+
+// mixes one voice into 'out' (stereo) and its reverb send into 'send' (mono).
+// Leaves v.segment == v.segments.size() when the voice is over.
+void GMMixer::MixVoice(Voice& v, float* out, float* send, int frames)
+{
+	const float rate = (float)m_OutputRate;
+	const bool global = v.params.global;
+
+	// ------------------------------------------------ geometry
+	float tgtL = 1.0f, tgtR = 1.0f;
+	float dist = 0.0f, lateral = 0.0f, front = 1.0f, distGain = 1.0f;
+
+	if (!global)
+	{
+		GMAudio_Spatialize(m_Listener, m_ListenerRight, v.params.origin, v.params.attenuation, tgtL, tgtR);
+
+		const float dx = v.params.origin.x - m_Listener.x;
+		const float dy = v.params.origin.y - m_Listener.y;
+		const float dz = v.params.origin.z - m_Listener.z;
+		dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+
+		if (dist > 0.001f)
+		{
+			lateral = (dx * m_ListenerRight.x + dy * m_ListenerRight.y + dz * m_ListenerRight.z) / dist;
+			front = (dx * m_ListenerForward.x + dy * m_ListenerForward.y + dz * m_ListenerForward.z) / dist;
+		}
+
+		distGain = v.params.attenuation > 0.0f ? std::max(0.0f, 1.0f - dist * (v.params.attenuation / 1000.0f)) : 1.0f;
+
+		if (m_Fx.spatial && dist > 1.0f)
+		{
+			// the time difference and the head shadow do most of the work: softer level difference
+			tgtL = std::min(1.0f, distGain * (1.0f - 0.35f * lateral));
+			tgtR = std::min(1.0f, distGain * (1.0f + 0.35f * lateral));
+		}
+	}
+
+	// ------------------------------------------------ occlusion / doppler (smooth)
+	v.occlusionCur += (v.occlusion - v.occlusionCur) * 0.2f;
+	v.dopplerCur += (v.doppler - v.dopplerCur) * 0.3f;
+
+	const float occ = global ? 0.0f : v.occlusionCur;
+	const float occGain = 1.0f - 0.6f * occ;
+
+	tgtL *= v.params.volume * m_Master * occGain;
+	tgtR *= v.params.volume * m_Master * occGain;
+
+	if (v.fresh) // first block: no fade-in from silence
+	{
+		v.curL = tgtL;
+		v.curR = tgtR;
+		v.fresh = false;
+	}
+
+	// the volume moves smoothly across the block, so a source that moves doesn't click
+	const float dL = (tgtL - v.curL) / (float)frames;
+	const float dR = (tgtR - v.curR) / (float)frames;
+	float gL = v.curL, gR = v.curR;
+
+	// ------------------------------------------------ filters
+	float cutoff = 22000.0f;
+	if (m_Fx.airAbsorption && !global)
+		cutoff = std::min(cutoff, std::max(3000.0f, 20000.0f * std::exp(-dist / 3000.0f)));
+	if (occ > 0.001f)
+		cutoff = std::min(cutoff, Lerp(20000.0f, 800.0f, occ));
+	const float lpA = GMAudio_LowpassCoef(cutoff, rate);
+	const bool useLowpass = lpA < 1.0f;
+
+	const bool spatial = m_Fx.spatial && !global && dist > 1.0f;
+	float shA_L = 1.0f, shA_R = 1.0f;
+	float itdTargetL = 0.0f, itdTargetR = 0.0f;
+
+	if (spatial)
+	{
+		// ~0.66 ms max interaural delay; the far ear also loses high frequencies
+		const float maxItd = std::min(60.0f, 0.00066f * rate);
+		const float side = std::fabs(lateral);
+		const float farCut = Lerp(20000.0f, 3500.0f, side);
+		const float behindCut = front < 0.0f ? Lerp(20000.0f, 5000.0f, -front) : 20000.0f;
+
+		if (lateral > 0.0f) // source on the right: the left ear is the far one
+		{
+			itdTargetL = side * maxItd;
+			shA_L = GMAudio_LowpassCoef(std::min(farCut, behindCut), rate);
+			shA_R = GMAudio_LowpassCoef(behindCut, rate);
+		}
+		else
+		{
+			itdTargetR = side * maxItd;
+			shA_R = GMAudio_LowpassCoef(std::min(farCut, behindCut), rate);
+			shA_L = GMAudio_LowpassCoef(behindCut, rate);
+		}
+	}
+
+	const float itdStepL = (itdTargetL - v.itdL) / (float)frames;
+	const float itdStepR = (itdTargetR - v.itdR) / (float)frames;
+
+	// ------------------------------------------------ reverb send
+	float sendGain = 0.0f;
+	if (send && m_Fx.reverb && distGain > 0.0f)
+		sendGain = v.params.volume * m_Master * (global ? 0.3f : (0.25f + 0.45f * distGain)) * occGain;
+
+	// ------------------------------------------------ samples
+	float sumAbs = 0.0f;
+	int mixed = 0;
+	int f = 0;
+
+	while (f < frames && v.segment < v.segments.size())
+	{
+		const GMSegment& seg = v.segments[v.segment];
+		const float* s = seg.sound->samples.data();
+		const size_t start = SegmentStart(seg);
+		const size_t end = SegmentEnd(seg);
+		const double step = ((double)seg.sound->rate / (double)m_OutputRate) * (double)v.params.pitch *
+							(double)std::min(4.0f, std::max(0.05f, seg.pitch)) * (double)(global ? 1.0f : v.dopplerCur);
+		const float segVolume = std::min(2.0f, std::max(0.0f, seg.volume));
+		const bool cubic = m_Fx.interpolation == 1;
+		const bool vibrato = m_Fx.vibrato;
+		const double vibDepth = std::min(0.9, std::max(0.0, (double)m_Fx.vibratoDepth));
+		const double vibStep = std::min(30.0, std::max(0.1, (double)m_Fx.vibratoRate)) / (double)m_OutputRate;
+		double pos = v.pos;
+
+		for (; f < frames; ++f)
+		{
+			const size_t idx = (size_t)pos;
+			if (idx >= end)
+				break;
+
+			const float t = (float)(pos - (double)idx);
+			const float x0 = s[idx];
+			const float x1 = (idx + 1 < end) ? s[idx + 1] : x0;
+			float smp;
+
+			if (cubic)
+			{
+				const float xm1 = (idx > start) ? s[idx - 1] : x0;
+				const float x2 = (idx + 2 < end) ? s[idx + 2] : x1;
+				const float c1 = 0.5f * (x1 - xm1);
+				const float c2 = xm1 - 2.5f * x0 + 2.0f * x1 - 0.5f * x2;
+				const float c3 = 0.5f * (x2 - xm1) + 1.5f * (x0 - x1);
+				smp = ((c3 * t + c2) * t + c1) * t + x0;
+			}
+			else
+			{
+				smp = x0 + (x1 - x0) * t;
+			}
+
+			smp *= segVolume;
+			sumAbs += std::fabs(smp);
+			mixed++;
+
+			if (useLowpass)
+				smp = v.lowpass.Process(smp, lpA);
+
+			float l = smp, r = smp;
+
+			if (spatial)
+			{
+				v.delay[v.delayPos] = smp;
+
+				auto readDelay = [&](float d) -> float
+				{
+					const int di = (int)d;
+					const float fr = d - (float)di;
+					const float a = v.delay[(v.delayPos - di + 64) & 63];
+					const float b = v.delay[(v.delayPos - di - 1 + 64) & 63];
+					return a + (b - a) * fr;
+				};
+
+				l = v.shadowL.Process(readDelay(v.itdL), shA_L);
+				r = v.shadowR.Process(readDelay(v.itdR), shA_R);
+
+				v.delayPos = (v.delayPos + 1) & 63;
+				v.itdL += itdStepL;
+				v.itdR += itdStepR;
+			}
+
+			out[2 * f] += l * gL;
+			out[2 * f + 1] += r * gR;
+
+			if (sendGain > 0.0f)
+				send[f] += smp * sendGain;
+
+			gL += dL;
+			gR += dR;
+
+			if (vibrato)
+			{
+				pos += step * (1.0 + vibDepth * std::sin(6.283185307179586 * v.vibratoPhase));
+				v.vibratoPhase += vibStep;
+				if (v.vibratoPhase >= 1.0)
+					v.vibratoPhase -= 1.0;
+			}
+			else
+			{
+				pos += step;
+			}
+		}
+
+		v.pos = pos;
+
+		if ((size_t)pos >= end) // this segment is over: next word
+		{
+			v.segment++;
+			if (v.segment < v.segments.size())
+				v.pos = (double)SegmentStart(v.segments[v.segment]);
+		}
+	}
+
+	if (spatial)
+	{
+		v.itdL = itdTargetL;
+		v.itdR = itdTargetR;
+	}
+
+	const float blockLevel = mixed > 0 ? (sumAbs / (float)mixed) * v.params.volume : 0.0f;
+	v.level = v.level * 0.5f + blockLevel * 0.5f;
+
+	v.curL = tgtL;
+	v.curR = tgtR;
+}
+
 void GMMixer::Mix(float* out, int frames)
 {
 	if (frames <= 0)
@@ -352,84 +620,55 @@ void GMMixer::Mix(float* out, int frames)
 
 	std::fill(out, out + (size_t)frames * 2, 0.0f);
 
+	if ((int)m_Send.size() < frames)
+		m_Send.resize((size_t)frames);
+	std::fill(m_Send.begin(), m_Send.begin() + frames, 0.0f);
+
 	for (size_t i = 0; i < m_Voices.size();)
 	{
 		Voice& v = m_Voices[i];
-
-		float tgtL = 1.0f, tgtR = 1.0f;
-		if (!v.params.global)
-			GMAudio_Spatialize(m_Listener, m_ListenerRight, v.params.origin, v.params.attenuation, tgtL, tgtR);
-
-		tgtL *= v.params.volume * m_Master;
-		tgtR *= v.params.volume * m_Master;
-
-		if (v.fresh) // first block: no fade-in from silence
-		{
-			v.curL = tgtL;
-			v.curR = tgtR;
-			v.fresh = false;
-		}
-
-		// the volume moves smoothly across the block, so a source that moves doesn't click
-		const float dL = (tgtL - v.curL) / (float)frames;
-		const float dR = (tgtR - v.curR) / (float)frames;
-		float gL = v.curL, gR = v.curR;
-
-		float sumAbs = 0.0f;
-		int mixed = 0;
-		int f = 0;
-
-		while (f < frames && v.segment < v.segments.size())
-		{
-			const GMSegment& seg = v.segments[v.segment];
-			const float* s = seg.sound->samples.data();
-			const size_t end = SegmentEnd(seg);
-			const double step = ((double)seg.sound->rate / (double)m_OutputRate) * (double)v.params.pitch *
-								(double)std::min(4.0f, std::max(0.05f, seg.pitch));
-			const float segVolume = std::min(2.0f, std::max(0.0f, seg.volume));
-			double pos = v.pos;
-
-			for (; f < frames; ++f)
-			{
-				const size_t idx = (size_t)pos;
-				if (idx >= end)
-					break;
-
-				const float s0 = s[idx];
-				const float s1 = (idx + 1 < end) ? s[idx + 1] : s0;
-				const float smp = (s0 + (s1 - s0) * (float)(pos - (double)idx)) * segVolume;
-
-				out[2 * f] += smp * gL;
-				out[2 * f + 1] += smp * gR;
-
-				sumAbs += std::fabs(smp);
-				mixed++;
-
-				gL += dL;
-				gR += dR;
-				pos += step;
-			}
-
-			v.pos = pos;
-
-			if ((size_t)pos >= end) // this segment is over: next word
-			{
-				v.segment++;
-				if (v.segment < v.segments.size())
-					v.pos = (double)SegmentStart(v.segments[v.segment]);
-			}
-		}
-
-		const float blockLevel = mixed > 0 ? (sumAbs / (float)mixed) * v.params.volume : 0.0f;
-		v.level = v.level * 0.5f + blockLevel * 0.5f;
-
-		v.curL = tgtL;
-		v.curR = tgtR;
+		MixVoice(v, out, m_Send.data(), frames);
 
 		if (v.segment >= v.segments.size())
 			m_Voices.erase(m_Voices.begin() + (std::ptrdiff_t)i); // finished
 		else
 			++i;
+	}
+
+	// ------------------------------------------------ room reverb
+	const GMRoomPreset& room = GMAudio_RoomPreset(m_Fx.reverb ? m_Fx.roomType : 0);
+	m_Reverb.SetTarget(room.room, room.damp, m_Fx.reverb ? room.wet * std::max(0.0f, m_Fx.reverbMix) : 0.0f);
+	if (m_Reverb.Active())
+		m_Reverb.Process(m_Send.data(), out, frames);
+
+	// ------------------------------------------------ underwater / water rooms: muffle everything
+	float waterCut = 0.0f;
+	if (m_Fx.underwater)
+		waterCut = 700.0f;
+	else if (m_Fx.reverb && room.lowpass > 0.0f)
+		waterCut = room.lowpass;
+
+	const float waterTarget = waterCut > 0.0f ? 1.0f : 0.0f;
+	m_WaterMix += (waterTarget - m_WaterMix) * 0.2f;
+	if (waterTarget == 0.0f && m_WaterMix < 0.001f)
+		m_WaterMix = 0.0f;
+
+	if (m_WaterMix > 0.0f)
+	{
+		const float a = GMAudio_LowpassCoef(waterCut > 0.0f ? waterCut : 700.0f, (float)m_OutputRate);
+		const float vol = m_Fx.underwater ? Lerp(1.0f, 0.8f, m_WaterMix) : 1.0f;
+
+		for (int k = 0; k < frames; ++k)
+		{
+			const float l = out[2 * k], r = out[2 * k + 1];
+			out[2 * k] = Lerp(l, m_WaterL.Process(l, a), m_WaterMix) * vol;
+			out[2 * k + 1] = Lerp(r, m_WaterR.Process(r, a), m_WaterMix) * vol;
+		}
+	}
+	else
+	{
+		m_WaterL.Reset();
+		m_WaterR.Reset();
 	}
 
 	for (int k = 0; k < frames * 2; ++k)

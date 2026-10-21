@@ -450,6 +450,9 @@
     <ClCompile Include="..\..\cl_dll\gm_audio_core.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\gm_audio_fx.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\cl_dll\cl_lrc_fx.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
@@ -816,6 +819,9 @@
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\gm_audio_core.h">
+      <Filter>Header Files\cl_dll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\gm_audio_fx.h">
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\game_shared\gm_audio_shared.h">

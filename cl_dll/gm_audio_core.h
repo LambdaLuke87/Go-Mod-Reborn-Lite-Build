@@ -5,6 +5,8 @@
 
 #include <cstddef>
 #include <memory>
+
+#include "gm_audio_fx.h"
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,6 +54,32 @@ struct GMSegment
 	float end = 1.0f;	 // 0..1, where to stop (sentence "e" modifier)
 };
 
+// Optional effects (all off = the plain mixer). Set by the game thread every frame.
+struct GMEffects
+{
+	bool reverb = false;	   // room reverb
+	int roomType = 0;		   // engine room_type 0-28 (env_sound), already resolved by the caller
+	float reverbMix = 1.0f;	   // multiplies the room's reverb level
+	bool spatial = false;	   // binaural approximation: time difference + head shadow + behind
+	bool airAbsorption = false; // far sounds lose high frequencies
+	bool underwater = false;   // the listener is underwater: muffle everything
+	int interpolation = 0;	   // 0 linear, 1 cubic (better quality when the pitch changes)
+
+	bool vibrato = false;	   // the pitch goes up and down by itself (YTP style)
+	float vibratoRate = 6.0f;  // oscillations per second
+	float vibratoDepth = 0.3f; // 0.3 = +-30% pitch
+};
+
+// what the game thread needs to compute occlusion / doppler for a voice
+struct GMVoiceSource
+{
+	unsigned long long serial = 0;
+	int entity = 0;
+	GMVec3 origin;
+	float attenuation = 0.0f;
+	bool global = false;
+};
+
 // Mixes many voices into interleaved stereo float. It has NO locking: whoever owns the audio
 // device must not call anything here while Mix() is running (the SDL glue locks the device).
 class GMMixer
@@ -69,6 +97,13 @@ public:
 	void StopAll();
 
 	void SetListener(const GMVec3& origin, const GMVec3& right, float masterVolume);
+	void SetListenerForward(const GMVec3& forward); // needed by the "spatial" effect (front / behind)
+	void SetEffects(const GMEffects& fx);
+
+	// occlusion (0 = clear .. 1 = fully blocked) and doppler (pitch multiplier) of one voice.
+	// The voice moves smoothly towards these values.
+	void GetSources(std::vector<GMVoiceSource>& out) const;
+	void SetVoiceFx(unsigned long long serial, float occlusion, float doppler);
 	void SetEntityOrigin(int entity, const GMVec3& origin);
 	void GetEntities(std::vector<int>& out) const; // entities (> 0) that have a sound playing
 
@@ -91,10 +126,27 @@ private:
 		float curL = 0.0f, curR = 0.0f;
 		bool fresh = true;
 		unsigned long long serial = 0;
+
+		// effects
+		float occlusion = 0.0f, occlusionCur = 0.0f;
+		float doppler = 1.0f, dopplerCur = 1.0f;
+		GMLowpass lowpass;			  // occlusion + air absorption
+		GMLowpass shadowL, shadowR;	  // head shadow / behind (spatial)
+		float delay[64] = {};		  // interaural delay line (spatial)
+		int delayPos = 0;
+		float itdL = 0.0f, itdR = 0.0f; // current delay of each ear, in samples
+		double vibratoPhase = 0.0;		 // 0..1
 	};
 
+	void MixVoice(Voice& v, float* out, float* send, int frames);
+
 	std::vector<Voice> m_Voices;
-	GMVec3 m_Listener, m_ListenerRight;
+	GMVec3 m_Listener, m_ListenerRight, m_ListenerForward;
+	GMEffects m_Fx;
+	GMReverb m_Reverb;
+	std::vector<float> m_Send; // mono reverb send, one block
+	GMLowpass m_WaterL, m_WaterR;
+	float m_WaterMix = 0.0f; // 0..1 fade of the underwater filter
 	float m_Master = 1.0f;
 	int m_OutputRate = 44100;
 	unsigned long long m_NextSerial = 1;

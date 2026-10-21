@@ -2,6 +2,8 @@
 #include "cl_util.h"
 #include "parsemsg.h"
 #include "com_model.h"
+#include "event_api.h"
+#include "pm_defs.h"
 
 #include "gm_audio.h"
 #include "gm_audio_core.h"
@@ -19,8 +21,11 @@
 #undef HSPRITE
 #endif
 
+#include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <cstdlib>
 #include <string>
 #include <unordered_map>
@@ -495,6 +500,325 @@ static void GMAudio_CmdStatus()
 }
 
 // ---------------------------------------------------------------------------------------
+//  Effects (reverb, occlusion, doppler, spatial...). Only for the sounds of this system.
+//
+//  The cvars are NOT archived on purpose: every time the game starts everything is normal again.
+//  "gm_audio_fx_reset" puts everything back to normal, "gm_audio_fx" shows what is on.
+// ---------------------------------------------------------------------------------------
+
+struct FxCvar
+{
+	const char* name;
+	const char* def;
+	const char* help;
+	cvar_t* cvar;
+};
+
+static FxCvar g_FxCvars[] = {
+	{"gm_audio_reverb", "0", "room reverb (follows env_sound / room_type)", nullptr},
+	{"gm_audio_reverb_room", "0", "force a room 1-28 (0 = the one of the map)", nullptr},
+	{"gm_audio_reverb_mix", "1", "reverb amount multiplier (0-2)", nullptr},
+	{"gm_audio_occlusion", "0", "walls between you and the sound muffle it", nullptr},
+	{"gm_audio_occlusion_strength", "1", "how much the walls muffle (0-1)", nullptr},
+	{"gm_audio_doppler", "0", "pitch changes with movement (doppler)", nullptr},
+	{"gm_audio_doppler_scale", "1", "doppler exaggeration (0.1-4)", nullptr},
+	{"gm_audio_spatial", "0", "binaural approximation (time difference + head shadow), best with headphones", nullptr},
+	{"gm_audio_air", "0", "air absorption: far sounds lose high frequencies", nullptr},
+	{"gm_audio_underwater", "0", "muffle the sounds when you are underwater", nullptr},
+	{"gm_audio_interp", "0", "resampling: 0 linear, 1 cubic (better quality)", nullptr},
+	{"gm_audio_vibrato", "0", "the pitch goes up and down by itself (YTP style)", nullptr},
+	{"gm_audio_vibrato_rate", "6", "vibrato oscillations per second (0.1-30)", nullptr},
+	{"gm_audio_vibrato_depth", "0.3", "vibrato amount, 0.3 = +-30% pitch (0-0.9)", nullptr},
+};
+
+static const int kFxCvarCount = (int)(sizeof(g_FxCvars) / sizeof(g_FxCvars[0]));
+
+static float FxValue(int i)
+{
+	return g_FxCvars[i].cvar ? g_FxCvars[i].cvar->value : (float)atof(g_FxCvars[i].def);
+}
+
+enum
+{
+	FX_REVERB = 0,
+	FX_REVERB_ROOM,
+	FX_REVERB_MIX,
+	FX_OCCLUSION,
+	FX_OCCLUSION_STRENGTH,
+	FX_DOPPLER,
+	FX_DOPPLER_SCALE,
+	FX_SPATIAL,
+	FX_AIR,
+	FX_UNDERWATER,
+	FX_INTERP,
+	FX_VIBRATO,
+	FX_VIBRATO_RATE,
+	FX_VIBRATO_DEPTH,
+};
+
+static void GMAudio_CmdFxReset()
+{
+	for (int i = 0; i < kFxCvarCount; i++)
+		gEngfuncs.Cvar_Set((char*)g_FxCvars[i].name, (char*)g_FxCvars[i].def);
+
+	gEngfuncs.Con_Printf("GMAudio: all audio effects back to normal\n");
+}
+
+static void GMAudio_CmdFxAll()
+{
+	GMAudio_CmdFxReset();
+	gEngfuncs.Cvar_Set((char*)"gm_audio_reverb", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_occlusion", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_doppler", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_spatial", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_air", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_underwater", (char*)"1");
+	gEngfuncs.Cvar_Set((char*)"gm_audio_interp", (char*)"1");
+	gEngfuncs.Con_Printf("GMAudio: all audio effects ON except the vibrato (until the game is closed or gm_audio_fx_reset)\n");
+}
+
+static int CurrentRoomType(bool underwater); // below
+
+static void GMAudio_CmdFx()
+{
+	gEngfuncs.Con_Printf("GMAudio effects (not saved, normal again every time the game starts):\n");
+
+	for (int i = 0; i < kFxCvarCount; i++)
+	{
+		const bool changed = g_FxCvars[i].cvar && strcmp(g_FxCvars[i].cvar->string, g_FxCvars[i].def) != 0;
+		gEngfuncs.Con_Printf("  %-28s %-6s %s%s\n", g_FxCvars[i].name, g_FxCvars[i].cvar ? g_FxCvars[i].cvar->string : "?",
+			g_FxCvars[i].help, changed ? "  <- CHANGED" : "");
+	}
+
+	extern int g_iWaterLevel;
+	const int room = CurrentRoomType(g_iWaterLevel >= 3);
+	gEngfuncs.Con_Printf("  room now: %d (%s)\n", room, GMAudio_RoomPreset(room).name);
+	gEngfuncs.Con_Printf("gm_audio_fx_reset = everything normal, gm_audio_fx_all = everything on\n");
+}
+
+static void RegisterFx()
+{
+	for (int i = 0; i < kFxCvarCount; i++)
+		g_FxCvars[i].cvar = gEngfuncs.pfnRegisterVariable((char*)g_FxCvars[i].name, (char*)g_FxCvars[i].def, 0); // 0 = NOT archived
+
+	gEngfuncs.pfnAddCommand((char*)"gm_audio_fx", GMAudio_CmdFx);
+	gEngfuncs.pfnAddCommand((char*)"gm_audio_fx_reset", GMAudio_CmdFxReset);
+	gEngfuncs.pfnAddCommand((char*)"gm_audio_fx_all", GMAudio_CmdFxAll);
+}
+
+// the engine keeps the env_sound room in "room_type" and the underwater one in "waterroom_type"
+static int CurrentRoomType(bool underwater)
+{
+	const int forced = (int)FxValue(FX_REVERB_ROOM);
+	if (forced > 0)
+		return forced;
+
+	return (int)gEngfuncs.pfnGetCvarFloat(underwater ? "waterroom_type" : "room_type");
+}
+
+// per playing voice: occlusion / doppler state (game thread only)
+struct SourceFx
+{
+	GMVec3 lastOrigin;
+	bool hasLast = false;
+	float occlusion = 0.0f;
+	float nextTrace = 0.0f;
+	float doppler = 1.0f;
+	bool seen = false;
+};
+
+static std::unordered_map<unsigned long long, SourceFx> g_SourceFx;
+static GMVec3 g_LastListener;
+static bool g_HasLastListener = false;
+static float g_LastFxTime = 0.0f;
+
+static bool TraceBlocked(const float* start, const float* end)
+{
+	pmtrace_t tr;
+	gEngfuncs.pEventAPI->EV_SetTraceHull(2); // point
+	gEngfuncs.pEventAPI->EV_PlayerTrace((float*)start, (float*)end, PM_WORLD_ONLY, -1, &tr);
+	return tr.fraction < 0.98f && !tr.allsolid;
+}
+
+// 0 = clear, 1 = blocked. 3 rays (center, above, to the side) so a thin pillar doesn't mute everything
+static float ComputeOcclusion(const GMVec3& listener, const float* right, const GMVec3& source)
+{
+	const float start[3] = {listener.x, listener.y, listener.z};
+	const float offsets[3][3] = {
+		{0.0f, 0.0f, 16.0f},
+		{0.0f, 0.0f, 40.0f},
+		{right[0] * 24.0f, right[1] * 24.0f, 16.0f + right[2] * 24.0f},
+	};
+
+	int blocked = 0;
+	for (const auto& o : offsets)
+	{
+		const float end[3] = {source.x + o[0], source.y + o[1], source.z + o[2]};
+		if (TraceBlocked(start, end))
+			blocked++;
+	}
+
+	return (float)blocked / 3.0f;
+}
+
+// game thread, once per frame: effects config + occlusion / doppler of every voice
+static void UpdateEffects(const GMVec3& listener, const float* right)
+{
+	extern int g_iWaterLevel;
+
+	const bool underwater = g_iWaterLevel >= 3;
+
+	GMEffects fx;
+	fx.reverb = FxValue(FX_REVERB) != 0.0f;
+	fx.roomType = CurrentRoomType(underwater);
+	fx.reverbMix = std::min(2.0f, std::max(0.0f, FxValue(FX_REVERB_MIX)));
+	fx.spatial = FxValue(FX_SPATIAL) != 0.0f;
+	fx.airAbsorption = FxValue(FX_AIR) != 0.0f;
+	fx.underwater = FxValue(FX_UNDERWATER) != 0.0f && underwater;
+	fx.interpolation = FxValue(FX_INTERP) != 0.0f ? 1 : 0;
+	fx.vibrato = FxValue(FX_VIBRATO) != 0.0f;
+	fx.vibratoRate = FxValue(FX_VIBRATO_RATE);
+	fx.vibratoDepth = FxValue(FX_VIBRATO_DEPTH);
+
+	const bool occlusion = FxValue(FX_OCCLUSION) != 0.0f;
+	const bool doppler = FxValue(FX_DOPPLER) != 0.0f;
+
+	const float now = gEngfuncs.GetClientTime();
+	float dt = now - g_LastFxTime;
+	g_LastFxTime = now;
+	if (dt <= 0.0f || dt > 0.5f)
+		dt = 0.0f; // paused / new map: no velocity this frame
+
+	std::vector<GMVoiceSource> sources;
+	if (occlusion || doppler)
+	{
+		AudioLock lock;
+		g_Mixer.SetEffects(fx);
+		g_Mixer.GetSources(sources);
+	}
+	else
+	{
+		AudioLock lock;
+		g_Mixer.SetEffects(fx);
+	}
+
+	// listener velocity
+	GMVec3 listenerVel;
+	if (g_HasLastListener && dt > 0.0f)
+	{
+		listenerVel.x = (listener.x - g_LastListener.x) / dt;
+		listenerVel.y = (listener.y - g_LastListener.y) / dt;
+		listenerVel.z = (listener.z - g_LastListener.z) / dt;
+	}
+	g_LastListener = listener;
+	g_HasLastListener = true;
+
+	// respawn / teleport: not a real movement
+	if (std::sqrt(listenerVel.x * listenerVel.x + listenerVel.y * listenerVel.y + listenerVel.z * listenerVel.z) > 4000.0f)
+		listenerVel = GMVec3();
+
+	if (sources.empty())
+	{
+		g_SourceFx.clear();
+		return;
+	}
+
+	// traces need a map
+	const char* level = gEngfuncs.pfnGetLevelName();
+	const bool canTrace = occlusion && level && level[0] && gEngfuncs.GetLocalPlayer();
+
+	const float strength = std::min(1.0f, std::max(0.0f, FxValue(FX_OCCLUSION_STRENGTH)));
+	const float dopplerScale = std::min(4.0f, std::max(0.1f, FxValue(FX_DOPPLER_SCALE)));
+	const float speedOfSound = 13500.0f; // units per second (~343 m/s)
+
+	for (auto& e : g_SourceFx)
+		e.second.seen = false;
+
+	std::vector<std::pair<unsigned long long, std::pair<float, float>>> results;
+	results.reserve(sources.size());
+
+	int tracesLeft = 48; // budget per frame, the rest wait for the next frame
+
+	for (const GMVoiceSource& src : sources)
+	{
+		SourceFx& st = g_SourceFx[src.serial];
+		st.seen = true;
+
+		if (src.global)
+		{
+			results.push_back({src.serial, {0.0f, 1.0f}});
+			continue;
+		}
+
+		// occlusion: re-traced every 0.1 s
+		if (canTrace && now >= st.nextTrace && tracesLeft >= 3)
+		{
+			st.occlusion = ComputeOcclusion(listener, right, src.origin) * strength;
+			st.nextTrace = now + 0.1f;
+			tracesLeft -= 3;
+		}
+		else if (!occlusion)
+		{
+			st.occlusion = 0.0f;
+		}
+
+		// doppler
+		float pitch = 1.0f;
+		if (doppler && dt > 0.0f && st.hasLast)
+		{
+			const float vx = (src.origin.x - st.lastOrigin.x) / dt;
+			const float vy = (src.origin.y - st.lastOrigin.y) / dt;
+			float vz = (src.origin.z - st.lastOrigin.z) / dt;
+			float vxs = vx, vys = vy;
+
+			// the origin of a voice gets corrected / teleported sometimes: not a real movement
+			if (std::sqrt(vx * vx + vy * vy + vz * vz) > 4000.0f)
+				vxs = vys = vz = 0.0f;
+
+			float dx = listener.x - src.origin.x;
+			float dy = listener.y - src.origin.y;
+			float dz = listener.z - src.origin.z;
+			const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+
+			if (len > 1.0f)
+			{
+				dx /= len;
+				dy /= len;
+				dz /= len;
+
+				const float c = speedOfSound / dopplerScale;
+				const float vs = std::min(c * 0.5f, vxs * dx + vys * dy + vz * dz);										  // source towards the listener
+				const float vl = std::min(c * 0.5f, -(listenerVel.x * dx + listenerVel.y * dy + listenerVel.z * dz)); // listener towards the source
+				pitch = (c + vl) / (c - vs);
+			}
+		}
+
+		st.lastOrigin = src.origin;
+		st.hasLast = true;
+
+		// teleports / new origins: ignore absurd jumps
+		if (pitch < 0.5f || pitch > 2.0f)
+			pitch = 1.0f;
+
+		st.doppler = pitch;
+		results.push_back({src.serial, {st.occlusion, st.doppler}});
+	}
+
+	// forget voices that are gone
+	for (auto it = g_SourceFx.begin(); it != g_SourceFx.end();)
+	{
+		if (!it->second.seen)
+			it = g_SourceFx.erase(it);
+		else
+			++it;
+	}
+
+	AudioLock lock;
+	for (const auto& r : results)
+		g_Mixer.SetVoiceFx(r.first, r.second.first, r.second.second);
+}
+
+// ---------------------------------------------------------------------------------------
 //  Public API
 // ---------------------------------------------------------------------------------------
 
@@ -506,6 +830,7 @@ void GMAudio_Init()
 	gEngfuncs.pfnHookUserMsg((char*)"GMSound", GMAudio_MsgFunc);
 	gEngfuncs.pfnAddCommand((char*)"gm_audio_play", GMAudio_CmdPlay);
 	gEngfuncs.pfnAddCommand((char*)"gm_audio_status", GMAudio_CmdStatus);
+	RegisterFx();
 
 	// ref-counted by SDL: if the engine already started the audio subsystem this just adds one
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
@@ -645,14 +970,23 @@ void GMAudio_SetListener(const float* origin, const float* viewangles)
 	listenerRight.y = right[1];
 	listenerRight.z = right[2];
 
+	GMVec3 listenerForward;
+	listenerForward.x = forward[0];
+	listenerForward.y = forward[1];
+	listenerForward.z = forward[2];
+
 	std::vector<std::pair<int, float>> voices;
 	{
 		AudioLock lock;
 		for (const auto& m : moved)
 			g_Mixer.SetEntityOrigin(m.first, m.second);
 		g_Mixer.SetListener(listener, listenerRight, master);
+		g_Mixer.SetListenerForward(listenerForward);
 		g_Mixer.GetVoiceLevels(voices);
 	}
+
+	// effects: reverb / occlusion / doppler...
+	UpdateEffects(listener, right);
 
 	// 3) mouths: the engine only moves them for its own sounds, so do it for ours (CHAN_VOICE)
 	static std::vector<int> s_OpenMouths;
