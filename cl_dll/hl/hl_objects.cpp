@@ -28,7 +28,6 @@
 
 #include <cmath>
 
-#include "../physgun_beam.h"
 
 extern BEAM* pBeam;
 extern BEAM* pBeam2;
@@ -89,64 +88,6 @@ void UpdateBeams()
 	}
 }
 
-void UpdatePhysBeam()
-{
-	BEAM* beam = PhysBeam_GetLocal();
-	if (!beam)
-		return;
-
-	if (beam->endEntity > 0)
-	{
-		cl_entity_t* targent = gEngfuncs.GetEntityByIndex(beam->endEntity);
-
-		NormalizeAngles(targent->baseline.angles);
-		Vector targang = targent->curstate.angles;
-		NormalizeAngles(targang);
-
-		v_frametime = gHUD.m_flTimeDelta * 20.0f;
-		V_SmoothInterpolateAngles(targent->baseline.angles, targang, targent->baseline.angles, 180.0f);
-
-		for (size_t i = 0; i < 3; i++)
-			targent->baseline.origin[i] = lerp(targent->baseline.origin[i], targent->curstate.origin[i], gHUD.m_flTimeDelta * 13.0f);
-
-		Vector targpos = targent->baseline.origin;
-		targpos[2] += targent->curstate.maxs[2] / 2;
-
-		if (beam->frameCount > 0)
-			VectorAverage(targent->curstate.maxs + targent->origin, targent->curstate.mins + targent->origin, targpos);
-
-		beam->target = targpos;
-	}
-	else
-	{
-		Vector forward, vecSrc, vecEnd, origin, angles, right, up;
-		Vector view_ofs;
-		pmtrace_t tr;
-
-		cl_entity_t* pthisplayer = gEngfuncs.GetLocalPlayer();
-		int idx = pthisplayer->index;
-
-		gEngfuncs.GetViewAngles((float*)angles);
-		HUD_GetLastOrg((float*)&origin);
-
-		AngleVectors(angles, forward, right, up);
-		VectorCopy(origin, vecSrc);
-		VectorMA(vecSrc, 2048, forward, vecEnd);
-
-		gEngfuncs.pEventAPI->EV_SetUpPlayerPrediction(0, 1);
-		gEngfuncs.pEventAPI->EV_PushPMStates();
-		gEngfuncs.pEventAPI->EV_SetSolidPlayers(idx - 1);
-		gEngfuncs.pEventAPI->EV_SetTraceHull(2);
-		gEngfuncs.pEventAPI->EV_PlayerTrace(vecSrc, vecEnd, PM_STUDIO_BOX, -1, &tr);
-		gEngfuncs.pEventAPI->EV_PopPMStates();
-
-		beam->target = tr.endpos;
-	}
-
-	beam->die = gEngfuncs.GetClientTime() + 0.1;
-	beam->freq = beam->speed * gEngfuncs.GetClientTime();
-}
-
 /*
 =====================
 Game_AddObjects
@@ -158,8 +99,4 @@ void Game_AddObjects()
 {
 	if (pBeam || pBeam2)
 		UpdateBeams();
-
-	BEAM* physBeam = PhysBeam_GetLocal();
-	if (physBeam && physBeam->endEntity == 0)
-		UpdatePhysBeam();
 }

@@ -447,8 +447,6 @@ void COFBabyVoltigore::Spawn()
 //=========================================================
 void COFBabyVoltigore::Precache()
 {
-	int i;
-
 	if (pev->model)
 		PRECACHE_MODEL((char*)STRING(pev->model)); // LRC
 	else

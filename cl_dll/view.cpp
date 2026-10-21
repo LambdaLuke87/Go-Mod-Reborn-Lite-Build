@@ -1737,8 +1737,8 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 		V_CalcNormalRefdef(pparams);
 	}
 
-	BEAM* physBeam = PhysBeam_GetLocal();
-	if ((cl_pred_physgun && (int)cl_pred_physgun->value > 0) && (physBeam && physBeam->endEntity > 0) && (in_use.state & 1) != 0)
+	const bool physgunLocked = (cl_pred_physgun && (int)cl_pred_physgun->value > 0) && PhysGun_LocalHolding() && (in_use.state & 1) != 0;
+	if (physgunLocked)
 	{
 		VectorCopy(Vector(v_lockedangles.x, v_lockedangles.y, 0.0f), pparams->viewangles);
 		VectorCopy(Vector(-v_lockedangles.x, v_lockedangles.y, 0.0f), gEngfuncs.GetViewModel()->curstate.angles);
@@ -1766,6 +1766,8 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 	}
 #endif
 */
+	PhysGun_Frame(pparams, physgunLocked);
+
 	GMAudio_SetListener(pparams->vieworg, pparams->viewangles);
 }
 

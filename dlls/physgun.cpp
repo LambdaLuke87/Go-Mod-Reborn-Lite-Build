@@ -40,7 +40,8 @@ void CPhysgun::Precache()
 	PRECACHE_MODEL(MyWModel());
 	PRECACHE_MODEL("models/p_physgun.mdl");
 
-	m_usPhysGun = PRECACHE_EVENT(1, "events/physgun.sc");
+	// no event: the beam is drawn by the client from the player's entity state
+	// (AddToFullPack: playerclass bit 0 = firing, aiment = held entity)
 }
 
 bool CPhysgun::GetItemInfo(ItemInfo* p)
@@ -80,17 +81,40 @@ void CPhysgun::Holster()
 
 	STOP_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "ambience/pulsemachine.wav");
 
-#ifndef CLIENT_DLL
-	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
-#endif
-	m_pPlayer->m_pPhysgunEnt = nullptr;
+	// let go of the entity (before it stayed flying forever with MOVETYPE_FLY)
+	ReleaseEntity(false);
+}
 
-	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-		0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
-		0, 0, true);
+void CPhysgun::ReleaseEntity(bool freeze)
+{
+	CBaseEntity* pHeld = m_pPlayer->m_pPhysgunEnt;
+
+	if (pHeld)
+	{
+		if (freeze)
+		{
+			pHeld->pev->movetype = MOVETYPE_NONE;
+			pHeld->pev->velocity = g_vecZero;
+			pHeld->pev->avelocity = g_vecZero;
+		}
+		else
+		{
+			// m_movetype = original movetype + 1 (0 = never touched)
+			if (pHeld->m_movetype > MOVETYPE_NONE)
+				pHeld->pev->movetype = pHeld->m_movetype - 1;
+
+			pHeld->pev->velocity = pHeld->pev->velocity.Normalize() * (pHeld->pev->velocity.Length() / 3.5f);
+		}
+	}
+
+	m_pPlayer->m_pPhysgunEnt = nullptr;
 
 	pev->fixangle = 0;
 	pev->v_angle = g_vecZero;
+
+#ifndef CLIENT_DLL
+	g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
+#endif
 }
 
 void CPhysgun::PrimaryAttack()
@@ -114,23 +138,14 @@ void CPhysgun::PrimaryAttack()
 		if (m_pPlayer->m_pPhysgunEnt->m_movetype == MOVETYPE_NONE)
 			m_pPlayer->m_pPhysgunEnt->m_movetype = m_pPlayer->m_pPhysgunEnt->pev->movetype + 1;
 
-		if (!m_pPlayer->m_pPhysgunEnt->IsBSPModel())
+		if (!isBspModel)
 		{
 			m_pPlayer->m_pPhysgunEnt->pev->movetype = MOVETYPE_FLY;
 		}
-		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, ENTINDEX(m_pPlayer->m_pPhysgunEnt->edict()),
-			0, isBspModel ? 1 : 0, false);
 
 		m_pPlayer->m_flPhysgunDist = 150.0f;
 		m_pPlayer->m_flPhysgunHor = 0.0f;
 		m_pPlayer->m_flPhysgunVert = 0.0f;
-	}
-	else
-	{
-		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
-			0, 0, false);
 	}
 }
 
@@ -138,23 +153,10 @@ void CPhysgun::SecondaryAttack()
 {
 	if (m_pPlayer->m_pPhysgunEnt)
 	{
-		m_pPlayer->m_pPhysgunEnt->pev->movetype = MOVETYPE_NONE;
-
-		m_pPlayer->m_pPhysgunEnt->pev->velocity = g_vecZero;
-		m_pPlayer->m_pPhysgunEnt = nullptr;
-
-		PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-			0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
-			0, 0, true);
+		// freeze it where it is
+		ReleaseEntity(true);
 
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.01f;
-
-#ifndef CLIENT_DLL
-		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
-#endif
-
-		pev->fixangle = 0;
-		pev->v_angle = g_vecZero;
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(0.4f);
@@ -183,6 +185,10 @@ void CPhysgun::HandleEvent(int mode)
 
 void CPhysgun::ItemThink()
 {
+	// the held entity was removed (picked up, gibbed, removed by a tool...): clean up
+	if (!m_pPlayer->m_pPhysgunEnt && pev->fixangle != 0)
+		ReleaseEntity(false);
+
 	if (m_pPlayer->m_pPhysgunEnt && (m_pPlayer->pev->button & IN_ATTACK) != 0)
 	{
 		TraceResult tr;
@@ -316,7 +322,40 @@ static bool IsPickupEntity(CBaseEntity* pEntity)
 		   (strncmp(classname, "weapon_", 7) == 0);
 }
 
+// another player is already holding it
+static bool IsHeldByOther(CBasePlayer* pSelf, CBaseEntity* pEntity)
+{
+#ifndef CLIENT_DLL
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+
+		if (!pPlayer || pPlayer == pSelf)
+			continue;
+
+		if ((CBaseEntity*)pPlayer->m_pPhysgunEnt == pEntity)
+			return true;
+	}
+#endif
+	return false;
+}
+
 CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
+{
+#ifdef CLIENT_DLL
+	// the client doesn't know the server entities
+	return nullptr;
+#else
+	CBaseEntity* pFound = FindEntity(fldist);
+
+	if (pFound && IsHeldByOther(m_pPlayer, pFound))
+		return nullptr;
+
+	return pFound;
+#endif
+}
+
+CBaseEntity* CPhysgun::FindEntity(float fldist)
 {
 	TraceResult tr;
 
@@ -385,29 +424,13 @@ CBaseEntity* CPhysgun::GetEntity(float fldist, bool m_bTakeDamage)
 }
 
 void CPhysgun::WeaponIdle()
-{	
-	PLAYBACK_EVENT_FULL(FEV_SERVER, m_pPlayer->edict(), m_usPhysGun,
-		0.0, g_vecZero, g_vecZero, 0.0f, 0.0f, 0,
-		0, 0, true);
-
+{
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 		return;
 
+	// the attack button was released: throw it
 	if (m_pPlayer->m_pPhysgunEnt)
-	{
-		if (m_pPlayer->m_pPhysgunEnt->m_movetype > MOVETYPE_NONE)
-			m_pPlayer->m_pPhysgunEnt->pev->movetype = m_pPlayer->m_pPhysgunEnt->m_movetype - 1;
-
-		m_pPlayer->m_pPhysgunEnt->pev->velocity = m_pPlayer->m_pPhysgunEnt->pev->velocity.Normalize() * (m_pPlayer->m_pPhysgunEnt->pev->velocity.Length() / 3.5f);
-		m_pPlayer->m_pPhysgunEnt = nullptr;
-
-
-		pev->fixangle = 0;
-		pev->v_angle = g_vecZero;
-#ifndef CLIENT_DLL
-		g_engfuncs.pfnSetPhysicsKeyValue(m_pPlayer->edict(), "phg", "0");
-#endif
-	}
+		ReleaseEntity(false);
 
 	int iAnim;
 	float flRand = RANDOM_FLOAT(0, 1);

@@ -1331,13 +1331,8 @@ bool CStudioModelRenderer::StudioDrawModel(int flags)
 	IEngineStudio.GetViewInfo(m_vRenderOrigin, m_vUp, m_vRight, m_vNormal);
 	IEngineStudio.GetAliasScale(&m_fSoftwareXScale, &m_fSoftwareYScale);
 
-	BEAM* physBeam = PhysBeam_GetLocal();
-	if ((int)cl_pred_physgun->value > 0 && physBeam && physBeam->endEntity == m_pCurrentEntity->index)
-	{
-		//	UpdatePhysBeam();
-		m_pCurrentEntity->origin = m_pCurrentEntity->baseline.origin;
-		m_pCurrentEntity->angles = m_pCurrentEntity->baseline.angles;
-	}
+	// entity held by the local player with the physgun: smoothed position (cl_pred_physgun)
+	PhysGun_OverrideHeldRender(m_pCurrentEntity);
 
 	if (m_pCurrentEntity->curstate.renderfx == kRenderFxDeadPlayer)
 	{
@@ -1770,6 +1765,10 @@ bool CStudioModelRenderer::StudioDrawPlayer(int flags, entity_state_t* pplayer)
 			StudioRenderModel();
 
 			StudioCalcAttachments();
+
+			// muzzle of the weapon model, for the physgun beam (the attachments are restored below)
+			if (m_pStudioHeader->numattachments > 0)
+				PhysGun_SetMuzzle(m_pCurrentEntity->index, m_pCurrentEntity->attachment[0]);
 
 			*m_pCurrentEntity = saveent;
 		}

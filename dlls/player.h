@@ -479,7 +479,11 @@ public:
 	int m_iFogSkyBox = 1;
 
 	// Physgun Stuff
+#ifdef CLIENT_DLL
 	CBaseEntity* m_pPhysgunEnt;
+#else
+	EHANDLE m_pPhysgunEnt; // EHANDLE: becomes null by itself if the held entity is removed
+#endif
 	float m_flPhysgunDist;
 	float m_flPhysgunHor;
 	float m_flPhysgunVert;

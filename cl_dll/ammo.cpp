@@ -769,8 +769,7 @@ void CHudAmmo::UserCmd_Close()
 // Selects the next item in the weapon menu
 void CHudAmmo::UserCmd_NextWeapon()
 {
-	BEAM* physBeam = PhysBeam_GetLocal();
-	if (physBeam && physBeam->endEntity > 0)
+	if (PhysGun_LocalHolding())
 	{
 		gEngfuncs.pfnClientCmd("+physback");
 		return;
@@ -816,8 +815,7 @@ void CHudAmmo::UserCmd_NextWeapon()
 // Selects the previous item in the menu
 void CHudAmmo::UserCmd_PrevWeapon()
 {
-	BEAM* physBeam = PhysBeam_GetLocal();
-	if (physBeam && physBeam->endEntity > 0)
+	if (PhysGun_LocalHolding())
 	{
 		gEngfuncs.pfnClientCmd("+physfwd");
 		return;

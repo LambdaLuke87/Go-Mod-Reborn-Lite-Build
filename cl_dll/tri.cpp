@@ -21,6 +21,7 @@
 #include "particleman.h"
 #include "environment.h"
 #include "tri.h"
+#include "physgun_beam.h"
 extern IParticleMan* g_pParticleMan;
 
 int g_iWaterLevel;
@@ -96,8 +97,6 @@ void DLLEXPORT HUD_DrawNormalTriangles()
 {
 	//	RecClDrawNormalTriangles();
 
-	UpdatePhysBeam();
-
 	gHUD.m_Spectator.DrawOverview();
 }
 
@@ -119,4 +118,6 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 		g_pParticleMan->Update();
 		g_Environment.Update();
 	}
+
+	PhysGun_Draw();
 }

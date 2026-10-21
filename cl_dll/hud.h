@@ -810,7 +810,6 @@ public:
 	}
 };
 
-extern void UpdatePhysBeam();
 
 extern CHud gHUD;
 

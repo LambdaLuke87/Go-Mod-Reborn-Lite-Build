@@ -164,7 +164,7 @@ TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 		DEFINE_FIELD(CBasePlayer, m_iCopiedMonsterID, FIELD_INTEGER),
 		DEFINE_FIELD(CBasePlayer, m_iGlowstickType, FIELD_INTEGER),
 
-		DEFINE_FIELD(CBasePlayer, m_pPhysgunEnt, FIELD_CLASSPTR),
+		DEFINE_FIELD(CBasePlayer, m_pPhysgunEnt, FIELD_EHANDLE),
 		DEFINE_FIELD(CBasePlayer, m_flPhysgunDist, FIELD_FLOAT),
 		DEFINE_FIELD(CBasePlayer, m_flPhysgunHor, FIELD_FLOAT),
 		DEFINE_FIELD(CBasePlayer, m_flPhysgunVert, FIELD_FLOAT),

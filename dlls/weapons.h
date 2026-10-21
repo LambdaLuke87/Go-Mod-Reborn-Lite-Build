@@ -1451,6 +1451,7 @@ public:
 	void WeaponIdle() override;
 
 	CBaseEntity* GetEntity(float dist, bool m_bTakeDamage = false);
+	CBaseEntity* FindEntity(float dist);
 
 #ifdef CLIENT_DLL
 	CBaseEntity* m_pCurrentEntity;
@@ -1475,10 +1476,11 @@ public:
 
 	void HandleEvent(int mode);
 
+	// lets go of the held entity (freeze = leave it frozen in the air, like the right click)
+	void ReleaseEntity(bool freeze);
+
 private:
 	float m_flDist = 0.0f;
 	float m_flHorDist = 0.0f;
 	float m_flVertDist = 0.0f;
-
-	unsigned short m_usPhysGun;
 };

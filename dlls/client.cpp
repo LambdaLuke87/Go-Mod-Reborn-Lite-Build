@@ -2641,6 +2641,26 @@ int AddToFullPack(struct entity_state_s* state, int e, edict_t* ent, edict_t* ho
 		//
 		state->usehull = (ent->v.flags & FL_DUCKING) != 0 ? 1 : 0;
 		state->health = ent->v.health;
+
+		// physgun beam (cl_dll/physgun_beam.cpp). Players don't use these two fields:
+		//   playerclass bit 0 = firing the physgun, aiment = entity being held
+		state->playerclass = 0;
+		state->aiment = 0;
+
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(entity);
+		if (pPlayer && pPlayer->IsAlive() && pPlayer->m_pActiveItem &&
+			pPlayer->m_pActiveItem->m_iId == WEAPON_PHYSGUN && (ent->v.button & IN_ATTACK) != 0)
+		{
+			state->playerclass = 1;
+
+			CBaseEntity* pHeld = pPlayer->m_pPhysgunEnt;
+			if (pHeld)
+			{
+				const int held = pHeld->entindex();
+				if (held > 0 && held < MAX_EDICTS)
+					state->aiment = held;
+			}
+		}
 	}
 
 	CBaseEntity* pEntity = static_cast<CBaseEntity*>(GET_PRIVATE(ent));

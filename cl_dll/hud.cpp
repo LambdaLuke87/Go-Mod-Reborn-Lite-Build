@@ -37,6 +37,7 @@
 #include "imgui/mmui.h"
 
 #include "gm_audio.h"
+#include "physgun_beam.h"
 
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
@@ -53,6 +54,12 @@ cvar_t* m_pCvarHudBlue_Critical;
 cvar_t* m_pCvarNightVisionR;
 cvar_t* m_pCvarNightVisionG;
 cvar_t* m_pCvarNightVisionB;
+cvar_t* m_pCvarPhysgunR;
+cvar_t* m_pCvarPhysgunG;
+cvar_t* m_pCvarPhysgunB;
+
+// default color of the physgun beam
+#define RGB_PHYSGUN 0x33CCFF
 
 extern int giOldWeapons;
 
@@ -439,6 +446,11 @@ void __CmdFunc_Custom_NightVision_Color()
 	gHUD.HUDColorCmd(2);
 }
 
+void __CmdFunc_Physgun_Color()
+{
+	gHUD.HUDColorCmd(3);
+}
+
 void __CmdFunc_ShowMenu()
 {
 	if (!UTIL_IsSandbox())
@@ -493,6 +505,7 @@ void CHud::Init()
 	HOOK_COMMAND("hud_color", HUDColor);
 	HOOK_COMMAND("hud_color_critical", HUDColor_Critical);
 	HOOK_COMMAND("nightvision_color", Custom_NightVision_Color);
+	HOOK_COMMAND("physgun_color", Physgun_Color);
 
 	HOOK_MESSAGE(ValClass);
 	HOOK_MESSAGE(TeamNames);
@@ -539,6 +552,8 @@ void CHud::Init()
 	int hudR, hudG, hudB;
 	int hudR_Critical, hudG_Critical, hudB_Critical;
 	int CustomNVR, CustomNVG, CustomNVB;
+	int physR, physG, physB;
+	UnpackRGB(physR, physG, physB, RGB_PHYSGUN);
 	UnpackRGB(hudR, hudG, hudB, RGB_YELLOWISH);
 	UnpackRGB(hudR_Critical, hudG_Critical, hudB_Critical, RGB_REDISH);
 	UnpackRGB(CustomNVR, CustomNVG, CustomNVB, RGB_REDISH);
@@ -551,6 +566,10 @@ void CHud::Init()
 	m_pCvarNightVisionR = CVAR_CREATE_INTVALUE("nightvision_color_r", CustomNVR, FCVAR_ARCHIVE);
 	m_pCvarNightVisionG = CVAR_CREATE_INTVALUE("nightvision_color_g", CustomNVG, FCVAR_ARCHIVE);
 	m_pCvarNightVisionB = CVAR_CREATE_INTVALUE("nightvision_color_b", CustomNVB, FCVAR_ARCHIVE);
+	m_pCvarPhysgunR = CVAR_CREATE_INTVALUE("physgun_color_r", physR, FCVAR_ARCHIVE);
+	m_pCvarPhysgunG = CVAR_CREATE_INTVALUE("physgun_color_g", physG, FCVAR_ARCHIVE);
+	m_pCvarPhysgunB = CVAR_CREATE_INTVALUE("physgun_color_b", physB, FCVAR_ARCHIVE);
+	PhysGun_Init(); // userinfo key with the color, so the other players see it
 
 	m_iLogo = 0;
 	m_iFOV = 0;
@@ -672,6 +691,8 @@ int CHud::GetSpriteIndex(const char* SpriteName)
 
 void CHud::VidInit()
 {
+	PhysGun_VidInit();
+
 	m_scrinfo.iSize = sizeof(m_scrinfo);
 	GetScreenInfo(&m_scrinfo);
 
@@ -1024,6 +1045,18 @@ void CHud::HUDColorCmd(int colorType)
 		pCvarBlue = m_pCvarNightVisionB;
 		break;
 
+	case 3: // Physgun beam
+		cvarR = "physgun_color_r";
+		cvarG = "physgun_color_g";
+		cvarB = "physgun_color_b";
+		cmdName = "physgun_color";
+		defaultColor = RGB_PHYSGUN;
+
+		pCvarRed = m_pCvarPhysgunR;
+		pCvarGreen = m_pCvarPhysgunG;
+		pCvarBlue = m_pCvarPhysgunB;
+		break;
+
 	default:
 		gEngfuncs.Con_Printf("Invalid HUD color type: %d\n", colorType);
 		return;
@@ -1114,6 +1147,10 @@ void CHud::HUDColorCmd(int colorType)
 	}
 	else
 	{
+		r = V_max(0, V_min(r, 255));
+		g = V_max(0, V_min(g, 255));
+		b = V_max(0, V_min(b, 255));
+
 		gEngfuncs.Cvar_SetValue(cvarR, r);
 		gEngfuncs.Cvar_SetValue(cvarG, g);
 		gEngfuncs.Cvar_SetValue(cvarB, b);

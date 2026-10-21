@@ -1017,6 +1017,10 @@ static void DrawColorSettingsTab()
 
 		if (ImGui::Button("Night Vision", ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("nightvision_color");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Physgun Beam", ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("physgun_color");
 	}
 
 	ImGui::Spacing();
