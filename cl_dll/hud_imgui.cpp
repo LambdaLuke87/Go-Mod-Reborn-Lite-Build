@@ -73,6 +73,22 @@ void ImGuiMenu_SetOpen(bool open)
 	}
 }
 
+// The engine takes the mouse back by itself while the menu is open: when the window gets the focus
+static void ImGuiMenu_KeepMouseFree()
+{
+	g_iVisibleMouse = true;
+
+	// the window doesn't have the focus (alt-tab): leave the mouse alone until it comes back
+	if (!SDL_GetKeyboardFocus())
+		return;
+
+	if (SDL_GetRelativeMouseMode() == SDL_TRUE)
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+	if (SDL_ShowCursor(SDL_QUERY) != SDL_ENABLE)
+		SDL_ShowCursor(SDL_ENABLE);
+}
+
 static void ImGuiMenu_UpdateMouse(ImGuiIO& io)
 {
 	int mx, my;
@@ -136,6 +152,7 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	io.DeltaTime = (dt > 0.0f && dt < 0.1f) ? dt : 1.0f / 60.0f;
 	flLastTime = flTime;
 
+	ImGuiMenu_KeepMouseFree();
 	ImGuiMenu_UpdateMouse(io);
 
 	ImGui_ImplOpenGL3_NewFrame();

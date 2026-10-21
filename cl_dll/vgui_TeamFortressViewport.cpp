@@ -59,6 +59,7 @@
 #include "screenfade.h"
 
 extern bool g_iVisibleMouse;
+extern bool g_bShowMenu; // hud_imgui.cpp
 extern bool UTIL_IsMultiplayer();
 extern bool UTIL_IsSandbox();
 class CCommandMenu;
@@ -1812,6 +1813,13 @@ void TeamFortressViewport::UpdateOnPlayerInfo()
 
 void TeamFortressViewport::UpdateCursorState()
 {
+	// the Go-Mod ImGui menu is open: it owns the cursor (hud_imgui.cpp)
+	if (g_bShowMenu)
+	{
+		g_iVisibleMouse = true;
+		return;
+	}
+
 	// Need cursor if any VGUI window is up
 	if (m_pSpectatorPanel->m_menuVisible || m_pCurrentMenu || m_pTeamMenu->isVisible() || GetClientVoiceMgr()->IsInSquelchMode())
 	{

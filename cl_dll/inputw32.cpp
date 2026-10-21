@@ -288,8 +288,10 @@ void DLLEXPORT IN_ActivateMouse()
 		IN_SetMouseRelative(true);
 	}
 
-	// Clear out accumulated mouse input from main menu movement.
-	IN_ResetMouse();
+	// (not if a menu has the cursor, like the Go-Mod menu: it would be thrown to the center of the
+	// screen every time the window gets the focus back)
+	if (!g_iVisibleMouse)
+		IN_ResetMouse();
 }
 
 

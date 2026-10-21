@@ -13,6 +13,7 @@
 #include "ref_params.h"
 
 #include "imgui.h"
+#include "imgui_internal.h" // window list (hit test of the menus)
 #include "imgui_impl_opengl3.h"
 
 #ifdef ARRAYSIZE
@@ -81,6 +82,25 @@ static std::vector<SDL_Event> s_Events;
 static SDL_EventFilter s_PrevFilter = nullptr;
 static void* s_PrevFilterData = nullptr;
 static bool s_bWeStartedTextInput = false;
+
+// The menus share the screen with the engine / GameUI menus (console, options...):
+//  - the mouse goes to ImGui only while it is over one of our windows (or dragging something of ours),
+//    otherwise it goes to the engine as usual
+//  - the keyboard goes to ImGui only while our window has the focus (the last click was on it)
+// everything below is protected by s_EventMutex (the SDL event filter can run on another thread)
+struct MMUIRect
+{
+	float x0, y0, x1, y1;
+};
+static std::vector<MMUIRect> s_HitRects; // our windows, last frame
+static bool s_bPopupOpen = false;		  // a combo / popup is open: any click goes to it (to close it)
+static bool s_bMouseOwner[3] = {};		  // button pressed on our window (its release goes to ImGui too)
+static bool s_bEngineOwner[3] = {};		  // button pressed on the engine menus (dragging the console over us...)
+static bool s_bKeyboardFocus = false;
+static bool s_bLostFocus = false; // clicked outside: drop the focus / active text entry next frame
+static bool s_bMouseOver = false;
+static bool s_bWantText = false; // an ImGui text entry is being edited
+static SDL_Cursor* s_pArrowCursor = nullptr;
 
 // =====================================================================
 //  State
@@ -1187,14 +1207,164 @@ static bool IsCapturedEvent(Uint32 type)
 	}
 }
 
+static bool MMUI_HitTest(float x, float y)
+{
+	for (const MMUIRect& r : s_HitRects)
+	{
+		if (x >= r.x0 && x < r.x1 && y >= r.y0 && y < r.y1)
+			return true;
+	}
+	return false;
+}
+
+static int MouseButtonSlot(Uint8 button)
+{
+	if (button == SDL_BUTTON_LEFT)
+		return 0;
+	if (button == SDL_BUTTON_RIGHT)
+		return 1;
+	if (button == SDL_BUTTON_MIDDLE)
+		return 2;
+	return -1;
+}
+
+static bool AnyMouseOwner()
+{
+	return s_bMouseOwner[0] || s_bMouseOwner[1] || s_bMouseOwner[2];
+}
+
+// true = the event is for ImGui only, the engine doesn't get it
+static bool MMUI_RouteEvent(SDL_Event* event, bool& queueForImGui)
+{
+	queueForImGui = false;
+
+	switch (event->type)
+	{
+	case SDL_MOUSEMOTION:
+	{
+		// ImGui always follows the mouse (hover), the engine only when it's not over our windows
+		queueForImGui = true;
+
+		// the engine is dragging something (a window, a slider...): it keeps the mouse until release
+		if (s_bEngineOwner[0] || s_bEngineOwner[1] || s_bEngineOwner[2])
+		{
+			s_bMouseOver = false;
+			return false;
+		}
+
+		const bool over = MMUI_HitTest((float)event->motion.x, (float)event->motion.y);
+		const bool ours = over || AnyMouseOwner();
+
+		if (ours && !s_bMouseOver)
+		{
+			// entering our window: tell the engine the mouse went away, so the panel that was under
+			// it (the console text, a button...) stops being hovered and drops its cursor (I-beam)
+			s_bMouseOver = true;
+			event->motion.x = -1;
+			event->motion.y = -1;
+			event->motion.xrel = 0;
+			event->motion.yrel = 0;
+			return false;
+		}
+
+		s_bMouseOver = ours;
+		return ours;
+	}
+
+	case SDL_MOUSEBUTTONDOWN:
+	{
+		const int slot = MouseButtonSlot(event->button.button);
+		const bool over = MMUI_HitTest((float)event->button.x, (float)event->button.y);
+
+		if (over || AnyMouseOwner() || s_bPopupOpen)
+		{
+			if (slot >= 0)
+				s_bMouseOwner[slot] = true;
+
+			s_bKeyboardFocus = true;
+			queueForImGui = true;
+			return true;
+		}
+
+		// click on the engine menus: they get the focus
+		if (slot >= 0)
+			s_bEngineOwner[slot] = true;
+		if (s_bKeyboardFocus)
+			s_bLostFocus = true;
+		s_bKeyboardFocus = false;
+		return false;
+	}
+
+	case SDL_MOUSEBUTTONUP:
+	{
+		const int slot = MouseButtonSlot(event->button.button);
+
+		if (slot >= 0 && s_bMouseOwner[slot])
+		{
+			s_bMouseOwner[slot] = false;
+			queueForImGui = true;
+			return true;
+		}
+
+		if (slot >= 0)
+			s_bEngineOwner[slot] = false;
+		return false;
+	}
+
+	case SDL_MOUSEWHEEL:
+	{
+		int mx = 0, my = 0;
+		SDL_GetMouseState(&mx, &my);
+
+		if (MMUI_HitTest((float)mx, (float)my) || AnyMouseOwner())
+		{
+			queueForImGui = true;
+			return true;
+		}
+		return false;
+	}
+
+	case SDL_KEYUP:
+		// releases go to both, so nothing stays stuck when the focus changes with a key held
+		queueForImGui = s_bKeyboardFocus;
+		return false;
+
+	case SDL_KEYDOWN:
+		// the console key always works, unless you are typing in one of our text entries
+		if (event->key.keysym.scancode == SDL_SCANCODE_GRAVE && !s_bWantText)
+			return false;
+		// fallthrough
+	case SDL_TEXTINPUT:
+	case SDL_TEXTEDITING:
+		if (s_bKeyboardFocus)
+		{
+			queueForImGui = true;
+			return true;
+		}
+		return false;
+
+	default:
+		return false;
+	}
+}
+
 static int SDLCALL MMUI_EventFilter(void* userdata, SDL_Event* event)
 {
 	if (s_bCapture.load() && IsCapturedEvent(event->type))
 	{
 		std::lock_guard<std::mutex> lock(s_EventMutex);
-		if (s_Events.size() < 1024)
-			s_Events.push_back(*event);
-		return 0; // the engine / GameUI does not get it
+
+		// ImGui gets the original (MMUI_RouteEvent may move the engine's copy out of the window)
+		const SDL_Event original = *event;
+
+		bool queueForImGui = false;
+		const bool onlyImGui = MMUI_RouteEvent(event, queueForImGui);
+
+		if (queueForImGui && s_Events.size() < 1024)
+			s_Events.push_back(original);
+
+		if (onlyImGui)
+			return 0; // the engine / GameUI does not get it
 	}
 
 	if (s_PrevFilter)
@@ -1341,6 +1511,14 @@ static void MMUI_StopCapture()
 	{
 		std::lock_guard<std::mutex> lock(s_EventMutex);
 		s_Events.clear();
+		s_HitRects.clear();
+		s_bPopupOpen = false;
+		s_bMouseOwner[0] = s_bMouseOwner[1] = s_bMouseOwner[2] = false;
+		s_bEngineOwner[0] = s_bEngineOwner[1] = s_bEngineOwner[2] = false;
+		s_bKeyboardFocus = false;
+		s_bLostFocus = false;
+		s_bMouseOver = false;
+		s_bWantText = false;
 	}
 
 	if (s_bWeStartedTextInput)
@@ -1488,6 +1666,14 @@ static void MMUI_OnSwap(void* sdlWindow)
 		return;
 
 	MMUI_EnsureEventFilter();
+
+	if (!s_bCapture)
+	{
+		// a menu was just opened: it starts with the keyboard focus
+		std::lock_guard<std::mutex> lock(s_EventMutex);
+		s_bKeyboardFocus = true;
+		s_bLostFocus = false;
+	}
 	s_bCapture = true;
 
 	ImGuiContext* prev = ImGui::GetCurrentContext();
@@ -1520,11 +1706,40 @@ static void MMUI_OnSwap(void* sdlWindow)
 	const float fontPx = std::floor(scheme.fontTall * uiScale);
 	s_flScale = fontPx / 20.0f;
 
+	bool lostFocus = false;
+	bool keyboardFocus = false;
+	bool mouseOver = false;
+	{
+		std::lock_guard<std::mutex> lock(s_EventMutex);
+		lostFocus = s_bLostFocus;
+		s_bLostFocus = false;
+		keyboardFocus = s_bKeyboardFocus;
+		mouseOver = s_bMouseOver;
+	}
+
+	if (lostFocus)
+	{
+		// the click went to the engine menus: drop the active text entry and the keys held
+		io.ClearInputKeys();
+		io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Right, false);
+		io.AddMouseButtonEvent(ImGuiMouseButton_Middle, false);
+	}
+
 	MMUI_FeedEvents(io, window);
 	MMUI_ApplyStyle(fontPx);
 
+	// a little transparent while the engine menus have the focus, to see what's behind
+	ImGui::GetStyle().Alpha = (keyboardFocus || mouseOver) ? 1.0f : 0.85f;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
+
+	if (lostFocus)
+	{
+		ImGui::ClearActiveID();
+		ImGui::FocusWindow(nullptr);
+	}
 
 	for (const MMUIPanel* p : s_Panels)
 	{
@@ -1533,6 +1748,28 @@ static void MMUI_OnSwap(void* sdlWindow)
 	}
 
 	ImGui::Render();
+
+	// where our windows are, for the event filter of the next frame
+	{
+		ImGuiContext& g = *ImGui::GetCurrentContext();
+
+		std::lock_guard<std::mutex> lock(s_EventMutex);
+		s_HitRects.clear();
+
+		for (ImGuiWindow* w : g.Windows)
+		{
+			if (!w->Active || w->Hidden)
+				continue;
+			if ((w->Flags & (ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Tooltip)) != 0)
+				continue;
+
+			s_HitRects.push_back({w->Pos.x, w->Pos.y, w->Pos.x + w->Size.x, w->Pos.y + w->Size.y});
+		}
+
+		s_bPopupOpen = ImGui::IsPopupOpen("", ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+		s_bWantText = io.WantTextInput;
+		mouseOver = s_bMouseOver;
+	}
 
 	// fixed function alpha test would eat the antialiased edges of the text
 	const bool alphaTest = pglIsEnabled ? (pglIsEnabled(GL_ALPHA_TEST) != 0) : false;
@@ -1557,6 +1794,16 @@ static void MMUI_OnSwap(void* sdlWindow)
 	}
 
 	ImGui::SetCurrentContext(prev);
+
+	// over our window the cursor is ours (the engine was told the mouse left, see MMUI_RouteEvent)
+	if (mouseOver)
+	{
+		if (!s_pArrowCursor)
+			s_pArrowCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+
+		if (s_pArrowCursor && SDL_GetCursor() != s_pArrowCursor)
+			SDL_SetCursor(s_pArrowCursor);
+	}
 
 	if (!MMUI_AnyPanelOpen())
 		MMUI_StopCapture();
