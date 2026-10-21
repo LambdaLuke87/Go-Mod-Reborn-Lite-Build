@@ -179,6 +179,13 @@ bool CHud::Redraw(float flTime, bool intermission)
 
 			pList = pList->pNext;
 		}
+
+		// Snark Frenzy countdowns / fuse (snarkfrenzy_hud.cpp)
+		if (!intermission && (m_iHideHUDDisplay & HIDEHUD_ALL) == 0)
+		{
+			extern void SnarkFrenzyHUD_Draw(float flTime);
+			SnarkFrenzyHUD_Draw(flTime);
+		}
 	}
 
 	// are we in demo mode? do we need to draw the logo in the top corner?

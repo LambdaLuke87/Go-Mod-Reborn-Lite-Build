@@ -77,6 +77,34 @@ IMPLEMENT_SAVERESTORE(CSqueakGrenade, CGrenade);
 
 #define SQUEEK_DETONATE_DELAY 15.0
 
+// Snark Frenzy (snarkfrenzy_gamerules.cpp)
+void SnarkFrenzy_SnarkSpawned(CBaseEntity* pSnark, CBaseEntity* pOwner);
+bool SnarkFrenzy_SnarkBite(CBaseEntity* pSnark, CBaseEntity* pVictim);
+
+// Snark Frenzy: the nearest visible player that isn't the one who threw it
+static CBaseEntity* SnarkFrenzy_FindTarget(CBaseMonster* pSnark, CBaseEntity* pOwner)
+{
+	CBaseEntity* pBest = nullptr;
+	float flBest = 1024.0f;
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+
+		if (!pPlayer || pPlayer == pOwner || !pPlayer->IsAlive() || pPlayer->IsObserver())
+			continue;
+
+		const float dist = (pPlayer->pev->origin - pSnark->pev->origin).Length();
+		if (dist >= flBest || !pSnark->FVisible(pPlayer))
+			continue;
+
+		flBest = dist;
+		pBest = pPlayer;
+	}
+
+	return pBest;
+}
+
 int CSqueakGrenade::Classify()
 {
 	if (m_iMyClass != 0)
@@ -129,6 +157,29 @@ void CSqueakGrenade::Spawn()
 
 	if (pev->owner)
 		m_hOwner = Instance(pev->owner);
+
+	if (UTIL_IsSnarkFrenzy())
+	{
+		// invulnerable and it never pops: it only passes the bomb
+		pev->takedamage = DAMAGE_NO;
+		pev->dmg = 0;
+		m_flDie = gpGlobals->time + 1E6;
+
+		// red trail (laserbeam sprite: the world already precaches it)
+		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
+		WRITE_BYTE(TE_BEAMFOLLOW);
+		WRITE_SHORT(entindex());		 // entity
+		WRITE_SHORT(g_sModelIndexLaser); // model
+		WRITE_BYTE(10);					 // life (0.1 s units)
+		WRITE_BYTE(4);					 // width
+		WRITE_BYTE(255);				 // r
+		WRITE_BYTE(0);					 // g
+		WRITE_BYTE(0);					 // b
+		WRITE_BYTE(200);				 // brightness
+		MESSAGE_END();
+
+		SnarkFrenzy_SnarkSpawned(this, m_hOwner);
+	}
 
 	m_flNextBounceSoundTime = gpGlobals->time; // reset each time a snark is spawned.
 
@@ -241,7 +292,12 @@ void CSqueakGrenade::HuntThink()
 
 	UTIL_MakeVectors(pev->angles);
 
-	if (m_hEnemy == NULL || !m_hEnemy->IsAlive())
+	if (UTIL_IsSnarkFrenzy())
+	{
+		// always the nearest player that is not the carrier
+		m_hEnemy = SnarkFrenzy_FindTarget(this, m_hOwner);
+	}
+	else if (m_hEnemy == NULL || !m_hEnemy->IsAlive())
 	{
 		// find target, bounce a bit towards it.
 		Look(512);
@@ -259,6 +315,8 @@ void CSqueakGrenade::HuntThink()
 	float flpitch = 155.0 - 60.0 * ((m_flDie - gpGlobals->time) / SQUEEK_DETONATE_DELAY);
 	if (flpitch < 80)
 		flpitch = 80;
+	if (UTIL_IsSnarkFrenzy())
+		flpitch = 100;
 
 	if (m_hEnemy != NULL)
 	{
@@ -329,8 +387,21 @@ void CSqueakGrenade::SuperBounceTouch(CBaseEntity* pOther)
 
 	// higher pitch as squeeker gets closer to detonation time
 	flpitch = 155.0 - 60.0 * ((m_flDie - gpGlobals->time) / SQUEEK_DETONATE_DELAY);
+	if (UTIL_IsSnarkFrenzy())
+		flpitch = 100;
 
-	if (0 != pOther->pev->takedamage && m_flNextAttack < gpGlobals->time && 0 == (pOther->pev->flags & FL_WORLDBRUSH))
+	// Snark Frenzy: a bite passes the bomb, no damage
+	if (UTIL_IsSnarkFrenzy() && pOther->IsPlayer())
+	{
+		// (any touch counts: also when the player runs into it)
+		if (m_flNextAttack < gpGlobals->time && pOther != (CBaseEntity*)m_hOwner)
+		{
+			m_flNextAttack = gpGlobals->time + 0.5;
+			if (SnarkFrenzy_SnarkBite(this, pOther))
+				return; // the snark was removed
+		}
+	}
+	else if (0 != pOther->pev->takedamage && m_flNextAttack < gpGlobals->time && 0 == (pOther->pev->flags & FL_WORLDBRUSH))
 	{
 		// attack!
 
@@ -546,7 +617,7 @@ void CSqueak::PrimaryAttack()
 
 			m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 
-			if (!rule_infammo.value)
+			if (!rule_infammo.value || UTIL_IsSnarkFrenzy())
 				m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
 			m_fJustThrown = true;

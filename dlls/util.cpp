@@ -2526,3 +2526,8 @@ bool UTIL_IsSandbox()
 {
 	return !UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox();
 }
+
+bool UTIL_IsSnarkFrenzy()
+{
+	return g_pGameRules && g_pGameRules->IsSnarkFrenzy();
+}

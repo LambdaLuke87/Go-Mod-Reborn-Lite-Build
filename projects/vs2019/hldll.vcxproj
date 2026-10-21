@@ -221,6 +221,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\mortar.cpp" />
     <ClCompile Include="..\..\dlls\mp5.cpp" />
     <ClCompile Include="..\..\dlls\multiplay_gamerules.cpp" />
+    <ClCompile Include="..\..\dlls\snarkfrenzy_gamerules.cpp" />
     <ClCompile Include="..\..\dlls\nihilanth.cpp" />
     <ClCompile Include="..\..\dlls\nodes.cpp" />
     <ClCompile Include="..\..\dlls\nuclearbomb.cpp" />

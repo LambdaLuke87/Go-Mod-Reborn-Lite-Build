@@ -83,7 +83,8 @@ public:
 	virtual bool IsDeathmatch() = 0;									  //is this a deathmatch game?
 	virtual bool IsTeamplay() { return false; }							  // is this deathmatch game being played with team rules?
 	virtual bool IsCoOp() = 0;											  // is this a coop game?
-	virtual bool IsCTF() = 0;											  // is this a ctf game?
+	virtual bool IsCTF() = 0;
+	virtual bool IsSnarkFrenzy() { return false; }					  // Go-Mod: mp_gamemode 3											  // is this a ctf game?
 	virtual const char* GetGameDescription() { return "Go-Mod: Reborn"; } // this is the game name that gets seen in the server browser
 
 	// Client connection/disconnection
@@ -411,6 +412,97 @@ public:
 protected:
 	float m_flEgonBustingCheckTime = -1.0f;
 	void CheckForEgons();
+};
+
+//=========================================================
+// CMultiplaySnarkFrenzy (mp_gamemode 3)
+// Hot potato with a snark. See snarkfrenzy_gamerules.cpp
+//=========================================================
+class CMultiplaySnarkFrenzy : public CHalfLifeMultiplay
+{
+public:
+	enum State
+	{
+		SF_WAITING = 0, // less than 2 players
+		SF_COUNTDOWN,	// round start / choosing the next carrier
+		SF_PLAYING,		// someone has the snark, the fuse is burning
+		SF_ROUNDEND,	// someone won the round, the next one starts soon
+	};
+
+	CMultiplaySnarkFrenzy();
+
+	bool IsSnarkFrenzy() override { return true; }
+
+	void Think() override;
+	void UpdateGameMode(CBasePlayer* pPlayer) override;
+	void InitHUD(CBasePlayer* pl) override;
+	void ClientDisconnected(edict_t* pClient) override;
+	void ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer) override;
+
+	// nobody gets hurt in this mode
+	bool FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker) override { return false; }
+	float FlPlayerFallDamage(CBasePlayer* pPlayer) override { return 0.0f; }
+
+	void PlayerSpawn(CBasePlayer* pPlayer) override;
+	bool FPlayerCanRespawn(CBasePlayer* pPlayer) override;
+	void PlayerKilled(CBasePlayer* pVictim, entvars_t* pKiller, entvars_t* pInflictor) override;
+	int IPointsForKill(CBasePlayer* pAttacker, CBasePlayer* pKilled) override { return 0; }
+
+	// only the weapons the mode gives: crowbar for everyone, the snark for the carrier
+	bool CanHavePlayerItem(CBasePlayer* pPlayer, CBasePlayerItem* pWeapon) override;
+	bool CanHaveItem(CBasePlayer* pPlayer, CItem* pItem) override { return false; }
+	bool CanHaveAmmo(CBasePlayer* pPlayer, const char* pszAmmoName, int iMaxCarry) override;
+	bool PlayerCanDropWeapon(CBasePlayer* pPlayer) override { return false; }
+	int DeadPlayerWeapons(CBasePlayer* pPlayer) override { return GR_PLR_DROP_GUN_NO; }
+	int DeadPlayerAmmo(CBasePlayer* pPlayer) override { return GR_PLR_DROP_AMMO_NO; }
+
+	// called by the snark (squeakgrenade.cpp)
+	void SnarkSpawned(CBaseEntity* pSnark, CBaseEntity* pOwner);
+	bool SnarkBite(CBaseEntity* pSnark, CBaseEntity* pVictim); // true = handled, the snark is gone
+	bool IsCarrier(CBaseEntity* pPlayer);
+
+private:
+	CBasePlayer* GetPlayer(int index);
+	bool IsInRound(int index); // connected, alive and still in the round
+	int CountInRound(int* pLast = nullptr);
+	int CountConnected();
+
+	void SetState(State state, float duration);
+	void StartRound();
+	void StartPickCountdown();
+	void PickCarrier();
+	void SetCarrier(int index, bool announce);
+	void GiveSnark(CBasePlayer* pPlayer);
+	void GiveCrowbar(CBasePlayer* pPlayer);
+	void RemoveSnarkEntity();
+	void Explode(int index);
+	void EndRound(int winner);
+	void SetPlayerModel(CBasePlayer* pPlayer);
+	void SendState(CBasePlayer* pTo); // nullptr = everyone
+	void RespawnForRound(CBasePlayer* pPlayer);
+
+	State m_State = SF_WAITING;
+	float m_flStateEnd = 0.0f;
+	bool m_bRoundStartCountdown = false;
+
+	int m_iCarrier = 0;	   // player index with the snark (0 = nobody)
+	float m_flFuseEnd = 0.0f;
+
+	// the snark running around (edict + serial number, like EHANDLE: EHANDLE isn't
+	// declared yet in some files that include gamerules.h)
+	edict_t* m_pSnarkEdict = nullptr;
+	int m_iSnarkSerial = 0;
+	CBaseEntity* GetSnark();
+	void SetSnark(CBaseEntity* pSnark);
+	float m_flSnarkThrown = 0.0f;
+
+	int m_iRoundWinner = 0;
+	float m_flNextWaitingMsg = 0.0f;
+	bool m_bGiving = false; // our own GiveNamedItem calls
+
+	bool m_bConnected[MAX_PLAYERS + 1] = {};
+	bool m_bInRound[MAX_PLAYERS + 1] = {};
+	float m_flMakeObserver[MAX_PLAYERS + 1] = {};
 };
 
 //=========================================================

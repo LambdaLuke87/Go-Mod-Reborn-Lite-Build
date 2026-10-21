@@ -665,6 +665,11 @@ static CGameRules* CreateGameRules(CBaseEntity* pWorld)
 		g_teamplay = false;
 		return new CMultiplayBusters;
 	}
+	else if (3 == current_gamemode.value && gpGlobals->maxClients > 1)
+	{
+		g_teamplay = false;
+		return new CMultiplaySnarkFrenzy;
+	}
 	else if (0 == gpGlobals->deathmatch)
 	{
 		// generic half-life

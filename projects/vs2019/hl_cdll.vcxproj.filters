@@ -435,6 +435,9 @@
     <ClCompile Include="..\..\cl_dll\physgun_beam.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\snarkfrenzy_hud.cpp">
+      <Filter>Source Files\cl_dll</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\cl_dll\hud_imgui.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>

@@ -132,7 +132,7 @@ static int s_iMapTab = CS_MAPS_GOMOD;
 static std::vector<std::string> s_Maps[CS_MAPS_COUNT];
 static int s_iSelected[CS_MAPS_COUNT] = {0, 0, 0}; // 0 = < Random Map >, 1.. = s_Maps[i][n - 1]
 
-static int s_iGameMode = 1; // 0 Deathmatch, 1 Sandbox, 2 Busters
+static int s_iGameMode = 1; // 0 Deathmatch, 1 Sandbox, 2 Busters, 3 Snark Frenzy
 static bool s_bSteamNetworking = true;
 
 static ScrPage s_Pages[3] = {
@@ -910,13 +910,14 @@ static void DrawServerTab(const ImVec2& panelMin, const ImVec2& panelMax)
 	ImGui::TextUnformatted(MMUI_Localize("#GameUI_GameMode"));
 	ImGui::SameLine(0.0f, 18.0f * k);
 
-	const char* modes[3] = {
+	const char* modes[4] = {
 		MMUI_Localize("#GameUI_GameMode_Deathmatch"),
 		MMUI_Localize("#GameUI_GameMode_Sandbox"),
 		MMUI_Localize("#GameUI_GameMode_Busters"),
+		MMUI_Localize("#GameUI_GameMode_SnarkFrenzy"),
 	};
 
-	if (s_iGameMode < 0 || s_iGameMode > 2)
+	if (s_iGameMode < 0 || s_iGameMode > 3)
 		s_iGameMode = 1;
 
 	ImGui::SetNextItemWidth(160.0f * k);
@@ -924,7 +925,7 @@ static void DrawServerTab(const ImVec2& panelMin, const ImVec2& panelMax)
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, s.EditBg);
 	if (ImGui::BeginCombo("##gamemode", modes[s_iGameMode]))
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			if (ImGui::Selectable(modes[i], s_iGameMode == i))
 				s_iGameMode = i;
@@ -1126,7 +1127,7 @@ static void CreateServer_Open()
 
 	s_iGameMode = 1;
 	if (const std::string* gm = FindLast("mp_gamemode"))
-		s_iGameMode = (std::max)(0, (std::min)(atoi(gm->c_str()), 2));
+		s_iGameMode = (std::max)(0, (std::min)(atoi(gm->c_str()), 3));
 
 	s_bSteamNetworking = true;
 	if (const std::string* sn = FindLast("sv_use_steam_networking"))

@@ -142,6 +142,10 @@ bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 	//TODO: define game mode constants
 	m_Teamplay = giTeamplay = READ_BYTE();
 
+	// 4 = Snark Frenzy (UTIL_IsSnarkFrenzy): no teams, normal scoreboard
+	if (m_Teamplay == 4)
+		m_Teamplay = 0;
+
 #ifdef STEAM_RICH_PRESENCE
 	if (m_Teamplay)
 		gEngfuncs.pfnClientCmd("richpresence_gamemode Teamplay\n");

@@ -368,6 +368,7 @@ extern Vector VecBModelOrigin(entvars_t* pevBModel);
 extern int BuildChangeList(LEVELLIST* pLevelList, int maxList);
 
 extern bool UTIL_IsSandbox();
+extern bool UTIL_IsSnarkFrenzy(); // mp_gamemode 3 (server: gamerules, client: GameMode message 4)
 
 //
 // How did I ever live without ASSERT?

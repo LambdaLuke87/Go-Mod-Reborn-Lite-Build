@@ -578,6 +578,10 @@ void ClientKill(edict_t* pEntity)
 	if (pl->m_fNextSuicideTime > gpGlobals->time)
 		return; // prevent suiciding too ofter
 
+	// Snark Frenzy: you can't escape from the snark
+	if (UTIL_IsSnarkFrenzy())
+		return;
+
 	pl->m_fNextSuicideTime = gpGlobals->time + 1; // don't let them suicide for 5 seconds after suiciding
 
 	// have the player kill themself
@@ -1660,7 +1664,7 @@ void ClientCommand(edict_t* pEntity)
 	}
 	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
 	{
-		if (player->IsObserver() && UTIL_IsSandbox())
+		if (player->IsObserver() && (UTIL_IsSandbox() || UTIL_IsSnarkFrenzy()))
 			player->Observer_SetMode( atoi( CMD_ARGV(1) ) );
 	}
 	else if (FStrEq(pcmd, "closemenus"))

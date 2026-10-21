@@ -782,6 +782,10 @@ void GameDLLInit()
 
 	//CVAR_REGISTER(&sv_busters); // moved to mp_gamemode 2
 
+	// Snark Frenzy (mp_gamemode 3)
+	extern void SnarkFrenzy_RegisterCvars();
+	SnarkFrenzy_RegisterCvars();
+
 	CVAR_REGISTER(&sv_allowbunnyhopping);
 
 	//===============================

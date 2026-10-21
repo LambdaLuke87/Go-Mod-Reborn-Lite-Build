@@ -222,6 +222,22 @@ bool CCrowbar::Swing(bool fFirst)
 
 		ClearMultiDamage();
 
+		// Snark Frenzy: nobody gets hurt, the crowbar pushes players away
+		if (UTIL_IsSnarkFrenzy() && pEntity && pEntity->IsPlayer())
+		{
+			extern float SnarkFrenzy_CrowbarPush();
+			const float push = SnarkFrenzy_CrowbarPush();
+
+			Vector vecPush = gpGlobals->v_forward;
+			vecPush.z = 0;
+			vecPush = vecPush.Normalize() * push;
+			vecPush.z = V_max(pEntity->pev->velocity.z, push * 0.45f);
+
+			pEntity->pev->velocity = pEntity->pev->velocity + Vector(vecPush.x, vecPush.y, 0);
+			pEntity->pev->velocity.z = vecPush.z;
+			pEntity->pev->flags &= ~FL_ONGROUND;
+		}
+		else
 		// JoshA: Changed from < -> <= to fix the full swing logic since client weapon prediction.
 		// -1.0f + 1.0f = 0.0f. UTIL_WeaponTimeBase is always 0 with client weapon prediction (0 time base vs curtime base)
 		if ((m_flNextPrimaryAttack + 1.0f <= UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())

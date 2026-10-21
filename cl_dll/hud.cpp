@@ -69,6 +69,10 @@ extern void GoModMenu_Reload();
 extern bool g_bShowMenu;
 extern bool UTIL_IsSandbox();
 
+// snarkfrenzy_hud.cpp
+void SnarkFrenzyHUD_Init();
+void SnarkFrenzyHUD_Reset();
+
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
 public:
@@ -481,6 +485,7 @@ void CHud::Init()
 	HOOK_MESSAGE(Logo);
 	HOOK_MESSAGE(ResetHUD);
 	HOOK_MESSAGE(GameMode);
+	SnarkFrenzyHUD_Init(); // "SnarkFrenzy" message (snarkfrenzy_hud.cpp)
 	HOOK_MESSAGE(InitHUD);
 	HOOK_MESSAGE(ViewMode);
 	HOOK_MESSAGE(SetFOV);
@@ -692,6 +697,7 @@ int CHud::GetSpriteIndex(const char* SpriteName)
 void CHud::VidInit()
 {
 	PhysGun_VidInit();
+	SnarkFrenzyHUD_Reset();
 
 	m_scrinfo.iSize = sizeof(m_scrinfo);
 	GetScreenInfo(&m_scrinfo);
