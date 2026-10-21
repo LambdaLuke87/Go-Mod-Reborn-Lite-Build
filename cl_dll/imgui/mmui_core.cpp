@@ -1482,8 +1482,6 @@ static void MMUI_OnSwap(void* sdlWindow)
 
 	SDL_Window* window = (SDL_Window*)sdlWindow;
 	if (!window)
-		window = SDL_GL_GetCurrentWindow();
-	if (!window)
 		return;
 
 	if (!MMUI_EnsureContext())
@@ -1497,9 +1495,8 @@ static void MMUI_OnSwap(void* sdlWindow)
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	int ww = 0, wh = 0, dw = 0, dh = 0;
+	int ww = 0, wh = 0;
 	SDL_GetWindowSize(window, &ww, &wh);
-	SDL_GL_GetDrawableSize(window, &dw, &dh);
 	if (ww <= 0 || wh <= 0)
 	{
 		ImGui::SetCurrentContext(prev);
@@ -1507,7 +1504,7 @@ static void MMUI_OnSwap(void* sdlWindow)
 	}
 
 	io.DisplaySize = ImVec2((float)ww, (float)wh);
-	io.DisplayFramebufferScale = ImVec2(dw > 0 ? (float)dw / ww : 1.0f, dh > 0 ? (float)dh / wh : 1.0f);
+	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
 	const Uint64 now = SDL_GetPerformanceCounter();
 	float dt = 1.0f / 60.0f;
