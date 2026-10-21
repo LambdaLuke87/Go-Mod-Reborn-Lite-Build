@@ -776,6 +776,10 @@ static void StartServer()
 	// (1) before the creation: everything that already exists right now
 	std::string cmd = "disconnect\nwait\nwait\n";
 
+	// Steam Networking only works on internet servers (same as Valve's Create Server)
+	if (s_bSteamNetworking)
+		cmd += "sv_lan 0\nsetmaster enable\n";
+
 	for (const auto& kv : values)
 	{
 		if (AlwaysSendBeforeMap(kv.first) || gEngfuncs.pfnGetCvarPointer(kv.first.c_str()))
