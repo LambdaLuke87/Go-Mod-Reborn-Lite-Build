@@ -171,20 +171,20 @@ static bool g_KeyStringsLoaded = false;
 static const char* KEY_STRINGS_FILE = "resource/gomod_gui.txt";
 
 static const VoiceOption g_VoiceOptions[] = {
-	{"Gordon/HEV Suit", "hevsuit"},
-	{"Team Fortress Classic", "dmc"},
-	{"Counter-Strike 1.6", "cstrike"},
-	{"Half-Life Alpha", "hlalpha"},
-	{"Barney", "barney"},
-	{"HECU Marine", "hgrunt"},
-	{"Scientist", "scientist"},
+	{"#Gomod_Voice_hevsuit", "hevsuit"},
+	{"#Gomod_Voice_dmc", "dmc"},
+	{"#Gomod_Voice_cstrike", "cstrike"},
+	{"#Gomod_Voice_hlalpha", "hlalpha"},
+	{"#Gomod_Voice_barney", "barney"},
+	{"#Gomod_Voice_hgrunt", "hgrunt"},
+	{"#Gomod_Voice_scientist", "scientist"},
 };
 
 static const FlashLightOption g_FlashLightOptions[] = {
-	{"Flashlight", 0},
-	{"OP4 Night Vision", 1},
-	{"CS1.6 Night Vision", 2},
-	{"Custom Night Vision", 3},
+	{"#Gomod_Flashlight_Flashlight", 0},
+	{"#Gomod_Flashlight_NightVisionOP4", 1},
+	{"#Gomod_Flashlight_NightVisionCS", 2},
+	{"#Gomod_Flashlight_NightVisionCustom", 3},
 };
 
 // =====================================================================
@@ -197,53 +197,53 @@ static void InitData()
 		return;
 
 	SpawnTab npcs;
-	npcs.title = "NPCs";
+	npcs.title = "#Gomod_Menu_Tab_NPCs";
 	npcs.folder = "resource/imgui/npcs";
 	npcs.toggles = {
-		{"Ignore Players", "button_notarget_set"},
-		{"No AI", "button_ai_set"},
-		{"Reverse Relationship", "button_reverse_relationship"},
+		{"#Gomod_Menu_IgnorePlayers", "button_notarget_set"},
+		{"#Gomod_Menu_NoAI", "button_ai_set"},
+		{"#Gomod_Menu_ReverseRelationship", "button_reverse_relationship"},
 	};
 	npcs.actions = {
-		{"Undo", "remove_entity_undo"},
-		{"Remove All", "remove_entities_all"},
-		{"Front Spawn", "button_front_spawn"},
+		{"#Gomod_Menu_Undo", "remove_entity_undo"},
+		{"#Gomod_Menu_RemoveAll", "remove_entities_all"},
+		{"#Gomod_Menu_FrontSpawn", "button_front_spawn"},
 	};
 
 	SpawnTab props;
-	props.title = "Props";
+	props.title = "#Gomod_Menu_Tab_Props";
 	props.folder = "resource/imgui/props";
 	props.toggles = {
-		{"Ignore Players", "button_notarget_set"},
+		{"#Gomod_Menu_IgnorePlayers", "button_notarget_set"},
 	};
 	props.actions = {
-		{"Undo", "remove_entity_undo"},
-		{"Remove All", "remove_entities_all"},
-		{"Front Spawn", "button_front_spawn"},
+		{"#Gomod_Menu_Undo", "remove_entity_undo"},
+		{"#Gomod_Menu_RemoveAll", "remove_entities_all"},
+		{"#Gomod_Menu_FrontSpawn", "button_front_spawn"},
 	};
 
 	SpawnTab items;
-	items.title = "Items";
+	items.title = "#Gomod_Menu_Tab_Items";
 	items.folder = "resource/imgui/items";
 	items.toggles = {
-		{"Give Mode", "button_self_pickup"},
+		{"#Gomod_Menu_GiveMode", "button_self_pickup"},
 	};
 	items.actions = {
-		{"Undo", "remove_entity_undo"},
-		{"Remove All", "remove_entities_all"},
-		{"Front Spawn", "button_front_spawn"},
+		{"#Gomod_Menu_Undo", "remove_entity_undo"},
+		{"#Gomod_Menu_RemoveAll", "remove_entities_all"},
+		{"#Gomod_Menu_FrontSpawn", "button_front_spawn"},
 	};
 
 	SpawnTab sweps;
-	sweps.title = "SWEPs";
+	sweps.title = "#Gomod_Menu_Tab_SWEPs";
 	sweps.folder = "resource/imgui/sweps";
 	sweps.toggles = {
-		{"Give Mode", "button_self_pickup"},
+		{"#Gomod_Menu_GiveMode", "button_self_pickup"},
 	};
 	sweps.actions = {
-		{"Undo", "remove_entity_undo"},
-		{"Remove All", "remove_entities_all"},
-		{"Front Spawn", "button_front_spawn"},
+		{"#Gomod_Menu_Undo", "remove_entity_undo"},
+		{"#Gomod_Menu_RemoveAll", "remove_entities_all"},
+		{"#Gomod_Menu_FrontSpawn", "button_front_spawn"},
 	};
 
 	g_Tabs.push_back(std::move(npcs));
@@ -253,32 +253,32 @@ static void InitData()
 
 	// Tools: command = "tool <name>"
 	g_ToolCats = {
-		{"Common Tools",
+		{"#Gomod_Menu_Cat_CommonTools",
 			{
-				{"No Tools", "tool none", "#Hint_tool_none"},
-				{"Duplicator", "tool duplicator", "#Hint_tool_duplicator"},
-				{"Remover", "tool remover", "#Hint_tool_remover"},
-				{"Render", "tool render", "#Hint_tool_render"},
+				{"#Gomod_Tool_none", "tool none", "#Hint_tool_none"},
+				{"#Gomod_Tool_duplicator", "tool duplicator", "#Hint_tool_duplicator"},
+				{"#Gomod_Tool_remover", "tool remover", "#Hint_tool_remover"},
+				{"#Gomod_Tool_render", "tool render", "#Hint_tool_render"},
 			}},
-		{"Monster Manage",
+		{"#Gomod_Menu_Cat_MonsterManage",
 			{
-				{"Blood Color", "tool blood_color", "#Hint_tool_blood_color"},
-				{"Frame Editor", "tool frame_set", "#Hint_tool_frame_set"},
-				{"Health Modify", "tool health_set", "#Hint_tool_health_set"},
-				{"Manipulator", "tool manipulator", "#Hint_tool_manipulator"},
-				{"Model Editor", "tool model_editor", "#Hint_tool_model_edit"},
-				{"No Colide", "tool no_collide", "#Hint_tool_no_colide"},
-				{"Poser", "tool poser", "#Hint_tool_poser"},
-				{"Scaler", "tool scaler", "#Hint_tool_scaler"},
-				{"Spawner", "tool spawner", "#Hint_tool_spawner"},
-				{"Take Damage", "tool take_damage", "#Hint_tool_take_damage"},
+				{"#Gomod_Tool_blood_color", "tool blood_color", "#Hint_tool_blood_color"},
+				{"#Gomod_Tool_frame_set", "tool frame_set", "#Hint_tool_frame_set"},
+				{"#Gomod_Tool_health_set", "tool health_set", "#Hint_tool_health_set"},
+				{"#Gomod_Tool_manipulator", "tool manipulator", "#Hint_tool_manipulator"},
+				{"#Gomod_Tool_model_editor", "tool model_editor", "#Hint_tool_model_edit"},
+				{"#Gomod_Tool_no_collide", "tool no_collide", "#Hint_tool_no_colide"},
+				{"#Gomod_Tool_poser", "tool poser", "#Hint_tool_poser"},
+				{"#Gomod_Tool_scaler", "tool scaler", "#Hint_tool_scaler"},
+				{"#Gomod_Tool_spawner", "tool spawner", "#Hint_tool_spawner"},
+				{"#Gomod_Tool_take_damage", "tool take_damage", "#Hint_tool_take_damage"},
 			}},
-		{"Utilites",
+		{"#Gomod_Menu_Cat_Utilities",
 			{
-				{"Camera", "tool camera", "#Hint_tool_camera"},
-				{"Gibber", "tool gibber", "#Hint_tool_gibber"},
-				{"Glowsticks", "tool glowsticks", "#Hint_tool_glowsticks"},
-				{"Teleporter", "tool teleporter", "#Hint_tool_teleporter"},
+				{"#Gomod_Tool_camera", "tool camera", "#Hint_tool_camera"},
+				{"#Gomod_Tool_gibber", "tool gibber", "#Hint_tool_gibber"},
+				{"#Gomod_Tool_glowsticks", "tool glowsticks", "#Hint_tool_glowsticks"},
+				{"#Gomod_Tool_teleporter", "tool teleporter", "#Hint_tool_teleporter"},
 			}},
 	};
 
@@ -286,36 +286,36 @@ static void InitData()
 	// command = "rendermode <name>"
 	// command = "renderfx <name>"
 	g_RenderToolCats = {
-		{"Render Mode",
+		{"#Gomod_Menu_Cat_RenderMode",
 			{
-				{"Normal", "rendermode normal", "#Hint_rendermode_normal"},
-				{"Color", "rendermode color", "#Hint_rendermode_color"},
-				{"Texture", "rendermode texture", "#Hint_rendermode_texture"},
-				//{"Glow", "rendermode glow", "#Hint_rendermode_glow"},
-				//{"Solid", "rendermode solid", "#Hint_rendermode_solid"},
-				{"Additive", "rendermode additive", "#Hint_rendermode_additive"},
+				{"#Gomod_RenderMode_normal", "rendermode normal", "#Hint_rendermode_normal"},
+				{"#Gomod_RenderMode_color", "rendermode color", "#Hint_rendermode_color"},
+				{"#Gomod_RenderMode_texture", "rendermode texture", "#Hint_rendermode_texture"},
+				//{"#Gomod_RenderMode_glow", "rendermode glow", "#Hint_rendermode_glow"},
+				//{"#Gomod_RenderMode_solid", "rendermode solid", "#Hint_rendermode_solid"},
+				{"#Gomod_RenderMode_additive", "rendermode additive", "#Hint_rendermode_additive"},
 			}},
-		{"Render FX",
+		{"#Gomod_Menu_Cat_RenderFX",
 			{
-				{"Normal", "renderfx normal", "#Hint_renderfx_normal"},
-				{"Slow Pulse", "renderfx slow_pulse", "#Hint_renderfx_slow_pulse"},
-				{"Fast Pulse", "renderfx fast_pulse", "#Hint_renderfx_fast_pulse"},
-				{"Slow Wide Pulse", "renderfx slow_wide_pulse", "#Hint_renderfx_slow_wide_pulse"},
-				{"Fast Wide Pulse", "renderfx fast_wide_pulse", "#Hint_renderfx_fast_wide_pulse"},
-				//{"Slow Fade Away", "renderfx slow_fade_away", "#Hint_renderfx_slow_fade_away"},
-				//{"Fast Fade Away", "renderfx fast_fade_away", "#Hint_renderfx_fast_fade_away"},
-				//{"Slow Become Solid", "renderfx slow_become_solid", "#Hint_renderfx_slow_become_solid"},
-				//{"Fast Become Solid", "renderfx fast_become_solid", "#Hint_renderfx_fast_become_solid"},
-				{"Slow Strobe", "renderfx slow_strobe", "#Hint_renderfx_slow_strobe"},
-				{"Fast Strobe", "renderfx fast_strobe", "#Hint_renderfx_fast_strobe"},
-				{"Faster Strobe", "renderfx faster_strobe", "#Hint_renderfx_faster_strobe"},
-				{"Slow Flicker", "renderfx slow_flicker", "#Hint_renderfx_slow_flicker"},
-				{"Fast Flicker", "renderfx fast_flicker", "#Hint_renderfx_fast_flicker"},
-				//{"Constant Glow", "renderfx constant_glow", "#Hint_renderfx_constant_glow"},
-				{"Distort", "renderfx distort", "#Hint_renderfx_distort"},
-				{"Hologram", "renderfx hologram", "#Hint_renderfx_hologram"},
-				{"Explode", "renderfx explode", "#Hint_renderfx_explode"},
-				{"Glow Shell", "renderfx glow_shell", "#Hint_renderfx_glow_shell"},
+				{"#Gomod_RenderFX_normal", "renderfx normal", "#Hint_renderfx_normal"},
+				{"#Gomod_RenderFX_slow_pulse", "renderfx slow_pulse", "#Hint_renderfx_slow_pulse"},
+				{"#Gomod_RenderFX_fast_pulse", "renderfx fast_pulse", "#Hint_renderfx_fast_pulse"},
+				{"#Gomod_RenderFX_slow_wide_pulse", "renderfx slow_wide_pulse", "#Hint_renderfx_slow_wide_pulse"},
+				{"#Gomod_RenderFX_fast_wide_pulse", "renderfx fast_wide_pulse", "#Hint_renderfx_fast_wide_pulse"},
+				//{"#Gomod_RenderFX_slow_fade_away", "renderfx slow_fade_away", "#Hint_renderfx_slow_fade_away"},
+				//{"#Gomod_RenderFX_fast_fade_away", "renderfx fast_fade_away", "#Hint_renderfx_fast_fade_away"},
+				//{"#Gomod_RenderFX_slow_become_solid", "renderfx slow_become_solid", "#Hint_renderfx_slow_become_solid"},
+				//{"#Gomod_RenderFX_fast_become_solid", "renderfx fast_become_solid", "#Hint_renderfx_fast_become_solid"},
+				{"#Gomod_RenderFX_slow_strobe", "renderfx slow_strobe", "#Hint_renderfx_slow_strobe"},
+				{"#Gomod_RenderFX_fast_strobe", "renderfx fast_strobe", "#Hint_renderfx_fast_strobe"},
+				{"#Gomod_RenderFX_faster_strobe", "renderfx faster_strobe", "#Hint_renderfx_faster_strobe"},
+				{"#Gomod_RenderFX_slow_flicker", "renderfx slow_flicker", "#Hint_renderfx_slow_flicker"},
+				{"#Gomod_RenderFX_fast_flicker", "renderfx fast_flicker", "#Hint_renderfx_fast_flicker"},
+				//{"#Gomod_RenderFX_constant_glow", "renderfx constant_glow", "#Hint_renderfx_constant_glow"},
+				{"#Gomod_RenderFX_distort", "renderfx distort", "#Hint_renderfx_distort"},
+				{"#Gomod_RenderFX_hologram", "renderfx hologram", "#Hint_renderfx_hologram"},
+				{"#Gomod_RenderFX_explode", "renderfx explode", "#Hint_renderfx_explode"},
+				{"#Gomod_RenderFX_glow_shell", "renderfx glow_shell", "#Hint_renderfx_glow_shell"},
 			}},
 	};
 }
@@ -325,6 +325,8 @@ static void InitData()
 //  inside its folder (resource/imgui/npcs/, props/, items/, sweps/).
 //  Each file is one section (section_name + button_list).
 // =====================================================================
+static std::string ResolveKeyText(const char* key); // below: "#Key" -> resource/gomod_gui.txt
+
 // load ONE section (ej. resource/imgui/npcs/military_aliens.json)
 // and adds it to the vector as another category 'out'.
 static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& out)
@@ -345,8 +347,9 @@ static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& 
 
 	MenuCategory cat;
 
+	// "#Key" -> resource/gomod_gui.txt, plain text works too
 	if (doc.HasMember("section_name") && doc["section_name"].IsString())
-		cat.name = doc["section_name"].GetString();
+		cat.name = ResolveKeyText(doc["section_name"].GetString());
 	else
 		cat.name = path; // fallback: if the name is missing, show the path.
 
@@ -363,7 +366,7 @@ static bool LoadSectionFile(const std::string& path, std::vector<MenuCategory>& 
 			MenuItem item;
 
 			if (btn.HasMember("name") && btn["name"].IsString())
-				item.name = btn["name"].GetString();
+				item.name = ResolveKeyText(btn["name"].GetString());
 			if (btn.HasMember("image") && btn["image"].IsString())
 				item.image = btn["image"].GetString();
 			if (btn.HasMember("command") && btn["command"].IsString())
@@ -563,6 +566,47 @@ static std::string ResolveKeyText(const char* key)
 	return std::string(key); // not founded: show raw text
 }
 
+// Same as ResolveKeyText, but returns a pointer (for ImGui). Text without '#' is returned as it is.
+// The pointer is valid until the strings are reloaded (gomod_menu_reload), so use it right away.
+static const char* L(const char* key)
+{
+	if (!key)
+		return "";
+
+	if (key[0] != '#')
+		return key;
+
+	EnsureHintStringsLoaded();
+
+	auto it = g_KeyStrings.find(key + 1);
+	if (it != g_KeyStrings.end())
+		return it->second.c_str();
+
+	return key; // not found: raw text
+}
+
+// Translated label with a fixed ImGui ID ("text###key"): the ID doesn't change with the language
+static std::string LID(const char* key)
+{
+	std::string label = L(key);
+	label += "###";
+	label += key ? key : "";
+	return label;
+}
+
+// For printf style formats: '%' in a translated text must not be read as a format specifier
+static std::string EscapePercent(const char* text)
+{
+	std::string out;
+	for (const char* p = text; p && *p; p++)
+	{
+		out.push_back(*p);
+		if (*p == '%')
+			out.push_back('%');
+	}
+	return out;
+}
+
 // =====================================================================
 //  Textures
 // =====================================================================
@@ -736,7 +780,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginChild("##list", ImVec2(0, -footerH), ImGuiChildFlags_Borders);
 
 	if (tab.cats.empty())
-		ImGui::TextDisabled("witouth entries. check %s/", tab.folder);
+		ImGui::TextDisabled("%s %s/", L("#Gomod_Menu_NoEntries"), tab.folder);
 
 	for (size_t c = 0; c < tab.cats.size(); c++)
 	{
@@ -790,7 +834,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginGroup();
 	for (const Toggle& t : tab.toggles)
 	{
-		if (ImGui::Button(t.label, ImVec2((float)toggleW, (float)toggleH)))
+		if (ImGui::Button(LID(t.label).c_str(), ImVec2((float)toggleW, (float)toggleH)))
 			RunCmd(t.command);
 	}
 	ImGui::EndGroup();
@@ -800,7 +844,7 @@ static void DrawSpawnTab(SpawnTab& tab)
 	ImGui::BeginGroup();
 	for (const Action& a : tab.actions)
 	{
-		if (ImGui::Button(a.label, ImVec2((float)btnW, (float)btnH)))
+		if (ImGui::Button(LID(a.label).c_str(), ImVec2((float)btnW, (float)btnH)))
 			RunCmd(a.command);
 	}
 	ImGui::EndGroup();
@@ -820,7 +864,7 @@ static void DrawSpawnWindow(int x, int y, int w, int h)
 	{
 		for (size_t t = 0; t < g_Tabs.size(); t++)
 		{
-			if (ImGui::BeginTabItem(g_Tabs[t].title))
+			if (ImGui::BeginTabItem(LID(g_Tabs[t].title).c_str()))
 			{
 				ImGui::PushID((int)t);
 				DrawSpawnTab(g_Tabs[t]);
@@ -846,11 +890,11 @@ static void DrawToolCategoryList(std::vector<ToolCategory>& cats, const ToolDef*
 	{
 		ImGui::PushID((int)c);
 
-		if (ImGui::CollapsingHeader(cats[c].name, ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(LID(cats[c].name).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			for (const ToolDef& tool : cats[c].tools)
 			{
-				if (ImGui::Selectable(tool.name, activeTool == &tool))
+				if (ImGui::Selectable(LID(tool.name).c_str(), activeTool == &tool))
 				{
 					activeTool = &tool;
 					RunCmd(tool.command);
@@ -876,15 +920,11 @@ static void DrawToolCategoryList(std::vector<ToolCategory>& cats, const ToolDef*
 		}
 		else
 		{
-			std::string lowerName = activeTool->name;
-			for (char& ch : lowerName)
-				ch = (char)tolower((unsigned char)ch);
-
-			ImGui::TextWrapped("hint of %s", lowerName.c_str());
+			ImGui::TextWrapped("%s %s", L("#Gomod_Menu_NoHint"), L(activeTool->name));
 		}
 	}
 	else
-		ImGui::TextColored(ImVec4(0.75f, 0.75f, 0.75f, 1.00f), "Select a Tool");
+		ImGui::TextColored(ImVec4(0.75f, 0.75f, 0.75f, 1.00f), "%s", L("#Gomod_Menu_SelectTool"));
 
 	ImGui::EndChild();
 }
@@ -909,14 +949,14 @@ static void DrawCustomizationTab()
 	ImGui::BeginChild("##customization", ImVec2(0, 0), ImGuiChildFlags_None);
 
 	// ---- Player Voice (hardcoded) ----
-	ImGui::Text("Player Voice");
+	ImGui::TextUnformatted(L("#Gomod_Menu_PlayerVoice"));
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	if (ImGui::BeginCombo("##playervoice", g_VoiceOptions[s_voiceIndex].label))
+	if (ImGui::BeginCombo("##playervoice", L(g_VoiceOptions[s_voiceIndex].label)))
 	{
 		for (int i = 0; i < (int)(sizeof(g_VoiceOptions) / sizeof(g_VoiceOptions[0])); i++)
 		{
 			bool selected = (i == s_voiceIndex);
-			if (ImGui::Selectable(g_VoiceOptions[i].label, selected))
+			if (ImGui::Selectable(LID(g_VoiceOptions[i].label).c_str(), selected))
 				s_voiceIndex = i;
 			if (selected)
 				ImGui::SetItemDefaultFocus();
@@ -929,14 +969,14 @@ static void DrawCustomizationTab()
 	ImGui::Spacing();
 
 	// ---- Player Flashlight (hardcoded) ----
-	ImGui::Text("Flashlight Type");
+	ImGui::TextUnformatted(L("#Gomod_Menu_FlashlightType"));
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	if (ImGui::BeginCombo("##flashlighttype", g_FlashLightOptions[s_flashlightIndex].label))
+	if (ImGui::BeginCombo("##flashlighttype", L(g_FlashLightOptions[s_flashlightIndex].label)))
 	{
 		for (int i = 0; i < (int)(sizeof(g_FlashLightOptions) / sizeof(g_FlashLightOptions[0])); i++)
 		{
 			bool selected = (i == s_flashlightIndex);
-			if (ImGui::Selectable(g_FlashLightOptions[i].label, selected))
+			if (ImGui::Selectable(LID(g_FlashLightOptions[i].label).c_str(), selected))
 				s_flashlightIndex = i;
 			if (selected)
 				ImGui::SetItemDefaultFocus();
@@ -952,7 +992,7 @@ static void DrawCustomizationTab()
 	ScaleSize(btnW, btnH);
 	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)btnW) * 0.5f);
 
-	if (ImGui::Button("Apply Changes", ImVec2((float)btnW, (float)btnH)))
+	if (ImGui::Button(LID("#Gomod_Menu_ApplyChanges").c_str(), ImVec2((float)btnW, (float)btnH)))
 	{
 		char buf[64];
 
@@ -970,7 +1010,7 @@ static void DrawColorSettingsTab()
 {
 	ImGui::BeginChild("##colorsettings", ImVec2(0, 0), ImGuiChildFlags_None);
 
-	ImGui::Text("Pick a color:");
+	ImGui::TextUnformatted(L("#Gomod_Menu_PickColor"));
 	ImGui::Separator();
 
 	static float miColor[3] = {1.0f, 1.0f, 1.0f}; // RGB
@@ -1002,24 +1042,24 @@ static void DrawColorSettingsTab()
 		const float spacing = ImGui::GetStyle().ItemSpacing.x;
 		const float btnW = (avail - 2.0f * spacing) / 3.0f;
 
-		ImGui::Text("Apply for:");
+		ImGui::TextUnformatted(L("#Gomod_Menu_ApplyFor"));
 
-		if (ImGui::Button("HUD Color", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button(LID("#Gomod_Menu_Color_HUDColor").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("hud_color");
 
 		ImGui::SameLine();
-		if (ImGui::Button("HUD Critical Color", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button(LID("#Gomod_Menu_Color_HUDCriticalColor").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("hud_color_critical");
 
 		ImGui::SameLine();
-		if (ImGui::Button("FX Color", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button(LID("#Gomod_Menu_Color_FXColor").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("render_color");
 
-		if (ImGui::Button("Night Vision", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button(LID("#Gomod_Menu_Color_NightVision").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("nightvision_color");
 
 		ImGui::SameLine();
-		if (ImGui::Button("Physgun Beam", ImVec2(btnW, (float)ButtonHeight)))
+		if (ImGui::Button(LID("#Gomod_Menu_Color_PhysgunBeam").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("physgun_color");
 	}
 
@@ -1027,7 +1067,7 @@ static void DrawColorSettingsTab()
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	ImGui::Text("Render FX Amount:");
+	ImGui::TextUnformatted(L("#Gomod_Menu_RenderFXAmount"));
 
 	{
 		static int s_renderAmount = 255;
@@ -1042,10 +1082,11 @@ static void DrawColorSettingsTab()
 			sliderW = 50.0f;
 
 		ImGui::SetNextItemWidth(sliderW);
-		ImGui::SliderInt("##render_amount", &s_renderAmount, 0, 255, "Render Amount: %d");
+		const std::string amountFormat = EscapePercent(L("#Gomod_Menu_RenderAmount")) + " %d";
+		ImGui::SliderInt("##render_amount", &s_renderAmount, 0, 255, amountFormat.c_str());
 
 		ImGui::SameLine();
-		if (ImGui::Button("Apply FX Amount", ImVec2((float)applyBtnW, (float)applyBtnH)))
+		if (ImGui::Button(LID("#Gomod_Menu_ApplyFXAmount").c_str(), ImVec2((float)applyBtnW, (float)applyBtnH)))
 		{
 			char cmdBuffer[64];
 			snprintf(cmdBuffer, sizeof(cmdBuffer), "render_amount %d", s_renderAmount);
@@ -1065,25 +1106,25 @@ static void DrawToolsWindow(int x, int y, int w, int h)
 
 	if (ImGui::BeginTabBar("##toolstabs"))
 	{
-		if (ImGui::BeginTabItem("Tools"))
+		if (ImGui::BeginTabItem(LID("#Gomod_Menu_Tab_Tools").c_str()))
 		{
 			DrawToolsTab();
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Render Options"))
+		if (ImGui::BeginTabItem(LID("#Gomod_Menu_Tab_RenderOptions").c_str()))
 		{
 			DrawRenderOptionsTab();
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Customization"))
+		if (ImGui::BeginTabItem(LID("#Gomod_Menu_Tab_Customization").c_str()))
 		{
 			DrawCustomizationTab();
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Color Settings"))
+		if (ImGui::BeginTabItem(LID("#Gomod_Menu_Tab_ColorSettings").c_str()))
 		{
 			DrawColorSettingsTab();
 			ImGui::EndTabItem();
