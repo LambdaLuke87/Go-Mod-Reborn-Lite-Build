@@ -558,6 +558,26 @@ bool CHudAmmo::MsgFunc_HideWeapon(const char* pszName, int iSize, void* pbuf)
 	return true;
 }
 
+void CHudAmmo::RestoreCrosshair()
+{
+	static Rect nullrc;
+
+	if (!m_pWeapon || gHUD.m_fPlayerDead || (gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0)
+	{
+		SetCrosshair(0, nullrc, 0, 0, 0);
+		return;
+	}
+
+	const int r = m_pCvarHudRed->value;
+	const int g = m_pCvarHudGreen->value;
+	const int b = m_pCvarHudBlue->value;
+
+	if (gHUD.m_iFOV >= 90)
+		SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, r, g, b);
+	else
+		SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, r, g, b);
+}
+
 //
 //  CurWeapon: Update hud state with the current weapon and clip count. Ammo
 //  counts are updated with AmmoX. Server assures that the Weapon ammo type

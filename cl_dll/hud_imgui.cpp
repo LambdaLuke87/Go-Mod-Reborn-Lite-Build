@@ -58,6 +58,10 @@ void ImGuiMenu_SetOpen(bool open)
 
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 		SDL_ShowCursor(SDL_ENABLE);
+
+		// the engine draws the crosshair after the HUD, on top of the menu: hide it
+		static Rect nullrc;
+		SetCrosshair(0, nullrc, 0, 0, 0);
 	}
 	else
 	{
@@ -70,6 +74,8 @@ void ImGuiMenu_SetOpen(bool open)
 		SDL_SetRelativeMouseMode(s_bPrevRelative ? SDL_TRUE : SDL_FALSE);
 
 		IN_ResetMouseAfterMenu(); // avoid the camera jump
+
+		gHUD.m_Ammo.RestoreCrosshair();
 	}
 }
 
@@ -154,6 +160,12 @@ void CHud::ImGuiMenu_Draw(float flTime)
 
 	ImGuiMenu_KeepMouseFree();
 	ImGuiMenu_UpdateMouse(io);
+
+	// a weapon change / zoom while the menu is open sets the crosshair again: keep it hidden
+	{
+		static Rect nullrc;
+		SetCrosshair(0, nullrc, 0, 0, 0);
+	}
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();

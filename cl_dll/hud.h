@@ -147,6 +147,9 @@ public:
 		return m_pWeapon;
 	}
 
+	// sets the crosshair of the current weapon again (after the Go-Mod menu hid it)
+	void RestoreCrosshair();
+
 private:
 	float m_fFade;
 	RGBA m_rgba;
