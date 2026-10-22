@@ -784,7 +784,7 @@ void EV_FireMP52(event_args_t* args)
 //======================
 // We only predict the animation and sound
 // The grenade is still launched from the server.
-void EV_GLFire(event_args_t* args)
+/* void EV_GLFire(event_args_t* args)
 {
 	int idx;
 	Vector origin;
@@ -802,6 +802,16 @@ void EV_GLFire(event_args_t* args)
 
 
 	// gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "weapons/m79_fire.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong(0, 0xf));
+}*/
+void EV_FireGrenadeLauncher(event_args_t* args)
+{
+	const int idx = args->entindex;
+	if (EV_IsLocal(idx))
+	{
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation(args->iparam1, 0);
+	}
+	gEngfuncs.pEventAPI->EV_PlaySound(idx, args->origin, CHAN_WEAPON, "weapons/glauncher.wav", 0.7f, ATTN_NORM, 0, PITCH_NORM);
 }
 //======================
 //		 GL END
@@ -2094,7 +2104,8 @@ void EV_ToolBow(event_args_t* args)
 //=============================================
 // TRAIL DMC CODE START
 //=============================================
-
+// Disabled at the moment
+/*
 void EV_RocketTrailCallback(struct tempent_s* ent, float frametime, float currenttime)
 {
 	if (currenttime < ent->entity.baseline.fuser1)
@@ -2145,7 +2156,7 @@ void EV_Trail(event_args_t* args)
 		pTrailSpawner->die = gEngfuncs.GetClientTime() + 10;					 // Just in case
 		pTrailSpawner->entity.baseline.fuser1 = gEngfuncs.GetClientTime() + 0.5; // Don't try to die till 500ms ahead
 	}
-}
+}*/
 
 //=============================================
 // TRAIL DMC CODE END

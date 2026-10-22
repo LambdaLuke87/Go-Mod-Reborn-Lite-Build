@@ -1,48 +1,52 @@
 /***
-*
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*
-*	This product contains software technology licensed from Id
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
+ *
+ *	Grenade Launcher - port of the Featureful SDK weapon to Half-Life: Opposing Force Updated SDK.
+ *
+ *	Differences from the Featureful version:
+ *	- Written as a regular CBasePlayerWeapon (no CConfigurableWeapon / WeaponParameters system).
+ *	- Shotgun-style reload (one grenade at a time) using m_fInSpecialReload, synced to the client for prediction.
+ *	- The projectile ("grenaderound") derives from CGrenade, without the Featureful projectile / NamedSoundScript / NamedVisual systems.
+ *
+ ****/
 
 #pragma once
 
-enum glauncher_e
+enum GrenadeLauncherAnim
 {
-	GL_IDLE1 = 0,
-	GL_IDLE2,
-	GL_IDLEFIDGET,
-	GL_FIRE1,
+	GL_IDLE = 0,
+	PL_IDLE,
+	GL_FIRE,
+	PL_FIRE,
+	GL_RELOAD_DN,
+	GL_RELOAD_UP,
+	PL_RELOAD_DN,
+	PL_RELOAD_UP,
 	GL_DRAW,
-	GL_RELOAD,
-	GL_RELOAD_EMPTY
+	PL_DRAW,
+	GL_HOLSTER,
+	PL_HOLSTER
 };
 
-class CGLauncher : public CBasePlayerWeapon
+class CGrenadeLauncher : public CBasePlayerWeapon
 {
 public:
-	void Spawn() override;
+	using BaseClass = CBasePlayerWeapon;
+
 	void Precache() override;
-	int iItemSlot() override { return 4; }
-	bool GetItemInfo(ItemInfo* p) override;
-	//	void AddToPlayer(CBasePlayer* pPlayer) override;
-	void PrimaryAttack() override;
-	void SecondaryAttack();
+	void Spawn() override;
+
 	bool Deploy() override;
 	void Holster() override;
+
+	void PrimaryAttack() override;
 	void Reload() override;
 	void WeaponIdle() override;
 
-	int m_iFire;
-	int m_iSmoke;
+	int iItemSlot() override { return 4; }
+	bool GetItemInfo(ItemInfo* p) override;
+
+	void GetWeaponData(weapon_data_t& data) override;
+	void SetWeaponData(const weapon_data_t& data) override;
 
 	bool UseDecrement() override
 	{
@@ -56,5 +60,5 @@ public:
 	const char* MyWModel() { return "models/w_glauncher.mdl"; }
 
 private:
-	unsigned short m_usFireGLauncher;
+	unsigned short m_usGrenadeLauncher;
 };

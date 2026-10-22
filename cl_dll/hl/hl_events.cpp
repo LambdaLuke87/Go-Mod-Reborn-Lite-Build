@@ -63,6 +63,6 @@ void Game_HookEvents()
 	gEngfuncs.pfnHookEvent("events/penguinfire.sc", EV_PenguinFire);
 	gEngfuncs.pfnHookEvent("events/toolbow.sc", EV_ToolBow);
 	gEngfuncs.pfnHookEvent("events/nailgun.sc", EV_FireNailgun);
-	gEngfuncs.pfnHookEvent("events/m79.sc", EV_GLFire);
-	gEngfuncs.pfnHookEvent("events/trail.sc", EV_Trail);
+	gEngfuncs.pfnHookEvent("events/glauncher.sc", EV_FireGrenadeLauncher);
+	//gEngfuncs.pfnHookEvent("events/trail.sc", EV_Trail);
 }

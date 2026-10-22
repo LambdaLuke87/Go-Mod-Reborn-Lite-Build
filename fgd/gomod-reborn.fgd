@@ -388,6 +388,7 @@
     10: "See Player Unconditional"
     11: "See Player, Not In Combat"
   ]
+  custom_npc(string) : "Custom NPC (id)" : "" : "Go-Mod custom NPC id (scripts/<pack>/custom_monsters.json). Applies its model, sounds, health, render... Empty = normal NPC."
   spawnflags(Flags) = 
   [
     1 : "WaitTillSeen"  : 0
@@ -2215,6 +2216,29 @@
     32 : "SquadLeader" : 0
   ]
 ]
+@PointClass base(Monster, Sequence) size(-40 -40 0, 40 40 200) studio("models/robocop.mdl") = monster_robocop : "Robocop" []
+@PointClass base(Monster, Sequence) size(-32 -32 0, 32 32 64) studio("models/Tor.mdl") = monster_alien_tor : "Alien Tor"
+[
+  netname(string) : "Squad Name"
+  spawnflags(Flags) =
+  [
+    32 : "SquadLeader" : 0
+  ]
+]
+@PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 72) studio("models/kingpin.mdl") = monster_kingpin : "Kingpin"
+[
+  teleport_target(string) : "Teleport target" : : "Name of targets to teleport to when can't get to enemy"
+  second_chance(choices) : "Can use second chance" : 0 =
+  [
+    0: "No"
+    1: "Yes"
+  ]
+  spawnflags(Flags) =
+  [
+    32768 : "Escape on death" : 0 : "Escape away via teleport instead of gibbing. Still counts as death for trigger condition"
+  ]
+]
+@PointClass base(Targetname) = env_plasmacluster : "Kingpin plasma cluster (for testing)" []
 @PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 72) studio("models/islave.mdl") = monster_alien_slave : "Vortigaunt" 
 [
   netname(string) : "Squad Name"
@@ -3595,6 +3619,10 @@ initammo(string) : "Initial Ammo" : "6"
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_penguinnest.mdl") = weapon_penguin : "Killer Penguin" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_pipe_wrench.mdl") = weapon_pipewrench : "Pipe Wrench" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_shock.mdl") = weapon_shockrifle : "Shock Roach" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_weaponbox.mdl") = weapon_nailgun : "Nailgun" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_9mmARclip.mdl") = ammo_nails : "Nails" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_weaponbox.mdl") = weapon_grenadelauncher : "Grenade Launcher" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_ARgrenade.mdl") = ammo_grenadeclip : "Grenade Launcher ammo" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_m40a1.mdl") = weapon_sniperrifle : "Sniper Rifle" []
 @PointClass base(Weapon, Targetx, RenderFields) studio("models/w_spore_launcher.mdl") = weapon_sporelauncher : "Spore Launcher" []
 
@@ -3717,3 +3745,464 @@ initammo(string) : "Initial Ammo" : "6"
 		2: "Toggle"
 	]
 ]
+// ---- LRC / locus effects (ported from Featureful) ----
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_quakefx : "Quake 1 particle effects"
+[
+	message(string) : "Position (blank = here) [LP]"
+	impulse(choices) : "Effect type" : 4 =
+	[
+		4 : "Tar Explosion"
+		10 : "Lava Splash"
+		11 : "Teleport Splash"
+		12 : "Explosion"
+		14 : "Implosion"
+		122 : "Particle Burst"
+	]
+	frags(integer) : "Particle Burst: color number" : 70
+	armortype(integer) : "Implosion/Particle Burst: radius" : 250
+	health(string) : "Implosion/Particle Burst: duration" : "1.0"
+	armorvalue(integer) : "Implosion tracer count" : 10
+	spawnflags(flags) =
+	[
+		1: "Repeatable" : 0
+	]
+]
+@PointClass base(Targetname) = env_shockwave : "Shockwave Effect"
+[
+	spawnflags(flags) =
+	[
+		1: "Centered" : 0
+		2: "Repeatable" : 0
+	]
+	m_iszPosition(string) : "Position (blank = here) [LP]"
+	netname(sprite) : "Spritename" : "sprites/shockwave.spr"
+	rendercolor(color255): "Color": "188 220 255"
+	renderamt(integer) : "Opacity (0-255)": 255
+	m_iTime(integer) : "Duration" : 2
+	m_iRadius(integer) : "Final radius" : 1000
+	m_iHeight(integer) : "Wave height" : 32
+	m_iScrollRate(integer) : "Scroll rate" : 0
+	m_iNoise(integer) : "Distortion ('noise')" : 0
+	m_iFrameRate(integer) : "Frame Rate" : 0
+	m_iStartFrame(integer) : "Starting Frame" : 0
+	m_cType(Choices) : "Type" =
+	[
+		0 : "Default (Cylinder)"
+		19 : "Torus"
+		20 : "Disk"
+		21 : "Cylinder"
+	]
+]
+@PointClass base(Targetname) = env_streak : "Streak splash"
+[
+	count(integer) : "Count" : 20
+	speed(integer) : "Speed (directional)" : 50
+	scale(string) : "Length" : 1.0
+	randomness(integer) : "Random velocity variance" : 400
+	tracer_color(choices) : "Tracer color index" : 6 =
+	[
+		0: "White"
+		1: "Red"
+		2: "Green"
+		3: "Blue"
+		4: "Default (cvars)"
+		5: "Golden"
+		6: "Orange"
+		7: "Purple"
+		8: "Yellowish"
+		9: "Yellowish 2"
+		10: "Yellowish 3"
+		11: "Yellowish 4"
+	]
+	minlife : "Min life" : 0.1
+	maxlife : "Max life" : 0.5
+	pt_type(choices) : "Particle type" : 1 =
+	[
+		1 : "Gravity"
+		2 : "Slow gravity"
+		3 : "Fire"
+		4 : "Explode"
+		5 : "Explode 2"
+		6 : "Blob"
+		7 : "Blob 2"
+		8 : "Vox slow gravity"
+		9 : "Vox gravity"
+	]
+	message(string) : "Position (blank = here) [LP]"
+	netname(string) : "Direction (blank = random) [LV]"
+	spawnflags(flags) =
+	[
+		1: "Remove on fire" : 0
+		2: "Use angles for direction" : 0
+	]
+]
+@PointClass base(Targetname) color(255 255 128) = particle_shooter : "Particle Shooter" 
+[
+	target(string) : "Shoot particles at [LP]" : : "This or 'Shooter direction' must be defined for the entity to work"
+	direction(string) : "Shooter direction [LV]" : : "This or 'Shoot particles at' must be defined for the entity to work. This option has higher preference."
+	position(string) : "Position to shoot from (blank = here) [LP]"
+
+	//group_id(integer) : "Group Id" : 1
+	num_particles(integer) : "Number of Particles ( -1 = infinite )" : 10
+	fire_delay(string) : "Delay between shots" : "0.2"
+
+	particle_life(string) : "particle life" : "4.0"
+
+	particle_speed(string) : "Particle Speed" : "200"
+	vel_variance(string) : "Velocity Variance" : "12"
+	//spin_speed(integer) : "spin ( degrees per sec )" : 0
+	gravity(string) : "Gravity factor" : "0.0" : "1 is normal gravity"
+	//damping_time(string) : "damping time" : "0.0"
+	//damping_vel(string) : "damping velocity" : "0.0"
+
+	spawnflags(Flags) = 
+	[
+		1 : "Repeatable" 	: 0
+		2 : "Spiral" : 0
+		4 : "Collide with world" : 0
+		//8 : "Affected by force" : 0
+		16 : "Animate" : 0
+		32 : "Start on" : 0
+		64 : "Kill on collide" : 0
+		128 : "Reserved (don't use)" : 0 : "Reserved for 'Ripple when hitting water'"
+	]
+
+	model(sprite) : "Sprite" : "sprites/xsmoke1.spr"
+	particle_size(string) : "particle size" : "16.0"
+
+	//colour_red(integer) : "colour: red ( 0 - 255 )" : 255
+	//colour_green(integer) : "colour: green ( 0 - 255 )" : 255
+	//colour_blue(integer) : "colour: blue ( 0 - 255 )" : 255
+	//brightness(string) : "brightness" : "190"
+
+	fade_speed(string) : "Fade Speed" : "0.0"
+	scale_speed(string) : "Scale Speed" : "1.0"
+	framerate(string) : "Framerate" : "0"
+
+	rendermode(choices) : "Render Mode" : 5 =
+	[
+		0: "Normal"
+		1: "Color"
+		2: "Texture"
+		3: "Glow"
+		4: "Solid"
+		5: "Additive"
+	]
+	renderamt(integer) : "FX Amount (1 - 255)" : "190"
+	rendercolor(color255) : "FX Color (R G B)" : "255 255 255"
+]
+@PointClass base(Targetname, RenderFields) size(-16 -16 -16, 16 16 16) = env_smoker : "Smoker"
+[
+	health(integer) : "Times to smoke [0 = infinite]" : 1
+	scale(string) : "Smoke Scale" : 1
+	dmg(string) : "Dispersion of smoke particles" : "0"
+	dmg_take(string) : "Min delay between smokes" : "0.4"
+	dmg_save(string) : "Max delay between smokes" : "0.6"
+	framerate(integer) : "Framerate"
+	speed(integer) : "Speed" : 30
+	scale_speed(string) : "Scale Speed"
+	model(sprite) : "Sprite"
+	frags(integer) : "Z offset"
+	target(string) : "Position to smoke at [LP]"
+	direction(string) : "Smoke direction [LV]" : : "When deciding on the direction this option has higher preference than 'Position to smoke at'."
+	position(string) : "Smoke from [LP]"
+	scale_unit_type(choices) :"Scale unit type" : 1 =
+	[
+		0: "Decile (tenth)"
+		1: "Normal"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "Start On" : 0
+		4 : "Repeatable" : 0
+		8 : "Directed" : 0
+		16 : "Fade sprite" : 0
+	]
+]
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = locus_beam : "Locus System - Beam effect"
+[
+	m_iszStart(target_generic) : "Start at (blank = here)" : ""
+	m_iszEnd(target_generic) : "End at (blank = here)" : "*locus"
+	impulse(choices) : "Start & End are" : 0 =
+	[
+		0: "Entity & Entity [LE LE]"
+		1: "Position & Entity [LP LE]"
+		2: "Position & Position [LP LP]"
+		3: "Position & Direction [LP LV]"
+	]
+	m_iszSprite(sprite) : "Sprite Name" : "sprites/laserbeam.spr"
+	renderamt(integer) : "Brightness (1 - 255)" : 255
+	rendercolor(color255) : "Color (R G B)" : "255 255 255"
+	m_iWidth(integer) : "Width" : 10
+	m_iDistortion(integer) : "Distortion ('noise')" : 0
+	m_fFrame(integer) : "Start frame" : 0
+	m_iScrollRate(integer) : "Scroll rate" : 0
+	m_fDuration(string) : "Duration (0 = unlimited)" : 0
+	m_fDamage(string) : "Damage amount" : 0
+	m_iDamageType(choices) : "Damage type" : 0 =
+	[
+		0	 : "Energy Beam"
+		1	 : "Fracture"
+		2	 : "Blood Loss"
+		4	 : "Lacerations"
+		8	 : "Burning"
+		16	 : "Freezing"
+		512	 : "Internal bleeding"
+		16384	 : "Drowning"
+		65536  : "Biohazard"
+		131072 : "Poison (duration)"
+		262144 : "Radiation"
+		1048576: "Hazardous chemical"
+	]
+	m_iszTargetName(target_source) : "Name of children"
+	target(target_destination) : "Fire on spawn (locus = child)"
+	m_iStartAttachment(integer) : "Start attachment [1-4]" : : "Used when start is entity"
+	m_iEndAttachment(integer) : "End attachment [1-4]" : : "Used when end is entity"
+	spawnflags(flags) =
+	[
+		8 : "Ring"			: 0
+		16: "StartSparks"		: 0
+		32: "EndSparks"		: 0
+		64: "Decal End"		: 0
+		128: "Fade Start"		: 0
+		256: "Fade End"		: 0
+		512: "Draw Solid"		: 0
+		1024: "Draw Sine"		: 0
+	]
+]
+@PointClass color(128 200 64) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_position : "Calculate position"
+[
+	netname(target_generic) : "Entity to use [LE]" : "*locus"
+	impulse(choices) : "Position to calculate" : 1 =
+	[
+		0 : "Origin"
+		1 : "Eyes"
+		2 : "Top"
+		3 : "Centre"
+		4 : "Bottom"
+		5 : "Attachment point 0"
+		6 : "Attachment point 1"
+		7 : "Attachment point 2"
+		8 : "Attachment point 3"
+		9 : "Random"
+		10 : "Calc Position [LP]" : "Get Calc Position of another entity. This allows to use the result of another calc_position as a base. You must ensure that the evaluation chain won't lead to recursion!"
+	]
+	message(string) : "Add offset [LV]" : "0 0 0"
+]
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) = calc_ratio : "Ratio adjustment"
+[
+	target(string) : "Based on ratio [LR]" : "*locus"
+	impulse(choices) : "Transformation" : 0 : "Cosine, sine and tangent operations expect degrees as a base value. Inverse operations return the result in degrees as well." =
+	[
+		0 : "None"
+		1 : "Reversed (1-X)"
+		2 : "Negative (-X)"
+		3 : "Reciprocal (1/X)"
+		4 : "Square (X*X)"
+		5 : "Inverse Square (1/X*X)"
+		6 : "Square root"
+		7 : "Cosine"
+		8 : "Sine"
+		9 : "Tangent"
+		10 : "Inverse Cosine"
+		11 : "Inverse Sine"
+		12 : "Inverse Tangent"
+	]
+	netname(string) : "Offset by [LR]" : : "Offset by value after transformation"
+	message(string) : "Scale factor [LR]" : : "Scale by value after transformation and after applying the offset"
+	noise(string) : "Min (blank = none) [LR]" : : "Min boundary for the resulting value"
+	noise1(string) : "Max (blank = none) [LR]" : : "Max boundary for the resulting value"
+	frags(choices) : "If outside range" : 0 =
+	[
+		0 : "Pick nearest value"
+		1 : "Wrap around"
+		2 : "Bounce back"
+	]
+	base_cast_mode(choices) : "Cast base" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+	result_cast_mode(choices) : "Cast result" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+]
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) = calc_numfromvec : "Calculate number based on vector"
+[
+	target(string) : "Vector to use [LV], [LP], [LE]" : "*locus"
+	impulse(choices) : "Number to get" : 0 =
+	[
+		0 : "X (R)"
+		1 : "Y (G)"
+		2 : "Z (B)"
+		3 : "Length"
+		4 : "Pitch"
+		5 : "Yaw"
+	]
+	vector_type(choices) : "Vector value is..." : 0 =
+	[
+		0: "Velocity [LV]"
+		1: "Position [LP]"
+		2: "Color [LE]"
+	]
+]
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_vecfromnums : "Calculate vector based on three numbers. This entity will report the resulting vector as both its Position and Velocity"
+[
+	base_vector(string): "Base Vector [LV], [LP], [LE]" : : "The vector to use as a base. If omitted the base vector is 0,0,0"
+	vector_type(choices) : "Base Vector is..." =
+	[
+		0: "Velocity [LV]"
+		1: "Position [LP]"
+		2: "Color [LE]"
+	]
+	x_value(string): "X value [LR]" : : "Use as X component. If omitted the one from Base Vector will be used"
+	y_value(string): "Y value [LR]" : : "Use as Y component. If omitted the one from Base Vector will be used"
+	z_value(string): "Z value [LR]" : : "Use as Z component. If omitted the one from Base Vector will be used"
+]
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_subvelocity : "Calculate velocity based on entity properties"
+[
+	netname(string) : "Entity to use [LE]" : "*locus"
+	impulse(choices) : "Value to calculate from" : 0 =
+	[
+		0 : "Movement Velocity"
+		1 : "Angle" : "Get entity direction"
+		2 : "View Angle" : "Get player view direction"
+		5 : "Attachment point 0"
+		6 : "Attachment point 1"
+		7 : "Attachment point 2"
+		8 : "Attachment point 3"
+		10: "Calc Velocity [LV]" : "Get Calc Velocity of another entity. This allows to use the result of another calc_subvelocity as a base. You must ensure that the evaluation chain won't lead to recursion!"
+	]
+	noise(string) : "Scale factor [LR]" : "1.0" : "Scale by this factor after getting the base vector and after possible normalization"
+	message(string) : "Add offset [LV]" : "0 0 0" : "Add offset after (possible) normalization and scale factor have been applied"
+	spawnflags(flags) =
+	[
+		1 : "Normalize before scaling" : 0
+		2 : "Flip Vertical" : 0
+		4 : "Discard X" : 0
+		8 : "Discard Y" : 0
+		16 : "Discard Z" :0
+	]
+]
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_velocity_path : "Calculate velocity for travelling"
+[
+	target(string) : "Start position [LP]" : "*locus"
+	netname(string) : "Destination [LP], [LV]"
+	armorvalue(choices) : "Destination is" : 0 =
+	[
+		0 : "Position [LP]"
+		1 : "Offset [LV]"
+	]
+	health(choices) : "Length Calculation" : 0 =
+	[
+		4 : "Square (X = X*X)"
+		0 : "None (X = X)"
+		1 : "Normalise (X = 1)"
+		2 : "Reciprocal (X = 1/X)"
+		3 : "Inverse Square (X = 1/X*X)"
+	]
+	noise(string) : "Length factor [LR]" : "1.0" : "Scale the vector by this factor. A negative number here will make the line go in the opposite direction."
+	frags(choices) : "Line is blocked by" : 0 =
+	[
+		0 : "Nothing"
+		1 : "Walls"
+		2 : "Walls & Glass"
+		3 : "Walls & Monsters"
+		4 : "Walls, Monsters & Glass"
+	]
+]
+@PointClass color(170 179 43) size(-12 -12 -12, 12 12 12) base(Targetname) = calc_velocity_polar : "Calculate velocity"
+[
+	netname(string) : "Based on velocity [LV]"
+	angles(string) : "Rotated by angle (Y Z X) (degrees)" : "0 0 0"
+	noise(string) : "Length factor [LR]" : "1.0" : "Scale the vector by this factor."
+	message(string) : "Add offset [LV]" : "0 0 0" : "After rotation and scaling, add this offset to the vector."
+	spawnflags(flags) =
+	[
+		1 : "Normalize" : 0 : "The 'Length factor' field will set the exact length of the velocity, instead of scaling it by a factor."
+	]
+]
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = locus_variable : "Locus System - Variable for storing data"
+[
+	m_iszPosition(string) : "Position to record  [LP]" : "*locus"
+	m_iszVelocity(string) : "Velocity to record [LV]" : "*locus"
+	m_iszRatio(string) : "Ratio to record [LR]" : "*locus"
+	m_iszTargetName(string) : "Child's name (blank = no child)"
+	m_iszFireOnSpawn(string) : "Fire on spawn (locus = child)"
+	m_fDuration(string) : "Removed after time (secs)"
+]
+@PointClass base(Targetname) color(170 221 85) size(-12 -12 -12, 12 12 12) = calc_eval_number : "Calculate number"
+[
+	left_operand(string) : "First Operand [LR]"
+	right_operand(string) : "Second Operand [LR]"
+	third_operand(string) : "Third Operand [LR] (optional)" : : "After calculating the result of operation on the first 2 operands, make the same operation with the result and the third operand. This allows, for example, to add 3 values or find the maximum among 3 values without resorting to the use of another calc_eval_number."
+	operation(choices) : "Operation" : 0 =
+	[
+		0 : "Add"
+		1 : "Subtract"
+		2 : "Multiply"
+		3 : "Divide"
+		4 : "Mod"
+		5 : "Find Min"
+		6 : "Find Max"
+	]
+	store_result(target_destination) : "Store result in" : : "When calc_eval_number is triggered and the operation succeeded, store the numeric result in other entity like game_number or game_counter"
+	target(target_destination) : "Trigger after operation" : : "When calc_eval_number is triggered and the operation succeeded, trigger this target"
+	trigger_on_fail(target_destination) : "Trigger on calculation fail" : : "When calc_eval_number is triggered and the operation failed, trigger this target. The operation may fail if one of the operands couldn't be calculated due to the source entity being missing or invalid operation like dividing by zero."
+	min_value(string) : "Min (blank = none) [LR]" : : "Min boundary for the resulting value"
+	max_value(string) : "Max (blank = none) [LR]" : : "Max boundary for the resulting value"
+	clamp_policy(choices) : "If outside range" =
+	[
+		0 : "Pick nearest value"
+		1 : "Wrap around"
+		2 : "Bounce back"
+	]
+	vector_mode(choices) : "Report as vector" : : "When the Position or Velocity is requested from this entity, form the vector based on the number depending on the chosen pattern. E.g. for 'X 0 0' pattern and number computed to 10 the resulting vector will be '10 0 0'. Sometimes it's more handy than having a dedicated calc_vecfromnums." =
+	[
+		0 : "No"
+		1 : "X 0 0"
+		2 : "0 Y 0"
+		3 : "0 0 Z"
+	]
+	first_cast_mode(choices) : "Cast first operand" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+	second_cast_mode(choices) : "Cast second operand" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+	third_cast_mode(choices) : "Cast third operand" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+	result_cast_mode(choices) : "Cast result" =
+	[
+		0 : "No cast"
+		1 : "Round"
+		2 : "Floor"
+		3 : "Ceil"
+		4 : "Trunc"
+	]
+]
+// ---- end of LRC / locus effects ----

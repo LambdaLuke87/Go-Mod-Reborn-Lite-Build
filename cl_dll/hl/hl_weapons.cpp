@@ -99,7 +99,7 @@ CPenguin g_Penguin;
 CPhysgun g_PhysGun;
 CToolbow g_ToolBow;
 CNailgun g_Nailgun;
-CGLauncher g_GLauncher;
+CGrenadeLauncher g_GLauncher;
 
 
 /*
@@ -645,7 +645,7 @@ CBasePlayerWeapon* GetLocalWeapon(int id)
 		return &g_ToolBow;
 	case WEAPON_NAILGUN:
 		return &g_Nailgun;
-	case WEAPON_M79:
+	case WEAPON_GLAUNCHER:
 		return &g_GLauncher;
 
 	default:

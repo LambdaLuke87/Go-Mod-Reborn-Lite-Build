@@ -4545,7 +4545,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		GiveNamedItem("weapon_sniperrifle");
 		GiveNamedItem("weapon_displacer");
 		GiveNamedItem("weapon_nailgun");
-		GiveNamedItem("weapon_m79");
+		GiveNamedItem("weapon_grenadelauncher");
 
 		// You shouldn't get these things, only in Sandbox or Singleplayer
 		if (!UTIL_IsMultiplayer() || UTIL_IsMultiplayer() && IsSandBox())
