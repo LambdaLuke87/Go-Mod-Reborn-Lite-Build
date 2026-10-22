@@ -58,6 +58,15 @@ cvar_t* m_pCvarPhysgunR;
 cvar_t* m_pCvarPhysgunG;
 cvar_t* m_pCvarPhysgunB;
 
+// Go-Mod crosshair (ammo.cpp DrawLineCrosshair)
+cvar_t* m_pCvarLegacyCrosshair;
+cvar_t* m_pCvarCrosshairSize;
+cvar_t* m_pCvarCrosshairTranslucent;
+cvar_t* m_pCvarCrosshairR;
+cvar_t* m_pCvarCrosshairG;
+cvar_t* m_pCvarCrosshairB;
+#define RGB_CROSSHAIR 0x32FA32 // 50 250 50
+
 // default color of the physgun beam
 #define RGB_PHYSGUN 0x33CCFF
 
@@ -451,6 +460,11 @@ void __CmdFunc_Physgun_Color()
 	gHUD.HUDColorCmd(3);
 }
 
+void __CmdFunc_Crosshair_Color()
+{
+	gHUD.HUDColorCmd(4);
+}
+
 void __CmdFunc_ShowMenu()
 {
 	if (!UTIL_IsSandbox())
@@ -507,6 +521,7 @@ void CHud::Init()
 	HOOK_COMMAND("hud_color_critical", HUDColor_Critical);
 	HOOK_COMMAND("nightvision_color", Custom_NightVision_Color);
 	HOOK_COMMAND("physgun_color", Physgun_Color);
+	HOOK_COMMAND("crosshair_color", Crosshair_Color);
 
 	HOOK_MESSAGE(ValClass);
 	HOOK_MESSAGE(TeamNames);
@@ -570,6 +585,15 @@ void CHud::Init()
 	m_pCvarPhysgunR = CVAR_CREATE_INTVALUE("physgun_color_r", physR, FCVAR_ARCHIVE);
 	m_pCvarPhysgunG = CVAR_CREATE_INTVALUE("physgun_color_g", physG, FCVAR_ARCHIVE);
 	m_pCvarPhysgunB = CVAR_CREATE_INTVALUE("physgun_color_b", physB, FCVAR_ARCHIVE);
+
+	int crossR, crossG, crossB;
+	UnpackRGB(crossR, crossG, crossB, RGB_CROSSHAIR);
+	m_pCvarCrosshairR = CVAR_CREATE_INTVALUE("crosshair_color_r", crossR, FCVAR_ARCHIVE);
+	m_pCvarCrosshairG = CVAR_CREATE_INTVALUE("crosshair_color_g", crossG, FCVAR_ARCHIVE);
+	m_pCvarCrosshairB = CVAR_CREATE_INTVALUE("crosshair_color_b", crossB, FCVAR_ARCHIVE);
+	m_pCvarCrosshairSize = CVAR_CREATE("cl_crosshair_size", "auto", FCVAR_ARCHIVE);
+	m_pCvarCrosshairTranslucent = CVAR_CREATE("cl_crosshair_translucent", "1", FCVAR_ARCHIVE);
+	m_pCvarLegacyCrosshair = CVAR_CREATE("cl_legacy_crosshair", "0", FCVAR_ARCHIVE);
 	PhysGun_Init(); // userinfo key with the color, so the other players see it
 
 	m_iLogo = 0;
@@ -1044,6 +1068,18 @@ void CHud::HUDColorCmd(int colorType)
 		pCvarRed = m_pCvarPhysgunR;
 		pCvarGreen = m_pCvarPhysgunG;
 		pCvarBlue = m_pCvarPhysgunB;
+		break;
+
+	case 4: // Go-Mod crosshair
+		cvarR = "crosshair_color_r";
+		cvarG = "crosshair_color_g";
+		cvarB = "crosshair_color_b";
+		cmdName = "crosshair_color";
+		defaultColor = RGB_CROSSHAIR;
+
+		pCvarRed = m_pCvarCrosshairR;
+		pCvarGreen = m_pCvarCrosshairG;
+		pCvarBlue = m_pCvarCrosshairB;
 		break;
 
 	default:

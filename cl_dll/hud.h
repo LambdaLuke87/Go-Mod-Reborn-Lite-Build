@@ -150,6 +150,10 @@ public:
 	// sets the crosshair of the current weapon again (after the Go-Mod menu hid it)
 	void RestoreCrosshair();
 
+	// Go-Mod crosshair: drawn with lines instead of the weapon sprite (cl_legacy_crosshair 1 = sprites)
+	bool UseSpriteCrosshair();
+	void DrawLineCrosshair();
+
 private:
 	float m_fFade;
 	RGBA m_rgba;

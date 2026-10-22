@@ -551,8 +551,7 @@ bool CHudAmmo::MsgFunc_HideWeapon(const char* pszName, int iSize, void* pbuf)
 	}
 	else
 	{
-		if (m_pWeapon)
-			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+		RestoreCrosshair();
 	}
 
 	return true;
@@ -562,7 +561,8 @@ void CHudAmmo::RestoreCrosshair()
 {
 	static Rect nullrc;
 
-	if (!m_pWeapon || gHUD.m_fPlayerDead || (gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0)
+	if (!m_pWeapon || gHUD.m_fPlayerDead || (gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0 ||
+		!UseSpriteCrosshair())
 	{
 		SetCrosshair(0, nullrc, 0, 0, 0);
 		return;
@@ -576,6 +576,124 @@ void CHudAmmo::RestoreCrosshair()
 		SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, r, g, b);
 	else
 		SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, r, g, b);
+}
+
+//=========================================================
+// Go-Mod crosshair
+//
+// Four lines around the center of the screen, always the same (it doesn't open up when you shoot,
+// move, jump or duck). Replaces the sprite crosshair of the weapons:
+//   cl_legacy_crosshair 1            back to the sprite crosshairs of the weapon_*.txt
+//   cl_crosshair_size auto/small/medium/large   (auto = by the screen height)
+//   cl_crosshair_translucent 1/0     additive (1) or solid (0)
+//   crosshair_color r g b / #RRGGBB / default   (cvars crosshair_color_r/g/b, separate from hud_color)
+// Weapons without a crosshair in their txt (knife, wrench...) have none here either, and the
+// zoom/scope sprites (sniper, crossbow zoom) are still the sprites.
+//=========================================================
+
+extern cvar_t* m_pCvarLegacyCrosshair;
+extern cvar_t* m_pCvarCrosshairSize;
+extern cvar_t* m_pCvarCrosshairTranslucent;
+extern cvar_t* m_pCvarCrosshairR;
+extern cvar_t* m_pCvarCrosshairG;
+extern cvar_t* m_pCvarCrosshairB;
+extern bool g_bShowMenu;
+
+bool CHudAmmo::UseSpriteCrosshair()
+{
+	if (!m_pWeapon)
+		return true;
+
+	if (!m_pCvarLegacyCrosshair || m_pCvarLegacyCrosshair->value != 0)
+		return true;
+
+	// zoomed with a zoom sprite of its own (scopes): that one stays
+	if (gHUD.m_iFOV < 90 && 0 != m_pWeapon->hZoomedCrosshair && m_pWeapon->hZoomedCrosshair != m_pWeapon->hCrosshair)
+		return true;
+
+	return false;
+}
+
+// 0 small, 1 medium, 2 large
+static int CrosshairSizeIndex()
+{
+	const char* size = m_pCvarCrosshairSize ? m_pCvarCrosshairSize->string : "auto";
+
+	if (!stricmp(size, "small") || !strcmp(size, "1"))
+		return 0;
+	if (!stricmp(size, "medium") || !strcmp(size, "2"))
+		return 1;
+	if (!stricmp(size, "large") || !strcmp(size, "3"))
+		return 2;
+
+	// auto
+	if (ScreenHeight <= 600)
+		return 0;
+	if (ScreenHeight <= 1080)
+		return 1;
+	return 2;
+}
+
+void CHudAmmo::DrawLineCrosshair()
+{
+	// the sprite mode changed (cvar, zoom): give the engine its sprite back / take it away
+	static int s_iLastSpriteMode = -1;
+	const int spriteMode = UseSpriteCrosshair() ? 1 : 0;
+	if (spriteMode != s_iLastSpriteMode)
+	{
+		s_iLastSpriteMode = spriteMode;
+		RestoreCrosshair();
+	}
+
+	if (spriteMode)
+		return;
+
+	if (!m_pWeapon || 0 == m_pWeapon->hCrosshair)
+		return; // this weapon has no crosshair
+
+	if (gHUD.m_fPlayerDead || g_bShowMenu)
+		return;
+
+	if ((gHUD.m_iHideHUDDisplay & (HIDEHUD_WEAPONS | HIDEHUD_ALL)) != 0)
+		return;
+
+	if (0 != g_iUser1 && g_iUser1 != OBS_IN_EYE)
+		return; // spectating, not in first person
+
+	// length / gap of each line, at 1080p
+	static const int kLength[] = {5, 7, 10};
+	static const int kGap[] = {3, 4, 5};
+
+	const int sizeIndex = CrosshairSizeIndex();
+	const int scale = V_max(1, (ScreenHeight + 540) / 1080); // 1 up to 1620p, 2 at 2160p...
+
+	const int length = kLength[sizeIndex] * scale;
+	const int gap = kGap[sizeIndex] * scale;
+	const int thick = scale;
+
+	const int cx = ScreenWidth / 2;
+	const int cy = ScreenHeight / 2;
+
+	const int r = m_pCvarCrosshairR ? (int)m_pCvarCrosshairR->value : 50;
+	const int g = m_pCvarCrosshairG ? (int)m_pCvarCrosshairG->value : 250;
+	const int b = m_pCvarCrosshairB ? (int)m_pCvarCrosshairB->value : 50;
+
+	const bool additive = !m_pCvarCrosshairTranslucent || m_pCvarCrosshairTranslucent->value != 0;
+
+	auto Fill = [&](int x, int y, int w, int h)
+	{
+		if (additive)
+			FillRGBA(x, y, w, h, r, g, b, 200);
+		else
+			gEngfuncs.pfnFillRGBABlend(x, y, w, h, r, g, b, 255);
+	};
+
+	const int half = thick / 2;
+
+	Fill(cx - gap - length, cy - half, length, thick); // left
+	Fill(cx + gap + 1, cy - half, length, thick);	   // right
+	Fill(cx - half, cy - gap - length, thick, length); // top
+	Fill(cx - half, cy + gap + 1, thick, length);	   // bottom
 }
 
 //
@@ -642,7 +760,11 @@ bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 	gNew = m_pCvarHudGreen->value;
 	bNew = m_pCvarHudBlue->value;
 
-	if (gHUD.m_iFOV >= 90)
+	if (!UseSpriteCrosshair())
+	{ // Go-Mod crosshair (DrawLineCrosshair): no engine sprite
+		SetCrosshair(0, nullrc, 0, 0, 0);
+	}
+	else if (gHUD.m_iFOV >= 90)
 	{ // normal crosshairs
 		if (fOnTarget && 0 != m_pWeapon->hAutoaim)
 			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, rNew, gNew, bNew);
@@ -894,6 +1016,8 @@ bool CHudAmmo::Draw(float flTime)
 {
 	int a, x, y, r, g, b;
 	int AmmoWidth;
+
+	DrawLineCrosshair();
 
 	if (!gHUD.HasSuit())
 		return true;

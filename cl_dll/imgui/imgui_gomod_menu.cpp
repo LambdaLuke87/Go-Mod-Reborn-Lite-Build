@@ -941,6 +941,98 @@ static void DrawRenderOptionsTab()
 	DrawToolCategoryList(g_RenderToolCats, s_pActive);
 }
 
+// ---- Crosshair (ammo.cpp DrawLineCrosshair), with its own apply button ----
+static const char* const g_CrosshairSizes[] = {"auto", "small", "medium", "large"};
+static const char* const g_CrosshairSizeKeys[] = {
+	"#Gomod_Menu_CrosshairSize_Auto",
+	"#Gomod_Menu_CrosshairSize_Small",
+	"#Gomod_Menu_CrosshairSize_Medium",
+	"#Gomod_Menu_CrosshairSize_Large",
+};
+
+static void DrawCrosshairSettings()
+{
+	static bool s_bLoaded = false;
+	static bool s_bLegacy = false;
+	static bool s_bTranslucent = true;
+	static int s_iSize = 0;
+
+	// read the cvars again every time this section shows up (menu opened / tab selected),
+	// they may have been changed from the console
+	// (ImGui frames only run with the menu open, so the real time is what tells it was closed)
+	static double s_flLastDrawn = -100.0;
+	const double now = SDL_GetTicks() / 1000.0;
+	if (!s_bLoaded || now - s_flLastDrawn > 0.25)
+	{
+		s_bLoaded = true;
+
+		s_bLegacy = gEngfuncs.pfnGetCvarFloat("cl_legacy_crosshair") != 0;
+		s_bTranslucent = gEngfuncs.pfnGetCvarFloat("cl_crosshair_translucent") != 0;
+
+		s_iSize = 0;
+		if (const char* size = gEngfuncs.pfnGetCvarString("cl_crosshair_size"))
+		{
+			for (int i = 0; i < (int)IM_ARRAYSIZE(g_CrosshairSizes); i++)
+			{
+				if (!stricmp(size, g_CrosshairSizes[i]) || (size[0] == '0' + i && size[1] == '\0'))
+					s_iSize = i;
+			}
+		}
+	}
+	s_flLastDrawn = now;
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ImGui::TextUnformatted(L("#Gomod_Menu_Crosshair"));
+	ImGui::Spacing();
+
+	ImGui::Checkbox(LID("#Gomod_Menu_CrosshairLegacy").c_str(), &s_bLegacy);
+
+	// the rest only applies to the new crosshair
+	ImGui::BeginDisabled(s_bLegacy);
+
+	ImGui::TextUnformatted(L("#Gomod_Menu_CrosshairSize"));
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	if (ImGui::BeginCombo("##crosshairsize", L(g_CrosshairSizeKeys[s_iSize])))
+	{
+		for (int i = 0; i < (int)IM_ARRAYSIZE(g_CrosshairSizes); i++)
+		{
+			const bool selected = (i == s_iSize);
+			if (ImGui::Selectable(LID(g_CrosshairSizeKeys[i]).c_str(), selected))
+				s_iSize = i;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::Checkbox(LID("#Gomod_Menu_CrosshairTranslucent").c_str(), &s_bTranslucent);
+
+	ImGui::EndDisabled();
+
+	ImGui::Spacing();
+
+	int btnW = 200, btnH = 30;
+	ScaleSize(btnW, btnH);
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - (float)btnW) * 0.5f);
+
+	if (ImGui::Button(LID("#Gomod_Menu_ApplyCrosshair").c_str(), ImVec2((float)btnW, (float)btnH)))
+	{
+		char buf[64];
+
+		snprintf(buf, sizeof(buf), "cl_legacy_crosshair %d", s_bLegacy ? 1 : 0);
+		RunCmd(buf);
+
+		snprintf(buf, sizeof(buf), "cl_crosshair_size %s", g_CrosshairSizes[s_iSize]);
+		RunCmd(buf);
+
+		snprintf(buf, sizeof(buf), "cl_crosshair_translucent %d", s_bTranslucent ? 1 : 0);
+		RunCmd(buf);
+	}
+}
+
 static void DrawCustomizationTab()
 {
 	static int s_voiceIndex = 0;
@@ -1003,6 +1095,8 @@ static void DrawCustomizationTab()
 		RunCmd(buf);
 	}
 
+	DrawCrosshairSettings();
+
 	ImGui::EndChild();
 }
 
@@ -1061,6 +1155,10 @@ static void DrawColorSettingsTab()
 		ImGui::SameLine();
 		if (ImGui::Button(LID("#Gomod_Menu_Color_PhysgunBeam").c_str(), ImVec2(btnW, (float)ButtonHeight)))
 			ApplyColorCmd("physgun_color");
+
+		ImGui::SameLine();
+		if (ImGui::Button(LID("#Gomod_Menu_Color_Crosshair").c_str(), ImVec2(btnW, (float)ButtonHeight)))
+			ApplyColorCmd("crosshair_color");
 	}
 
 	ImGui::Spacing();
