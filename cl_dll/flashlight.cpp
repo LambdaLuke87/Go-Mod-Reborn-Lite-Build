@@ -146,18 +146,18 @@ bool CHudFlashlight::Draw(float flTime)
 	ScaleColors(r, g, b, a);
 
 	y = (m_prc1->bottom - m_prc2->top) / 2;
-	x = CHud::Renderer().PerceviedScreenWidth() - m_iWidth - m_iWidth / 2;
+	x = ScreenWidth - m_iWidth - m_iWidth / 2;
 
 	// Draw the flashlight casing
-	CHud::Renderer().SPR_Set(m_hSprite1, r, g, b);
-	CHud::Renderer().SPR_DrawAdditive(0, x, y, m_prc1);
+	SPR_Set(m_hSprite1, r, g, b);
+	SPR_DrawAdditive(0, x, y, m_prc1);
 
 	if (m_fOn)
 	{ // draw the flashlight beam
-		x = CHud::Renderer().PerceviedScreenWidth() - m_iWidth / 2;
+		x = ScreenWidth - m_iWidth / 2;
 
-		CHud::Renderer().SPR_Set(m_hBeam, r, g, b);
-		CHud::Renderer().SPR_DrawAdditive(0, x, y, m_prcBeam);
+		SPR_Set(m_hBeam, r, g, b);
+		SPR_DrawAdditive(0, x, y, m_prcBeam);
 
 		if (g_iNightVision == 1)
 			drawNightVision();
@@ -168,15 +168,15 @@ bool CHudFlashlight::Draw(float flTime)
 	}
 
 	// draw the flashlight energy level
-	x = CHud::Renderer().PerceviedScreenWidth() - m_iWidth - m_iWidth / 2;
+	x = ScreenWidth - m_iWidth - m_iWidth / 2;
 	int iOffset = m_iWidth * (1.0 - m_flBat);
 	if (iOffset < m_iWidth)
 	{
 		rc = *m_prc2;
 		rc.left += iOffset;
 
-		CHud::Renderer().SPR_Set(m_hSprite2, r, g, b);
-		CHud::Renderer().SPR_DrawAdditive(0, x + iOffset, y, &rc);
+		SPR_Set(m_hSprite2, r, g, b);
+		SPR_DrawAdditive(0, x + iOffset, y, &rc);
 	}
 
 

@@ -57,13 +57,13 @@ bool CHudTrain::Draw(float fTime)
 		r = giR;
 		g = giG;
 		b = giB;
-		CHud::Renderer().SPR_Set(m_hSprite, r, g, b);
+		SPR_Set(m_hSprite, r, g, b);
 
 		// This should show up to the right and part way up the armor number
-		y = CHud::Renderer().PerceviedScreenHeight() - SPR_Height(m_hSprite, 0) - gHUD.m_iFontHeight;
-		x = (CHud::Renderer().PerceviedScreenWidth() - SPR_Width(m_hSprite, 0)) / 2;
+		y = ScreenHeight - SPR_Height(m_hSprite, 0) - gHUD.m_iFontHeight;
+		x = ScreenWidth / 3 + SPR_Width(m_hSprite, 0) / 4;
 
-		CHud::Renderer().SPR_DrawAdditive(m_iPos - 1, x, y, NULL);
+		SPR_DrawAdditive(m_iPos - 1, x, y, NULL);
 	}
 
 	return true;

@@ -44,35 +44,23 @@ inline const char* CVAR_GET_STRING(const char* x) { return gEngfuncs.pfnGetCvarS
 inline struct cvar_s* CVAR_CREATE(const char* cv, const char* val, const int flags) { return gEngfuncs.pfnRegisterVariable((char*)cv, (char*)val, flags); }
 
 #define SPR_Load (*gEngfuncs.pfnSPR_Load)
-inline void SPR_Set(HSPRITE hPic, int r, int g, int b)
-{
-	gEngfuncs.pfnSPR_Set(hPic, r, g, b);
-}
+#define SPR_Set (*gEngfuncs.pfnSPR_Set)
 #define SPR_Frames (*gEngfuncs.pfnSPR_Frames)
 #define SPR_GetList (*gEngfuncs.pfnSPR_GetList)
 
 // SPR_Draw  draws a the current sprite as solid
 #define SPR_Draw (*gEngfuncs.pfnSPR_Draw)
 // SPR_DrawHoles  draws the current sprites,  with color index255 not drawn (transparent)
-inline void SPR_DrawHoles(int frame, int x, int y, const Rect* prc)
-{
-	gEngfuncs.pfnSPR_DrawHoles(frame, x, y, prc);
-}
+#define SPR_DrawHoles (*gEngfuncs.pfnSPR_DrawHoles)
 // SPR_DrawAdditive  adds the sprites RGB values to the background  (additive transulency)
-inline void SPR_DrawAdditive(int frame, int x, int y, const Rect* prc)
-{
-	gEngfuncs.pfnSPR_DrawAdditive(frame, x, y, prc);
-}
+#define SPR_DrawAdditive (*gEngfuncs.pfnSPR_DrawAdditive)
 
 // SPR_EnableScissor  sets a clipping rect for HUD sprites.  (0,0) is the top-left hand corner of the screen.
 #define SPR_EnableScissor (*gEngfuncs.pfnSPR_EnableScissor)
 // SPR_DisableScissor  disables the clipping rect
 #define SPR_DisableScissor (*gEngfuncs.pfnSPR_DisableScissor)
 //
-inline void FillRGBA(int x, int y, int width, int height, int r, int g, int b, int a)
-{
-	gEngfuncs.pfnFillRGBA(x, y, width, height, r, g, b, a);
-}
+#define FillRGBA (*gEngfuncs.pfnFillRGBA)
 
 
 // ScreenHeight returns the height of the screen, in pixels
@@ -93,10 +81,7 @@ inline void FillRGBA(int x, int y, int width, int height, int r, int g, int b, i
 #define ServerCmd (*gEngfuncs.pfnServerCmd)
 #define EngineClientCmd (*gEngfuncs.pfnClientCmd)
 #define EngineFilteredClientCmd (*gEngfuncs.pfnFilteredClientCmd)
-inline void SetCrosshair(HSPRITE hspr, Rect rc, int r, int g, int b)
-{
-	gEngfuncs.pfnSetCrosshair(hspr, rc, r, g, b);
-}
+#define SetCrosshair (*gEngfuncs.pfnSetCrosshair)
 #define AngleVectors (*gEngfuncs.pfnAngleVectors)
 #define Com_RandomLong (*gEngfuncs.pfnRandomLong)
 #define Com_RandomFloat (*gEngfuncs.pfnRandomFloat)

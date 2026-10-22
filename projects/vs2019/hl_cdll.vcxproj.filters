@@ -387,9 +387,6 @@
     <ClCompile Include="..\..\cl_dll\particleman\CBaseParticle.cpp">
       <Filter>Source Files\cl_dll\particleman</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\hud_sprite.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\physgun.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
@@ -769,9 +766,6 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\particleman\CBaseParticle.h">
       <Filter>Header Files\cl_dll\particleman</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\hud_sprite.h">
-      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\environment.h">
       <Filter>Header Files\cl_dll</Filter>

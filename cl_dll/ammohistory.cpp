@@ -131,8 +131,8 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 				ScaleColors(r, g, b, V_min(scale, 255));
 
 				// Draw the pic
-				int ypos = ScreenHeight - (CHud::Renderer().ScaleScreen(AMMO_PICKUP_PICK_HEIGHT) + (AMMO_PICKUP_GAP * i));
-				int xpos = ScreenWidth - 24;
+				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				int xpos = ScreenWidth - (rcPic.right - rcPic.left) - 4;
 				if (spr && 0 != *spr) // weapon isn't loaded yet so just don't draw the pic
 				{					  // the dll has to make sure it has sent info the weapons you need
 					SPR_Set(*spr, r, g, b);
@@ -162,7 +162,7 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 				float scale = (rgAmmoHistory[i].DisplayTime - flTime) * 80;
 				ScaleColors(r, g, b, V_min(scale, 255));
 
-				int ypos = ScreenHeight - (CHud::Renderer().ScaleScreen(AMMO_PICKUP_PICK_HEIGHT) + (AMMO_PICKUP_GAP * i));
+				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
 				int xpos = ScreenWidth - (weap->rcInactive.right - weap->rcInactive.left);
 				SPR_Set(weap->hInactive, r, g, b);
 				SPR_DrawAdditive(0, xpos, ypos, &weap->rcInactive);
@@ -182,7 +182,7 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 				float scale = (rgAmmoHistory[i].DisplayTime - flTime) * 80;
 				ScaleColors(r, g, b, V_min(scale, 255));
 
-				int ypos = ScreenHeight - (CHud::Renderer().ScaleScreen(AMMO_PICKUP_PICK_HEIGHT) + (AMMO_PICKUP_GAP * i));
+				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
 				int xpos = ScreenWidth - (rect.right - rect.left) - 10;
 
 				SPR_Set(gHUD.GetSprite(rgAmmoHistory[i].iId), r, g, b);

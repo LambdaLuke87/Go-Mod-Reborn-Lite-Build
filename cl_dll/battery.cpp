@@ -121,8 +121,12 @@ bool CHudBattery::Draw(float flTime)
 
 	int iOffset = (m_prc1->bottom - m_prc1->top) / 6;
 
-	y = CHud::Renderer().PerceviedScreenHeight() - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
-	x = CHud::Renderer().PerceviedScreenWidth() / 5;
+	y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
+
+	int width = (m_prc1->right - m_prc1->left);
+
+	// this used to just be ScreenWidth/5 (4 on Updated) but that caused real issues at higher resolutions. Instead, base it on the width of this sprite.
+	x = 3 * width;
 
 	// make sure we have the right sprite handles
 	if (0 == m_hSprite1)
@@ -130,16 +134,17 @@ bool CHudBattery::Draw(float flTime)
 	if (0 == m_hSprite2)
 		m_hSprite2 = gHUD.GetSprite(gHUD.GetSpriteIndex("suit_full"));
 
-	CHud::Renderer().SPR_Set(m_hSprite1, r, g, b);
-	CHud::Renderer().SPR_DrawAdditive(0, x, y - iOffset, m_prc1);
+	SPR_Set(m_hSprite1, r, g, b);
+	SPR_DrawAdditive(0, x, y - iOffset, m_prc1);
 
 	if (rc.bottom > rc.top)
 	{
-		CHud::Renderer().SPR_Set(m_hSprite2, r, g, b);
-		CHud::Renderer().SPR_DrawAdditive(0, x, y - iOffset + (rc.top - m_prc2->top), &rc);
+		SPR_Set(m_hSprite2, r, g, b);
+		SPR_DrawAdditive(0, x, y - iOffset + (rc.top - m_prc2->top), &rc);
 	}
 
-	x += (m_prc1->right - m_prc1->left);
+	x += width;
+	y += (int)(gHUD.m_iFontHeight * 0.2f);
 	x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iBat, r, g, b);
 
 	return true;

@@ -128,10 +128,6 @@ cvar_t* cl_bobtilt = nullptr;
 cvar_t* r_decals = nullptr;
 cvar_t* cl_sourcewpnlag = nullptr;
 
-// HUD Scale Render
-cvar_t* hud_scale = NULL;
-cvar_t* hud_sprite_offset = NULL;
-
 cvar_t* cl_weather = NULL;
 
 void ShutdownInput();
@@ -585,7 +581,6 @@ void CHud::Init()
 	default_fov = CVAR_CREATE("default_fov", "90", FCVAR_ARCHIVE);
 	m_pCvarStealMouse = CVAR_CREATE("hud_capturemouse", "1", FCVAR_ARCHIVE);
 	m_pCvarDraw = CVAR_CREATE("hud_draw", "1", FCVAR_ARCHIVE);
-	m_pCvarCrosshair = gEngfuncs.pfnGetCvarPointer("crosshair");
 	cl_lw = gEngfuncs.pfnGetCvarPointer("cl_lw");
 	cl_rollangle = CVAR_CREATE("cl_rollangle", "2.0", FCVAR_ARCHIVE);
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", FCVAR_ARCHIVE);
@@ -597,14 +592,6 @@ void CHud::Init()
 
 	// Player Sounds
 	CVAR_CREATE("cl_player_sfx_type", "hevsuit", FCVAR_ARCHIVE | FCVAR_USERINFO); // Custom Player sounds
-
-	hasHudScaleInEngine = gEngfuncs.pfnGetCvarPointer("hud_scale") != NULL;
-
-	if (!hasHudScaleInEngine)
-	{
-		hud_scale = CVAR_CREATE("hud_scale", "0.0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
-		hud_sprite_offset = CVAR_CREATE("hud_sprite_offset", "0.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
-	}
 
 	m_pSpriteList = NULL;
 
@@ -646,8 +633,6 @@ void CHud::Init()
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
 	m_Menu.Init();
-
-	hudRenderer.Init();
 
 	MsgFunc_ResetHUD(0, 0, NULL);
 
@@ -710,10 +695,14 @@ void CHud::VidInit()
 	m_hsprLogo = 0;
 	m_hsprCursor = 0;
 
-	if (ScreenWidth < 640)
-		m_iRes = 320;
-	else
+	if (ScreenWidth > 2560 && ScreenHeight > 1600)
+		m_iRes = 2560;
+	else if (ScreenWidth >= 1280 && ScreenHeight > 720)
+		m_iRes = 1280;
+	else if (ScreenWidth >= 640)
 		m_iRes = 640;
+	else
+		m_iRes = 320;
 
 	// Only load this once
 	if (!m_pSpriteList)
@@ -805,7 +794,6 @@ void CHud::VidInit()
 	m_PlayerBrowse.VidInit();
 	GetClientVoiceMgr()->VidInit();
 
-	hudRenderer.VidInit();
 	memset(&fog, 0, sizeof(fog));
 }
 
@@ -994,11 +982,6 @@ float CHud::GetSensitivity()
 void CHud::setNightVisionState(bool state)
 {
 	mNightVisionState = state;
-}
-
-HudSpriteRenderer& CHud::Renderer()
-{
-	return gHUD.hudRenderer.DefaultScale();
 }
 
 void CHud::HUDColorCmd(int colorType)

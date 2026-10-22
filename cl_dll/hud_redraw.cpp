@@ -231,11 +231,6 @@ bool CHud::Redraw(float flTime, bool intermission)
 	}
 	*/
 
-	if (m_pCvarCrosshair->value > 0.0f)
-	{
-		CHud::Renderer().DrawCrosshair();
-	}
-
 	ImGuiMenu_Draw(flTime); // Start ImGui
 
 	return true;
@@ -321,8 +316,8 @@ int CHud::DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int
 		if (iNumber >= 100)
 		{
 			k = iNumber / 100;
-			CHud::Renderer().SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
-			CHud::Renderer().SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
+			SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
+			SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
 			x += iWidth;
 		}
 		else if ((iFlags & DHN_3DIGITS) != 0)
@@ -335,8 +330,8 @@ int CHud::DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int
 		if (iNumber >= 10)
 		{
 			k = (iNumber % 100) / 10;
-			CHud::Renderer().SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
-			CHud::Renderer().SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
+			SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
+			SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
 			x += iWidth;
 		}
 		else if ((iFlags & (DHN_3DIGITS | DHN_2DIGITS)) != 0)
@@ -347,13 +342,13 @@ int CHud::DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int
 
 		// SPR_Draw ones
 		k = iNumber % 10;
-		CHud::Renderer().SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
-		CHud::Renderer().SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
+		SPR_Set(GetSprite(m_HUD_number_0 + k), r, g, b);
+		SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0 + k));
 		x += iWidth;
 	}
 	else if ((iFlags & DHN_DRAWZERO) != 0)
 	{
-		CHud::Renderer().SPR_Set(GetSprite(m_HUD_number_0), r, g, b);
+		SPR_Set(GetSprite(m_HUD_number_0), r, g, b);
 
 		// SPR_Draw 100's
 		if ((iFlags & DHN_3DIGITS) != 0)
@@ -370,7 +365,7 @@ int CHud::DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int
 
 		// SPR_Draw ones
 
-		CHud::Renderer().SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0));
+		SPR_DrawAdditive(0, x, y, &GetSpriteRect(m_HUD_number_0));
 		x += iWidth;
 	}
 
