@@ -23,6 +23,7 @@
 #include "game.h"
 #include "pm_shared.h"
 #include "gm_audio_server.h"
+#include "custom_monsters.h"
 
 void EntvarsKeyvalue(entvars_t* pev, KeyValueData* pkvd);
 
@@ -165,6 +166,29 @@ int DispatchSpawn(edict_t* pent)
 				return -1; // return that this entity should be deleted
 			if ((pEntity->pev->flags & FL_KILLME) != 0)
 				return -1;
+
+			// Go-Mod: custom NPC ("custom_npc" keyvalue of the map, or SpawnerParams::customId)
+			if (!pEntity->m_customMonsterId.empty())
+			{
+				const CustomMonsterDef* pDef = FindCustomMonsterDef(pEntity->m_customMonsterId.c_str());
+
+				if (!pDef)
+				{
+					ALERT(at_console, "custom_npc \"%s\" (%s): no custom NPC with that id\n",
+						pEntity->m_customMonsterId.c_str(), STRING(pEntity->pev->classname));
+					pEntity->m_customMonsterId.clear();
+				}
+				else
+				{
+					if (!FClassnameIs(pEntity->pev, pDef->baseClassname.c_str()))
+					{
+						ALERT(at_console, "custom_npc \"%s\": it is made for %s, but it's on a %s\n",
+							pDef->id.c_str(), pDef->baseClassname.c_str(), STRING(pEntity->pev->classname));
+					}
+
+					ApplyCustomMonsterOverrides(pEntity, *pDef);
+				}
+			}
 		}
 
 
@@ -210,6 +234,14 @@ void DispatchKeyValue(edict_t* pentKeyvalue, KeyValueData* pkvd)
 
 	if (!pEntity)
 		return;
+
+	// Go-Mod: "custom_npc" "<id>" on any entity of a map: the custom NPC is applied after Spawn
+	if (FStrEq(pkvd->szKeyName, "custom_npc"))
+	{
+		pEntity->m_customMonsterId = pkvd->szValue ? pkvd->szValue : "";
+		pkvd->fHandled = 1;
+		return;
+	}
 
 	pkvd->fHandled = static_cast<int32>(pEntity->KeyValue(pkvd));
 }
@@ -786,6 +818,9 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 	pEntity->m_AltClass = p.altClass; // Get alt class
 	pEntity->m_MenuCreated = true; // Menu Created
 
+	if (p.customId && p.customId[0])
+		pEntity->m_customMonsterId = p.customId; // applied by DispatchSpawn
+
 	if (p.glowstick)
 		pEntity->m_ForceSkin = p.skin;
 	else if (p.spawner_mode)
@@ -795,6 +830,7 @@ CBaseEntity* CBaseEntity::CreateCustom(const SpawnerParams& p)
 		pEntity->m_CustomFrame = p.customFrame;		// Frame tool Support
 		pEntity->pev->body = p.body;
 		pEntity->pev->skin = p.skin;
+		pEntity->m_bloodColor = p.blood_color;
 		// Renders Copy
 		pEntity->pev->rendermode = p.renderMode;
 		pEntity->pev->renderfx = p.renderFx;

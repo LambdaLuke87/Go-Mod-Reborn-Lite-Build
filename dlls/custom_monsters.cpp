@@ -339,6 +339,9 @@ void ApplyCustomMonsterOverrides(CBaseEntity* pEntity, const CustomMonsterDef& d
 	if (!pEntity)
 		return;
 
+	// remember it: duplicator, spawner (respawn)...
+	pEntity->m_customMonsterId = def.id;
+
 	if (!def.modelPath.empty())
 	{
 		// Save original npc colission
@@ -355,8 +358,7 @@ void ApplyCustomMonsterOverrides(CBaseEntity* pEntity, const CustomMonsterDef& d
 	if (!def.customSoundsId.empty())
 	{
 		// override new sounds to the npc
-		CBaseMonster* pMonster = static_cast<CBaseMonster*>(pEntity);
-		pMonster->m_customSoundsId = def.customSoundsId;
+		pEntity->m_customSoundsId = def.customSoundsId;
 	}
 
 	if (def.health > 0)

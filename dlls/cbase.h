@@ -165,6 +165,7 @@ struct SpawnerParams
 	int customFrame;
 	int body;
 	int skin;
+	int blood_color;
 
 	int renderMode;
 	int renderFx;
@@ -174,6 +175,9 @@ struct SpawnerParams
 	float scale;
 
 	edict_t* owner = nullptr;
+
+	// custom NPC (custom_monsters.h) to apply after Spawn, nullptr = none. 'name' must be its base classname
+	const char* customId = nullptr;
 };
 
 //
@@ -458,6 +462,7 @@ public:
 	int m_respawntime = 3.0f; // The respawn time, by default is 3.0f
 	int m_ForceSkin; // used for Glowstick skins
 	std::string m_customSoundsId;
+	std::string m_customMonsterId; // custom NPC id (custom_monsters.h), empty = normal entity. Mappers: keyvalue "custom_npc"
 
 	// Used by physgun
 	int m_movetype = 0;

@@ -33,6 +33,7 @@
 #include "player.h"
 #include "studio.h"
 #include "gm_audio_server.h"
+#include "custom_monsters.h"
 
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 
@@ -835,6 +836,9 @@ void CBaseMonster::MonsterRespawnThink()
 	params.respawnTime = m_respawntime;
 	params.altClass = m_AltClass;
 	params.customFrame = m_CustomFrame;
+	params.body = pev->body;
+	params.skin = pev->skin;
+	params.blood_color = m_bloodColor;
 
 	params.renderMode = pev->rendermode;
 	params.renderFx = pev->renderfx;
@@ -845,11 +849,28 @@ void CBaseMonster::MonsterRespawnThink()
 	params.a = pev->renderamt;
 
 	params.scale = pev->scale;
+	params.body = pev->body;
+	params.skin = pev->skin;
 	params.spawner_mode = m_bShouldRespawn;
 
 	params.owner = edict();
 
+	// custom NPC: comes back as the same custom NPC
+	params.customId = m_customMonsterId.empty() ? nullptr : m_customMonsterId.c_str();
+
 	CBaseEntity* pRespawned = CBaseEntity::CreateCustom(params);
+
+	// the custom NPC is applied after Spawn: keep what the tools changed on this one
+	if (pRespawned && params.customId)
+	{
+		pRespawned->pev->rendermode = params.renderMode;
+		pRespawned->pev->renderfx = params.renderFx;
+		pRespawned->pev->rendercolor = Vector(params.r, params.g, params.b);
+		pRespawned->pev->renderamt = params.a;
+		pRespawned->pev->scale = params.scale;
+		pRespawned->pev->body = params.body;
+		pRespawned->pev->skin = params.skin;
+	}
 
 	UTIL_Remove(this); // Remove it
 }
@@ -1890,765 +1911,477 @@ CBaseEntity* FindEntityForwardNew(CBaseEntity* pMe)
 	return NULL;
 }
 
+//=========================================================
+// ToolBow tools (weapon_toolbow, Sandbox)
+//
+// m_iToolMode = position in gToolbowModes (dlls/client.cpp) + 1. Gibber, camera, teleporter and
+// glowsticks are handled in toolbow.cpp, the rest here:
+//   FireBulletsToolBow    = left click  (primary)
+//   FireBulletsToolBowAlt = right click (secondary)
+// The tools never work on players.
+//=========================================================
+
+enum ToolBowTool
+{
+	TOOL_NONE = 1,
+	TOOL_DUPLICATOR,
+	TOOL_REMOVER,
+	TOOL_GIBBER,
+	TOOL_POSER,
+	TOOL_CAMERA,
+	TOOL_RENDER,
+	TOOL_HEALTH_SET,
+	TOOL_NO_COLLIDE,
+	TOOL_TAKE_DAMAGE,
+	TOOL_BLOOD_COLOR,
+	TOOL_FRAME_SET,
+	TOOL_TELEPORTER,
+	TOOL_GLOWSTICKS,
+	TOOL_SPAWNER,
+	TOOL_SCALER,
+	TOOL_MANIPULATOR,
+	TOOL_MODEL_EDITOR,
+};
+
+// m_iToolRenderMode / m_iToolRenderFX (index) <-> engine value
+static const int g_ToolRenderModes[] = {
+	kRenderNormal,
+	kRenderTransColor,
+	kRenderTransTexture,
+	kRenderGlow,
+	kRenderTransAlpha,
+	kRenderTransAdd,
+};
+
+static const int g_ToolRenderFX[] = {
+	kRenderFxNone,
+	kRenderFxPulseSlow,
+	kRenderFxPulseFast,
+	kRenderFxPulseSlowWide,
+	kRenderFxPulseFastWide,
+	kRenderFxFadeSlow,
+	kRenderFxFadeFast,
+	kRenderFxSolidSlow,
+	kRenderFxSolidFast,
+	kRenderFxStrobeSlow,
+	kRenderFxStrobeFast,
+	kRenderFxStrobeFaster,
+	kRenderFxFlickerSlow,
+	kRenderFxFlickerFast,
+	kRenderFxNoDissipation,
+	kRenderFxDistort,
+	kRenderFxHologram,
+	kRenderFxExplode,
+	kRenderFxGlowShell,
+};
+
+// m_CustomFrame values, in the order the left click goes through them
+static const char* const g_FrameSpeedNames[] = {
+	"Normal (Default)",
+	"Fast",
+	"Faster",
+	"Turbo",
+	"Ultra",
+	"Slow",
+};
+
+static const float g_SpawnerTimes[] = {1.0f, 3.0f, 6.0f, 10.0f, 15.0f, 30.0f};
+
+static const float g_ScalesLimited[] = {0.2f, 0.5f, 0.8f, 1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f, 5.0f};
+static const float g_ScalesFull[] = {0.2f, 0.5f, 0.8f, 1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f, 5.0f, 8.0f, 10.0f};
+
+template <typename T, size_t N>
+static int TableIndexOf(const T (&table)[N], T value)
+{
+	for (size_t i = 0; i < N; i++)
+	{
+		if (table[i] == value)
+			return (int)i;
+	}
+	return -1;
+}
+
+template <typename T, size_t N>
+static T TableValue(const T (&table)[N], int index)
+{
+	return (index >= 0 && index < (int)N) ? table[index] : table[0];
+}
+
+static int FindFloat(const float* table, int count, float value)
+{
+	for (int i = 0; i < count; i++)
+	{
+		if (fabs(table[i] - value) < 0.01f)
+			return i;
+	}
+	return -1;
+}
+
+// next (forward) or previous value of a list that goes round
+static float CycleFloat(const float* table, int count, float value, bool forward, float notFound)
+{
+	const int index = FindFloat(table, count, value);
+	if (index < 0)
+		return notFound;
+
+	return table[(index + (forward ? 1 : count - 1)) % count];
+}
+
+// Entity under the crosshair the tools can be used on (never a player)
+static CBaseEntity* ToolTarget(CBaseEntity* pMe, CBasePlayer* pPlayer)
+{
+	CBaseEntity* pEntity = FindEntityForwardNew(pMe);
+
+	if (!pEntity || pEntity->entindex() == 0)
+		return nullptr;
+
+	if (pEntity->IsPlayer())
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You can't use tools on players\n");
+		return nullptr;
+	}
+
+	return pEntity;
+}
+
+static void ToolScale(CBasePlayer* pPlayer, CBaseEntity* pEntity, bool bigger)
+{
+	const bool limited = scaler_limit.value != 0;
+	const float* table = limited ? g_ScalesLimited : g_ScalesFull;
+	const int count = limited ? ARRAYSIZE(g_ScalesLimited) : ARRAYSIZE(g_ScalesFull);
+
+	const float current = pEntity->pev->scale != 0 ? pEntity->pev->scale : 1.0f;
+
+	pEntity->pev->scale = CycleFloat(table, count, current, bigger, 1.0f);
+	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, UTIL_VarArgs("Scale %.1f\n", pEntity->pev->scale));
+}
+
+static void ToolFrameSpeed(CBasePlayer* pPlayer, CBaseEntity* pEntity, bool faster)
+{
+	const int count = ARRAYSIZE(g_FrameSpeedNames);
+	int frame = pEntity->m_CustomFrame;
+	if (frame < 0 || frame >= count)
+		frame = 0;
+
+	frame = (frame + (faster ? 1 : count - 1)) % count;
+
+	pEntity->m_CustomFrame = frame;
+	if (frame == 0)
+		pEntity->pev->framerate = 1.0;
+
+	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, UTIL_VarArgs("Frame Speed: %s\n", g_FrameSpeedNames[frame]));
+}
+
+// NPC selected with the manipulator (right click), nullptr if it's gone
+static CBaseMonster* ManipulatedNPC(CBasePlayer* pPlayer)
+{
+	CBaseEntity* pEntity = pPlayer->m_hManipulateNPC;
+	return pEntity ? pEntity->MyMonsterPointer() : nullptr;
+}
+
+static void ToolManipulatorAttack(CBasePlayer* pPlayer, CBaseEntity* pTarget)
+{
+	CBaseMonster* pAttacker = ManipulatedNPC(pPlayer);
+
+	if (!pAttacker)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected\n");
+		return;
+	}
+
+	if (!pTarget)
+		return;
+
+	CBaseMonster* pTargetMonster = pTarget->MyMonsterPointer();
+
+	if (!pTargetMonster)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is not an NPC\n");
+		return;
+	}
+
+	if (pTargetMonster == pAttacker)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Cannot attack itself\n");
+		return;
+	}
+
+	if (!pTargetMonster->IsAlive())
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is dead\n");
+		return;
+	}
+
+	// Assign the target as the NPC's enemy
+	pAttacker->m_bToolEnemy = true;
+	pAttacker->m_hEnemy = pTargetMonster;
+	pAttacker->m_vecEnemyLKP = pTargetMonster->pev->origin;
+
+	pAttacker->SetConditions(bits_COND_NEW_ENEMY | bits_COND_SEE_ENEMY | bits_COND_SEE_HATE);
+
+	pAttacker->SetState(MONSTERSTATE_COMBAT);
+	pAttacker->ClearSchedule();
+	pAttacker->RouteClear();
+
+	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC attacking target\n");
+}
+
+static void ToolManipulatorLead(CBasePlayer* pPlayer, const Vector& vecSrc, const Vector& vecDir, float flDistance)
+{
+	CBaseMonster* pMonster = ManipulatedNPC(pPlayer);
+
+	if (!pMonster)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected");
+		return;
+	}
+
+	TraceResult tr;
+	UTIL_TraceLine(vecSrc, vecSrc + vecDir * flDistance, ignore_monsters, pPlayer->edict(), &tr);
+
+	if (tr.flFraction == 1.0)
+		return;
+
+	if (pMonster->MoveToLocation(ACT_WALK, 0.0, tr.vecEndPos))
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC moving");
+	else
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
+}
+
+// Spread of the shot (same random numbers as the client), returned to the weapon for the event
+static void ToolBowSpread(int shared_rand, float& x, float& y)
+{
+	x = UTIL_SharedRandomFloat(shared_rand + 1, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 2, -0.5, 0.5);
+	y = UTIL_SharedRandomFloat(shared_rand + 3, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 4, -0.5, 0.5);
+}
+
 Vector CBaseEntity::FireBulletsToolBow(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
-	static int tracerCount;
-	TraceResult tr;
-	Vector vecRight = gpGlobals->v_right;
-	Vector vecUp = gpGlobals->v_up;
-	float x, y, z, i = 0;
-	CBaseEntity* pEntity;
-
-	if (pevAttacker == NULL)
-		pevAttacker = pev; // the default attacker is ourselves
-
-	ClearMultiDamage();
-	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
-
-	pEntity = FindEntityForwardNew(this);
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-	if (pPlayer->m_iToolMode == 2)
+	float x, y;
+	ToolBowSpread(shared_rand, x, y);
+	const Vector vecResult(x * vecSpread.x, y * vecSpread.y, 0.0);
+
+	const int tool = pPlayer->m_iToolMode;
+
+	// tools that don't need an entity
+	if (tool == TOOL_DUPLICATOR)
 	{
-		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
-		{
-			// Use player's random seed.
-			//  get circular gaussian spread
-			x = UTIL_SharedRandomFloat(shared_rand + iShot, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + (1 + iShot), -0.5, 0.5);
-			y = UTIL_SharedRandomFloat(shared_rand + (2 + iShot), -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + (3 + iShot), -0.5, 0.5);
-			z = x * x + y * y;
+		const CustomMonsterDef* pCustomDef = pPlayer->m_szCopiedCustomId.empty() ? nullptr : FindCustomMonsterDef(pPlayer->m_szCopiedCustomId.c_str());
 
-			Vector vecDir = vecDirShooting +
-							x * vecSpread.x * vecRight +
-							y * vecSpread.y * vecUp;
-			Vector vecEnd;
+		if (!pCustomDef && pPlayer->m_iCopiedMonsterID <= 0)
+			return vecResult;
 
-			vecEnd = vecSrc + vecDir * flDistance;
-			UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev) /*pentIgnore*/, &tr);
+		const Vector vecDir = vecDirShooting + x * vecSpread.x * gpGlobals->v_right + y * vecSpread.y * gpGlobals->v_up;
 
-			UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
+		TraceResult tr;
+		UTIL_TraceLine(vecSrc, vecSrc + vecDir * flDistance, dont_ignore_monsters, ENT(pev), &tr);
 
-			SpawnerParams params;
+		SpawnerParams params;
+		params.name = pCustomDef ? pCustomDef->baseClassname.c_str() : MonsterInfo::GetName(pPlayer->m_iCopiedMonsterID - 1);
+		params.customId = pCustomDef ? pCustomDef->id.c_str() : nullptr; // applied after Spawn
+		params.origin = tr.vecEndPos;
+		params.angles = Vector(0, pev->angles.y + 180, 0);
+		params.altClass = pPlayer->m_fUseAlliedMode;
 
-			params.name = MonsterInfo::GetName(pPlayer->m_iCopiedMonsterID - 1);
-			params.origin = tr.vecEndPos;
-			params.angles = Vector(0, pev->angles.y + 180, 0);
-			params.altClass = pPlayer->m_fUseAlliedMode;
-
-			CBaseEntity::CreateCustom(params);
-		}
-	}
-	else if (pPlayer->m_iToolMode == 3)
-	{
-		if (pEntity)
-		{
-			if (pevAttacker == NULL)
-				pevAttacker = pev;
-			else
-			{
-				if (!pEntity->IsNetClient()) // Ignore Players!
-					UTIL_SafeRemoveMonster(pEntity);
-			}
-		}
-	}
-	else if (pPlayer->m_iToolMode == 5)
-	{
-		int frame = 0;
-		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
-		{
-			if (pEntity)
-			{
-				frame = RANDOM_LONG(0, 256);
-
-				pEntity->pev->frame = frame;
-			}
-		}
-	}
-	else if (pPlayer->m_iToolMode == 7)
-	{
-		if (pEntity)
-		{
-			// Render Color
-			pEntity->pev->rendercolor.x = pPlayer->m_iToolRenderColorR; // Red
-			pEntity->pev->rendercolor.y = pPlayer->m_iToolRenderColorG; // Green
-			pEntity->pev->rendercolor.z = pPlayer->m_iToolRenderColorB; // Blue
-
-			switch (pPlayer->m_iToolRenderMode)
-			{
-			case 1:
-				pEntity->pev->rendermode = kRenderTransColor;
-				break;
-			case 2:
-				pEntity->pev->rendermode = kRenderTransTexture;
-				break;
-			case 3:
-				pEntity->pev->rendermode = kRenderGlow;
-				break;
-			case 4:
-				pEntity->pev->rendermode = kRenderTransAlpha;
-				break;
-			case 5:
-				pEntity->pev->rendermode = kRenderTransAdd;
-				break;
-			default:
-				pEntity->pev->rendermode = kRenderNormal;
-				break;
-			}
-
-			switch (pPlayer->m_iToolRenderFX)
-			{
-			case 1:
-				pEntity->pev->renderfx = kRenderFxPulseSlow;
-				break;
-			case 2:
-				pEntity->pev->renderfx = kRenderFxPulseFast;
-				break;
-			case 3:
-				pEntity->pev->renderfx = kRenderFxPulseSlowWide;
-				break;
-			case 4:
-				pEntity->pev->renderfx = kRenderFxPulseFastWide;
-				break;
-			case 5:
-				pEntity->pev->renderfx = kRenderFxFadeSlow;
-				break;
-			case 6:
-				pEntity->pev->renderfx = kRenderFxFadeFast;
-				break;
-			case 7:
-				pEntity->pev->renderfx = kRenderFxSolidSlow;
-				break;
-			case 8:
-				pEntity->pev->renderfx = kRenderFxSolidFast;
-				break;
-			case 9:
-				pEntity->pev->renderfx = kRenderFxStrobeSlow;
-				break;
-			case 10:
-				pEntity->pev->renderfx = kRenderFxStrobeFast;
-				break;
-			case 11:
-				pEntity->pev->renderfx = kRenderFxStrobeFaster;
-				break;
-			case 12:
-				pEntity->pev->renderfx = kRenderFxFlickerSlow;
-				break;
-			case 13:
-				pEntity->pev->renderfx = kRenderFxFlickerFast;
-				break;
-			case 14:
-				pEntity->pev->renderfx = kRenderFxNoDissipation;
-				break;
-			case 15:
-				pEntity->pev->renderfx = kRenderFxDistort;
-				break;
-			case 16:
-				pEntity->pev->renderfx = kRenderFxHologram;
-				break;
-			case 17:
-				pEntity->pev->renderfx = kRenderFxExplode;
-				break;
-			case 18:
-				pEntity->pev->renderfx = kRenderFxGlowShell;
-				break;
-			default:
-				pEntity->pev->renderfx = kRenderFxNone;
-				break;
-			}
-			
-			pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
-		}
-	}
-	else if (pPlayer->m_iToolMode == 17)
-	{
-		if (pPlayer->m_fToolManipulatorMode) //Attack Mode
-		{
-			CBaseMonster* pAttacker = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
-
-			if (!pAttacker)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected\n");
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			CBaseEntity* pTarget = FindEntityForwardNew(this);
-
-			if (!pTarget)
-			{
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			CBaseMonster* pTargetMonster = pTarget->MyMonsterPointer();
-
-			if (!pTargetMonster)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is not an NPC\n");
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			if (pTargetMonster == pAttacker)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Cannot attack itself\n");
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			if (!pTargetMonster->IsAlive())
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Target is dead\n");
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			// Assign the target as the NPC's enemy
-			pAttacker->m_bToolEnemy = true;
-			pAttacker->m_hEnemy = pTargetMonster;
-			pAttacker->m_vecEnemyLKP = pTargetMonster->pev->origin;
-
-			pAttacker->SetConditions(bits_COND_NEW_ENEMY | bits_COND_SEE_ENEMY | bits_COND_SEE_HATE);
-
-			pAttacker->SetState(MONSTERSTATE_COMBAT);
-			pAttacker->ClearSchedule();
-			pAttacker->RouteClear();
-
-			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC attacking target\n");
-		}
-		else // Lead Mode
-		{
-			CBaseMonster* pMonster = CBaseEntity::GetMonsterPointer(pPlayer->m_hManipulateNPC.Get());
-
-			if (!pMonster)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "No NPC selected");
-				return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
-			}
-
-			TraceResult tr;
-
-			Vector vecEnd = vecSrc + vecDirShooting * flDistance;
-
-			UTIL_TraceLine(vecSrc, vecEnd, ignore_monsters, pPlayer->edict(), &tr);
-
-			if (tr.flFraction != 1.0)
-			{
-				if (pMonster->MoveToLocation(ACT_WALK, 0.0, tr.vecEndPos))
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC moving");
-				else
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC can't reach that position");
-			}
-		}
-
-	}
-	else if (pPlayer->m_iToolMode >= 8)
-	{
-		CBaseMonster* pMonster;
-		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
-
-		if (pMonster)
-		{
-			if (pPlayer->m_iToolMode == 8)
-			{
-				pMonster->pev->health = custom_npc_health.value;
-				pMonster->pev->max_health = custom_npc_health.value;
-			}
-			else if (pPlayer->m_iToolMode == 9)
-			{
-				pMonster->pev->solid = SOLID_NOT;
-			}
-			else if (pPlayer->m_iToolMode == 10)
-			{
-				pMonster->pev->takedamage = DAMAGE_NO;
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became invulnerable\n");
-			}
-			else if (pPlayer->m_iToolMode == 11)
-			{
-				if (pMonster->m_bloodColor == BLOOD_COLOR_RED)
-				{
-					pMonster->m_bloodColor = BLOOD_COLOR_YELLOW;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Yellow\n");
-				}
-				else
-				{
-					pMonster->m_bloodColor = BLOOD_COLOR_RED;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Red\n");
-				}
-			}
-			else if (pPlayer->m_iToolMode == 12)
-			{
-				switch (pMonster->m_CustomFrame)
-				{
-				case 0:
-					pMonster->m_CustomFrame = 1;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Fast\n");
-					break;
-				case 1:
-					pMonster->m_CustomFrame = 2;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Faster\n");
-					break;
-				case 2:
-					pMonster->m_CustomFrame = 3;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Turbo\n");
-					break;
-				case 3:
-					pMonster->m_CustomFrame = 4;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Ultra\n");
-					break;
-				case 4:
-					pMonster->m_CustomFrame = 5;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Slow\n");
-					break;
-				case 5:
-					pMonster->m_CustomFrame = 0;
-					pMonster->pev->framerate = 1.0;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Normal (Default)\n");
-					break;
-				}
-			}
-			else if (pPlayer->m_iToolMode == 15)
-			{
-				if (pMonster->m_RespawnBlackList)
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You can't use it on this NPC\n");
-				else if (pMonster->m_bShouldRespawn)
-				{
-					pMonster->m_bShouldRespawn = false;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Spawner Mode\n");
-				}
-				else
-				{
-					pMonster->m_bShouldRespawn = true;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Added Spawner Mode\n");
-				}
-			}
-			else if (pPlayer->m_iToolMode == 16)
-			{
-				if (!pMonster->pev->scale) // set scale by default
-					pMonster->pev->scale = 1.0f;
-
-				if (pMonster->pev->scale == 1.0f)
-				{
-					pMonster->pev->scale = 1.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.5\n");
-				}
-				else if (pMonster->pev->scale == 1.5f)
-				{
-					pMonster->pev->scale = 2.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.0\n");
-				}
-				else if (pMonster->pev->scale == 2.0f)
-				{
-					pMonster->pev->scale = 2.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.5\n");
-				}
-				else if (pMonster->pev->scale == 2.5f)
-				{
-					pMonster->pev->scale = 3.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.0\n");
-				}
-				else if (pMonster->pev->scale == 3.0f)
-				{
-					pMonster->pev->scale = 3.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.5\n");
-				}
-				else if (pMonster->pev->scale == 3.5f)
-				{
-					pMonster->pev->scale = 4.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.0\n");
-				}
-				else if (pMonster->pev->scale == 4.0f)
-				{
-					pMonster->pev->scale = 4.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.5\n");
-				}
-				else if (pMonster->pev->scale == 4.5f)
-				{
-					pMonster->pev->scale = 5.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
-				}
-				else if (pMonster->pev->scale == 5.0f)
-				{
-					if (scaler_limit.value)
-					{
-						pMonster->pev->scale = 0.2f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
-					}
-					else
-					{
-						pMonster->pev->scale = 8.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 8.0\n");
-					}
-				}
-				else if (pMonster->pev->scale == 8.0f)
-				{
-					pMonster->pev->scale = 10.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 10.0\n");
-				}
-				else if (pMonster->pev->scale == 10.0f)
-				{
-					pMonster->pev->scale = 0.2f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
-				}
-				else if (pMonster->pev->scale == 0.2f)
-				{
-					pMonster->pev->scale = 0.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.5\n");
-				}
-				else if (pMonster->pev->scale == 0.5f)
-				{
-					pMonster->pev->scale = 0.8f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.8\n");
-				}
-				else
-				{
-					pMonster->pev->scale = 1.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
-				}
-			}
-			else if (pPlayer->m_iToolMode == 18)
-			{
-				int skinCount = GetModelSkinCount(pMonster);
-
-				pMonster->pev->skin++;
-
-				if (pMonster->pev->skin >= skinCount)
-					pMonster->pev->skin = 0;
-			}
-		}
+		CBaseEntity::CreateCustom(params);
+		return vecResult;
 	}
 
-	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+	if (tool == TOOL_MANIPULATOR)
+	{
+		if (pPlayer->m_fToolManipulatorMode)
+			ToolManipulatorAttack(pPlayer, ToolTarget(this, pPlayer));
+		else
+			ToolManipulatorLead(pPlayer, vecSrc, vecDirShooting, flDistance);
+
+		return vecResult;
+	}
+
+	CBaseEntity* pEntity = ToolTarget(this, pPlayer);
+	if (!pEntity)
+		return vecResult;
+
+	switch (tool)
+	{
+	case TOOL_REMOVER:
+		UTIL_SafeRemoveMonster(pEntity);
+		break;
+
+	case TOOL_POSER:
+		pEntity->pev->frame = RANDOM_LONG(0, 256);
+		break;
+
+	case TOOL_RENDER:
+		pEntity->pev->rendercolor = Vector(pPlayer->m_iToolRenderColorR, pPlayer->m_iToolRenderColorG, pPlayer->m_iToolRenderColorB);
+		pEntity->pev->rendermode = TableValue(g_ToolRenderModes, pPlayer->m_iToolRenderMode);
+		pEntity->pev->renderfx = TableValue(g_ToolRenderFX, pPlayer->m_iToolRenderFX);
+		pEntity->pev->renderamt = pPlayer->m_iToolRenderAMT;
+		break;
+
+	case TOOL_HEALTH_SET:
+		pEntity->pev->health = custom_npc_health.value;
+		pEntity->pev->max_health = custom_npc_health.value;
+		break;
+
+	case TOOL_NO_COLLIDE:
+		pEntity->pev->solid = SOLID_NOT;
+		break;
+
+	case TOOL_TAKE_DAMAGE:
+		pEntity->pev->takedamage = DAMAGE_NO;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became invulnerable\n");
+		break;
+
+	case TOOL_BLOOD_COLOR:
+		if (pEntity->m_bloodColor == BLOOD_COLOR_RED)
+		{
+			pEntity->m_bloodColor = BLOOD_COLOR_YELLOW;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Yellow\n");
+		}
+		else
+		{
+			pEntity->m_bloodColor = BLOOD_COLOR_RED;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Changed Blood Color to Red\n");
+		}
+		break;
+
+	case TOOL_FRAME_SET:
+		ToolFrameSpeed(pPlayer, pEntity, true);
+		break;
+
+	case TOOL_SPAWNER:
+		if (pEntity->m_RespawnBlackList)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You can't use it on this NPC\n");
+		}
+		else
+		{
+			pEntity->m_bShouldRespawn = !pEntity->m_bShouldRespawn;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, pEntity->m_bShouldRespawn ? "Added Spawner Mode\n" : "Removed Spawner Mode\n");
+		}
+		break;
+
+	case TOOL_SCALER:
+		ToolScale(pPlayer, pEntity, true);
+		break;
+
+	case TOOL_MODEL_EDITOR:
+		pEntity->pev->skin = (pEntity->pev->skin + 1) % GetModelSkinCount(static_cast<CBaseAnimating*>(pEntity));
+		break;
+
+	default:
+		break;
+	}
+
+	return vecResult;
 }
 
 Vector CBaseEntity::FireBulletsToolBowAlt(unsigned int cShots, Vector vecSrc, Vector vecDirShooting, Vector vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t* pevAttacker, int shared_rand)
 {
-	static int tracerCount;
-	TraceResult tr;
-	Vector vecRight = gpGlobals->v_right;
-	Vector vecUp = gpGlobals->v_up;
-	float x, y = 0;
-	CBaseEntity* pEntity = FindEntityForwardNew(this);
-
-	if (pevAttacker == NULL)
-		pevAttacker = pev; // the default attacker is ourselves
-
-	ClearMultiDamage();
-	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
-
 	CBasePlayer* pPlayer = GetClassPtr((CBasePlayer*)pev);
 
-	if (pPlayer->m_iToolMode == 2)
+	float x, y;
+	ToolBowSpread(shared_rand, x, y);
+	const Vector vecResult(x * vecSpread.x, y * vecSpread.y, 0.0);
+
+	CBaseEntity* pEntity = ToolTarget(this, pPlayer);
+	if (!pEntity)
+		return vecResult;
+
+	switch (pPlayer->m_iToolMode)
 	{
-		if (pEntity)
+	case TOOL_DUPLICATOR:
+	{
+		// copy the monster (a custom NPC is copied as itself)
+		const CustomMonsterDef* pCustomDef = pEntity->m_customMonsterId.empty() ? nullptr : FindCustomMonsterDef(pEntity->m_customMonsterId.c_str());
+
+		if (pCustomDef)
 		{
-			// Pick the Monster ID
+			pPlayer->m_szCopiedCustomId = pCustomDef->id;
+			pPlayer->m_iCopiedMonsterID = MonsterInfo::GetId(pCustomDef->baseClassname.c_str());
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, UTIL_VarArgs("Copied: %s\n", pCustomDef->id.c_str()));
+		}
+		else
+		{
+			pPlayer->m_szCopiedCustomId.clear();
 			pPlayer->m_iCopiedMonsterID = MonsterInfo::GetId(STRING(pEntity->pev->classname));
 		}
+		break;
 	}
-	else if (pPlayer->m_iToolMode == 5)
+
+	case TOOL_POSER:
+		pEntity->pev->sequence++;
+		break;
+
+	case TOOL_RENDER:
 	{
-		for (unsigned int iShot = 1; iShot <= cShots; iShot++)
-		{
-			if (pEntity)
-			{
-				pEntity->pev->sequence++;
-			}
-		}
-	}
-	else if (pPlayer->m_iToolMode == 7)
-	{
-		if (pEntity)
-		{
-			// Render Color
-			pPlayer->m_iToolRenderColorR = pEntity->pev->rendercolor.x; // Red
-			pPlayer->m_iToolRenderColorG = pEntity->pev->rendercolor.y; // Green
-			pPlayer->m_iToolRenderColorB = pEntity->pev->rendercolor.z; // Blue
+		// copy the render settings of the entity
+		const int mode = TableIndexOf(g_ToolRenderModes, pEntity->pev->rendermode);
+		const int fx = TableIndexOf(g_ToolRenderFX, pEntity->pev->renderfx);
 
-			switch (pEntity->pev->rendermode)
-			{
-			case kRenderTransColor:
-				pPlayer->m_iToolRenderMode = 1;
-				break;
-			case kRenderTransTexture:
-				pPlayer->m_iToolRenderMode = 2;
-				break;
-			case kRenderGlow:
-				pPlayer->m_iToolRenderMode = 3;
-				break;
-			case kRenderTransAlpha:
-				pPlayer->m_iToolRenderMode = 4;
-				break;
-			case kRenderTransAdd:
-				pPlayer->m_iToolRenderMode = 5;
-				break;
-			default:
-				pPlayer->m_iToolRenderMode = 0;
-				break;
-			}
-
-			switch (pEntity->pev->renderfx)
-			{
-			case kRenderFxPulseSlow:
-				pPlayer->m_iToolRenderFX = 1;
-				break;
-			case kRenderFxPulseFast:
-				pPlayer->m_iToolRenderFX = 2;
-				break;
-			case kRenderFxPulseSlowWide:
-				pPlayer->m_iToolRenderFX = 3;
-				break;
-			case kRenderFxPulseFastWide:
-				pPlayer->m_iToolRenderFX = 4;
-				break;
-			case kRenderFxFadeSlow:
-				pPlayer->m_iToolRenderFX = 5;
-				break;
-			case kRenderFxFadeFast:
-				pPlayer->m_iToolRenderFX = 6;
-				break;
-			case kRenderFxSolidSlow:
-				pPlayer->m_iToolRenderFX = 7;
-				break;
-			case kRenderFxSolidFast:
-				pPlayer->m_iToolRenderFX = 8;
-				break;
-			case kRenderFxStrobeSlow:
-				pPlayer->m_iToolRenderFX = 9;
-				break;
-			case kRenderFxStrobeFast:
-				pPlayer->m_iToolRenderFX = 10;
-				break;
-			case kRenderFxStrobeFaster:
-				pPlayer->m_iToolRenderFX = 11;
-				break;
-			case kRenderFxFlickerSlow:
-				pPlayer->m_iToolRenderFX = 12;
-				break;
-			case kRenderFxFlickerFast:
-				pPlayer->m_iToolRenderFX = 13;
-				break;
-			case kRenderFxNoDissipation:
-				pPlayer->m_iToolRenderFX = 14;
-				break;
-			case kRenderFxDistort:
-				pPlayer->m_iToolRenderFX = 15;
-				break;
-			case kRenderFxHologram:
-				pPlayer->m_iToolRenderFX = 16;
-				break;
-			case kRenderFxExplode:
-				pPlayer->m_iToolRenderFX = 17;
-				break;
-			case kRenderFxGlowShell:
-				pPlayer->m_iToolRenderFX = 18;
-				break;
-			default:
-				pPlayer->m_iToolRenderFX = 0;
-				break;
-			}
-
-			pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
-		}
-	}
-	else if (pPlayer->m_iToolMode == 17)
-	{
-		if (pEntity)
-		{
-			CBaseMonster* pMonster = dynamic_cast<CBaseMonster*>(pEntity);
-
-			if (pMonster)
-			{
-				pPlayer->m_hManipulateNPC = pMonster;
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC selected");
-			}
-		}
-	}
-	else if (pPlayer->m_iToolMode >= 8)
-	{
-		CBaseMonster* pMonster;
-		pMonster = static_cast<CBaseMonster*>(FindEntityForwardNew(this));
-
-		if (pMonster)
-		{
-			if (pPlayer->m_iToolMode == 8)
-				pMonster->pev->gravity = custom_npc_gravity.value;
-			else if (pPlayer->m_iToolMode == 10)
-			{
-				pMonster->pev->takedamage = DAMAGE_YES;
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became mortal\n");
-			}
-			else if (pPlayer->m_iToolMode == 11)
-			{
-				pMonster->m_bloodColor = DONT_BLEED;
-				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Blood (Dont Bleed)\n");
-			}
-			else if (pPlayer->m_iToolMode == 12)
-			{
-				switch (pMonster->m_CustomFrame)
-				{
-				case 0:
-					pMonster->m_CustomFrame = 5;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Slow\n");
-					break;
-				case 1:
-					pMonster->m_CustomFrame = 0;
-					pMonster->pev->framerate = 1.0;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Normal (Default)\n");
-					break;
-				case 2:
-					pMonster->m_CustomFrame = 1;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Fast\n");
-					break;
-				case 3:
-					pMonster->m_CustomFrame = 2;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Faster\n");
-					break;
-				case 4:
-					pMonster->m_CustomFrame = 3;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Turbo\n");
-					break;
-				case 5:
-					pMonster->m_CustomFrame = 4;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Frame Speed: Ultra\n");
-					break;
-				}
-			}
-			else if (pPlayer->m_iToolMode == 15)
-			{
-				if (pMonster->m_bShouldRespawn)
-				{
-					if (pMonster->m_respawntime == 3.0f)
-					{
-						pMonster->m_respawntime = 6.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 6.0\n");
-					}
-					else if (pMonster->m_respawntime == 6.0f)
-					{
-						pMonster->m_respawntime = 10.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 10.0\n");
-					}
-					else if (pMonster->m_respawntime == 10.0f)
-					{
-						pMonster->m_respawntime = 15.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 15.0\n");
-					}
-					else if (pMonster->m_respawntime == 15.0f)
-					{
-						pMonster->m_respawntime = 30.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 30.0\n");
-					}
-					else if (pMonster->m_respawntime == 30.0f)
-					{
-						pMonster->m_respawntime = 1.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 1.0\n");
-					}
-					else if (pMonster->m_respawntime == 1.0f)
-					{
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Time: 3.0\n");
-						pMonster->m_respawntime = 3.0f;
-					}
-				}
-				else
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Mode Needed\n");
-			}
-			else if (pPlayer->m_iToolMode == 16)
-			{
-				if (!pMonster->pev->scale) // set scale by default
-					pMonster->pev->scale = 1.0f;
-
-				if (pMonster->pev->scale == 0.8f)
-				{
-					pMonster->pev->scale = 0.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.5\n");
-				}
-				else if (pMonster->pev->scale == 0.5f)
-				{
-					pMonster->pev->scale = 0.2f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.2\n");
-				}
-				else if (pMonster->pev->scale == 0.2f)
-				{
-					if (scaler_limit.value)
-					{
-						pMonster->pev->scale = 5.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
-					}
-					else
-					{
-						pMonster->pev->scale = 10.0f;
-						ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 10.0\n");
-					}
-				}
-				else if (pMonster->pev->scale == 10.0f)
-				{
-					pMonster->pev->scale = 8.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 8.0\n");
-				}
-				else if (pMonster->pev->scale == 8.0f)
-				{
-					pMonster->pev->scale = 5.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 5.0\n");
-				}
-				else if (pMonster->pev->scale == 5.0f)
-				{
-					pMonster->pev->scale = 4.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.5\n");
-				}
-				else if (pMonster->pev->scale == 4.5f)
-				{
-					pMonster->pev->scale = 4.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 4.0\n");
-				}
-				else if (pMonster->pev->scale == 4.0f)
-				{
-					pMonster->pev->scale = 3.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.5\n");
-				}
-				else if (pMonster->pev->scale == 3.5f)
-				{
-					pMonster->pev->scale = 3.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 3.0\n");
-				}
-				else if (pMonster->pev->scale == 3.0f)
-				{
-					pMonster->pev->scale = 2.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.5\n");
-				}
-				else if (pMonster->pev->scale == 2.5f)
-				{
-					pMonster->pev->scale = 2.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 2.0\n");
-				}
-				else if (pMonster->pev->scale == 2.0f)
-				{
-					pMonster->pev->scale = 1.5f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.5\n");
-				}
-				else if (pMonster->pev->scale == 1.5f)
-				{
-					pMonster->pev->scale = 1.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
-				}
-				else if (pMonster->pev->scale == 1.0f)
-				{
-					pMonster->pev->scale = 0.8f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 0.8\n");
-				}
-				else
-				{
-					pMonster->pev->scale = 1.0f;
-					ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Scale 1.0\n");
-				}
-			}
-			else if (pPlayer->m_iToolMode == 18)
-			{
-				int bodyCount = GetModelBodyCount(pMonster);
-
-				pMonster->pev->body++;
-
-				if (pMonster->pev->body >= bodyCount)
-					pMonster->pev->body = 0;
-			}
-		}
+		pPlayer->m_iToolRenderColorR = pEntity->pev->rendercolor.x;
+		pPlayer->m_iToolRenderColorG = pEntity->pev->rendercolor.y;
+		pPlayer->m_iToolRenderColorB = pEntity->pev->rendercolor.z;
+		pPlayer->m_iToolRenderMode = mode >= 0 ? mode : 0;
+		pPlayer->m_iToolRenderFX = fx >= 0 ? fx : 0;
+		pPlayer->m_iToolRenderAMT = pEntity->pev->renderamt;
+		break;
 	}
 
-	return Vector(x * vecSpread.x, y * vecSpread.y, 0.0);
+	case TOOL_MANIPULATOR:
+		if (CBaseMonster* pMonster = pEntity->MyMonsterPointer())
+		{
+			pPlayer->m_hManipulateNPC = pMonster;
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC selected");
+		}
+		break;
+
+	case TOOL_HEALTH_SET:
+		pEntity->pev->gravity = custom_npc_gravity.value;
+		break;
+
+	case TOOL_TAKE_DAMAGE:
+		pEntity->pev->takedamage = DAMAGE_YES;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "NPC became mortal\n");
+		break;
+
+	case TOOL_BLOOD_COLOR:
+		pEntity->m_bloodColor = DONT_BLEED;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Removed Blood (Dont Bleed)\n");
+		break;
+
+	case TOOL_FRAME_SET:
+		ToolFrameSpeed(pPlayer, pEntity, false);
+		break;
+
+	case TOOL_SPAWNER:
+		if (!pEntity->m_bShouldRespawn)
+		{
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "Spawner Mode Needed\n");
+		}
+		else
+		{
+			// 3 -> 6 -> 10 -> 15 -> 30 -> 1 -> 3
+			pEntity->m_respawntime = CycleFloat(g_SpawnerTimes, ARRAYSIZE(g_SpawnerTimes), pEntity->m_respawntime, true, 3.0f);
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, UTIL_VarArgs("Spawner Time: %.1f\n", (float)pEntity->m_respawntime));
+		}
+		break;
+
+	case TOOL_SCALER:
+		ToolScale(pPlayer, pEntity, false);
+		break;
+
+	case TOOL_MODEL_EDITOR:
+		pEntity->pev->body = (pEntity->pev->body + 1) % GetModelBodyCount(static_cast<CBaseAnimating*>(pEntity));
+		break;
+
+	default:
+		break;
+	}
+
+	return vecResult;
 }
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType)

@@ -463,6 +463,7 @@ public:
 	int m_iToolRenderColorG;
 	int m_iToolRenderColorB;
 	int m_iCopiedMonsterID;
+	std::string m_szCopiedCustomId; // duplicator: custom NPC id copied (empty = normal NPC)
 	bool m_fToolManipulatorMode;
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
