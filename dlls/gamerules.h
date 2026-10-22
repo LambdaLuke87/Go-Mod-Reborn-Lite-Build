@@ -438,6 +438,7 @@ public:
 	void InitHUD(CBasePlayer* pl) override;
 	void ClientDisconnected(edict_t* pClient) override;
 	void ClientUserInfoChanged(CBasePlayer* pPlayer, char* infobuffer) override;
+	void PlayerThink(CBasePlayer* pPlayer) override; // carrier dash (secondary attack)
 
 	// nobody gets hurt in this mode
 	bool FPlayerCanTakeDamage(CBasePlayer* pPlayer, CBaseEntity* pAttacker) override { return false; }
@@ -472,8 +473,9 @@ private:
 	void StartPickCountdown();
 	void PickCarrier();
 	void SetCarrier(int index, bool announce);
-	void GiveSnark(CBasePlayer* pPlayer);
-	void GiveCrowbar(CBasePlayer* pPlayer);
+	void GiveSnark(CBasePlayer* pPlayer, bool strip = true);	 // strip = take his weapons away first
+	void GiveCrowbar(CBasePlayer* pPlayer, bool strip = true);
+	void GiveWeapon(CBasePlayer* pPlayer, const char* name, int ammo, bool strip);
 	void RemoveSnarkEntity();
 	void Explode(int index);
 	void EndRound(int winner);
@@ -487,6 +489,8 @@ private:
 
 	int m_iCarrier = 0;	   // player index with the snark (0 = nobody)
 	float m_flFuseEnd = 0.0f;
+	float m_flDashReady = 0.0f; // the carrier can dash again at this time
+	void Dash(CBasePlayer* pPlayer);
 
 	// the snark running around (edict + serial number, like EHANDLE: EHANDLE isn't
 	// declared yet in some files that include gamerules.h)

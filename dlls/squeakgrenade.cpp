@@ -80,6 +80,7 @@ IMPLEMENT_SAVERESTORE(CSqueakGrenade, CGrenade);
 // Snark Frenzy (snarkfrenzy_gamerules.cpp)
 void SnarkFrenzy_SnarkSpawned(CBaseEntity* pSnark, CBaseEntity* pOwner);
 bool SnarkFrenzy_SnarkBite(CBaseEntity* pSnark, CBaseEntity* pVictim);
+float SnarkFrenzy_SnarkSpeed();
 
 // Snark Frenzy: the nearest visible player that isn't the one who threw it
 static CBaseEntity* SnarkFrenzy_FindTarget(CBaseMonster* pSnark, CBaseEntity* pOwner)
@@ -168,14 +169,14 @@ void CSqueakGrenade::Spawn()
 		// red trail (laserbeam sprite: the world already precaches it)
 		MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY);
 		WRITE_BYTE(TE_BEAMFOLLOW);
-		WRITE_SHORT(entindex());		 // entity
+		WRITE_SHORT(entindex()); // entity
 		WRITE_SHORT(g_sModelIndexLaser); // model
-		WRITE_BYTE(10);					 // life (0.1 s units)
-		WRITE_BYTE(4);					 // width
-		WRITE_BYTE(255);				 // r
-		WRITE_BYTE(0);					 // g
-		WRITE_BYTE(0);					 // b
-		WRITE_BYTE(200);				 // brightness
+		WRITE_BYTE(10);	 // life (0.1 s units)
+		WRITE_BYTE(4);	 // width
+		WRITE_BYTE(255); // r
+		WRITE_BYTE(0);	 // g
+		WRITE_BYTE(0);	 // b
+		WRITE_BYTE(200); // brightness
 		MESSAGE_END();
 
 		SnarkFrenzy_SnarkSpawned(this, m_hOwner);
@@ -280,7 +281,8 @@ void CSqueakGrenade::HuntThink()
 	if (m_flNextHunt > gpGlobals->time)
 		return;
 
-	m_flNextHunt = gpGlobals->time + 2.0;
+	// Snark Frenzy: it re-aims much more often
+	m_flNextHunt = gpGlobals->time + (UTIL_IsSnarkFrenzy() ? 0.3 : 2.0);
 
 	CBaseEntity* pOther = NULL;
 	Vector vecDir;
@@ -336,7 +338,8 @@ void CSqueakGrenade::HuntThink()
 
 		// ALERT( at_console, "%.0f %.2f %.2f %.2f\n", flVel, m_vecTarget.x, m_vecTarget.y, m_vecTarget.z );
 
-		pev->velocity = pev->velocity * flAdj + m_vecTarget * 300;
+		const float flSpeed = UTIL_IsSnarkFrenzy() ? 300.0f * SnarkFrenzy_SnarkSpeed() : 300.0f;
+		pev->velocity = pev->velocity * flAdj + m_vecTarget * flSpeed;
 	}
 
 	if ((pev->flags & FL_ONGROUND) != 0)
@@ -604,7 +607,8 @@ void CSqueak::PrimaryAttack()
 
 #ifndef CLIENT_DLL
 			CBaseEntity* pSqueak = CBaseEntity::Create("monster_snark", tr.vecEndPos, m_pPlayer->pev->v_angle, m_pPlayer->edict());
-			pSqueak->pev->velocity = vTraceForward * 200 + m_pPlayer->pev->velocity;
+			const float flThrow = UTIL_IsSnarkFrenzy() ? 200.0f * SnarkFrenzy_SnarkSpeed() : 200.0f;
+			pSqueak->pev->velocity = vTraceForward * flThrow + m_pPlayer->pev->velocity;
 #endif
 
 			// play hunt sound

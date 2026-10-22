@@ -37,6 +37,7 @@ inline int gmsgTeamInfo = 0;
 inline int gmsgTeamScore = 0;
 inline int gmsgGameMode = 0;
 inline int gmsgSnarkFrenzy = 0;
+inline int gmsgSFDash = 0;
 inline int gmsgMOTD = 0;
 inline int gmsgServerName = 0;
 inline int gmsgAmmoPickup = 0;

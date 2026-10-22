@@ -35,6 +35,7 @@ static int s_iFlags = 0;
 static int s_iWinScore = 5;
 static float s_flEndTime = 0.0f; // client time when the countdown / fuse reaches 0
 static int s_iLastBeep = -1;
+static float s_flDashReady = 0.0f; // client time when the dash is ready again
 
 static const char* PlayerName(int index)
 {
@@ -68,12 +69,24 @@ static int __MsgFunc_SnarkFrenzy(const char* pszName, int iSize, void* pbuf)
 	s_flEndTime = gHUD.m_flTime + remaining;
 	s_iLastBeep = -1;
 
+	// new carrier: the dash is ready
+	if (s_iState != SFS_PLAYING || s_iCarrier != LocalIndex())
+		s_flDashReady = 0.0f;
+
+	return 1;
+}
+
+static int __MsgFunc_SFDash(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	s_flDashReady = gHUD.m_flTime + READ_BYTE() / 10.0f;
 	return 1;
 }
 
 void SnarkFrenzyHUD_Init()
 {
 	gEngfuncs.pfnHookUserMsg("SnarkFrenzy", __MsgFunc_SnarkFrenzy);
+	gEngfuncs.pfnHookUserMsg("SFDash", __MsgFunc_SFDash);
 }
 
 void SnarkFrenzyHUD_Reset()
@@ -84,6 +97,7 @@ void SnarkFrenzyHUD_Reset()
 	s_iFlags = 0;
 	s_flEndTime = 0.0f;
 	s_iLastBeep = -1;
+	s_flDashReady = 0.0f;
 }
 
 // text centered at y, color 0-255
@@ -171,6 +185,16 @@ void SnarkFrenzyHUD_Draw(float flTime)
 			// blinking warning
 			if (!hurry || ((int)(flTime * 4.0f) & 1) == 0)
 				DrawCenteredText(y + lineHeight + 4, "YOU HAVE THE SNARK! Throw it at someone!", 255, 60, 60);
+
+			// dash (secondary attack)
+			const float dashLeft = s_flDashReady - flTime;
+			if (dashLeft <= 0.0f)
+				DrawCenteredText(y + (lineHeight + 4) * 2, "DASH READY (secondary attack)", 80, 255, 80);
+			else
+			{
+				snprintf(text, sizeof(text), "Dash: %.1f", dashLeft);
+				DrawCenteredText(y + (lineHeight + 4) * 2, text, 160, 160, 160);
+			}
 
 			// tick every second in the last 5
 			if (hurry && seconds != s_iLastBeep && seconds > 0)

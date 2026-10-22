@@ -32,6 +32,9 @@ cvar_t sf_winscore = {"mp_sf_winscore", "5", FCVAR_SERVER};		 // rounds won to w
 cvar_t sf_snark_return = {"mp_sf_snark_return", "4", FCVAR_SERVER}; // seconds the thrown snark has to bite someone
 cvar_t sf_fuse_reset = {"mp_sf_fuse_reset", "0", FCVAR_SERVER};	 // 1 = the fuse starts again every time the snark changes hands
 cvar_t sf_crowbar_push = {"mp_sf_crowbar_push", "550", FCVAR_SERVER}; // crowbar push force
+cvar_t sf_dash_force = {"mp_sf_dash_force", "800", FCVAR_SERVER};	   // carrier dash speed
+cvar_t sf_dash_cooldown = {"mp_sf_dash_cooldown", "3", FCVAR_SERVER}; // seconds between dashes
+cvar_t sf_snark_speed = {"mp_sf_snark_speed", "1.8", FCVAR_SERVER};  // snark speed multiplier (1 = normal snark)
 
 #define SF_ROUNDEND_TIME 5.0f
 #define SF_OBSERVER_DELAY 3.0f
@@ -46,6 +49,9 @@ void SnarkFrenzy_RegisterCvars()
 	CVAR_REGISTER(&sf_snark_return);
 	CVAR_REGISTER(&sf_fuse_reset);
 	CVAR_REGISTER(&sf_crowbar_push);
+	CVAR_REGISTER(&sf_dash_force);
+	CVAR_REGISTER(&sf_dash_cooldown);
+	CVAR_REGISTER(&sf_snark_speed);
 }
 
 static CMultiplaySnarkFrenzy* SnarkFrenzyRules()
@@ -81,6 +87,11 @@ bool SnarkFrenzy_IsCarrier(CBaseEntity* pPlayer)
 float SnarkFrenzy_CrowbarPush()
 {
 	return sf_crowbar_push.value;
+}
+
+float SnarkFrenzy_SnarkSpeed()
+{
+	return V_max(0.1f, sf_snark_speed.value);
 }
 
 //=========================================================
@@ -266,10 +277,11 @@ void CMultiplaySnarkFrenzy::PlayerSpawn(CBasePlayer* pPlayer)
 		}
 	}
 
+	// inside Spawn: the inventory is already empty, don't strip (see GiveWeapon)
 	if (IsCarrier(pPlayer))
-		GiveSnark(pPlayer);
+		GiveSnark(pPlayer, false);
 	else
-		GiveCrowbar(pPlayer);
+		GiveCrowbar(pPlayer, false);
 
 	SetPlayerModel(pPlayer);
 }
@@ -319,29 +331,43 @@ bool CMultiplaySnarkFrenzy::CanHaveAmmo(CBasePlayer* pPlayer, const char* pszAmm
 	return CHalfLifeMultiplay::CanHaveAmmo(pPlayer, pszAmmoName, iMaxCarry);
 }
 
-void CMultiplaySnarkFrenzy::GiveCrowbar(CBasePlayer* pPlayer)
+void CMultiplaySnarkFrenzy::GiveWeapon(CBasePlayer* pPlayer, const char* name, int ammo, bool strip)
 {
-	pPlayer->RemoveAllItems(false);
+	// NOT inside Spawn: RemoveAllItems calls UpdateClientData, and in the middle of Spawn that sends
+	// the ResetHUD / InitHUD / HideWeapon messages before the spawn is finished (HUD and client
+	// weapon prediction out of sync). PlayerSpawn passes strip = false (the inventory is empty there).
+	if (strip)
+		pPlayer->RemoveAllItems(false);
+
+	// always take it out, whatever cl_autowepswitch says (like the base PlayerSpawn)
+	const int autoSwitch = pPlayer->m_iAutoWepSwitch;
+	pPlayer->m_iAutoWepSwitch = 1;
 
 	m_bGiving = true;
-	pPlayer->GiveNamedItem("weapon_crowbar");
+	if (ammo > 0)
+		pPlayer->GiveNamedItem(name, ammo);
+	else
+		pPlayer->GiveNamedItem(name);
 	m_bGiving = false;
+
+	pPlayer->m_iAutoWepSwitch = autoSwitch;
+
+	pPlayer->SelectItem(name);
 }
 
-void CMultiplaySnarkFrenzy::GiveSnark(CBasePlayer* pPlayer)
+void CMultiplaySnarkFrenzy::GiveCrowbar(CBasePlayer* pPlayer, bool strip)
 {
-	pPlayer->RemoveAllItems(false);
+	GiveWeapon(pPlayer, "weapon_crowbar", 0, strip);
+}
 
-	m_bGiving = true;
-	pPlayer->GiveNamedItem("weapon_snark", 1);
-	m_bGiving = false;
+void CMultiplaySnarkFrenzy::GiveSnark(CBasePlayer* pPlayer, bool strip)
+{
+	GiveWeapon(pPlayer, "weapon_snark", 1, strip);
 
 	// exactly one snark
 	const int ammo = CBasePlayer::GetAmmoIndex("Snarks");
 	if (ammo >= 0)
 		pPlayer->m_rgAmmo[ammo] = 1;
-
-	pPlayer->SelectItem("weapon_snark");
 
 	// can't throw it back in the same instant
 	pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + SF_PASS_DELAY;
@@ -351,7 +377,20 @@ void CMultiplaySnarkFrenzy::RespawnForRound(CBasePlayer* pPlayer)
 {
 	if (pPlayer->IsObserver())
 	{
-		pPlayer->StopObserver(); // calls Spawn
+		// out of spectator mode the clean way: everything cleared BEFORE Spawn
+		// (StopObserver clears the HUD flags after Spawn and leaves PFLAG_OBSERVER set)
+		pPlayer->pev->iuser1 = 0;
+		pPlayer->pev->iuser2 = 0;
+		pPlayer->m_hObserverTarget = nullptr;
+		pPlayer->m_iHideHUD = 0;
+		pPlayer->m_afPhysicsFlags &= ~PFLAG_OBSERVER;
+
+		respawn(pPlayer->pev, false);
+
+		MESSAGE_BEGIN(MSG_ALL, gmsgTeamInfo);
+		WRITE_BYTE(pPlayer->entindex());
+		WRITE_STRING("Players");
+		MESSAGE_END();
 	}
 	else if (!pPlayer->IsAlive())
 	{
@@ -359,8 +398,16 @@ void CMultiplaySnarkFrenzy::RespawnForRound(CBasePlayer* pPlayer)
 	}
 	else
 	{
-		pPlayer->RemoveAllItems(false);
-		pPlayer->Spawn();
+		// still alive (the winner of the last round): don't Spawn him again, just send him to a
+		// spawn point with full health and a crowbar
+		g_pGameRules->GetPlayerSpawnSpot(pPlayer);
+		pPlayer->pev->basevelocity = g_vecZero;
+		pPlayer->pev->health = pPlayer->pev->max_health > 0 ? pPlayer->pev->max_health : 100;
+		pPlayer->pev->armorvalue = 0;
+		UTIL_SetOrigin(pPlayer->pev, pPlayer->pev->origin);
+
+		GiveCrowbar(pPlayer, true);
+		SetPlayerModel(pPlayer);
 	}
 }
 
@@ -452,6 +499,8 @@ void CMultiplaySnarkFrenzy::SetCarrier(int index, bool announce)
 
 	if (sf_fuse_reset.value != 0.0f || m_flFuseEnd <= gpGlobals->time)
 		m_flFuseEnd = gpGlobals->time + V_max(1.0f, sf_fuse.value);
+
+	m_flDashReady = 0.0f; // the new carrier can dash right away
 
 	GiveSnark(pPlayer);
 	SetPlayerModel(pPlayer);
@@ -617,6 +666,56 @@ void CMultiplaySnarkFrenzy::EndRound(int winner)
 	}
 
 	SetState(SF_ROUNDEND, SF_ROUNDEND_TIME);
+}
+
+//=========================================================
+// Carrier dash: secondary attack, with cooldown
+//=========================================================
+
+void CMultiplaySnarkFrenzy::PlayerThink(CBasePlayer* pPlayer)
+{
+	CHalfLifeMultiplay::PlayerThink(pPlayer);
+
+	if (m_State != SF_PLAYING || !IsCarrier(pPlayer) || !pPlayer->IsAlive() || pPlayer->IsObserver())
+		return;
+
+	if ((pPlayer->m_afButtonPressed & IN_ATTACK2) != 0 && gpGlobals->time >= m_flDashReady)
+		Dash(pPlayer);
+}
+
+void CMultiplaySnarkFrenzy::Dash(CBasePlayer* pPlayer)
+{
+	// where he is looking, flat; if he is moving, a bit toward where he is moving
+	UTIL_MakeVectors(Vector(0, pPlayer->pev->v_angle.y, 0));
+	Vector dir = gpGlobals->v_forward;
+
+	if ((pPlayer->pev->button & IN_MOVELEFT) != 0)
+		dir = dir - gpGlobals->v_right;
+	if ((pPlayer->pev->button & IN_MOVERIGHT) != 0)
+		dir = dir + gpGlobals->v_right;
+	if ((pPlayer->pev->button & IN_BACK) != 0 && (pPlayer->pev->button & IN_FORWARD) == 0)
+		dir = dir - gpGlobals->v_forward * 2.0f;
+
+	dir.z = 0;
+	if (dir.Length() < 0.01f)
+		dir = gpGlobals->v_forward;
+	dir = dir.Normalize();
+
+	const float force = V_max(0.0f, sf_dash_force.value);
+
+	pPlayer->pev->velocity.x = dir.x * force;
+	pPlayer->pev->velocity.y = dir.y * force;
+	pPlayer->pev->velocity.z = V_max(pPlayer->pev->velocity.z, 180.0f); // off the ground, so friction doesn't eat it
+	pPlayer->pev->flags &= ~FL_ONGROUND;
+
+	GMAudio_Emit(pPlayer, CHAN_BODY, "player/pl_jump2.wav", 1.0f, ATTN_NORM, 80);
+
+	const float cooldown = V_max(0.0f, sf_dash_cooldown.value);
+	m_flDashReady = gpGlobals->time + cooldown;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgSFDash, NULL, pPlayer->edict());
+	WRITE_BYTE((int)V_min(255.0f, cooldown * 10.0f));
+	MESSAGE_END();
 }
 
 void CMultiplaySnarkFrenzy::Think()
