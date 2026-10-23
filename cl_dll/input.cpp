@@ -677,7 +677,6 @@ void DLLEXPORT CL_CreateMove(float frametime, struct usercmd_s* cmd, int active)
 {
 	//	RecClCL_CreateMove(frametime, cmd, active);
 
-	float spd;
 	Vector viewangles;
 	static Vector oldangles;
 
@@ -719,21 +718,9 @@ void DLLEXPORT CL_CreateMove(float frametime, struct usercmd_s* cmd, int active)
 			cmd->upmove *= cl_movespeedkey->value;
 		}
 
-		// clip to maxspeed
-		spd = gEngfuncs.GetClientMaxspeed();
-		if (spd != 0.0)
-		{
-			// scale the 3 speeds so that the total velocity is not > cl.maxspeed
-			float fmov = sqrt((cmd->forwardmove * cmd->forwardmove) + (cmd->sidemove * cmd->sidemove) + (cmd->upmove * cmd->upmove));
-
-			if (fmov > spd)
-			{
-				float fratio = spd / fmov;
-				cmd->forwardmove *= fratio;
-				cmd->sidemove *= fratio;
-				cmd->upmove *= fratio;
-			}
-		}
+		// Go-Mod: no clip to the client max speed here, pm_shared.cpp (PM_CheckParamters) does it:
+		// the max speed of the client is the own speed of the player (self_speed) and the keys
+		// must arrive complete so the movement knows how much they are pressed
 
 		// Allow mice and other controllers to add their inputs
 		IN_Move(frametime, cmd);

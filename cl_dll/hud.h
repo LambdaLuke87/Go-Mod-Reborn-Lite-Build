@@ -357,6 +357,8 @@ public:
 	bool Draw(float flTime) override;
 	bool MsgFunc_Battery(const char* pszName, int iSize, void* pbuf);
 
+	int GetArmor() const { return m_iBat; } // Go-Mod menu (User Settings)
+
 private:
 	HSPRITE m_hSprite1;
 	HSPRITE m_hSprite2;

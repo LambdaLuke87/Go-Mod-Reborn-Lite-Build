@@ -468,6 +468,10 @@ public:
 	bool m_fUseAlliedMode;
 	bool m_fGiveItemMode;
 	bool m_fUseFrontSpawn;
+
+	// Go-Mod: settings that the player applies to himself (User Settings menu, sandbox only)
+	int m_iGMSpeed = 0;		 // own speed (pev->maxspeed, pm_shared.cpp), 0 = normal speed
+	bool m_bGMGreenBlood = false; // yellow/green blood instead of red
 	bool m_fUseNightVision;
 	EHANDLE m_hManipulateNPC;
 	int m_iGlowstickType = 0;

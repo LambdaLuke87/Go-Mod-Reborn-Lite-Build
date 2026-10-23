@@ -2272,6 +2272,219 @@ static void DrawEnvironmentTab()
 	ImGui::EndChild();
 }
 
+// =====================================================================
+//  User Settings: Player Tweaks (server commands of client.cpp, sandbox only)
+//  self_health / self_armor / self_speed / self_blood / self_render / buddha / zeus / self_reset
+// =====================================================================
+
+static const int TWEAK_SPEED_NORMAL = 320; // sv_maxspeed of Half-Life
+static const int TWEAK_SPEED_MIN = 100;	   // same limits as client.cpp
+static const int TWEAK_SPEED_MAX = 1000;
+
+struct PlayerTweaks
+{
+	int health = 100;
+	int armor = 1;
+	int speed = TWEAK_SPEED_NORMAL;
+	int blood = 0;	   // 0 red, 1 green
+	int renderMode = 0; // index in the Render Mode list of Render Options
+	int renderFX = 0;	// index in the Render FX list of Render Options
+	int renderAmount = 255;
+	int renderColor[3] = {255, 255, 255};
+	bool buddha = false;
+	bool zeus = false;
+};
+
+// "rendermode color" -> "color"
+static const char* ToolArg(const ToolDef& tool)
+{
+	const char* space = strchr(tool.command, ' ');
+	return space ? space + 1 : tool.command;
+}
+
+static void DrawPlayerTweaksTab()
+{
+	static PlayerTweaks s_Tweaks;
+	static RefreshTimer s_Refresh;
+	static int s_iReadHealth = -1; // what the HUD said when the menu opened
+	static int s_iReadArmor = -1;
+
+	// health and suit: what the player has now (they are only sent if they are changed)
+	if (s_Refresh.Check())
+	{
+		s_iReadHealth = (std::max)(1, (std::min)(999, gHUD.m_Health.m_iHealth));
+		s_iReadArmor = (std::max)(1, (std::min)(999, gHUD.m_Battery.GetArmor()));
+		s_Tweaks.health = s_iReadHealth;
+		s_Tweaks.armor = s_iReadArmor;
+	}
+
+	const std::vector<ToolDef>& modes = g_RenderToolCats[0].tools;
+	const std::vector<ToolDef>& fxs = g_RenderToolCats[1].tools;
+	s_Tweaks.renderMode = (std::max)(0, (std::min)((int)modes.size() - 1, s_Tweaks.renderMode));
+	s_Tweaks.renderFX = (std::max)(0, (std::min)((int)fxs.size() - 1, s_Tweaks.renderFX));
+
+	auto Slider = [](const char* id, const char* key, int& value, int mn, int mx, const char* fmt = "%d")
+	{
+		ImGui::TextUnformatted(L(key));
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SliderInt(id, &value, mn, mx, fmt, ImGuiSliderFlags_AlwaysClamp);
+	};
+
+	ImGui::BeginChild("##playertweaks", ImVec2(0, 0), ImGuiChildFlags_None);
+
+	ImGui::TextWrapped("%s", L("#Gomod_Tweaks_Info"));
+
+	if (ImGui::BeginTable("##tweakstable", 2, ImGuiTableFlags_SizingStretchSame))
+	{
+		ImGui::TableNextRow();
+
+		// ---------------- left: player ----------------
+		ImGui::TableSetColumnIndex(0);
+
+		SectionTitle("#Gomod_Tweaks_Player");
+
+		Slider("##tweakhealth", "#Gomod_Tweaks_Health", s_Tweaks.health, 1, 999);
+		Slider("##tweakarmor", "#Gomod_Tweaks_Suit", s_Tweaks.armor, 1, 999);
+		ImGui::TextDisabled("%s", L("#Gomod_Tweaks_AliveHint"));
+
+		ImGui::Spacing();
+
+		{
+			const std::string fmt = s_Tweaks.speed == TWEAK_SPEED_NORMAL
+										? "%d (" + EscapePercent(L("#Gomod_Tweaks_SpeedNormal")) + ")"
+										: std::string("%d");
+			Slider("##tweakspeed", "#Gomod_Tweaks_Speed", s_Tweaks.speed, TWEAK_SPEED_MIN, TWEAK_SPEED_MAX, fmt.c_str());
+		}
+
+		ImGui::Spacing();
+
+		{
+			static const char* const kBlood[] = {"#Gomod_Tweaks_BloodRed", "#Gomod_Tweaks_BloodGreen"};
+
+			ImGui::TextUnformatted(L("#Gomod_Tweaks_Blood"));
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			if (ImGui::BeginCombo("##tweakblood", L(kBlood[s_Tweaks.blood])))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					if (ImGui::Selectable(LID(kBlood[i]).c_str(), i == s_Tweaks.blood))
+						s_Tweaks.blood = i;
+				}
+				ImGui::EndCombo();
+			}
+		}
+
+		SectionTitle("#Gomod_Tweaks_Immortality");
+		ImGui::Checkbox(LID("#Gomod_Tweaks_Buddha").c_str(), &s_Tweaks.buddha);
+		ImGui::TextDisabled("%s", L("#Gomod_Tweaks_BuddhaHint"));
+		ImGui::Checkbox(LID("#Gomod_Tweaks_Zeus").c_str(), &s_Tweaks.zeus);
+		ImGui::TextDisabled("%s", L("#Gomod_Tweaks_ZeusHint"));
+
+		// ---------------- right: render ----------------
+		ImGui::TableSetColumnIndex(1);
+
+		SectionTitle("#Gomod_Tweaks_Render");
+
+		ImGui::TextUnformatted(L("#Gomod_Menu_Cat_RenderMode"));
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (ImGui::BeginCombo("##tweakrendermode", L(modes[s_Tweaks.renderMode].name)))
+		{
+			for (int i = 0; i < (int)modes.size(); i++)
+			{
+				if (ImGui::Selectable(LID(modes[i].name).c_str(), i == s_Tweaks.renderMode))
+					s_Tweaks.renderMode = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::TextUnformatted(L("#Gomod_Menu_Cat_RenderFX"));
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (ImGui::BeginCombo("##tweakrenderfx", L(fxs[s_Tweaks.renderFX].name), ImGuiComboFlags_HeightLarge))
+		{
+			for (int i = 0; i < (int)fxs.size(); i++)
+			{
+				if (ImGui::Selectable(LID(fxs[i].name).c_str(), i == s_Tweaks.renderFX))
+					s_Tweaks.renderFX = i;
+			}
+			ImGui::EndCombo();
+		}
+
+		{
+			const std::string fmt = EscapePercent(L("#Gomod_Menu_RenderAmount")) + " %d";
+			ImGui::TextUnformatted(L("#Gomod_Menu_RenderFXAmount"));
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderInt("##tweakrenderamount", &s_Tweaks.renderAmount, 0, 255, fmt.c_str(), ImGuiSliderFlags_AlwaysClamp);
+		}
+
+		ImGui::TextUnformatted(L("#Gomod_Menu_Color_FXColor"));
+		if (ColorChangeButton("tweakrendercolor", "#Gomod_Tweaks_ChangeRenderColor", s_Tweaks.renderColor))
+			OpenColorDialog("#Gomod_Color_Title_FX", nullptr, s_Tweaks.renderColor, s_Tweaks.renderColor);
+
+		// the hint of the selected render, same texts as Render Options
+		ImGui::Spacing();
+		if (fxs[s_Tweaks.renderFX].hint && s_Tweaks.renderFX != 0)
+			ImGui::TextWrapped("%s", ResolveKeyText(fxs[s_Tweaks.renderFX].hint).c_str());
+		else if (modes[s_Tweaks.renderMode].hint)
+			ImGui::TextWrapped("%s", ResolveKeyText(modes[s_Tweaks.renderMode].hint).c_str());
+
+		ImGui::EndTable();
+	}
+
+	// ---------------- apply / reset ----------------
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	int btnW = 200, btnH = 30;
+	ScaleSize(btnW, btnH);
+	CenteredButtonPos((float)btnW * 2.0f + ImGui::GetStyle().ItemSpacing.x);
+
+	if (ImGui::Button(LID("#Gomod_Tweaks_Apply").c_str(), ImVec2((float)btnW, (float)btnH)))
+	{
+		char buf[160];
+
+		if (s_Tweaks.health != s_iReadHealth)
+		{
+			snprintf(buf, sizeof(buf), "self_health %d", s_Tweaks.health);
+			RunCmd(buf);
+			s_iReadHealth = s_Tweaks.health;
+		}
+
+		if (s_Tweaks.armor != s_iReadArmor)
+		{
+			snprintf(buf, sizeof(buf), "self_armor %d", s_Tweaks.armor);
+			RunCmd(buf);
+			s_iReadArmor = s_Tweaks.armor;
+		}
+
+		snprintf(buf, sizeof(buf), "self_speed %d", s_Tweaks.speed == TWEAK_SPEED_NORMAL ? 0 : s_Tweaks.speed);
+		RunCmd(buf);
+
+		RunCmd(s_Tweaks.blood ? "self_blood green" : "self_blood red");
+
+		snprintf(buf, sizeof(buf), "self_render %s %s %d %d %d %d",
+			ToolArg(modes[s_Tweaks.renderMode]), ToolArg(fxs[s_Tweaks.renderFX]), s_Tweaks.renderAmount,
+			s_Tweaks.renderColor[0], s_Tweaks.renderColor[1], s_Tweaks.renderColor[2]);
+		RunCmd(buf);
+
+		RunCmd(s_Tweaks.buddha ? "buddha 1" : "buddha 0");
+		RunCmd(s_Tweaks.zeus ? "zeus 1" : "zeus 0");
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(LID("#Gomod_Tweaks_Reset").c_str(), ImVec2((float)btnW, (float)btnH)))
+	{
+		RunCmd("self_reset");
+
+		s_Tweaks = PlayerTweaks();
+		s_Tweaks.health = s_iReadHealth = 100;
+		s_iReadArmor = s_Tweaks.armor; // the server puts 0, the slider starts at 1
+	}
+
+	ImGui::EndChild();
+}
+
 static void DrawUserSettingsWindow(int x, int y, int w, int h)
 {
 	ImGui::SetNextWindowPos(ImVec2((float)x, (float)y), ImGuiCond_Appearing);
@@ -2284,6 +2497,12 @@ static void DrawUserSettingsWindow(int x, int y, int w, int h)
 		if (ImGui::BeginTabItem(LID("#Gomod_User_Tab_Player").c_str()))
 		{
 			DrawPlayerSettingsTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem(LID("#Gomod_User_Tab_Tweaks").c_str()))
+		{
+			DrawPlayerTweaksTab();
 			ImGui::EndTabItem();
 		}
 

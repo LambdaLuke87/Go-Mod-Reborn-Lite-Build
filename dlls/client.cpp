@@ -391,53 +391,257 @@ void GoMod_NoclipHelper(CBasePlayer* player, edict_t* pEntity, bool active)
 	}
 }
 
-void GoMod_ImmortalityHelper(CBasePlayer* player, edict_t* pEntity, bool zeus)
+// gm_allow_health_modifier: 0 nobody, 1 everybody, 2 only the host (listen server)
+static bool GoMod_HealthModifierAllowed(edict_t* pEntity)
 {
 	if (!UTIL_IsSandbox() || !allow_healthmodify.value)
-		return;
+	{
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Health modifiers are disabled on this server (gm_allow_health_modifier)\n");
+		return false;
+	}
 
 	if (allow_healthmodify.value == 2) // Only Hoster
 	{
 		// Check if it is a dedicated server.
 		if (IS_DEDICATED_SERVER())
 		{
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - You can't use Immortalities\n");
-			return;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - You can't use health modifiers\n");
+			return false;
 		}
 
 		// Verify if the player is the host (local player #1)
 		if (ENTINDEX(pEntity) != 1)
 		{
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - Only the host can use Immortalities\n");
-			return;
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Admin Lock - Only the host can use health modifiers\n");
+			return false;
 		}
 	}
 
+	return true;
+}
+
+// buddha / zeus: without argument it switches, "buddha 1" / "buddha 0" sets it.
+// Everybody sees it in the chat, so the admin / host knows who is using it.
+void GoMod_ImmortalityHelper(CBasePlayer* player, edict_t* pEntity, bool zeus)
+{
+	const bool isOn = zeus ? (player->pev->takedamage == DAMAGE_NO) : player->m_buddha;
+	const bool wantOn = (CMD_ARGC() > 1) ? (atoi(CMD_ARGV(1)) != 0) : !isOn;
+
+	if (wantOn == isOn)
+		return; // nothing changes, nothing to say (the menu sends "buddha 0" every time)
+
+	if (!GoMod_HealthModifierAllowed(pEntity))
+		return;
+
 	if (zeus)
+		player->pev->takedamage = wantOn ? DAMAGE_NO : DAMAGE_AIM;
+	else
+		player->m_buddha = wantOn;
+
+	const char* name = STRING(player->pev->netname);
+	const char* what = zeus ? "Zeus" : "Buddha";
+
+	if (wantOn)
+		UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s is using %s\n", "%s", what), name);
+	else
+		UTIL_ClientPrintAll(HUD_PRINTTALK, UTIL_VarArgs("%s is no longer using %s\n", "%s", what), name);
+}
+
+// =====================================================================
+//  Go-Mod: things the player applies to himself (User Settings > Player Tweaks), sandbox only
+//
+//  self_health <1-999>      only alive, gm_allow_health_modifier
+//  self_armor <0-999>       only alive, gm_allow_health_modifier
+//  self_speed <100-1000>    own speed (0 = normal), it ignores sv_maxspeed / cl_forwardspeed...
+//  self_blood <red|green>
+//  self_render <mode> <fx> <amount 0-255> <r> <g> <b>   (same names as rendermode / renderfx)
+//  self_reset               everything back to normal
+// =====================================================================
+
+#define GOMOD_SPEED_MIN 100
+#define GOMOD_SPEED_MAX 1000
+
+static bool GoMod_SelfAlive(CBasePlayer* player, edict_t* pEntity)
+{
+	if (!player->IsAlive() || player->pev->iuser1 != 0)
 	{
-		if (0 != player->pev->takedamage)
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "You must be alive to do that\n");
+		return false;
+	}
+	return true;
+}
+
+static void GoMod_SetSelfSpeed(CBasePlayer* player, int speed)
+{
+	if (speed > 0)
+		speed = V_min(V_max(speed, GOMOD_SPEED_MIN), GOMOD_SPEED_MAX);
+	else
+		speed = 0;
+
+	player->m_iGMSpeed = speed;
+	player->pev->maxspeed = (float)speed; // goes to the client in the clientdata (pm_shared.cpp)
+}
+
+static void GoMod_SetSelfBlood(CBasePlayer* player, bool green)
+{
+	player->m_bGMGreenBlood = green;
+	player->m_bloodColor = green ? BLOOD_COLOR_YELLOW : BLOOD_COLOR_RED;
+}
+
+// only the render modes / fx that the Render Options of the menu use
+static bool GoMod_RenderModeByName(const char* name, int& out)
+{
+	static const struct { const char* name; int value; } modes[] = {
+		{"normal", kRenderNormal},
+		{"color", kRenderTransColor},
+		{"texture", kRenderTransTexture},
+		{"additive", kRenderTransAdd},
+	};
+
+	for (const auto& m : modes)
+	{
+		if (FStrEq(name, m.name))
 		{
-			player->pev->takedamage = DAMAGE_NO;
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Applied Zeus invulnerability\n");
-		}
-		else
-		{
-			player->pev->takedamage = DAMAGE_YES;
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Zeus invulnerability removed\n");
+			out = m.value;
+			return true;
 		}
 	}
-	else
+	return false;
+}
+
+static bool GoMod_RenderFXByName(const char* name, int& out)
+{
+	static const struct { const char* name; int value; } fxs[] = {
+		{"normal", kRenderFxNone},
+		{"slow_pulse", kRenderFxPulseSlow},
+		{"fast_pulse", kRenderFxPulseFast},
+		{"slow_wide_pulse", kRenderFxPulseSlowWide},
+		{"fast_wide_pulse", kRenderFxPulseFastWide},
+		{"slow_strobe", kRenderFxStrobeSlow},
+		{"fast_strobe", kRenderFxStrobeFast},
+		{"faster_strobe", kRenderFxStrobeFaster},
+		{"slow_flicker", kRenderFxFlickerSlow},
+		{"fast_flicker", kRenderFxFlickerFast},
+		{"distort", kRenderFxDistort},
+		{"hologram", kRenderFxHologram},
+		{"explode", kRenderFxExplode},
+		{"glow_shell", kRenderFxGlowShell},
+	};
+
+	for (const auto& f : fxs)
 	{
-		if (player->m_buddha)
+		if (FStrEq(name, f.name))
 		{
-			player->m_buddha = false;
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode off\n");
+			out = f.value;
+			return true;
+		}
+	}
+	return false;
+}
+
+static void GoMod_SelfCommand(CBasePlayer* player, edict_t* pEntity, const char* pcmd)
+{
+	if (!UTIL_IsSandbox())
+	{
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Sandbox Disabled - mp_gamemode 1 required\n");
+		return;
+	}
+
+	if (FStrEq(pcmd, "self_health") || FStrEq(pcmd, "self_armor"))
+	{
+		const bool health = FStrEq(pcmd, "self_health");
+
+		if (CMD_ARGC() < 2)
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, health ? "Usage: self_health <1-999>\n" : "Usage: self_armor <0-999>\n");
+			return;
+		}
+
+		if (!GoMod_SelfAlive(player, pEntity) || !GoMod_HealthModifierAllowed(pEntity))
+			return;
+
+		if (health)
+		{
+			player->pev->health = V_min(V_max(atoi(CMD_ARGV(1)), 1), 999);
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Health set to %d\n", (int)player->pev->health));
 		}
 		else
 		{
-			player->m_buddha = true;
-			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Buddha Mode on\n");
+			player->pev->armorvalue = V_min(V_max(atoi(CMD_ARGV(1)), 0), 999);
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Suit set to %d\n", (int)player->pev->armorvalue));
 		}
+	}
+	else if (FStrEq(pcmd, "self_speed"))
+	{
+		if (CMD_ARGC() < 2)
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Usage: self_speed <%d-%d> (0 = normal speed)\n", GOMOD_SPEED_MIN, GOMOD_SPEED_MAX));
+			return;
+		}
+
+		GoMod_SetSelfSpeed(player, atoi(CMD_ARGV(1)));
+
+		if (player->m_iGMSpeed > 0)
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Speed set to %d\n", player->m_iGMSpeed));
+		else
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Normal speed\n");
+	}
+	else if (FStrEq(pcmd, "self_blood"))
+	{
+		const bool green = FStrEq(CMD_ARGV(1), "green") || FStrEq(CMD_ARGV(1), "yellow") || FStrEq(CMD_ARGV(1), "1");
+		GoMod_SetSelfBlood(player, green);
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, green ? "Blood color: green\n" : "Blood color: red\n");
+	}
+	else if (FStrEq(pcmd, "self_render"))
+	{
+		int mode, fx;
+		if (CMD_ARGC() < 7 || !GoMod_RenderModeByName(CMD_ARGV(1), mode) || !GoMod_RenderFXByName(CMD_ARGV(2), fx))
+		{
+			ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Usage: self_render <mode> <fx> <amount 0-255> <r> <g> <b>\n");
+			return;
+		}
+
+		player->pev->rendermode = mode;
+		player->pev->renderfx = fx;
+		player->pev->renderamt = V_min(V_max(atoi(CMD_ARGV(3)), 0), 255);
+		player->pev->rendercolor = Vector(
+			V_min(V_max(atoi(CMD_ARGV(4)), 0), 255),
+			V_min(V_max(atoi(CMD_ARGV(5)), 0), 255),
+			V_min(V_max(atoi(CMD_ARGV(6)), 0), 255));
+
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs("Render set: %s, %s\n", CMD_ARGV(1), CMD_ARGV(2)));
+	}
+	else if (FStrEq(pcmd, "self_reset"))
+	{
+		GoMod_SetSelfSpeed(player, 0);
+		GoMod_SetSelfBlood(player, false);
+
+		player->pev->rendermode = kRenderNormal;
+		player->pev->renderfx = kRenderFxNone;
+		player->pev->renderamt = 0;
+		player->pev->rendercolor = g_vecZero;
+
+		// health, suit, buddha and zeus: only if the server lets him change them
+		if (player->IsAlive() && player->pev->iuser1 == 0 && UTIL_IsSandbox() && allow_healthmodify.value &&
+			(allow_healthmodify.value != 2 || (!IS_DEDICATED_SERVER() && ENTINDEX(pEntity) == 1)))
+		{
+			player->pev->health = 100;
+			player->pev->armorvalue = 0;
+
+			if (player->m_buddha)
+			{
+				player->m_buddha = false;
+				UTIL_ClientPrintAll(HUD_PRINTTALK, "%s is no longer using Buddha\n", STRING(player->pev->netname));
+			}
+
+			if (player->pev->takedamage == DAMAGE_NO)
+			{
+				player->pev->takedamage = DAMAGE_AIM;
+				UTIL_ClientPrintAll(HUD_PRINTTALK, "%s is no longer using Zeus\n", STRING(player->pev->netname));
+			}
+		}
+
+		ClientPrint(&pEntity->v, HUD_PRINTCONSOLE, "Your settings are back to normal\n");
 	}
 }
 
@@ -1658,6 +1862,9 @@ void ClientCommand(edict_t* pEntity)
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot change the render amount outside of the sandbox\n"));
 	}
+	else if (FStrEq(pcmd, "self_health") || FStrEq(pcmd, "self_armor") || FStrEq(pcmd, "self_speed") ||
+			 FStrEq(pcmd, "self_blood") || FStrEq(pcmd, "self_render") || FStrEq(pcmd, "self_reset"))
+		GoMod_SelfCommand(pPlayer, pEntity, pcmd);
 	else if (FStrEq(pcmd, "buddha"))
 		GoMod_ImmortalityHelper(pPlayer, pEntity, false);
 	else if (FStrEq(pcmd, "zeus"))

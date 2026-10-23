@@ -2964,9 +2964,29 @@ void PM_CheckParamters()
 	spd = sqrt(spd);
 
 	maxspeed = pmove->clientmaxspeed; //atof( pmove->PM_Info_ValueForKey( pmove->physinfo, "maxspd" ) );
-	if (maxspeed != 0.0)
+
+	// Go-Mod: the max speed of the client (pev->maxspeed, only set by self_speed in the sandbox)
+	// is the own speed of this player. It replaces sv_maxspeed and the cl_forwardspeed /
+	// cl_sidespeed / cl_backspeed of the client: the keys only give the direction and how much
+	// (400 = a key fully pressed, walking = less).
+	// It comes in the clientdata of every frame, so the prediction of the client always has the
+	// same value as the server (no jumps / corrections).
+	if (maxspeed > 0.0f)
 	{
-		pmove->maxspeed = V_min(maxspeed, pmove->maxspeed);
+		pmove->maxspeed = maxspeed;
+
+		if (spd > 0.0f)
+		{
+			float amount = spd / 400.0f;
+			if (amount > 1.0f)
+				amount = 1.0f;
+
+			const float fRatio = (maxspeed * amount) / spd;
+			pmove->cmd.forwardmove *= fRatio;
+			pmove->cmd.sidemove *= fRatio;
+			pmove->cmd.upmove *= fRatio;
+			spd = maxspeed * amount;
+		}
 	}
 
 	// Slow down, I'm pulling it! (a box maybe) but only when I'm standing on ground

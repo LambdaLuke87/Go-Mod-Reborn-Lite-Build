@@ -179,22 +179,7 @@ void CBasePlayer::Pain()
 	char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
 	if (RANDOM_FLOAT(0.0f, 100.0f) <= 35.0f)
 	{
-		if (0 == strcmp(PlayerSFXString, "barney"))
-		{
-			switch (RANDOM_LONG(1, 3))
-			{
-			case 1:
-				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			case 2:
-				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			case 3:
-				GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			}
-		}
-		else if (0 == strcmp(PlayerSFXString, "cstrike"))
+		if (0 == strcmp(PlayerSFXString, "cstrike"))
 		{
 			switch (RANDOM_LONG(1, 5))
 			{
@@ -227,45 +212,6 @@ void CBasePlayer::Pain()
 				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain6.wav", 1.0, ATTN_NORM, PITCH_NORM);
 			else
 				GMAudio_Emit(this, CHAN_VOICE, "player/pl_pain7.wav", 1.0, ATTN_NORM, PITCH_NORM);
-		}
-		else if (0 == strcmp(PlayerSFXString, "hgrunt"))
-		{
-			switch (RANDOM_LONG(0, 7))
-			{
-			case 0:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			case 1:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			case 2:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			case 3:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			case 4:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			case 5:
-				GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
-				break;
-			}
-		}
-		else if (0 == strcmp(PlayerSFXString, "scientist"))
-		{
-			switch (RANDOM_LONG(1, 3))
-			{
-			case 1:
-				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			case 2:
-				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			case 3:
-				GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
-				break;
-			}
 		}
 	}
 }
@@ -723,11 +669,66 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 			char* PlayerSFXString = g_engfuncs.pfnInfoKeyValue(g_engfuncs.pfnGetInfoKeyBuffer(edict()), "cl_player_sfx_type");
 			if ((bitsDamage & DMG_FALL) != 0)
 			{
-				if (FStrEq(PlayerSFXString, "barney") ||
-					FStrEq(PlayerSFXString, "cstrike") ||
-					FStrEq(PlayerSFXString, "hgrunt") ||
-					FStrEq(PlayerSFXString, "scientist"))
-					Pain();
+				if (0 == strcmp(PlayerSFXString, "barney"))
+				{
+					switch (RANDOM_LONG(1, 3))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "barney/ba_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "cstrike"))
+				{
+					switch (RANDOM_LONG(1, 5))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain3.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 4:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 5:
+						GMAudio_Emit(this, CHAN_VOICE, "player/profiles/cs_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "hgrunt"))
+				{
+					switch (RANDOM_LONG(0, 7))
+					{
+					case 0:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain3.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain4.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain5.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain1.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 4:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain2.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					case 5:
+						GMAudio_Emit(this, CHAN_VOICE, "fgrunt/pain6.wav", 1, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
 				else if (0 == strcmp(PlayerSFXString, "hlalpha"))
 				{
 					switch (RANDOM_LONG(1, 2))
@@ -737,6 +738,21 @@ bool CBasePlayer::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 						break;
 					case 2:
 						GMAudio_Emit(this, CHAN_VOICE, "player/pl_fallpain2.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					}
+				}
+				else if (0 == strcmp(PlayerSFXString, "scientist"))
+				{
+					switch (RANDOM_LONG(1, 3))
+					{
+					case 1:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain1.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 2:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain4.wav", 1.0, ATTN_NORM, PITCH_NORM);
+						break;
+					case 3:
+						GMAudio_Emit(this, CHAN_VOICE, "scientist/sci_pain5.wav", 1.0, ATTN_NORM, PITCH_NORM);
 						break;
 					}
 				}
@@ -3772,6 +3788,9 @@ void CBasePlayer::Spawn()
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", UTIL_dtos1(sv_allowbunnyhopping.value != 0 ? 1 : 0));
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "jpj", "0");
 
+	// Go-Mod: own speed (self_speed), it stays after dying. Only in the sandbox (pm_shared.cpp)
+	pev->maxspeed = (UTIL_IsSandbox() && m_iGMSpeed > 0) ? (float)m_iGMSpeed : 0.0f;
+
 	m_iFOV = 0;		   // init field of view.
 	m_iClientFOV = -1; // make sure fov reset is sent
 	m_ClientSndRoomtype = -1;
@@ -3786,7 +3805,8 @@ void CBasePlayer::Spawn()
 	m_iStepLeft = 0;
 	m_flFieldOfView = 0.5; // some monsters use this to determine whether or not the player is looking at them.
 
-	m_bloodColor = BLOOD_COLOR_RED;
+	// Go-Mod: blood chosen with self_blood (sandbox)
+	m_bloodColor = (UTIL_IsSandbox() && m_bGMGreenBlood) ? BLOOD_COLOR_YELLOW : BLOOD_COLOR_RED;
 	m_flNextAttack = UTIL_WeaponTimeBase();
 
 	m_fGiveItemMode = true;
@@ -3977,6 +3997,7 @@ bool CBasePlayer::Restore(CRestore& restore)
 	}
 
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
+	pev->maxspeed = 0.0f; // Go-Mod: normal speed (self_speed)
 
 	if (m_fLongJump)
 	{

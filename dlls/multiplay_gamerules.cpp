@@ -564,7 +564,8 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 			pPlayer->m_flNextHEVCharge = gpGlobals->time + 0.5;
 		}
 	}
-	else if (pPlayer->pev->armorvalue > 100 && pPlayer->m_flNextHEVCharge <= gpGlobals->time)
+	// Go-Mod: in the sandbox the extra suit stays (taking off the power up, self_armor)
+	else if (!UTIL_IsSandbox() && pPlayer->pev->armorvalue > 100 && pPlayer->m_flNextHEVCharge <= gpGlobals->time)
 	{
 		pPlayer->pev->armorvalue -= 1;
 		pPlayer->m_flNextHEVCharge = gpGlobals->time + 0.5;
@@ -593,7 +594,8 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer* pPlayer)
 			pPlayer->m_flNextHealthCharge = gpGlobals->time + 0.5;
 		}
 	}
-	else if (pPlayer->pev->health > 100.0 && gpGlobals->time >= pPlayer->m_flNextHealthCharge)
+	// Go-Mod: in the sandbox the extra health stays (taking off the power up, self_health)
+	else if (!UTIL_IsSandbox() && pPlayer->pev->health > 100.0 && gpGlobals->time >= pPlayer->m_flNextHealthCharge)
 	{
 		pPlayer->pev->health -= 1;
 		pPlayer->m_flNextHealthCharge = gpGlobals->time + 0.5;
