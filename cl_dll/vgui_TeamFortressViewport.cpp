@@ -51,7 +51,6 @@
 
 #include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
-#include "vgui_SpectatorPanel.h"
 #include "vgui_StatsMenuPanel.h"
 
 #include "shake.h"
@@ -85,6 +84,13 @@ extern float* GetClientColor(int clientIndex);
 
 extern void ImGuiMenu_SetOpen(bool open);
 extern bool GoModInfo_QueueVGUIMenu(int iMenu);
+
+// imgui_hudpanels.cpp: CTF team / character menus and spectator panel (ImGui)
+extern void GoModCTF_Open(int menu);
+extern void GoModCTF_Reset();
+extern void GoModCTF_TeamFull(bool full);
+extern bool GoModCTF_IsOpen();
+extern bool GoModSpec_MenuOpen();
 
 using namespace vgui;
 
@@ -537,10 +543,7 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 {
 	gViewPort = this;
 	m_iInitialized = false;
-	m_pTeamMenu = NULL;
-	m_pClassMenu = NULL;
 	m_pStatsMenu = NULL;
-	m_pSpectatorPanel = NULL;
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
 
@@ -596,10 +599,7 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 
 	App::getInstance()->setScheme(pScheme);
 
-	// VGUI MENUS
-	CreateTeamMenu();
-	CreateClassMenu();
-	CreateSpectatorMenu();
+	// VGUI MENUS (team / character menus and spectator panel: ImGui, imgui_hudpanels.cpp)
 	CreateStatsMenu();
 
 	// Init command menus
@@ -607,22 +607,6 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 	m_iCurrentTeamNumber = m_iUser1 = m_iUser2 = m_iUser3 = 0;
 
 	m_StandardMenu = CreateCommandMenu("commandmenu.txt", false, CMENU_TOP, false, CMENU_SIZE_X, BUTTON_SIZE_Y, 0);
-	m_SpectatorOptionsMenu = CreateCommandMenu("spectatormenu.txt", true, PANEL_HEIGHT, true, CMENU_SIZE_X, BUTTON_SIZE_Y / 2, 0);						   // above bottom bar, flat design
-	m_SpectatorCameraMenu = CreateCommandMenu("spectcammenu.txt", true, PANEL_HEIGHT, true, XRES(200), BUTTON_SIZE_Y / 2, ScreenWidth - (XRES(200) + 15)); // above bottom bar, flat design
-
-	m_PlayerMenu = m_iNumMenus;
-	m_iNumMenus++;
-
-	float flLabelSize = ((ScreenWidth - (XRES(CAMOPTIONS_BUTTON_X) + 15)) - XRES(24 + 15)) - XRES((15 + OPTIONS_BUTTON_X + 15) + 38);
-
-	m_pCommandMenus[m_PlayerMenu] = new CCommandMenu(NULL, true,
-		XRES((15 + OPTIONS_BUTTON_X + 15) + 31), PANEL_HEIGHT, flLabelSize, 300);
-	m_pCommandMenus[m_PlayerMenu]->setParent(this);
-	m_pCommandMenus[m_PlayerMenu]->setVisible(false);
-	m_pCommandMenus[m_PlayerMenu]->m_flButtonSizeY = BUTTON_SIZE_Y / 2;
-	m_pCommandMenus[m_PlayerMenu]->m_iSpectCmdMenu = true;
-
-	UpdatePlayerMenu(m_PlayerMenu);
 }
 
 //-----------------------------------------------------------------------------
@@ -631,20 +615,8 @@ TeamFortressViewport::TeamFortressViewport(int x, int y, int wide, int tall) : P
 void TeamFortressViewport::Initialize()
 {
 	// Force each menu to Initialize
-	if (m_pTeamMenu)
-	{
-		m_pTeamMenu->Initialize();
-	}
-	if (m_pClassMenu)
-	{
-		m_pClassMenu->Initialize();
-	}
+	GoModCTF_Reset();
 	gHUD.m_Scoreboard.SetForced(false);
-	if (m_pSpectatorPanel)
-	{
-		// Spectator menu doesn't need initializing
-		m_pSpectatorPanel->setVisible(false);
-	}
 
 	if (m_pStatsMenu)
 	{
@@ -657,7 +629,6 @@ void TeamFortressViewport::Initialize()
 
 	// Clear out some data
 	m_iRandomPC = false;
-	m_flSpectatorPanelLastUpdated = 0;
 
 	// reset player info
 	g_iPlayerClass = 0;
@@ -1136,21 +1107,6 @@ void TeamFortressViewport::HideCommandMenu()
 		m_pCommandMenus[m_StandardMenu]->ClearButtonsOfArmedState();
 	}
 
-	if (m_pCommandMenus[m_SpectatorOptionsMenu])
-	{
-		m_pCommandMenus[m_SpectatorOptionsMenu]->ClearButtonsOfArmedState();
-	}
-
-	if (m_pCommandMenus[m_SpectatorCameraMenu])
-	{
-		m_pCommandMenus[m_SpectatorCameraMenu]->ClearButtonsOfArmedState();
-	}
-
-	if (m_pCommandMenus[m_PlayerMenu])
-	{
-		m_pCommandMenus[m_PlayerMenu]->ClearButtonsOfArmedState();
-	}
-
 
 	m_flMenuOpenTime = 0.0f;
 	SetCurrentCommandMenu(NULL);
@@ -1186,208 +1142,11 @@ void TeamFortressViewport::SetCurrentCommandMenu(CCommandMenu* pNewMenu)
 
 void TeamFortressViewport::UpdateCommandMenu(int menuIndex)
 {
-	// if its the player menu update the player list
-	if (menuIndex == m_PlayerMenu)
-	{
-		m_pCommandMenus[m_PlayerMenu]->RemoveAllButtons();
-		UpdatePlayerMenu(m_PlayerMenu);
-	}
-
 	m_pCommandMenus[menuIndex]->RecalculateVisibles(0, false);
 	m_pCommandMenus[menuIndex]->RecalculatePositions(0);
 }
 
-void TeamFortressViewport::UpdatePlayerMenu(int menuIndex)
-{
-
-	cl_entity_t* pEnt = NULL;
-	float flLabelSize = ((ScreenWidth - (XRES(CAMOPTIONS_BUTTON_X) + 15)) - XRES(24 + 15)) - XRES((15 + OPTIONS_BUTTON_X + 15) + 38);
-	gHUD.m_Scoreboard.GetAllPlayersInfo();
-
-
-	for (int i = 1; i < MAX_PLAYERS_HUD; i++)
-	{
-		//if ( g_PlayerInfoList[i].name == NULL )
-		//	continue; // empty player slot, skip
-
-		pEnt = gEngfuncs.GetEntityByIndex(i);
-
-		if (!gHUD.m_Spectator.IsActivePlayer(pEnt))
-			continue;
-
-		//if ( g_PlayerExtraInfo[i].teamname[0] == 0 )
-		//	continue; // skip over players who are not in a team
-
-		SpectButton* pButton = new SpectButton(1, g_PlayerInfoList[pEnt->index].name,
-			XRES((15 + OPTIONS_BUTTON_X + 15) + 31), PANEL_HEIGHT + (i - 1) * CMENU_SIZE_X, flLabelSize, BUTTON_SIZE_Y / 2);
-
-		pButton->setBoundKey((char)255);
-		pButton->setContentAlignment(vgui::Label::a_center);
-		m_pCommandMenus[menuIndex]->AddButton(pButton);
-		pButton->setParentMenu(m_pCommandMenus[menuIndex]);
-
-		// Override font in CommandMenu
-		pButton->setFont(Scheme::sf_primary3);
-
-		pButton->addActionSignal(new CMenuHandler_SpectateFollow(g_PlayerInfoList[pEnt->index].name));
-		// Create an input signal that'll popup the current menu
-		pButton->addInputSignal(new CMenuHandler_PopupSubMenuInput(pButton, m_pCommandMenus[menuIndex]));
-	}
-}
-
-
-
 void COM_FileBase(const char* in, char* out);
-
-void TeamFortressViewport::UpdateSpectatorPanel()
-{
-	m_iUser1 = g_iUser1;
-	m_iUser2 = g_iUser2;
-	m_iUser3 = g_iUser3;
-
-	if (!m_pSpectatorPanel)
-		return;
-
-	if (0 != g_iUser1 && 0 != gHUD.m_pCvarDraw->value && !gHUD.m_iIntermission) // don't draw in dev_overview mode
-	{
-		char bottomText[128];
-		char helpString2[128];
-		char tempString[128];
-		char* name;
-		char* pBottomText = NULL;
-		int player = 0;
-
-		// check if spectator combinations are still valid
-		gHUD.m_Spectator.CheckSettings();
-
-		if (!m_pSpectatorPanel->isVisible())
-		{
-			m_pSpectatorPanel->setVisible(true); // show spectator panel, but
-			m_pSpectatorPanel->ShowMenu(false);	 // dsiable all menus/buttons
-
-			snprintf(tempString, sizeof(tempString) - 1, "%c%s", HUD_PRINTCENTER, CHudTextMessage::BufferedLocaliseTextString("#Spec_Duck"));
-			tempString[sizeof(tempString) - 1] = '\0';
-
-			gHUD.m_TextMessage.MsgFunc_TextMsg(NULL, strlen(tempString) + 1, tempString);
-		}
-
-		sprintf(bottomText, "#Spec_Mode%d", g_iUser1);
-		sprintf(helpString2, "#Spec_Mode%d", g_iUser1);
-
-		if (0 != gEngfuncs.IsSpectateOnly())
-			strcat(helpString2, " - HLTV");
-
-		// check if we're locked onto a target, show the player's name
-		if ((g_iUser2 > 0) && (g_iUser2 <= gEngfuncs.GetMaxClients()) && (g_iUser1 != OBS_ROAMING))
-		{
-			player = g_iUser2;
-		}
-
-		// special case in free map and inset off, don't show names
-		if ((g_iUser1 == OBS_MAP_FREE) && 0 == gHUD.m_Spectator.m_pip->value)
-			name = NULL;
-		else
-			name = g_PlayerInfoList[player].name;
-
-		// create player & health string
-		if (0 != player && name)
-		{
-			strncpy(bottomText, name, sizeof(bottomText));
-			bottomText[sizeof(bottomText) - 1] = 0;
-			pBottomText = bottomText;
-		}
-		else
-		{
-			pBottomText = CHudTextMessage::BufferedLocaliseTextString(bottomText);
-		}
-
-		bool useTeamColor = false;
-
-		// in first person mode colorize player names
-		if ((g_iUser1 == OBS_IN_EYE) && 0 != player)
-		{
-			float* color = GetClientColor(player);
-
-			//Color is null in CTF.
-			if (color)
-			{
-				int r = color[0] * 255;
-				int g = color[1] * 255;
-				int b = color[2] * 255;
-
-				// set team color, a bit transparent
-				m_pSpectatorPanel->m_BottomMainLabel->setFgColor(r, g, b, 0);
-				m_pSpectatorPanel->m_BottomMainButton->setFgColor(r, g, b, 0);
-
-				useTeamColor = true;
-			}
-		}
-
-		if (!useTeamColor)
-		{ // restore GUI color
-			m_pSpectatorPanel->m_BottomMainLabel->setFgColor(143, 143, 54, 0);
-			m_pSpectatorPanel->m_BottomMainButton->setFgColor(143, 143, 54, 0);
-		}
-
-		// add sting auto if we are in auto directed mode
-		if (0 != gHUD.m_Spectator.m_autoDirector->value)
-		{
-			char tempString[128];
-			sprintf(tempString, "#Spec_Auto %s", helpString2);
-			strcpy(helpString2, tempString);
-		}
-
-		m_pSpectatorPanel->m_BottomMainLabel->setText("%s", pBottomText);
-		m_pSpectatorPanel->m_BottomMainButton->setText(pBottomText);
-
-
-		// update extra info field
-		char szText[64];
-
-		if (0 != gEngfuncs.IsSpectateOnly())
-		{
-			// in HLTV mode show number of spectators
-			snprintf(szText, 63, "%s: %d", CHudTextMessage::BufferedLocaliseTextString("#Spectators"), gHUD.m_Spectator.m_iSpectatorNumber);
-		}
-		else
-		{
-			// otherwise show map name
-			char szMapName[64];
-			COM_FileBase(gEngfuncs.pfnGetLevelName(), szMapName);
-
-			snprintf(szText, 63, "%s: %s", CHudTextMessage::BufferedLocaliseTextString("#Spec_Map"), szMapName);
-		}
-
-		szText[63] = 0;
-
-		m_pSpectatorPanel->m_ExtraInfo->setText(szText);
-
-		/*
-		int timer = (int)( gHUD.m_roundTimer.m_flTimeEnd - gHUD.m_flTime );
-
-		if ( timer < 0 )
-			 timer	= 0;
-
-		snprintf ( szText, 63, "%d:%02d\n", (timer / 60), (timer % 60) );
-		
-		szText[63] = 0;
-				
-		m_pSpectatorPanel->m_CurrentTime->setText( szText ); */
-
-		// update spectator panel
-		gViewPort->m_pSpectatorPanel->Update();
-	}
-	else
-	{
-		if (m_pSpectatorPanel->isVisible())
-		{
-			m_pSpectatorPanel->setVisible(false);
-			m_pSpectatorPanel->ShowMenu(false); // dsiable all menus/buttons
-		}
-	}
-
-	m_flSpectatorPanelLastUpdated = gHUD.m_flTime + 1.0; // update every second
-}
 
 //======================================================================
 // Set the VGUI Menu
@@ -1445,9 +1204,12 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 
 	switch (iMenu)
 	{
+	// Go-Mod: CTF team / character menus are ImGui (imgui_hudpanels.cpp)
 	case MENU_TEAM:
-		pNewMenu = ShowTeamMenu();
-		break;
+	case MENU_CLASS:
+		HideCommandMenu();
+		GoModCTF_Open(iMenu);
+		return;
 
 	case MENU_STATSMENU:
 		SwitchToStatsMenu();
@@ -1457,10 +1219,6 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 	case MENU_SCOREBOARD:
 		SwitchToScoreBoard();
 		return;
-
-	case MENU_CLASS:
-		pNewMenu = ShowClassMenu();
-		break;
 
 	default:
 		break;
@@ -1479,19 +1237,7 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 	// See if another menu is visible, and if so, cache this one for display once the other one's finished
 	if (m_pCurrentMenu)
 	{
-		if (m_pCurrentMenu->GetMenuID() == MENU_CLASS && iMenu == MENU_TEAM)
-		{
-			CMenuPanel* temp = m_pCurrentMenu;
-			m_pCurrentMenu->Close();
-			m_pCurrentMenu = pNewMenu;
-			m_pCurrentMenu->SetNextMenu(temp);
-			m_pCurrentMenu->Open();
-			UpdateCursorState();
-		}
-		else
-		{
-			m_pCurrentMenu->SetNextMenu(pNewMenu);
-		}
+		m_pCurrentMenu->SetNextMenu(pNewMenu);
 	}
 	else
 	{
@@ -1528,73 +1274,11 @@ void TeamFortressViewport::HideTopMenu()
 // Return true if the HUD's allowed to print text messages
 bool TeamFortressViewport::AllowedToPrintText()
 {
-	// Prevent text messages when fullscreen menus are up
-	if (m_pCurrentMenu && g_iPlayerClass == 0)
-	{
-		int iId = m_pCurrentMenu->GetMenuID();
-		if (iId == MENU_TEAM || iId == MENU_CLASS)
-			return false;
-	}
+	// Prevent text messages when the team / character menus are up (ImGui)
+	if (GoModCTF_IsOpen() && g_iPlayerClass == 0)
+		return false;
 
 	return true;
-}
-
-//======================================================================================
-// TEAM MENU
-//======================================================================================
-// Bring up the Team selection Menu
-CMenuPanel* TeamFortressViewport::ShowTeamMenu()
-{
-	// Don't open menus in demo playback
-	if (0 != gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pTeamMenu->Reset();
-	return m_pTeamMenu;
-}
-
-void TeamFortressViewport::CreateTeamMenu()
-{
-	// Create the panel
-	m_pTeamMenu = new CTeamMenuPanel(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pTeamMenu->setParent(this);
-	m_pTeamMenu->setVisible(false);
-}
-
-//======================================================================================
-// CLASS MENU
-//======================================================================================
-// Bring up the Class selection Menu
-CMenuPanel* TeamFortressViewport::ShowClassMenu()
-{
-	// Don't open menus in demo playback
-	if (0 != gEngfuncs.pDemoAPI->IsPlayingback())
-		return NULL;
-
-	m_pClassMenu->Reset();
-	return m_pClassMenu;
-}
-
-void TeamFortressViewport::CreateClassMenu()
-{
-	// Create the panel
-	m_pClassMenu = new CClassMenuPanel(100, false, 0, 0, ScreenWidth, ScreenHeight);
-	m_pClassMenu->setParent(this);
-	m_pClassMenu->setVisible(false);
-}
-
-//======================================================================================
-//======================================================================================
-// SPECTATOR MENU
-//======================================================================================
-// Spectator "Menu" explaining the Spectator buttons
-void TeamFortressViewport::CreateSpectatorMenu()
-{
-	// Create the Panel
-	m_pSpectatorPanel = new SpectatorPanel(0, 0, ScreenWidth, ScreenHeight);
-	m_pSpectatorPanel->setParent(this);
-	m_pSpectatorPanel->setVisible(false);
-	m_pSpectatorPanel->Initialize();
 }
 
 void TeamFortressViewport::CreateStatsMenu()
@@ -1612,10 +1296,6 @@ void TeamFortressViewport::CreateStatsMenu()
 // Recalculate any menus that use it.
 void TeamFortressViewport::UpdateOnPlayerInfo()
 {
-	if (m_pTeamMenu)
-		m_pTeamMenu->Update();
-	if (m_pClassMenu)
-		m_pClassMenu->Update();
 }
 
 void TeamFortressViewport::UpdateCursorState()
@@ -1635,7 +1315,14 @@ void TeamFortressViewport::UpdateCursorState()
 	}
 
 	// Need cursor if any VGUI window is up
-	if (m_pSpectatorPanel->m_menuVisible || m_pCurrentMenu || m_pTeamMenu->isVisible())
+	// the ImGui menus (spectator, team / character) own the cursor too
+	if (GoModSpec_MenuOpen() || GoModCTF_IsOpen())
+	{
+		g_iVisibleMouse = true;
+		return;
+	}
+
+	if (m_pCurrentMenu)
 	{
 		g_iVisibleMouse = true;
 		App::getInstance()->setCursorOveride(App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow));
@@ -1685,11 +1372,6 @@ void TeamFortressViewport::paintBackground()
 	{
 		UpdateCommandMenu(m_StandardMenu);
 
-		if (m_pClassMenu)
-		{
-			m_pClassMenu->Update();
-		}
-
 		m_iCurrentTeamNumber = g_iTeamNumber;
 	}
 
@@ -1698,13 +1380,6 @@ void TeamFortressViewport::paintBackground()
 		UpdateCommandMenu(m_StandardMenu);
 
 		m_iCurrentPlayerClass = g_iPlayerClass;
-	}
-
-	// See if the Spectator Menu needs to be update
-	if ((g_iUser1 != m_iUser1 || g_iUser2 != m_iUser2) ||
-		(m_flSpectatorPanelLastUpdated < gHUD.m_flTime))
-	{
-		UpdateSpectatorPanel();
 	}
 
 	int extents[4];
@@ -1763,50 +1438,11 @@ bool TeamFortressViewport::SlotInput(int iSlot)
 // Direct Key Input
 bool TeamFortressViewport::KeyInput(bool down, int keynum, const char* pszCurrentBinding)
 {
-	// Enter gets out of Spectator Mode by bringing up the Team Menu
-	if (0 != m_iUser1 && 0 == gEngfuncs.Con_IsVisible())
+	// Enter gets out of Spectator Mode by bringing up the Team Menu (CTF, ImGui)
+	if (0 != g_iUser1 && 0 == gEngfuncs.Con_IsVisible() && gHUD.m_Teamplay == 2 && !GoModCTF_IsOpen())
 	{
 		if (down && (keynum == K_ENTER || keynum == K_KP_ENTER))
 			ShowVGUIMenu(MENU_TEAM);
-	}
-
-	// Open Text Window?
-	if (m_pCurrentMenu && 0 == gEngfuncs.Con_IsVisible())
-	{
-		int iMenuID = m_pCurrentMenu->GetMenuID();
-
-		// Get number keys as Input for Team/Class menus
-		if (iMenuID == MENU_TEAM || iMenuID == MENU_CLASS)
-		{
-			// Escape gets you out of Team/Class menus if the Cancel button is visible
-			if (keynum == K_ESCAPE)
-			{
-				if ((iMenuID == MENU_TEAM && 0 != g_iTeamNumber) || (iMenuID == MENU_CLASS && 0 != g_iPlayerClass))
-				{
-					HideTopMenu();
-					return false;
-				}
-			}
-
-			for (int i = '0'; i <= '9'; i++)
-			{
-				if (down && (keynum == i))
-				{
-					SlotInput(i - '0');
-					return false;
-				}
-			}
-		}
-
-		// Grab jump key on Team Menu as autoassign
-		if (pszCurrentBinding && down && 0 == strcmp(pszCurrentBinding, "+jump"))
-		{
-			if (iMenuID == MENU_TEAM)
-			{
-				m_pTeamMenu->SlotInput(5);
-				return false;
-			}
-		}
 	}
 
 	// if we're in a command menu, try hit one of it's buttons
@@ -1874,10 +1510,6 @@ bool TeamFortressViewport::MsgFunc_TeamNames(const char* pszName, int iSize, voi
 				m_pDisguiseButtons[teamNum]->setText(m_sTeamNames[teamNum]);
 		}
 	}
-
-	// Update the Team Menu
-	if (m_pTeamMenu)
-		m_pTeamMenu->Update();
 
 	return true;
 }
@@ -1971,10 +1603,6 @@ bool TeamFortressViewport::MsgFunc_AllowSpec(const char* pszName, int iSize, voi
 	// Force the menu to update
 	UpdateCommandMenu(m_StandardMenu);
 
-	// If the team menu is up, update it too
-	if (m_pTeamMenu)
-		m_pTeamMenu->Update();
-
 	return true;
 }
 
@@ -1995,7 +1623,9 @@ bool TeamFortressViewport::MsgFunc_SpecFade(const char* pszName, int iSize, void
 
 bool TeamFortressViewport::MsgFunc_TeamFull(const char* pszName, int iSize, void* pbuf)
 {
-	m_pTeamMenu->MsgFunc_TeamFull(pszName, iSize, pbuf);
+	// Go-Mod: the team menu is ImGui (imgui_hudpanels.cpp)
+	BEGIN_READ(pbuf, iSize);
+	GoModCTF_TeamFull(READ_BYTE() != 0);
 	return true;
 }
 
@@ -2056,4 +1686,16 @@ void GoModInfo_ShowVGUIMenu(int iMenu)
 bool GoModInfo_VGUIMenuOpen()
 {
 	return gViewPort && (gViewPort->m_pCurrentMenu || gViewPort->m_pCurrentCommandMenu);
+}
+
+// Go-Mod: CTF team / character menus (ImGui, imgui_hudpanels.cpp)
+int GoModCTF_MenuTeamNumber()
+{
+	return gViewPort ? gViewPort->m_iCTFTeamNumber : 0;
+}
+
+void GoModCTF_SetStatsPlayerImage(const char* image)
+{
+	if (gViewPort && gViewPort->m_pStatsMenu)
+		gViewPort->m_pStatsMenu->SetPlayerImage(image);
 }

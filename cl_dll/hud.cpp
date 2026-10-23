@@ -471,8 +471,12 @@ void __CmdFunc_ShowMenu()
 		return;
 	}
 
-	// avoid open in a VGUI menu (team, class...)
+	// avoid open in a VGUI menu (stats...) or in the CTF team / character menu
 	if (gViewPort && gViewPort->m_pCurrentMenu)
+		return;
+
+	extern bool GoModCTF_IsOpen();
+	if (GoModCTF_IsOpen())
 		return;
 
 	// avoid open in CommandMenu

@@ -35,7 +35,6 @@
 using namespace vgui;
 
 class Cursor;
-class SpectatorPanel;
 class CCommandMenu;
 class CommandLabel;
 class CommandButton;
@@ -44,8 +43,6 @@ class ClassButton;
 class CMenuPanel;
 class DragNDropPanel;
 class CTransparentPanel;
-class CClassMenuPanel;
-class CTeamMenuPanel;
 class TeamFortressViewport;
 class CStatsMenuPanel;
 
@@ -60,6 +57,7 @@ extern int sTFValidClassInts[];
 extern char *sLocalisedClasses[][7];
 extern const char* sLocalisedStatsTeams[StatsTeamsCount];
 extern const char* sCTFStatsSelection[StatsTeamsCount];
+extern void GoModSpec_Update(); // imgui_hudpanels.cpp
 extern int iTeamColors[5][3];
 extern int iNumberOfTeamColors;
 extern TeamFortressViewport *gViewPort;
@@ -498,7 +496,6 @@ private:
 
 	CCommandMenu *m_pCommandMenus[ MAX_MENUS ];
 	float		 m_flMenuOpenTime;
-	float		 m_flSpectatorPanelLastUpdated;
 	int			 m_iNumMenus;
 	int			 m_iCurrentTeamNumber;
 	int			 m_iCurrentPlayerClass;
@@ -507,11 +504,6 @@ private:
 	int			 m_iUser3;
 
 	// VGUI Menus
-	void		 CreateTeamMenu( void );
-	CMenuPanel*	 ShowTeamMenu( void );
-	void		 CreateClassMenu( void );
-	CMenuPanel*	 ShowClassMenu( void );
-	void		 CreateSpectatorMenu( void );
 	void CreateStatsMenu();
 	
 	// Scheme handler
@@ -538,7 +530,6 @@ private:
 	char		m_sDetpackStrings[3][MAX_BUTTON_SIZE];
 
 	// helper function to update the player menu entries
-	void UpdatePlayerMenu(int menuIndex);
 
 public:
 	TeamFortressViewport(int x,int y,int wide,int tall);
@@ -552,7 +543,6 @@ public:
 	void UpdateCommandMenu(int menuIndex);
 	void UpdateOnPlayerInfo( void );
 	void UpdateHighlights( void );
-	void UpdateSpectatorPanel( void );
 
 	bool KeyInput( bool down, int keynum, const char *pszCurrentBinding );
 	void InputPlayerSpecial( void );
@@ -620,14 +610,8 @@ public:
 	// VGUI Menus
 	CCommandMenu* m_pCurrentCommandMenu;
 	CMenuPanel		*m_pCurrentMenu;
-	CTeamMenuPanel	*m_pTeamMenu;
 	int						m_StandardMenu;	// indexs in m_pCommandMenus
-	int						m_SpectatorOptionsMenu;
-	int						m_SpectatorCameraMenu;
-	int						m_PlayerMenu; // a list of current player
-	CClassMenuPanel	*m_pClassMenu;
 	CStatsMenuPanel* m_pStatsMenu;
-	SpectatorPanel *		m_pSpectatorPanel;
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -823,7 +807,7 @@ public:
 		// hide the menu 
 		gViewPort->HideCommandMenu();
 
-		gViewPort->UpdateSpectatorPanel();
+		GoModSpec_Update(); // spectator panel (ImGui)
 	}
 
 	
@@ -1613,81 +1597,7 @@ public:
 //================================================================
 // Menu Panels that take key input
 //============================================================
-class CClassMenuPanel : public CMenuPanel
-{
-private:
-	CTransparentPanel	*m_pClassInfoPanel[ PC_MAX_TEAMS ][PC_LASTCLASS];
-	Label				*m_pPlayers[PC_LASTCLASS];
-	ClassButton			*m_pButtons[ PC_MAX_TEAMS ][PC_LASTCLASS];
-	CommandButton		*m_pCancelButton;
-	ScrollPanel			*m_pScrollPanel;
 
-	CImageLabel			*m_pClassImages[ PC_MAX_TEAMS ][PC_LASTCLASS];
-
-	int					m_iCurrentInfo;
-
-	enum { STRLENMAX_PLAYERSONTEAM = 128 };
-	char m_sPlayersOnTeamString[STRLENMAX_PLAYERSONTEAM];
-
-public:
-	CClassMenuPanel(int iTrans, bool iRemoveMe, int x,int y,int wide,int tall);
-
-	virtual bool SlotInput( int iSlot );
-	virtual void Open( void );
-	virtual void Update( void );
-	virtual void SetActiveInfo( int iInput );
-	virtual void Initialize( void );
-
-	virtual void Reset( void )
-	{
-		CMenuPanel::Reset();
-		m_iCurrentInfo = 0;
-	}
-};
-
-class CTeamMenuPanel : public CMenuPanel
-{
-public:
-	ScrollPanel         *m_pScrollPanel;
-	CTransparentPanel	*m_pTeamWindow;
-	Label				*m_pMapTitle;
-	TextPanel			*m_pBriefing;
-	TextPanel			*m_pTeamInfoPanel[6];
-	CommandButton		*m_pButtons[6];
-	bool				m_bUpdatedMapName;
-	CommandButton		*m_pCancelButton;
-	CommandButton		*m_pSpectateButton;
-
-	TextPanel* m_pTeamFull;
-	float m_flTeamFullReset;
-
-	int					m_iCurrentInfo;
-
-public:
-	CTeamMenuPanel(int iTrans, bool iRemoveMe, int x,int y,int wide,int tall);
-
-	virtual bool SlotInput( int iSlot );
-	virtual void Open( void );
-	virtual void Update( void );
-	virtual void SetActiveInfo( int iInput );
-	virtual void paintBackground( void );
-
-	virtual void Initialize( void );
-
-	virtual void Reset( void )
-	{
-		CMenuPanel::Reset();
-		m_iCurrentInfo = 0;
-
-		if( m_flTeamFullReset <= gHUD.m_flTime )
-		{
-			m_pTeamFull->setVisible( false );
-			m_flTeamFullReset = 0;
-		}
-	}
-
-	bool MsgFunc_TeamFull( const char* pszName, int iSize, void* pbuf );
-};
 
 //=========================================================
 // Specific Menus to handle old HUD sections

@@ -255,9 +255,6 @@
     <ClCompile Include="..\..\cl_dll\vgui_CustomObjects.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_ClassMenu.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\game_shared\vgui_grid.cpp">
       <Filter>Source Files\game_shared</Filter>
     </ClCompile>
@@ -288,13 +285,7 @@
     <ClCompile Include="..\..\cl_dll\view.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_SpectatorPanel.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\vgui_TeamFortressViewport.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_teammenu.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\voice_status.cpp">
@@ -423,6 +414,9 @@
     <ClCompile Include="..\..\cl_dll\imgui\imgui_gomod_menu.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_hudpanels.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\cl_dll\physgun_beam.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
@@ -544,9 +538,6 @@
     </ClInclude>
     <ClInclude Include="..\..\game_shared\voice_banmgr.h">
       <Filter>Header Files\game_shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\vgui_SpectatorPanel.h">
-      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\view.h">
       <Filter>Header Files\cl_dll</Filter>

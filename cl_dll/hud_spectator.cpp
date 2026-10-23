@@ -10,7 +10,6 @@
 #include "cl_entity.h"
 #include "triangleapi.h"
 #include "vgui_TeamFortressViewport.h"
-#include "vgui_SpectatorPanel.h"
 #include "hltv.h"
 
 #include "pm_shared.h"
@@ -38,6 +37,13 @@ extern void V_GetInEyePos(int entity, float* origin, float* angles);
 extern void V_ResetChaseCam();
 extern void V_GetChasePos(int target, float* cl_angles, float* origin, float* angles);
 extern float* GetClientColor(int clientIndex);
+
+// imgui_hudpanels.cpp: the spectator panel (ImGui)
+extern void GoModSpec_Update();
+extern void GoModSpec_ShowMenu(bool show);
+extern void GoModSpec_ToggleMenu();
+extern bool GoModSpec_IsVisible();
+extern void GoModSpec_SetInset(bool enabled);
 
 extern Vector v_origin;	   // last view origin
 extern Vector v_angles;	   // last view angle
@@ -116,23 +122,16 @@ void SpectatorSpray()
 }
 void SpectatorHelp()
 {
-	if (gViewPort)
-	{
-		//TODO: none of this spectator stuff exists in Op4
-		//gViewPort->ShowVGUIMenu( MENU_SPECHELP );
-	}
-	else
-	{
-		char* text = CHudTextMessage::BufferedLocaliseTextString("#Spec_Help_Text");
+	// the help text goes to the console
+	char* text = CHudTextMessage::BufferedLocaliseTextString("#Spec_Help_Text");
 
-		if (text)
+	if (text)
+	{
+		while ('\0' != *text)
 		{
-			while ('\0' != *text)
-			{
-				if (*text != 13)
-					gEngfuncs.Con_Printf("%c", *text);
-				text++;
-			}
+			if (*text != 13)
+				gEngfuncs.Con_Printf("%c", *text);
+			text++;
 		}
 	}
 }
@@ -145,7 +144,7 @@ void SpectatorMenu()
 		return;
 	}
 
-	gViewPort->m_pSpectatorPanel->ShowMenu(atoi(gEngfuncs.Cmd_Argv(1)) != 0);
+	GoModSpec_ShowMenu(atoi(gEngfuncs.Cmd_Argv(1)) != 0);
 }
 
 void ToggleScores()
@@ -798,13 +797,12 @@ void CHudSpectator::DirectorMessage(int iSize, void* pbuf)
 		m_iSpectatorNumber = READ_LONG(); // total number of spectator
 		READ_WORD();					  // total number of relay proxies
 
-		gViewPort->UpdateSpectatorPanel();
+		GoModSpec_Update();
 		break;
 
 	case DRC_CMD_BANNER:
-		// gEngfuncs.Con_DPrintf("GUI: Banner %s\n",READ_STRING() ); // name of banner tga eg gfx/temp/7454562234563475.tga
-		gViewPort->m_pSpectatorPanel->m_TopBanner->LoadImage(READ_STRING());
-		gViewPort->UpdateSpectatorPanel();
+		// HLTV banner (gfx/temp/xxx.tga): not shown by the ImGui spectator panel
+		READ_STRING();
 		break;
 
 	case DRC_CMD_STUFFTEXT:
@@ -1036,7 +1034,7 @@ void CHudSpectator::HandleButtonsDown(int ButtonPressed)
 
 	// enable spectator screen
 	if ((ButtonPressed & IN_DUCK) != 0)
-		gViewPort->m_pSpectatorPanel->ShowMenu(!gViewPort->m_pSpectatorPanel->m_menuVisible);
+		GoModSpec_ToggleMenu();
 
 	//  'Use' changes inset window mode
 	if ((ButtonPressed & IN_USE) != 0)
@@ -1111,7 +1109,7 @@ void CHudSpectator::HandleButtonsUp(int ButtonPressed)
 	if (!gViewPort)
 		return;
 
-	if (!gViewPort->m_pSpectatorPanel->isVisible())
+	if (!GoModSpec_IsVisible())
 		return; // dont do anything if not in spectator mode
 
 	if ((ButtonPressed & (IN_FORWARD | IN_BACK)) != 0)
@@ -1229,7 +1227,7 @@ void CHudSpectator::SetModes(int iNewMainMode, int iNewInsetMode)
 		gHUD.m_TextMessage.MsgFunc_TextMsg(NULL, strlen(string) + 1, string);
 	}
 
-	gViewPort->UpdateSpectatorPanel();
+	GoModSpec_Update();
 }
 
 bool CHudSpectator::IsActivePlayer(cl_entity_t* ent)
@@ -1894,7 +1892,7 @@ void CHudSpectator::CheckSettings()
 		m_pip->value = INSET_OFF;
 
 	// draw small border around inset view, adjust upper black bar
-	gViewPort->m_pSpectatorPanel->EnableInsetView(m_pip->value != INSET_OFF);
+	GoModSpec_SetInset(m_pip->value != INSET_OFF);
 }
 
 int CHudSpectator::ToggleInset(bool allowOff)

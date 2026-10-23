@@ -34,6 +34,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
+#define STBI_ONLY_TGA // character pictures of the CTF menu (gfx/vgui/*.tga)
 #include "stb_image.h"
 
 #include "../external/rapidjson/document.h"
@@ -680,6 +681,14 @@ static void DeleteTexture(GLuint& tex)
 	tex = 0;
 }
 
+static GLuint LoadTexture(const char* path, int* outW = nullptr, int* outH = nullptr); // below
+
+// png / tga for the other ImGui parts of the client (CTF menus)
+unsigned int GoModUI_LoadImage(const char* path, int* w, int* h)
+{
+	return LoadTexture(path, w, h);
+}
+
 // for the other ImGui parts of the client (scoreboard avatars)
 unsigned int GoModUI_UploadTexture(unsigned int tex, const unsigned char* rgba, int w, int h)
 {
@@ -693,7 +702,7 @@ void GoModUI_DeleteTexture(unsigned int& tex)
 	tex = 0;
 }
 
-static GLuint LoadTexture(const char* path, int* outW = nullptr, int* outH = nullptr)
+static GLuint LoadTexture(const char* path, int* outW, int* outH)
 {
 	if (!LoadGL())
 		return 0;
@@ -713,7 +722,7 @@ static GLuint LoadTexture(const char* path, int* outW = nullptr, int* outH = nul
 
 	if (!pixels)
 	{
-		gEngfuncs.Con_Printf("GoMod menu: invalid PNG: %s\n", path);
+		gEngfuncs.Con_Printf("GoMod menu: invalid image: %s\n", path);
 		return 0;
 	}
 

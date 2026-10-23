@@ -129,7 +129,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 			{
 				gViewPort->m_pStatsMenu->setVisible(false);
 			}
-			gViewPort->UpdateSpectatorPanel();
+			GoModSpec_Update();
 		}
 		//Disabled in Opposing Force.
 		/*
@@ -139,7 +139,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 			gViewPort->HideCommandMenu();
 			gViewPort->HideVGUIMenu();
 			m_Scoreboard.SetForced(true);
-			gViewPort->UpdateSpectatorPanel();
+			GoModSpec_Update();
 
 			// Take a screenshot if the client's got the cvar set
 			if (CVAR_GET_FLOAT("hud_takesshots") != 0)
