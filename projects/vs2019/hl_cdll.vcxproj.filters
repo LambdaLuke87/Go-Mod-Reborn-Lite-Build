@@ -273,9 +273,6 @@
     <ClCompile Include="..\..\game_shared\vgui_listbox.cpp">
       <Filter>Source Files\game_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_MOTDWindow.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\vgui_SchemeManager.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>

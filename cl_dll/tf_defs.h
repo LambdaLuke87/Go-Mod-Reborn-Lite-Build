@@ -1103,8 +1103,6 @@ float already_chosen_map;
 #define MENU_DEFAULT				1
 #define MENU_TEAM 					2
 #define MENU_CLASS 					3
-#define MENU_MAPBRIEFING			4
-#define MENU_INTRO 					5
 #define MENU_CLASSHELP				6
 #define MENU_CLASSHELP2 			7
 #define MENU_REPEATHELP 			8

@@ -82,10 +82,10 @@ int g_iUser3 = 0;
 
 void IN_ResetMouse();
 void IN_ResetRelativeMouseState();
-extern CMenuPanel* CMessageWindowPanel_Create(const char* szMOTD, const char* szTitle, bool iShadeFullscreen, bool iRemoveMe, int x, int y, int wide, int tall);
 extern float* GetClientColor(int clientIndex);
 
 extern void ImGuiMenu_SetOpen(bool open);
+extern bool GoModInfo_QueueVGUIMenu(int iMenu);
 
 using namespace vgui;
 
@@ -663,7 +663,6 @@ void TeamFortressViewport::Initialize()
 	HideCommandMenu();
 
 	// Clear out some data
-	m_iGotAllMOTD = true;
 	m_iRandomPC = false;
 	m_flScoreBoardLastUpdated = 0;
 	m_flSpectatorPanelLastUpdated = 0;
@@ -672,7 +671,6 @@ void TeamFortressViewport::Initialize()
 	g_iPlayerClass = 0;
 	g_iTeamNumber = 0;
 
-	strcpy(m_sMapName, "");
 	strcpy(m_szServerName, "");
 	for (int i = 0; i < 5; i++)
 	{
@@ -1497,96 +1495,13 @@ void TeamFortressViewport::SetCurrentMenu(CMenuPanel* pMenu)
 }
 
 //================================================================
-// Text Window
-CMenuPanel* TeamFortressViewport::CreateTextWindow(int iTextToShow)
-{
-	char sz[256];
-	const char* cText = "";
-	char* pfile = NULL;
-	static const int MAX_TITLE_LENGTH = 64;
-	char cTitle[MAX_TITLE_LENGTH];
-
-	if (iTextToShow == SHOW_MOTD)
-	{
-		if (!m_szServerName || '\0' == m_szServerName[0])
-			strcpy(cTitle, "Half-Life");
-		else
-			strncpy(cTitle, m_szServerName, sizeof(cTitle));
-		cTitle[sizeof(cTitle) - 1] = 0;
-		cText = m_szMOTD;
-	}
-	else if (iTextToShow == SHOW_MAPBRIEFING)
-	{
-		// Get the current mapname, and open it's map briefing text
-		if (m_sMapName && '\0' != m_sMapName[0])
-		{
-			strcpy(sz, "maps/");
-			strcat(sz, m_sMapName);
-			strcat(sz, ".txt");
-		}
-		else
-		{
-			const char* level = gEngfuncs.pfnGetLevelName();
-			if (!level)
-				return NULL;
-
-			strcpy(sz, level);
-			char* ch = strchr(sz, '.');
-			*ch = '\0';
-			strcat(sz, ".txt");
-
-			// pull out the map name
-			strcpy(m_sMapName, level);
-			ch = strchr(m_sMapName, '.');
-			if (ch)
-			{
-				*ch = 0;
-			}
-
-			ch = strchr(m_sMapName, '/');
-			if (ch)
-			{
-				// move the string back over the '/'
-				memmove(m_sMapName, ch + 1, strlen(ch) + 1);
-			}
-		}
-
-		pfile = (char*)gEngfuncs.COM_LoadFile(sz, 5, NULL);
-
-		if (!pfile)
-			return NULL;
-
-		cText = pfile;
-
-		strncpy(cTitle, m_sMapName, MAX_TITLE_LENGTH);
-		cTitle[MAX_TITLE_LENGTH - 1] = 0;
-	}
-	else if (iTextToShow == SHOW_SPECHELP)
-	{
-		CHudTextMessage::LocaliseTextString("#Spec_Help_Title", cTitle, MAX_TITLE_LENGTH);
-		cTitle[MAX_TITLE_LENGTH - 1] = 0;
-
-		char* pfile = CHudTextMessage::BufferedLocaliseTextString("#Spec_Help_Text");
-		if (pfile)
-		{
-			cText = pfile;
-		}
-	}
-
-	// if we're in the game (ie. have selected a class), flag the menu to be only grayed in the dialog box, instead of full screen
-	CMenuPanel* pMOTDPanel = CMessageWindowPanel_Create(cText, cTitle, g_iPlayerClass == PC_UNDEFINED, false, 0, 0, ScreenWidth, ScreenHeight);
-	pMOTDPanel->setParent(this);
-
-	if (pfile)
-		gEngfuncs.COM_FreeFile(pfile);
-
-	return pMOTDPanel;
-}
-
-//================================================================
 // VGUI Menus
 void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 {
+	// Go-Mod: the MOTD / Map Info (ImGui) is open: this menu is shown when it is closed
+	if (GoModInfo_QueueVGUIMenu(iMenu))
+		return;
+
 	ImGuiMenu_SetOpen(false); // close ImGui
 
 	CMenuPanel* pNewMenu = NULL;
@@ -1596,11 +1511,9 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 		return;
 
 	/*
-	// Don't open any menus except the MOTD or stats menu during intermission
-	// MOTD needs to be accepted because it's sent down to the client
-	// after map change, before intermission's turned off
+	// Don't open any menus except the stats menu during intermission
 	// Stats menu is displayed during intermission.
-	if (gHUD.m_iIntermission && (iMenu != MENU_INTRO && iMenu != MENU_STATSMENU))
+	if (gHUD.m_iIntermission && iMenu != MENU_STATSMENU)
 		return;
 	*/
 
@@ -1622,24 +1535,6 @@ void TeamFortressViewport::ShowVGUIMenu(int iMenu)
 		pNewMenu = ShowTeamMenu();
 		break;
 
-	// Map Briefing removed now that it appears in the team menu
-	case MENU_MAPBRIEFING:
-		pNewMenu = CreateTextWindow(SHOW_MAPBRIEFING);
-		break;
-
-	case MENU_INTRO:
-		pNewMenu = CreateTextWindow(SHOW_MOTD);
-		break;
-
-	case MENU_CLASSHELP:
-		pNewMenu = CreateTextWindow(SHOW_CLASSDESC);
-		break;
-
-		/*
-	case MENU_SPECHELP:
-		pNewMenu = CreateTextWindow( SHOW_SPECHELP );
-		break;
-		*/
 	case MENU_STATSMENU:
 		SwitchToStatsMenu();
 		m_pStatsMenu->m_pSaveButton->setVisible(true);
@@ -1723,7 +1618,7 @@ bool TeamFortressViewport::AllowedToPrintText()
 	if (m_pCurrentMenu && g_iPlayerClass == 0)
 	{
 		int iId = m_pCurrentMenu->GetMenuID();
-		if (iId == MENU_TEAM || iId == MENU_CLASS || iId == MENU_INTRO || iId == MENU_CLASSHELP)
+		if (iId == MENU_TEAM || iId == MENU_CLASS)
 			return false;
 	}
 
@@ -2008,16 +1903,6 @@ bool TeamFortressViewport::KeyInput(bool down, int keynum, const char* pszCurren
 			}
 		}
 
-		// Grab enter keys to close TextWindows
-		if (down && (keynum == K_ENTER || keynum == K_KP_ENTER || keynum == K_SPACE || keynum == K_ESCAPE))
-		{
-			if (iMenuID == MENU_MAPBRIEFING || iMenuID == MENU_INTRO || iMenuID == MENU_CLASSHELP)
-			{
-				HideTopMenu();
-				return false;
-			}
-		}
-
 		// Grab jump key on Team Menu as autoassign
 		if (pszCurrentBinding && down && 0 == strcmp(pszCurrentBinding, "+jump"))
 		{
@@ -2132,38 +2017,8 @@ bool TeamFortressViewport::MsgFunc_VGUIMenu(const char* pszName, int iSize, void
 
 	int iMenu = READ_BYTE();
 
-	// Map briefing includes the name of the map (because it's sent down before the client knows what map it is)
-	if (iMenu == MENU_MAPBRIEFING)
-	{
-		strncpy(m_sMapName, READ_STRING(), sizeof(m_sMapName));
-		m_sMapName[sizeof(m_sMapName) - 1] = '\0';
-	}
-
 	// Bring up the menu6
 	ShowVGUIMenu(iMenu);
-
-	return true;
-}
-
-bool TeamFortressViewport::MsgFunc_MOTD(const char* pszName, int iSize, void* pbuf)
-{
-	if (m_iGotAllMOTD)
-		m_szMOTD[0] = 0;
-
-	BEGIN_READ(pbuf, iSize);
-
-	m_iGotAllMOTD = READ_BYTE() != 0;
-
-	int roomInArray = sizeof(m_szMOTD) - strlen(m_szMOTD) - 1;
-
-	strncat(m_szMOTD, READ_STRING(), roomInArray >= 0 ? roomInArray : 0);
-	m_szMOTD[sizeof(m_szMOTD) - 1] = '\0';
-
-	// don't show MOTD for HLTV spectators
-	if (m_iGotAllMOTD && 0 == gEngfuncs.IsSpectateOnly())
-	{
-		ShowVGUIMenu(MENU_INTRO);
-	}
 
 	return true;
 }
@@ -2374,4 +2229,25 @@ const char* GoModAdmin_TeamName(int team)
 bool GoModAdmin_AllowSpectators()
 {
 	return gViewPort && gViewPort->GetAllowSpectators();
+}
+
+//-----------------------------------------------------------------------------
+// Go-Mod: MOTD / Map Info (ImGui, imgui_gomod_menu.cpp)
+//-----------------------------------------------------------------------------
+const char* GoModInfo_ServerName()
+{
+	return gViewPort ? gViewPort->m_szServerName : "";
+}
+
+// a VGUI menu that waited for the MOTD / Map Info to be closed
+void GoModInfo_ShowVGUIMenu(int iMenu)
+{
+	if (gViewPort)
+		gViewPort->ShowVGUIMenu(iMenu);
+}
+
+// a VGUI menu (team, class...) is open
+bool GoModInfo_VGUIMenuOpen()
+{
+	return gViewPort && (gViewPort->m_pCurrentMenu || gViewPort->m_pCurrentCommandMenu);
 }

@@ -7,6 +7,7 @@
 
 #include "imgui.h"
 #include "gm_audio.h"
+#include "parsemsg.h"
 
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
@@ -42,6 +43,8 @@
 #endif
 
 extern bool g_bShowMenu;
+extern void ImGuiMenu_SetOpen(bool open);
+extern bool UTIL_IsSandbox();
 
 // =====================================================================
 //  Utilities
@@ -3072,6 +3075,274 @@ static void DrawAdminSettingsWindow(int x, int y, int w, int h)
 }
 
 // =====================================================================
+//  Information: Message of the Day (motd.txt, message "MOTD") and Map Info (maps/<map>.txt)
+//  In the sandbox they are a section of the Go-Mod menu (green circle).
+//  In the other game modes they are two windows alone (the old VGUI ones, done in ImGui):
+//  the MOTD opens by itself when it arrives, toggleMOTDMenu / toggleMapInfoMenu open them.
+// =====================================================================
+
+extern const char* GoModInfo_ServerName();	   // vgui_TeamFortressViewport.cpp
+extern void GoModInfo_ShowVGUIMenu(int iMenu); // vgui_TeamFortressViewport.cpp
+
+enum
+{
+	INFO_PAGE_MOTD = 0,
+	INFO_PAGE_MAPINFO,
+};
+
+static std::string g_MOTD;
+static bool g_bMOTDComplete = true; // the last chunk arrived (next message = new MOTD)
+
+static int g_iInfoStandalone = -1; // page open alone (outside the sandbox), -1 = none
+static int g_iQueuedVGUIMenu = 0;  // VGUI menu that waits for the window to be closed
+
+static std::string g_MapInfoLevel; // level of the loaded text
+static std::string g_MapInfoName;
+static std::string g_MapInfoText;
+static bool g_bMapInfoFound = false;
+
+static void OpenStandaloneInfo(int page); // below
+
+// message "MOTD": byte last chunk, string text (dlls/multiplay_gamerules.cpp, SendMOTDToClient)
+int GoModInfo_MsgMOTD(const char* pszName, int iSize, void* pbuf)
+{
+	if (g_bMOTDComplete)
+		g_MOTD.clear();
+
+	BEGIN_READ(pbuf, iSize);
+
+	g_bMOTDComplete = READ_BYTE() != 0;
+	g_MOTD += READ_STRING();
+
+	if (g_MOTD.size() > MAX_MOTD_LENGTH - 1)
+		g_MOTD.resize(MAX_MOTD_LENGTH - 1);
+
+	// don't show the MOTD to HLTV spectators. In the sandbox it is only in the Go-Mod menu
+	// (the server sends GameMode before the MOTD, InitHUD of multiplay_gamerules.cpp).
+	// It opens now, so a VGUI menu that comes after it (team menu of CTF) waits for it.
+	if (g_bMOTDComplete && 0 == gEngfuncs.IsSpectateOnly() && !UTIL_IsSandbox())
+		OpenStandaloneInfo(INFO_PAGE_MOTD);
+
+	return 1;
+}
+
+static void LoadMapInfo()
+{
+	const char* level = gEngfuncs.pfnGetLevelName(); // "maps/<name>.bsp"
+	const std::string current = level ? level : "";
+
+	if (current == g_MapInfoLevel)
+		return;
+
+	g_MapInfoLevel = current;
+	g_MapInfoName.clear();
+	g_MapInfoText.clear();
+	g_bMapInfoFound = false;
+
+	if (current.empty())
+		return;
+
+	std::string path = current;
+	const size_t dot = path.find_last_of('.');
+	if (dot != std::string::npos)
+		path = path.substr(0, dot);
+
+	const size_t slash = path.find_last_of("/\\");
+	g_MapInfoName = (slash != std::string::npos) ? path.substr(slash + 1) : path;
+
+	path += ".txt";
+
+	std::string text;
+	if (LoadTextFile(path.c_str(), text))
+	{
+		g_bMapInfoFound = true;
+		g_MapInfoText = text;
+	}
+}
+
+// the texts come from files written in Windows: no '\r'
+static std::string CleanText(const std::string& in)
+{
+	std::string out;
+	out.reserve(in.size());
+	for (char c : in)
+	{
+		if (c != '\r')
+			out.push_back(c);
+	}
+	return out;
+}
+
+// title + text with scroll, leaving 'bottom' pixels free below
+static void DrawInfoPage(int page, float bottom)
+{
+	std::string title, text;
+
+	if (page == INFO_PAGE_MOTD)
+	{
+		const char* server = GoModInfo_ServerName();
+		title = (server && server[0]) ? server : "Half-Life";
+		text = g_MOTD.empty() ? std::string(L("#Gomod_Info_NoMOTD")) : CleanText(g_MOTD);
+	}
+	else
+	{
+		LoadMapInfo();
+		title = g_MapInfoName.empty() ? std::string(L("#Gomod_Info_Tab_MapInfo")) : g_MapInfoName;
+		text = g_bMapInfoFound ? CleanText(g_MapInfoText) : std::string(L("#Gomod_Info_NoMapInfo"));
+	}
+
+	ImGui::SeparatorText(title.c_str());
+
+	ImGui::BeginChild("##infotext", ImVec2(0, -bottom), ImGuiChildFlags_Borders);
+	ImGui::PushTextWrapPos(0.0f);
+	ImGui::TextUnformatted(text.c_str());
+	ImGui::PopTextWrapPos();
+	ImGui::EndChild();
+}
+
+// size of the old VGUI MOTD window
+static void InfoWindowRect(float& x, float& y, float& w, float& h)
+{
+	w = (float)(int)XRES(424);
+	h = (float)(int)YRES(312);
+	x = (ScreenWidth - w) * 0.5f;
+	y = (ScreenHeight - h) * 0.5f;
+}
+
+// green circle of the Go-Mod menu (sandbox)
+static void DrawInformationWindow()
+{
+	float x, y, w, h;
+	InfoWindowRect(x, y, w, h);
+
+	ImGui::SetNextWindowPos(ImVec2(x, y), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ImVec2(w, h), ImGuiCond_Appearing);
+
+	ImGui::Begin("Information", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::BeginTabBar("##infotabs"))
+	{
+		if (ImGui::BeginTabItem(LID("#Gomod_Info_Tab_MOTD").c_str()))
+		{
+			DrawInfoPage(INFO_PAGE_MOTD, 0.0f);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem(LID("#Gomod_Info_Tab_MapInfo").c_str()))
+		{
+			DrawInfoPage(INFO_PAGE_MAPINFO, 0.0f);
+			ImGui::EndTabItem();
+		}
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+}
+
+// the window alone (outside the sandbox), with its OK button
+static void DrawStandaloneInfo()
+{
+	float x, y, w, h;
+	InfoWindowRect(x, y, w, h);
+
+	ImGui::SetNextWindowPos(ImVec2(x, y), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ImVec2(w, h), ImGuiCond_Appearing);
+
+	const char* title = (g_iInfoStandalone == INFO_PAGE_MOTD) ? "Message of the Day###gomod_info_alone" : "Map Info###gomod_info_alone";
+
+	bool open = true;
+	ImGui::Begin(title, &open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+
+	int btnW = 120, btnH = 28;
+	ScaleSize(btnW, btnH);
+
+	DrawInfoPage(g_iInfoStandalone, (float)btnH + ImGui::GetStyle().ItemSpacing.y * 2.0f);
+
+	ImGui::Spacing();
+	CenteredButtonPos((float)btnW);
+	if (ImGui::Button(LID("#Gomod_Info_OK").c_str(), ImVec2((float)btnW, (float)btnH)))
+		open = false;
+
+	ImGui::End();
+
+	if (!open)
+		g_bShowMenu = false; // hud_imgui.cpp closes it
+}
+
+static void OpenStandaloneInfo(int page)
+{
+	if (page == INFO_PAGE_MAPINFO)
+	{
+		LoadMapInfo();
+		if (!g_bMapInfoFound)
+		{
+			gEngfuncs.Con_Printf("This map has no information (%s)\n", g_MapInfoName.c_str());
+			return;
+		}
+	}
+
+	g_iInfoStandalone = page;
+	ImGuiMenu_SetOpen(true);
+}
+
+extern bool GoModInfo_VGUIMenuOpen(); // vgui_TeamFortressViewport.cpp
+
+// commands toggleMOTDMenu (0) / toggleMapInfoMenu (1)
+void GoModInfo_Toggle(int page)
+{
+	if (UTIL_IsSandbox())
+	{
+		gEngfuncs.Con_Printf("In the sandbox the MOTD and the map info are in the Go-Mod menu (Information)\n");
+		return;
+	}
+
+	if (g_bShowMenu && g_iInfoStandalone == page)
+	{
+		ImGuiMenu_SetOpen(false);
+		return;
+	}
+
+	// not on top of a VGUI menu (team menu...)
+	if (GoModInfo_VGUIMenuOpen())
+		return;
+
+	OpenStandaloneInfo(page);
+}
+
+bool GoModInfo_StandaloneOpen()
+{
+	return g_bShowMenu && g_iInfoStandalone >= 0 && !UTIL_IsSandbox();
+}
+
+// a VGUI menu wants to open while the MOTD / Map Info is open: it waits (true = queued)
+bool GoModInfo_QueueVGUIMenu(int iMenu)
+{
+	if (!GoModInfo_StandaloneOpen())
+		return false;
+
+	g_iQueuedVGUIMenu = iMenu;
+	return true;
+}
+
+// every frame (also with the menu closed)
+void GoModInfo_Frame()
+{
+	// closed: the queued VGUI menu (team menu of CTF...) can open now
+	if (!g_bShowMenu && g_iInfoStandalone >= 0)
+	{
+		g_iInfoStandalone = -1;
+
+		if (g_iQueuedVGUIMenu)
+		{
+			const int menu = g_iQueuedVGUIMenu;
+			g_iQueuedVGUIMenu = 0;
+			GoModInfo_ShowVGUIMenu(menu);
+		}
+	}
+}
+
+// =====================================================================
 //  Sections: the circles at the top left
 //  red = menu theme (popup), orange = spawn menu + tools, blue = user settings, purple = admin
 // =====================================================================
@@ -3080,6 +3351,7 @@ enum
 {
 	SECTION_MAIN = 0,
 	SECTION_USER,
+	SECTION_INFO,
 	SECTION_ADMIN,
 };
 
@@ -3170,6 +3442,10 @@ static void DrawSectionBar(float x, float y, float size)
 		g_iSection = SECTION_USER;
 
 	ImGui::SameLine();
+	if (SectionButton("##sec_info", "resource/imgui/menu/section_info.png", IM_COL32(40, 170, 70, 255), size, g_iSection == SECTION_INFO, "#Gomod_Section_Info"))
+		g_iSection = SECTION_INFO;
+
+	ImGui::SameLine();
 	if (SectionButton("##sec_admin", "resource/imgui/menu/section_admin.png", IM_COL32(135, 65, 190, 255), size, g_iSection == SECTION_ADMIN, "#Gomod_Section_Admin"))
 		g_iSection = SECTION_ADMIN;
 
@@ -3191,6 +3467,17 @@ void GoModMenu_DigitPressed(int digit)
 void GoModMenu_Draw()
 {
 	InitData();
+
+	// outside the sandbox the menu only shows the MOTD / Map Info alone
+	if (!UTIL_IsSandbox())
+	{
+		if (g_iInfoStandalone >= 0)
+			DrawStandaloneInfo();
+		else
+			g_bShowMenu = false;
+		return;
+	}
+	g_iInfoStandalone = -1;
 
 	// the menu was just opened: it starts with the spawn menu and the tools
 	static RefreshTimer s_Opened;
@@ -3217,6 +3504,10 @@ void GoModMenu_Draw()
 	case SECTION_USER:
 		// same size as the spawn menu, in the center
 		DrawUserSettingsWindow((ScreenWidth - leftW) / 2, y0, leftW, h);
+		break;
+
+	case SECTION_INFO:
+		DrawInformationWindow();
 		break;
 
 	case SECTION_ADMIN:
@@ -3253,6 +3544,8 @@ void GoModMenu_Reload()
 	g_AdminLoaded = false;
 	g_AdminMenus.clear();
 	g_AdminChain.clear();
+
+	g_MapInfoLevel.clear(); // read the map text again
 }
 
 void GoModMenu_Shutdown()

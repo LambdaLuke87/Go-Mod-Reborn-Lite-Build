@@ -269,20 +269,18 @@ void __CmdFunc_ForceCloseCommandMenu()
 	}
 }
 
+// MOTD / Map Info: ImGui (imgui_gomod_menu.cpp). In the sandbox they are in the Go-Mod menu (Information)
+extern void GoModInfo_Toggle(int page);
+extern int GoModInfo_MsgMOTD(const char* pszName, int iSize, void* pbuf);
+
 void __CmdFunc_OpenMOTDMenu()
 {
-	if (gViewPort)
-	{
-		gViewPort->ShowVGUIMenu(MENU_INTRO);
-	}
+	GoModInfo_Toggle(0);
 }
 
 void __CmdFunc_OpenMapInfoMenu()
 {
-	if (gViewPort)
-	{
-		gViewPort->ShowVGUIMenu(MENU_MAPBRIEFING);
-	}
+	GoModInfo_Toggle(1);
 }
 
 // TFFree Command Menu Message Handlers
@@ -323,9 +321,7 @@ int __MsgFunc_VGUIMenu(const char* pszName, int iSize, void* pbuf)
 
 int __MsgFunc_MOTD(const char* pszName, int iSize, void* pbuf)
 {
-	if (gViewPort)
-		return static_cast<int>(gViewPort->MsgFunc_MOTD(pszName, iSize, pbuf));
-	return 0;
+	return GoModInfo_MsgMOTD(pszName, iSize, pbuf);
 }
 
 int __MsgFunc_BuildSt(const char* pszName, int iSize, void* pbuf)
@@ -473,7 +469,7 @@ void __CmdFunc_ShowMenu()
 		return;
 	}
 
-	// avoid open in MTOD or MAPINFO
+	// avoid open in a VGUI menu (team, class...)
 	if (gViewPort && gViewPort->m_pCurrentMenu)
 		return;
 

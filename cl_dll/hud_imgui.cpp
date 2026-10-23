@@ -22,6 +22,8 @@ extern void GoModMenu_Draw();
 extern void __CmdFunc_ShowMenu();
 
 extern void GoModMenu_DigitPressed(int digit);
+extern void GoModInfo_Frame();
+extern bool GoModInfo_StandaloneOpen();
 
 // keys that ImGui needs to edit a number in a text field (color picker, ctrl+click on a slider).
 // ImGui receives them, but the game keeps receiving them too (they are not blocked)
@@ -139,6 +141,14 @@ int GoModMenu_KeyEvent(int down, int keynum)
 		return 0; // prevent the engine from opening the main menu
 	}
 
+	// MOTD / Map Info alone (outside the sandbox): enter and space close it, like the old VGUI window
+	if (GoModInfo_StandaloneOpen() && (keynum == K_ENTER || keynum == K_KP_ENTER || keynum == K_SPACE))
+	{
+		if (!down)
+			ImGuiMenu_SetOpen(false);
+		return 0;
+	}
+
 	if (keynum == K_MWHEELUP || keynum == K_MWHEELDOWN)
 	{
 		if (down)
@@ -177,6 +187,8 @@ int GoModMenu_KeyEvent(int down, int keynum)
 
 void CHud::ImGuiMenu_Draw(float flTime)
 {
+	GoModInfo_Frame(); // MOTD / Map Info closed: the VGUI menu that was waiting
+
 	if (!g_bShowMenu)
 		return; // closed menu: ImGui does not run.
 

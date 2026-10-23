@@ -519,10 +519,6 @@ private:
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
 
-	// MOTD
-	bool	m_iGotAllMOTD;
-	char	m_szMOTD[ MAX_MOTD_LENGTH ];
-
 	//  Command Menu Team buttons
 	CommandButton *m_pTeamButtons[6];
 	CommandButton *m_pDisguiseButtons[5];
@@ -542,8 +538,6 @@ private:
 
 	// Localisation strings
 	char		m_sDetpackStrings[3][MAX_BUTTON_SIZE];
-
-	char		m_sMapName[64];
 
 	// helper function to update the player menu entries
 	void UpdatePlayerMenu(int menuIndex);
@@ -590,8 +584,6 @@ public:
 	void SwitchToScoreBoard();
 	void HideScoreStatsWindow();
 
-	CMenuPanel* CreateTextWindow( int iTextToShow );
-
 	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu, int iYOffset, int iXOffset = 0 );
 
 	// Data Handlers
@@ -611,7 +603,6 @@ public:
 	bool MsgFunc_Feign(const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_Detpack(const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_VGUIMenu(const char *pszName, int iSize, void *pbuf );
-	bool MsgFunc_MOTD( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_BuildSt( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_RandomPC( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_ServerName( const char *pszName, int iSize, void *pbuf );
@@ -799,10 +790,6 @@ public:
 };
 
 #define HIDE_TEXTWINDOW		0
-#define SHOW_MAPBRIEFING	1
-#define SHOW_CLASSDESC		2
-#define SHOW_MOTD			3
-#define SHOW_SPECHELP		4
 
 class CMenuHandler_TextWindow : public ActionSignal
 {
