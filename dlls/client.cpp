@@ -55,6 +55,7 @@
 #include "custom_monsters.h"
 #include "custom_sounds.h"
 #include "gm_audio_server.h"
+#include "fx_flags.h"
 
 extern DLL_GLOBAL unsigned int g_ulModelIndexPlayer;
 extern DLL_GLOBAL bool g_fGameOver;
@@ -904,6 +905,191 @@ called each time a player uses a "cmd" command
 ============
 */
 // Use CMD_ARGV,  CMD_ARGV, and CMD_ARGC to get pointers the character string command.
+// =====================================================================
+//  Go-Mod: personal rain / snow (only for the player that asks for it)
+//
+//  rain <intensity> <r> <g> <b> <brightness> <drop size> <speed> <splashes 0/1> <ripples 0/1> <indoors 0/1>
+//  snow <intensity> <r> <g> <b> <brightness> <flake size> <speed> <indoors 0/1>
+//  rain_remove / snow_remove
+//
+//  Same messages as env_rain / env_snow (effects.cpp), sent only to this player.
+//  The sprites are ALWAYS the default ones of the client (empty sprite strings),
+//  custom sprites are not supported on purpose. Nothing is precached: the client
+//  loads its own default sprites (environment.cpp).
+// =====================================================================
+
+// entity index used by the client to tell the weathers apart: far away from any real entity
+static int GoMod_WeatherIndex(CBasePlayer* player)
+{
+	return 0x100000 + player->entindex();
+}
+
+static int GoMod_WeatherArg(int i, int def, int lo, int hi)
+{
+	const int value = (CMD_ARGC() > i) ? atoi(CMD_ARGV(i)) : def;
+	return V_min(V_max(value, lo), hi);
+}
+
+static void GoMod_PlayerWeatherCommand(CBasePlayer* player, const char* pcmd)
+{
+	edict_t* pEdict = player->edict();
+	const int index = GoMod_WeatherIndex(player);
+
+	if (FStrEq(pcmd, "rain_remove") || FStrEq(pcmd, "snow_remove"))
+	{
+		const bool rain = FStrEq(pcmd, "rain_remove");
+		MESSAGE_BEGIN(MSG_ONE, rain ? gmsgRain : gmsgSnow, NULL, pEdict);
+		WRITE_LONG(index);
+		WRITE_SHORT(0); // not active = remove
+		MESSAGE_END();
+
+		CLIENT_PRINTF(pEdict, print_console, rain ? "Rain removed\n" : "Snow removed\n");
+		return;
+	}
+
+	if (FStrEq(pcmd, "rain"))
+	{
+		if (CMD_ARGC() < 2)
+		{
+			CLIENT_PRINTF(pEdict, print_console,
+				"Usage: rain <intensity 10-400> <r> <g> <b> <brightness 1-255> <drop size 1-4> <speed 300-2500> <splashes 0/1> <ripples 0/1> <indoors 0/1>\n");
+			return;
+		}
+
+		// limits: enough to look good, not enough to kill the framerate
+		const int intensity = GoMod_WeatherArg(1, 150, 10, 400);
+		const int r = GoMod_WeatherArg(2, 255, 0, 255);
+		const int g = GoMod_WeatherArg(3, 255, 0, 255);
+		const int b = GoMod_WeatherArg(4, 255, 0, 255);
+		const int brightness = GoMod_WeatherArg(5, 128, 1, 255);
+		const int size = GoMod_WeatherArg(6, 2, 1, 4);
+		const int speed = GoMod_WeatherArg(7, 1800, 300, 2500);
+		const bool splashes = GoMod_WeatherArg(8, 1, 0, 1) != 0;
+		const bool ripples = GoMod_WeatherArg(9, 1, 0, 1) != 0;
+		const bool indoors = GoMod_WeatherArg(10, 0, 0, 1) != 0;
+
+		int flags = SF_RAIN_ACTIVE;
+		if (!splashes)
+			flags |= SF_RAIN_NO_SPLASHES;
+		if (!ripples)
+			flags |= SF_RAIN_NO_RIPPLES;
+		if (indoors)
+			flags |= SF_RAIN_ALLOW_INDOOR;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgRain, NULL, pEdict);
+		WRITE_LONG(index);
+		WRITE_SHORT(flags);
+		WRITE_SHORT(intensity);
+		WRITE_SHORT(0); // update period: default
+		WRITE_SHORT(0); // distance: default
+		WRITE_SHORT(0); // min height: default
+		WRITE_SHORT(0); // max height: default
+
+		// raindrops
+		WRITE_SHORT(size);
+		WRITE_SHORT(size * 40); // same stretch as the default drop
+		WRITE_BYTE(0);			// render mode: default
+		WRITE_BYTE(brightness);
+		// 0 0 0 means "default color" for the client: use 1 1 1 for black
+		WRITE_BYTE((r + g + b) > 0 ? r : 1);
+		WRITE_BYTE((r + g + b) > 0 ? g : 1);
+		WRITE_BYTE((r + g + b) > 0 ? b : 1);
+		WRITE_BYTE(0); // light mode: default
+		WRITE_SHORT(V_max(speed * 3 / 10, 100)); // min speed
+		WRITE_SHORT(speed);						 // max speed
+		WRITE_SHORT(0);							 // life: default
+
+		// wind puffs: default
+		WRITE_SHORT(0);
+		WRITE_SHORT(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_SHORT(0);
+
+		// splashes: default
+		WRITE_SHORT(0);
+		WRITE_SHORT(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+
+		// ripples: default
+		WRITE_SHORT(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+
+		// sprites: always the default ones
+		WRITE_STRING("");
+		WRITE_STRING("");
+		WRITE_STRING("");
+		WRITE_STRING("");
+		MESSAGE_END();
+
+		CLIENT_PRINTF(pEdict, print_console, UTIL_VarArgs("Rain set: intensity=%d RGB(%d,%d,%d) brightness=%d size=%d speed=%d\n",
+												 intensity, r, g, b, brightness, size, speed));
+		return;
+	}
+
+	// snow
+	if (CMD_ARGC() < 2)
+	{
+		CLIENT_PRINTF(pEdict, print_console,
+			"Usage: snow <intensity 10-300> <r> <g> <b> <brightness 1-255> <flake size 1-6> <speed 30-400> <indoors 0/1>\n");
+		return;
+	}
+
+	const int intensity = GoMod_WeatherArg(1, 150, 10, 300);
+	const int r = GoMod_WeatherArg(2, 128, 0, 255);
+	const int g = GoMod_WeatherArg(3, 128, 0, 255);
+	const int b = GoMod_WeatherArg(4, 128, 0, 255);
+	const int brightness = GoMod_WeatherArg(5, 130, 1, 255);
+	const int size = GoMod_WeatherArg(6, 2, 1, 6);
+	const int speed = GoMod_WeatherArg(7, 200, 30, 400);
+	const bool indoors = GoMod_WeatherArg(8, 0, 0, 1) != 0;
+
+	int flags = SF_SNOW_ACTIVE;
+	if (indoors)
+		flags |= SF_SNOW_ALLOW_INDOOR;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgSnow, NULL, pEdict);
+	WRITE_LONG(index);
+	WRITE_SHORT(flags);
+	WRITE_SHORT(intensity);
+	WRITE_SHORT(0); // update period: default
+	WRITE_SHORT(0); // distance: default
+	WRITE_SHORT(0); // min height: default
+	WRITE_SHORT(0); // max height: default
+
+	WRITE_SHORT(size);					 // min size
+	WRITE_SHORT(size + (size + 3) / 4); // max size (a bit bigger, like the default 2 - 2.5)
+	WRITE_BYTE(0);						 // render mode: default
+	WRITE_BYTE(brightness);
+	WRITE_BYTE((r + g + b) > 0 ? r : 1);
+	WRITE_BYTE((r + g + b) > 0 ? g : 1);
+	WRITE_BYTE((r + g + b) > 0 ? b : 1);
+	WRITE_BYTE(0);							// light mode: default
+	WRITE_SHORT(V_max(speed / 2, 15));		// min speed
+	WRITE_SHORT(speed);						// max speed
+	WRITE_SHORT(0);							// life: default
+
+	WRITE_STRING(""); // sprite: always the default one
+	MESSAGE_END();
+
+	CLIENT_PRINTF(pEdict, print_console, UTIL_VarArgs("Snow set: intensity=%d RGB(%d,%d,%d) brightness=%d size=%d speed=%d\n",
+											 intensity, r, g, b, brightness, size, speed));
+}
+
 void ClientCommand(edict_t* pEntity)
 {
 	const char* pcmd = CMD_ARGV(0);
@@ -1504,6 +1690,13 @@ void ClientCommand(edict_t* pEntity)
 			density = V_min(V_max(density, 0), 32767);
 			skyfog = V_min(V_max(skyfog, 0), 1);
 
+			// remember it, so fog_color / fog_density / fog_skybox continue from here
+			player->m_iFogRed = r;
+			player->m_iFogGreen = g;
+			player->m_iFogBlue = b;
+			player->m_iFogDensity = density;
+			player->m_iFogSkyBox = skyfog;
+
 			// Send the user message
 			MESSAGE_BEGIN(MSG_ONE, gmsgSetFog, NULL, pPlayer->edict());
 			WRITE_BYTE(r);
@@ -1521,6 +1714,13 @@ void ClientCommand(edict_t* pEntity)
 		}
 		else
 			CLIENT_PRINTF(pEntity, print_console, UTIL_VarArgs("You cannot use fog command outside of the sandbox\n"));
+	}
+	else if (FStrEq(pcmd, "rain") || FStrEq(pcmd, "rain_remove") || FStrEq(pcmd, "snow") || FStrEq(pcmd, "snow_remove"))
+	{
+		if (UTIL_IsSandbox())
+			GoMod_PlayerWeatherCommand(pPlayer, pcmd);
+		else
+			CLIENT_PRINTF(pEntity, print_console, "You cannot use weather commands outside of the sandbox\n");
 	}
 	else if (FStrEq(pcmd, "toggle_flashlight_mode"))
 	{

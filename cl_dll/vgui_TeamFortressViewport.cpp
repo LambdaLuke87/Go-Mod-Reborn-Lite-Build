@@ -2354,3 +2354,24 @@ bool TeamFortressViewport::MsgFunc_StatsPlayer(const char* pszName, int iSize, v
 {
 	return m_pStatsMenu->MsgFunc_StatsPlayer(pszName, iSize, pbuf);
 }
+
+//-----------------------------------------------------------------------------
+// Go-Mod: Admin Settings (ImGui copy of the command menu, imgui_gomod_menu.cpp)
+// the team buttons of "CUSTOM !CHANGETEAM" need this, without including vgui there
+//-----------------------------------------------------------------------------
+int GoModAdmin_NumberOfTeams()
+{
+	return gViewPort ? gViewPort->GetNumberOfTeams() : 0;
+}
+
+const char* GoModAdmin_TeamName(int team)
+{
+	if (!gViewPort || team < 1 || team > 4)
+		return "";
+	return gViewPort->GetTeamName(team);
+}
+
+bool GoModAdmin_AllowSpectators()
+{
+	return gViewPort && gViewPort->GetAllowSpectators();
+}

@@ -21,22 +21,26 @@ static int s_iPrevCursor = SDL_DISABLE;
 extern void GoModMenu_Draw();
 extern void __CmdFunc_ShowMenu();
 
-ImGuiKey TranslateValveKeyToImGui(int keynum)
+extern void GoModMenu_DigitPressed(int digit);
+
+// keys that ImGui needs to edit a number in a text field (color picker, ctrl+click on a slider).
+// ImGui receives them, but the game keeps receiving them too (they are not blocked)
+static ImGuiKey TranslateEditKey(int keynum)
 {
 	switch (keynum)
 	{
-	case K_TAB: return ImGuiKey_Tab;
+	case K_BACKSPACE: return ImGuiKey_Backspace;
+	case K_DEL: return ImGuiKey_Delete;
 	case K_LEFTARROW: return ImGuiKey_LeftArrow;
 	case K_RIGHTARROW: return ImGuiKey_RightArrow;
-	case K_UPARROW: return ImGuiKey_UpArrow;
-	case K_DOWNARROW: return ImGuiKey_DownArrow;
+	case K_HOME: return ImGuiKey_Home;
+	case K_END: return ImGuiKey_End;
 	case K_ENTER: return ImGuiKey_Enter;
-	case K_ESCAPE: return ImGuiKey_Escape;
-	case K_SPACE: return ImGuiKey_Space;
+	case K_KP_ENTER: return ImGuiKey_KeypadEnter;
+	case K_TAB: return ImGuiKey_Tab;
 	default: return ImGuiKey_None;
 	}
 }
-
 
 void ImGuiMenu_SetOpen(bool open)
 {
@@ -69,6 +73,7 @@ void ImGuiMenu_SetOpen(bool open)
 		io.AddMouseButtonEvent(ImGuiMouseButton_Right, false);
 		io.AddMouseButtonEvent(ImGuiMouseButton_Middle, false);
 		io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+		io.ClearInputKeys(); // no key stays pressed inside ImGui
 
 		SDL_ShowCursor(s_iPrevCursor);
 		SDL_SetRelativeMouseMode(s_bPrevRelative ? SDL_TRUE : SDL_FALSE);
@@ -140,6 +145,32 @@ int GoModMenu_KeyEvent(int down, int keynum)
 			io.AddMouseWheelEvent(0.0f, keynum == K_MWHEELUP ? 1.0f : -1.0f);
 		return 0;
 	}
+
+	// 1 2 3 4 5 6 7 8 9 0: blocked for the game (no weapon change behind the menu),
+	// they go to ImGui (to type the numbers of a color) and to the Admin Settings menu
+	if (keynum >= '0' && keynum <= '9')
+	{
+		io.AddKeyEvent((ImGuiKey)(ImGuiKey_0 + (keynum - '0')), down != 0);
+
+		if (down)
+		{
+			io.AddInputCharacter((unsigned int)keynum);
+			GoModMenu_DigitPressed(keynum);
+		}
+		return 0;
+	}
+
+	// ctrl + click on a slider = type the value
+	if (keynum == K_CTRL)
+	{
+		io.AddKeyEvent(ImGuiMod_Ctrl, down != 0);
+		io.AddKeyEvent(ImGuiKey_LeftCtrl, down != 0);
+		return 1;
+	}
+
+	const ImGuiKey editKey = TranslateEditKey(keynum);
+	if (editKey != ImGuiKey_None)
+		io.AddKeyEvent(editKey, down != 0);
 
 	return 1; // the rest (WASD, etc.) still works
 }
