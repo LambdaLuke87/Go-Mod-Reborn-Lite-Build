@@ -9,6 +9,7 @@
 
 #include <SDL2/SDL.h>
 #include "keydefs.h"
+#include "voice_status.h"
 
 extern bool g_iVisibleMouse;
 extern void IN_ResetMouseAfterMenu();
@@ -44,19 +45,27 @@ static ImGuiKey TranslateEditKey(int keynum)
 	}
 }
 
-void ImGuiMenu_SetOpen(bool open)
+// the mouse belongs to ImGui: Go-Mod menu open, or scoreboard in "mute" mode (right click)
+static bool ImGui_WantsCursor()
 {
-	g_bShowMenu = open;
+	return g_bShowMenu || GetClientVoiceMgr()->IsInSquelchMode();
+}
 
-	if (open == s_bMenuApplied)
+static bool s_bCursorOwned = false;
+
+// takes the mouse from the game / gives it back, when it changes
+void ImGuiCursor_Update()
+{
+	const bool want = ImGui_WantsCursor();
+	if (want == s_bCursorOwned)
 		return;
 
-	s_bMenuApplied = open;
-	g_iVisibleMouse = open ? 1 : 0;
+	s_bCursorOwned = want;
+	g_iVisibleMouse = want ? 1 : 0;
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (open)
+	if (want)
 	{
 		// save the state set by the engine in order to restore it later
 		s_bPrevRelative = (SDL_GetRelativeMouseMode() == SDL_TRUE);
@@ -64,10 +73,6 @@ void ImGuiMenu_SetOpen(bool open)
 
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 		SDL_ShowCursor(SDL_ENABLE);
-
-		// the engine draws the crosshair after the HUD, on top of the menu: hide it
-		static Rect nullrc;
-		SetCrosshair(0, nullrc, 0, 0, 0);
 	}
 	else
 	{
@@ -81,9 +86,30 @@ void ImGuiMenu_SetOpen(bool open)
 		SDL_SetRelativeMouseMode(s_bPrevRelative ? SDL_TRUE : SDL_FALSE);
 
 		IN_ResetMouseAfterMenu(); // avoid the camera jump
-
-		gHUD.m_Ammo.RestoreCrosshair();
 	}
+}
+
+void ImGuiMenu_SetOpen(bool open)
+{
+	g_bShowMenu = open;
+
+	if (open != s_bMenuApplied)
+	{
+		s_bMenuApplied = open;
+
+		if (open)
+		{
+			// the engine draws the crosshair after the HUD, on top of the menu: hide it
+			static Rect nullrc;
+			SetCrosshair(0, nullrc, 0, 0, 0);
+		}
+		else
+		{
+			gHUD.m_Ammo.RestoreCrosshair();
+		}
+	}
+
+	ImGuiCursor_Update();
 }
 
 // The engine takes the mouse back by itself while the menu is open: when the window gets the focus
@@ -130,7 +156,24 @@ static void ImGuiMenu_UpdateMouse(ImGuiIO& io)
 int GoModMenu_KeyEvent(int down, int keynum)
 {
 	if (!g_bShowMenu)
+	{
+		// scoreboard open: the right click gives the mouse (mute players), the left click
+		// doesn't shoot while the mouse is free
+		if (gHUD.m_Scoreboard.WantsMouseClick())
+		{
+			if (keynum == K_MOUSE2)
+			{
+				if (down && !GetClientVoiceMgr()->IsInSquelchMode())
+					GetClientVoiceMgr()->StartSquelchMode();
+				return 0;
+			}
+
+			if (keynum == K_MOUSE1 && GetClientVoiceMgr()->IsInSquelchMode())
+				return 0;
+		}
+
 		return 1;
+	}
 
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -185,12 +228,20 @@ int GoModMenu_KeyEvent(int down, int keynum)
 	return 1; // the rest (WASD, etc.) still works
 }
 
+static void ApplyTranslucentTheme(); // below
+
 void CHud::ImGuiMenu_Draw(float flTime)
 {
 	GoModInfo_Frame(); // MOTD / Map Info closed: the VGUI menu that was waiting
 
-	if (!g_bShowMenu)
-		return; // closed menu: ImGui does not run.
+	const bool scoreboard = gHUD.m_Scoreboard.IsVisible();
+
+	// the mute mode ends with the scoreboard
+	if (!scoreboard && GetClientVoiceMgr()->IsInSquelchMode())
+		GetClientVoiceMgr()->StopSquelchMode();
+
+	if (!g_bShowMenu && !scoreboard)
+		return; // nothing to draw: ImGui does not run.
 
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -201,10 +252,18 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	io.DeltaTime = (dt > 0.0f && dt < 0.1f) ? dt : 1.0f / 60.0f;
 	flLastTime = flTime;
 
-	ImGuiMenu_KeepMouseFree();
-	ImGuiMenu_UpdateMouse(io);
+	if (ImGui_WantsCursor())
+	{
+		ImGuiMenu_KeepMouseFree();
+		ImGuiMenu_UpdateMouse(io);
+	}
+	else
+	{
+		io.AddMousePosEvent(-FLT_MAX, -FLT_MAX); // only the scoreboard: the mouse is the game's
+	}
 
 	// a weapon change / zoom while the menu is open sets the crosshair again: keep it hidden
+	if (g_bShowMenu)
 	{
 		static Rect nullrc;
 		SetCrosshair(0, nullrc, 0, 0, 0);
@@ -213,8 +272,17 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
+	// the scoreboard always uses the "Go-Mod 3" theme (transparent), the menu the chosen one
+	if (scoreboard)
+	{
+		ApplyTranslucentTheme();
+		gHUD.m_Scoreboard.DrawImGui();
+	}
+
 	GoModImGuiStyle();
-	GoModMenu_Draw();
+
+	if (g_bShowMenu)
+		GoModMenu_Draw();
 
 	if (!g_bShowMenu) // close with x button
 		ImGuiMenu_SetOpen(false);

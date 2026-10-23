@@ -146,10 +146,6 @@ bool CHudMenu::Draw(float flTime)
 		return true;
 	}
 
-	/*
-	if ( gViewPort && gViewPort->IsScoreBoardVisible() )
-		return true;
-		*/
 
 	SCREENINFO screenInfo;
 	screenInfo.iSize = sizeof(SCREENINFO);

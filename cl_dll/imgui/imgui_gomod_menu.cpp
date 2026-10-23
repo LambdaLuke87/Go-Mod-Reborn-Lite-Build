@@ -680,6 +680,19 @@ static void DeleteTexture(GLuint& tex)
 	tex = 0;
 }
 
+// for the other ImGui parts of the client (scoreboard avatars)
+unsigned int GoModUI_UploadTexture(unsigned int tex, const unsigned char* rgba, int w, int h)
+{
+	return UploadTexture((GLuint)tex, rgba, w, h);
+}
+
+void GoModUI_DeleteTexture(unsigned int& tex)
+{
+	GLuint t = (GLuint)tex;
+	DeleteTexture(t);
+	tex = 0;
+}
+
 static GLuint LoadTexture(const char* path, int* outW = nullptr, int* outH = nullptr)
 {
 	if (!LoadGL())

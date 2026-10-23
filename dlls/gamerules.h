@@ -86,6 +86,7 @@ public:
 	virtual bool IsCTF() = 0;
 	virtual bool IsSnarkFrenzy() { return false; }					  // Go-Mod: mp_gamemode 3											  // is this a ctf game?
 	virtual const char* GetGameDescription() { return "Go-Mod: Reborn"; } // this is the game name that gets seen in the server browser
+	virtual const char* GetGameModeName() { return "Half-Life"; }		  // Go-Mod: name at the top of the scoreboard (message GameName)
 
 	// Client connection/disconnection
 	virtual bool ClientConnected(edict_t* pEntity, const char* pszName, const char* pszAddress, char szRejectReason[128]) = 0; // a client just connected to the server (player hasn't spawned yet)
@@ -281,6 +282,8 @@ public:
 class CHalfLifeMultiplay : public CGameRules
 {
 public:
+	const char* GetGameModeName() override { return "Deathmatch"; }
+	void SendSteamID(CBasePlayer* player, CBasePlayer* to); // Go-Mod: scoreboard avatars
 	CHalfLifeMultiplay();
 
 	// GR_Think
@@ -394,6 +397,7 @@ protected:
 class CMultiplayBusters : public CHalfLifeMultiplay
 {
 public:
+	const char* GetGameModeName() override { return "Busters"; }
 	CMultiplayBusters();
 
 	void Think();
@@ -421,6 +425,7 @@ protected:
 class CMultiplaySnarkFrenzy : public CHalfLifeMultiplay
 {
 public:
+	const char* GetGameModeName() override { return "Snark Frenzy"; }
 	enum State
 	{
 		SF_WAITING = 0, // less than 2 players
@@ -516,6 +521,7 @@ private:
 class CMultiplaySandbox : public CHalfLifeMultiplay
 {
 public:
+	const char* GetGameModeName() override { return "Sandbox"; }
 	void PlayerSpawn(CBasePlayer* pPlayer);
 
 	int WeaponShouldRespawn(CBasePlayerItem* pWeapon);

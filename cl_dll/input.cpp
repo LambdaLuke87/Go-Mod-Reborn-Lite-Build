@@ -526,24 +526,12 @@ void IN_ScoreDown()
 {
 	KeyDown(&in_score);
 	gHUD.m_Scoreboard.UserCmd_ShowScores();
-	/*
-	if ( gViewPort )
-	{
-		gViewPort->ShowScoreBoard();
-	}
-	*/
 }
 
 void IN_ScoreUp()
 {
 	KeyUp(&in_score);
 	gHUD.m_Scoreboard.UserCmd_HideScores();
-	/*
-	if ( gViewPort )
-	{
-		gViewPort->HideScoreBoard();
-	}
-	*/
 }
 
 void IN_MLookUp()

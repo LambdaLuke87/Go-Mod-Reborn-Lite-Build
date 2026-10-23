@@ -22,7 +22,6 @@
 #include "r_efx.h"
 
 #include "vgui_TeamFortressViewport.h"
-#include "vgui_ScorePanel.h"
 
 #include "particleman.h"
 #include "environment.h"
@@ -154,17 +153,6 @@ bool CHud::MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 
 	gEngfuncs.pfnClientCmd("richpresence_update\n");
 #endif
-
-	if (gViewPort && !gViewPort->m_pScoreBoard)
-	{
-		gViewPort->CreateScoreBoard();
-		gViewPort->m_pScoreBoard->Initialize();
-
-		if (!gHUD.m_iIntermission)
-		{
-			gViewPort->HideScoreBoard();
-		}
-	}
 
 	return true;
 }

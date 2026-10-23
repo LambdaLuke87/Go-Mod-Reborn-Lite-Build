@@ -94,7 +94,6 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/vgui_ClassMenu.o \
 	$(HL1_OBJ_DIR)/vgui_CustomObjects.o \
 	$(HL1_OBJ_DIR)/vgui_SchemeManager.o \
-	$(HL1_OBJ_DIR)/vgui_ScorePanel.o \
 	$(HL1_OBJ_DIR)/vgui_StatsMenuPanel.o \
 	$(HL1_OBJ_DIR)/vgui_TeamFortressViewport.o \
 	$(HL1_OBJ_DIR)/vgui_SpectatorPanel.o \

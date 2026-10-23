@@ -629,7 +629,6 @@ public:
 	void InitHUDData();
 	bool VidInit();
 	bool Draw(float flTime);
-	int DrawPlayers(int xoffset, float listslot, int nameoffset = 0, char* team = NULL); // returns the ypos where it finishes drawing
 	void UserCmd_ShowScores();
 	void UserCmd_HideScores();
 	bool MsgFunc_ScoreInfo(const char* pszName, int iSize, void* pbuf);
@@ -639,7 +638,13 @@ public:
 	bool MsgFunc_CTFScore(const char* pszName, int iSize, void* pbuf);
 	void DeathMsg(int killer, int victim);
 
-
+	// Go-Mod: ImGui scoreboard (scoreboard.cpp)
+	int RebuildTeams();
+	bool IsVisible();				// it has to be drawn this frame
+	bool WantsMouseClick();			// the right click can give the mouse (mute players)
+	void SetForced(bool forced);	// open without holding the key (spectator / stats window)
+	bool IsForced() const { return m_bForced; }
+	void DrawImGui();				// between ImGui::NewFrame and ImGui::Render (hud_imgui.cpp)
 
 	int m_iNumTeams;
 
@@ -647,6 +652,7 @@ public:
 	int m_fLastKillTime;
 	int m_iPlayerNum;
 	bool m_iShowscoresHeld;
+	bool m_bForced = false;
 
 	struct cvar_s* cl_showpacketloss;
 

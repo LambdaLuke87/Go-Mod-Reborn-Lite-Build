@@ -186,7 +186,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\vgui_CustomObjects.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_int.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_SchemeManager.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_ScorePanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_SpectatorPanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_StatsMenuPanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_TeamFortressViewport.cpp" />
@@ -284,7 +283,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\tri.h" />
     <ClInclude Include="..\..\cl_dll\vgui_int.h" />
     <ClInclude Include="..\..\cl_dll\vgui_SchemeManager.h" />
-    <ClInclude Include="..\..\cl_dll\vgui_ScorePanel.h" />
     <ClInclude Include="..\..\cl_dll\vgui_SpectatorPanel.h" />
     <ClInclude Include="..\..\cl_dll\vgui_StatsMenuPanel.h" />
     <ClInclude Include="..\..\cl_dll\view.h" />

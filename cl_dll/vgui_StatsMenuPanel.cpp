@@ -363,7 +363,7 @@ bool CStatsMenuPanel::MsgFunc_StatsInfo(const char* pszName, int iSize, void* pb
 			}
 			else
 			{
-				gViewPort->GetAllPlayersInfo();
+				gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 				//TODO: this passes an arbitrary string as the format string which is incredibly dangerous (also in vanilla)
 				//Overcomplicated time calculations, can just use modulo instead for seconds

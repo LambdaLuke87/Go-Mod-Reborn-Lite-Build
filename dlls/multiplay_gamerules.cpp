@@ -371,6 +371,41 @@ void CHalfLifeMultiplay::UpdateGameMode(CBasePlayer* pPlayer)
 	MESSAGE_END();
 }
 
+// Go-Mod: "STEAM_X:Y:Z" (or "[U:1:N]") -> 64 bit steam id. 0 = bot / LAN / unknown
+static uint64 GoMod_AuthIDToSteamID(const char* auth)
+{
+	if (!auth)
+		return 0;
+
+	unsigned int x = 0, y = 0, z = 0;
+	if (sscanf(auth, "STEAM_%u:%u:%u", &x, &y, &z) == 3)
+		return 76561197960265728ULL + (uint64)z * 2 + y;
+
+	unsigned int n = 0;
+	if (sscanf(auth, "[U:1:%u]", &n) == 1)
+		return 76561197960265728ULL + n;
+
+	return 0;
+}
+
+// message SteamID: byte player, long low, long high (to 'to', or to everybody if null)
+void CHalfLifeMultiplay::SendSteamID(CBasePlayer* player, CBasePlayer* to)
+{
+	const uint64 id = GoMod_AuthIDToSteamID(GETPLAYERAUTHID(player->edict()));
+	if (id == 0)
+		return;
+
+	if (to)
+		MESSAGE_BEGIN(MSG_ONE, gmsgSteamID, NULL, to->edict());
+	else
+		MESSAGE_BEGIN(MSG_ALL, gmsgSteamID);
+
+	WRITE_BYTE(player->entindex());
+	WRITE_LONG((int)(id & 0xFFFFFFFFULL));
+	WRITE_LONG((int)(id >> 32));
+	MESSAGE_END();
+}
+
 void CHalfLifeMultiplay::InitHUD(CBasePlayer* pl)
 {
 	// notify other clients of player joining the game
@@ -396,6 +431,21 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer* pl)
 	}
 
 	UpdateGameMode(pl);
+
+	// Go-Mod: the name of the game mode, at the top of the scoreboard
+	MESSAGE_BEGIN(MSG_ONE, gmsgGameName, NULL, pl->edict());
+	WRITE_STRING(GetGameModeName());
+	MESSAGE_END();
+
+	// Go-Mod: steam ids for the avatars of the scoreboard (the engine doesn't give them to the client):
+	// the new player to everybody, and everybody to the new player
+	SendSteamID(pl, nullptr);
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* other = static_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+		if (other && other != pl)
+			SendSteamID(other, pl);
+	}
 
 	// sending just one score makes the hud scoreboard active;  otherwise
 	// it is just disabled for single play

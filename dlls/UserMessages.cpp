@@ -77,6 +77,8 @@ void LinkUserMessages()
 	gmsgSetFog = REG_USER_MSG("SetFog", 15);
 	gmsgRain = REG_USER_MSG("Rain", -1);
 	gmsgSnow = REG_USER_MSG("Snow", -1);
+	gmsgGameName = REG_USER_MSG("GameName", -1);
+	gmsgSteamID = REG_USER_MSG("SteamID", 9);
 
 	gmsgSpectator = g_engfuncs.pfnRegUserMsg("Spectator", 2);
 	gmsgStatusIcon = g_engfuncs.pfnRegUserMsg("StatusIcon", -1);

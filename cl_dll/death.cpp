@@ -192,8 +192,7 @@ bool CHudDeathNotice::MsgFunc_DeathMsg(const char* pszName, int iSize, void* pbu
 	strcpy(killedwith, "d_");
 	strncat(killedwith, READ_STRING(), 32);
 
-	if (gViewPort)
-		gViewPort->DeathMsg(killer, victim);
+	gHUD.m_Scoreboard.DeathMsg(killer, victim);
 
 	gHUD.m_Spectator.DeathMessage(victim);
 	int i;
@@ -208,8 +207,7 @@ bool CHudDeathNotice::MsgFunc_DeathMsg(const char* pszName, int iSize, void* pbu
 		i = MAX_DEATHNOTICES - 1;
 	}
 
-	if (gViewPort)
-		gViewPort->GetAllPlayersInfo();
+	gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 	// Get the Killer's name
 	const char* killer_name = g_PlayerInfoList[killer].name;

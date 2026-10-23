@@ -124,7 +124,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 			// Have to do this here so the scoreboard goes away
 			m_iIntermission = intermission;
 			gViewPort->HideCommandMenu();
-			gViewPort->HideScoreBoard();
+			m_Scoreboard.SetForced(false);
 			if (gViewPort->m_pStatsMenu && gViewPort->m_pStatsMenu->isVisible())
 			{
 				gViewPort->m_pStatsMenu->setVisible(false);
@@ -138,7 +138,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 			m_iIntermission = intermission;
 			gViewPort->HideCommandMenu();
 			gViewPort->HideVGUIMenu();
-			gViewPort->ShowScoreBoard();
+			m_Scoreboard.SetForced(true);
 			gViewPort->UpdateSpectatorPanel();
 
 			// Take a screenshot if the client's got the cvar set

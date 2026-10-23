@@ -28,7 +28,6 @@
 
 #include "demo.h"
 #include "demo_api.h"
-#include "vgui_ScorePanel.h"
 
 #include "environment.h"
 
@@ -82,6 +81,8 @@ extern bool UTIL_IsSandbox();
 void SnarkFrenzyHUD_Init();
 void SnarkFrenzyHUD_Reset();
 
+extern void ImGuiCursor_Update(); // hud_imgui.cpp
+
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
 public:
@@ -108,7 +109,11 @@ public:
 
 	void UpdateCursorState() override
 	{
-		gViewPort->UpdateCursorState();
+		// the scoreboard (ImGui) takes / gives back the mouse to mute players
+		ImGuiCursor_Update();
+
+		if (gViewPort)
+			gViewPort->UpdateCursorState();
 	}
 
 	int GetAckIconHeight() override
@@ -118,10 +123,7 @@ public:
 
 	bool CanShowSpeakerLabels() override
 	{
-		if (gViewPort && gViewPort->m_pScoreBoard)
-			return !gViewPort->m_pScoreBoard->isVisible();
-		else
-			return false;
+		return !gHUD.m_Scoreboard.IsVisible();
 	}
 };
 static CHLVoiceStatusHelper g_VoiceStatusHelper;

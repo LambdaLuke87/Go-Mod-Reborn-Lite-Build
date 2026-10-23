@@ -60,6 +60,7 @@ public:
 	bool IsCTF() override { return true; }
 
 	const char* GetGameDescription() override { return "OpFor CTF"; }
+	const char* GetGameModeName() override { return "Capture the Flag"; }
 
 	bool ClientConnected(edict_t* pEntity, const char* pszName, const char* pszAddress, char* szRejectReason) override;
 

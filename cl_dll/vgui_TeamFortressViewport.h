@@ -35,7 +35,6 @@
 using namespace vgui;
 
 class Cursor;
-class ScorePanel;
 class SpectatorPanel;
 class CCommandMenu;
 class CommandLabel;
@@ -499,7 +498,6 @@ private:
 
 	CCommandMenu *m_pCommandMenus[ MAX_MENUS ];
 	float		 m_flMenuOpenTime;
-	float		 m_flScoreBoardLastUpdated;
 	float		 m_flSpectatorPanelLastUpdated;
 	int			 m_iNumMenus;
 	int			 m_iCurrentTeamNumber;
@@ -547,7 +545,6 @@ public:
 	void Initialize( void );
 
 	int		CreateCommandMenu( const char * menuFile, bool direction, int yOffset, bool flatDesign, float flButtonSizeX, float flButtonSizeY, int xOffset );
-	void	CreateScoreBoard( void );
 	CommandButton * CreateCustomButton( char *pButtonText, char * pButtonName, int  iYOffset );
 	CCommandMenu *	CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText, int iYOffset, int iXOffset = 0 );
 
@@ -559,8 +556,6 @@ public:
 
 	bool KeyInput( bool down, int keynum, const char *pszCurrentBinding );
 	void InputPlayerSpecial( void );
-	void GetAllPlayersInfo( void );
-	void DeathMsg( int killer, int victim );
 
 	void ShowCommandMenu(int menuIndex);
 	void InputSignalHideCommandMenu( void );
@@ -568,9 +563,6 @@ public:
 	void SetCurrentCommandMenu( CCommandMenu *pNewMenu );
 	void SetCurrentMenu( CMenuPanel *pMenu );
 
-	void ShowScoreBoard( void );
-	void HideScoreBoard( void );
-	bool IsScoreBoardVisible( void );
 
 	bool AllowedToPrintText( void );
 
@@ -606,9 +598,6 @@ public:
 	bool MsgFunc_BuildSt( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_RandomPC( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_ServerName( const char *pszName, int iSize, void *pbuf );
-	bool MsgFunc_ScoreInfo( const char *pszName, int iSize, void *pbuf );
-	bool MsgFunc_TeamScore( const char *pszName, int iSize, void *pbuf );
-	bool MsgFunc_TeamInfo( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_Spectator( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_AllowSpec( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_SpecFade( const char *pszName, int iSize, void *pbuf );	
@@ -624,7 +613,6 @@ public:
 	virtual void paintBackground();
 
 	CSchemeManager *GetSchemeManager( void ) { return &m_SchemeManager; }
-	ScorePanel *GetScoreBoard( void ) { return m_pScoreBoard; }
 
 	void *operator new( size_t stAllocateBlock );
 
@@ -639,7 +627,6 @@ public:
 	int						m_PlayerMenu; // a list of current player
 	CClassMenuPanel	*m_pClassMenu;
 	CStatsMenuPanel* m_pStatsMenu;
-	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];

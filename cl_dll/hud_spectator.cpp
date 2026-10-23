@@ -150,17 +150,8 @@ void SpectatorMenu()
 
 void ToggleScores()
 {
-	if (gViewPort)
-	{
-		if (gViewPort->IsScoreBoardVisible())
-		{
-			gViewPort->HideScoreBoard();
-		}
-		else
-		{
-			gViewPort->ShowScoreBoard();
-		}
-	}
+	// Go-Mod: ImGui scoreboard (scoreboard.cpp)
+	gHUD.m_Scoreboard.SetForced(!gHUD.m_Scoreboard.IsForced());
 }
 
 //-----------------------------------------------------------------------------
@@ -643,7 +634,7 @@ bool CHudSpectator::Draw(float flTime)
 		return true;
 
 	// make sure we have player info
-	gViewPort->GetAllPlayersInfo();
+	gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 
 	// loop through all the players and draw additional infos to their sprites on the map
@@ -916,7 +907,7 @@ void CHudSpectator::FindNextPlayer(bool bReverse)
 	int iDir = bReverse ? -1 : 1;
 
 	// make sure we have player info
-	gViewPort->GetAllPlayersInfo();
+	gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 
 	do
@@ -979,7 +970,7 @@ void CHudSpectator::FindPlayer(const char* name)
 	g_iUser2 = 0;
 
 	// make sure we have player info
-	gViewPort->GetAllPlayersInfo();
+	gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 	cl_entity_t* pEnt = NULL;
 

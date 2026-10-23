@@ -62,6 +62,8 @@ inline int gmsgNightVision = 0;
 inline int gmsgSetFog = 0;
 inline int gmsgRain = 0;
 inline int gmsgSnow = 0;
+inline int gmsgGameName = 0; // Go-Mod: name of the game mode (scoreboard)
+inline int gmsgSteamID = 0;	 // Go-Mod: steam id of a player (scoreboard avatars)
 
 inline int gmsgSpectator = 0;
 inline int gmsgStatusIcon = 0;
