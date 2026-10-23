@@ -18,7 +18,7 @@
 #include "hud.h"
 #include "cl_util.h"
 
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 extern void GoModStats_Close(); // imgui_hudpanels.cpp
 
@@ -135,7 +135,6 @@ bool CHud::Redraw(float flTime, bool intermission)
 		{
 			m_iIntermission = intermission;
 			GoModCmdMenu_Hide();
-			gViewPort->HideVGUIMenu();
 			m_Scoreboard.SetForced(true);
 			GoModSpec_Update();
 

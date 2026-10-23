@@ -21,7 +21,7 @@
 #include "parsemsg.h"
 #include "r_efx.h"
 
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 #include "particleman.h"
 #include "environment.h"

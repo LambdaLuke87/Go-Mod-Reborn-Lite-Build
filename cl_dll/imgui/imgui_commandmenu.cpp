@@ -15,7 +15,7 @@
 
 extern int g_iTeamNumber;
 
-// vgui_TeamFortressViewport.cpp (teams of "CUSTOM !CHANGETEAM")
+// gomod_viewport.cpp (teams of "CUSTOM !CHANGETEAM")
 extern int GoModAdmin_NumberOfTeams();
 extern const char* GoModAdmin_TeamName(int team);
 extern bool GoModAdmin_AllowSpectators();

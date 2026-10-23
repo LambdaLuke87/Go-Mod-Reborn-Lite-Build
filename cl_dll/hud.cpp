@@ -23,8 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
-#include "vgui_int.h"
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 #include "demo.h"
 #include "demo_api.h"
@@ -111,9 +110,7 @@ public:
 	{
 		// the scoreboard (ImGui) takes / gives back the mouse to mute players
 		ImGuiCursor_Update();
-
-		if (gViewPort)
-			gViewPort->UpdateCursorState();
+		gViewPort->UpdateCursorState();
 	}
 
 	int GetAckIconHeight() override
@@ -463,12 +460,10 @@ void __CmdFunc_ShowMenu()
 		return;
 	}
 
-	// avoid open in a VGUI menu (stats...) or in the CTF team / character menu
-	if (gViewPort && gViewPort->m_pCurrentMenu)
-		return;
-
+	// avoid open in the CTF team / character menu or in the CTF stats
 	extern bool GoModCTF_IsOpen();
-	if (GoModCTF_IsOpen())
+	extern bool GoModStats_IsOpen();
+	if (GoModCTF_IsOpen() || GoModStats_IsOpen())
 		return;
 
 	// avoid open in CommandMenu
@@ -541,7 +536,7 @@ void CHud::Init()
 	HOOK_MESSAGE(ResetFade);
 	HOOK_MESSAGE(TeamFull);
 
-	// VGUI Menus
+	// the server opens the menus with "VGUIMenu" (gomod_viewport.cpp)
 	HOOK_MESSAGE(VGUIMenu);
 
 	gEngfuncs.pfnAddCommand("gomod_menu_reload", GoModMenu_Reload);
@@ -648,7 +643,7 @@ void CHud::Init()
 	m_StatusIcons.Init();
 	m_FlagIcons.Init();
 	m_PlayerBrowse.Init();
-	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper);
 
 	m_Menu.Init();
 

@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 DECLARE_MESSAGE(m_DeathNotice, DeathMsg);
 

@@ -19,34 +19,6 @@ static char s_shared_token[ 1500 ];
 static char s_shared_quote = '\"';
 
 //--------------------------------------------------------------------------------------------------------------
-/**
- *  Wrapper for vgui::localize()->Find() that doesn't return NULL
- */
-#ifdef CLIENT_DLL
-#include <vgui/IVGui.h>
-#include <vgui_controls/Controls.h>	// for localize()
-#include <vgui/ILocalize.h>
-wchar_t* SharedFindString( char *asciiIdentifier )
-{
-	const int BufLen = 1024;
-	const int NumBuffers = 4;
-	static wchar_t string[NumBuffers][BufLen];
-	static int curstring = 0;
-	
-	wchar_t *identifier = vgui::localize()->Find( asciiIdentifier );
-	if ( !identifier )
-	{
-		identifier = string[curstring];
-		curstring = ( curstring + 1 ) % NumBuffers;
-
-		vgui::localize()->ConvertANSIToUnicode( asciiIdentifier, identifier, BufLen*2 );
-	}
-
-	return identifier;
-}
-#endif
-
-//--------------------------------------------------------------------------------------------------------------
 wchar_t * SharedWVarArgs(wchar_t *format, ...)
 {
 	va_list argptr;

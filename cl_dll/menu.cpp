@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 #define MAX_MENU_STRING 512
 char g_szMenuString[MAX_MENU_STRING];

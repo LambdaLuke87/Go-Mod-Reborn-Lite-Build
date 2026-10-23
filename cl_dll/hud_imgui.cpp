@@ -214,6 +214,14 @@ int GoModMenu_KeyEvent(int down, int keynum)
 					GoModCmdMenu_Hide();
 				return 0;
 			}
+
+			// with the cursor free, the right / middle click closes it
+			if (GoModCmdMenu_WantsCursor() && (keynum == K_MOUSE2 || keynum == K_MOUSE3))
+			{
+				if (down)
+					GoModCmdMenu_Hide();
+				return 0;
+			}
 		}
 
 		// CTF team / character menu: number keys choose, ESC closes (if allowed)
@@ -310,7 +318,7 @@ static void ApplyTranslucentTheme(); // below
 
 void CHud::ImGuiMenu_Draw(float flTime)
 {
-	GoModInfo_Frame(); // MOTD / Map Info closed: the VGUI menu that was waiting
+	GoModInfo_Frame(); // MOTD / Map Info closed: the game menu that was waiting
 	GoModSpec_Update(); // spectator panel shown / hidden
 
 	const bool scoreboard = gHUD.m_Scoreboard.IsVisible();
@@ -318,12 +326,13 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	const bool ctfMenu = GoModCTF_IsOpen();
 	const bool commandMenu = GoModCmdMenu_IsOpen();
 	const bool stats = GoModStats_IsOpen();
+	const bool voice = GetClientVoiceMgr()->HasImGui(); // who is talking / you are talking
 
 	// the mute mode ends with the scoreboard
 	if (!scoreboard && GetClientVoiceMgr()->IsInSquelchMode())
 		GetClientVoiceMgr()->StopSquelchMode();
 
-	if (!g_bShowMenu && !scoreboard && !spectator && !ctfMenu && !commandMenu && !stats)
+	if (!g_bShowMenu && !scoreboard && !spectator && !ctfMenu && !commandMenu && !stats && !voice)
 		return; // nothing to draw: ImGui does not run.
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -354,6 +363,9 @@ void CHud::ImGuiMenu_Draw(float flTime)
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
+
+	if (voice)
+		GetClientVoiceMgr()->DrawImGui();
 
 	// the scoreboard and the spectator panel always use the "Go-Mod 3" theme (transparent),
 	// the menus the chosen one

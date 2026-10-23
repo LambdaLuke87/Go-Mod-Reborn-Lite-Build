@@ -27,7 +27,7 @@
 #include <stdio.h>
 
 #include "ammohistory.h"
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 #include "physgun_beam.h"
 
@@ -845,9 +845,6 @@ bool CHudAmmo::MsgFunc_WeaponList(const char* pszName, int iSize, void* pbuf)
 // Slot button pressed
 void CHudAmmo::SlotInput(int iSlot)
 {
-	if (gViewPort && gViewPort->SlotInput(iSlot))
-		return;
-
 	gWR.SelectSlot(iSlot, false, 1);
 }
 

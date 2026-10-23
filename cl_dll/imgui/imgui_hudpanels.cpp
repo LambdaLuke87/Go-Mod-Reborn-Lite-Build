@@ -41,7 +41,7 @@ extern void ImGuiCursor_Update(); // hud_imgui.cpp
 // imgui_gomod_menu.cpp
 extern unsigned int GoModUI_LoadImage(const char* path, int* w, int* h);
 
-// vgui_TeamFortressViewport.cpp (until it is gone too)
+// gomod_viewport.cpp
 extern int GoModAdmin_NumberOfTeams();
 extern const char* GoModAdmin_TeamName(int team);
 extern bool GoModAdmin_AllowSpectators();

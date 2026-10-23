@@ -184,11 +184,9 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\train.cpp" />
     <ClCompile Include="..\..\cl_dll\tri.cpp" />
     <ClCompile Include="..\..\cl_dll\util.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_CustomObjects.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_int.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_SchemeManager.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_TeamFortressViewport.cpp" />
     <ClCompile Include="..\..\cl_dll\view.cpp" />
+    <ClCompile Include="..\..\cl_dll\gomod_viewport.cpp" />
+    <ClCompile Include="..\..\cl_dll\vgui_worldview.cpp" />
     <ClCompile Include="..\..\cl_dll\voice_status.cpp" />
     <ClCompile Include="..\..\common\mathlib.cpp" />
     <ClCompile Include="..\..\common\parsemsg.cpp" />
@@ -225,13 +223,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\glock.cpp" />
     <ClCompile Include="..\..\game_shared\filesystem_utils.cpp" />
     <ClCompile Include="..\..\game_shared\util_shared.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_checkbutton2.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_grid.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_helpers.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_listbox.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_loadtga.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_scrollbar2.cpp" />
-    <ClCompile Include="..\..\game_shared\vgui_slider2.cpp" />
     <ClCompile Include="..\..\game_shared\voice_banmgr.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_debug.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_math.cpp" />
@@ -254,6 +245,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\gm_audio_core.h" />
     <ClInclude Include="..\..\cl_dll\gm_audio_fx.h" />
     <ClInclude Include="..\..\cl_dll\health.h" />
+    <ClInclude Include="..\..\cl_dll\gomod_viewport.h" />
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui_commandmenu.h" />
@@ -280,8 +272,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\stb_image.h" />
     <ClInclude Include="..\..\cl_dll\StudioModelRenderer.h" />
     <ClInclude Include="..\..\cl_dll\tri.h" />
-    <ClInclude Include="..\..\cl_dll\vgui_int.h" />
-    <ClInclude Include="..\..\cl_dll\vgui_SchemeManager.h" />
     <ClInclude Include="..\..\cl_dll\view.h" />
     <ClInclude Include="..\..\common\beamdef.h" />
     <ClInclude Include="..\..\common\cl_entity.h" />
@@ -349,8 +339,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\game_shared\filesystem_utils.h" />
     <ClInclude Include="..\..\game_shared\gm_audio_shared.h" />
     <ClInclude Include="..\..\game_shared\lrc_fx_flags.h" />
-    <ClInclude Include="..\..\game_shared\vgui_scrollbar2.h" />
-    <ClInclude Include="..\..\game_shared\vgui_slider2.h" />
     <ClInclude Include="..\..\game_shared\voice_banmgr.h" />
     <ClInclude Include="..\..\game_shared\voice_status.h" />
     <ClInclude Include="..\..\pm_shared\pm_debug.h" />

@@ -9,7 +9,7 @@
 #include "cl_util.h"
 #include "cl_entity.h"
 #include "triangleapi.h"
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 
 // these are included for the math functions
 #include "com_model.h"
@@ -52,7 +52,7 @@ int CHudOverview::Draw(float flTime)
 		return 1;
 
 	// make sure we have player info
-	gViewPort->GetAllPlayersInfo();
+	gHUD.m_Scoreboard.GetAllPlayersInfo();
 
 	// calculate player size on the overview
 	int x1, y1, x2, y2;

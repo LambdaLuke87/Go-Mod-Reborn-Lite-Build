@@ -24,23 +24,22 @@
 #include "cl_util.h"
 #include "netadr.h"
 #include "interface.h"
-//#include "vgui_schememanager.h"
 
 #include "pm_shared.h"
 
 #include <string.h>
-#include "vgui_int.h"
 
 #include "Platform.h"
 #include "Exports.h"
 
 #include "tri.h"
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 #include "filesystem_utils.h"
 
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
-TeamFortressViewport* gViewPort = NULL;
+
+void WorldView_Startup(); // vgui_worldview.cpp
 
 
 #include "particleman.h"
@@ -175,7 +174,8 @@ int DLLEXPORT HUD_VidInit()
 
 	gHUD.VidInit();
 
-	VGui_Startup();
+	GoModViewport_VidInit();
+	WorldView_Startup(); // vgui_worldview.cpp: the engine draws the world there
 
 	return 1;
 }
@@ -196,7 +196,6 @@ void DLLEXPORT HUD_Init()
 	InitInput();
 
 	gHUD.Init();
-	Scheme_Init();
 }
 
 
@@ -396,11 +395,7 @@ public:
 	// returns the name of the server the user is connected to, if any
 	const char* GetServerHostName() override
 	{
-		/*if (gViewPortInterface)
-		{
-			return gViewPortInterface->GetServerName();
-		}*/
-		return "";
+		return gViewPort->m_szServerName;
 	}
 
 	// ingame voice manipulation

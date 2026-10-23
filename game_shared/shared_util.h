@@ -109,12 +109,4 @@ char * SharedVarArgs(char *format, ...);
  */
 wchar_t * SharedWVarArgs(wchar_t *format, ...);
 
-//--------------------------------------------------------------------------------------------------------------
-/**
- *  Wrapper for vgui::localize()->Find() that doesn't return NULL (client-only)
- */
-#ifdef CLIENT_DLL
-wchar_t* SharedFindString( char *asciiIdentifier );
-#endif
-
 #endif // SHARED_UTIL_H

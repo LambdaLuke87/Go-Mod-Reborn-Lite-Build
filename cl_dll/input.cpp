@@ -18,7 +18,7 @@
 #include <ctype.h>
 #include "Exports.h"
 
-#include "vgui_TeamFortressViewport.h"
+#include "gomod_viewport.h"
 #include "filesystem_utils.h"
 
 #include "imgui/imgui.h"
@@ -459,7 +459,7 @@ void IN_SpeedUp() { KeyUp(&in_speed); }
 void IN_StrafeDown() { KeyDown(&in_strafe); }
 void IN_StrafeUp() { KeyUp(&in_strafe); }
 
-// needs capture by hud/vgui also
+// needs capture by hud/imgui also
 extern void __CmdFunc_InputPlayerSpecial();
 
 void IN_Attack2Down()

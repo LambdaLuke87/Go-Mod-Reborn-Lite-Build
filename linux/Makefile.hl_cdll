@@ -92,10 +92,8 @@ HL1_OBJS = \
 	$(HL1_OBJ_DIR)/tri.o \
 	$(HL1_OBJ_DIR)/util.o \
 	$(HL1_OBJ_DIR)/view.o \
-	$(HL1_OBJ_DIR)/vgui_int.o \
-	$(HL1_OBJ_DIR)/vgui_CustomObjects.o \
-	$(HL1_OBJ_DIR)/vgui_SchemeManager.o \
-	$(HL1_OBJ_DIR)/vgui_TeamFortressViewport.o \
+	$(HL1_OBJ_DIR)/gomod_viewport.o \
+	$(HL1_OBJ_DIR)/vgui_worldview.o \
 	$(HL1_OBJ_DIR)/voice_status.o \
 
 HL1_PARTICLEMAN_OBJS = \
@@ -148,13 +146,6 @@ COMMON_OBJS = \
 GAME_SHARED_OBJS = \
 	$(GAME_SHARED_OBJ_DIR)/filesystem_utils.o \
 	$(GAME_SHARED_OBJ_DIR)/util_shared.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_checkbutton2.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_grid.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_helpers.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_listbox.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_loadtga.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_scrollbar2.o \
-	$(GAME_SHARED_OBJ_DIR)/vgui_slider2.o \
 	$(GAME_SHARED_OBJ_DIR)/voice_banmgr.o \
 	
 PM_SHARED_OBJS = \
@@ -174,7 +165,6 @@ $(HL1_OBJ_DIR):
 	mkdir -p $(HL1_OBJ_DIR)/hl
 	mkdir -p $(HL1_OBJ_DIR)/imgui
 	mkdir -p $(HL1_OBJ_DIR)/dlls/wpn_shared
-	mkdir -p $(HL1_OBJ_DIR)/VGUI
 
 $(HL1_SERVER_OBJ_DIR):
 	mkdir -p $(HL1_SERVER_OBJ_DIR)
@@ -209,9 +199,6 @@ $(HL1_OBJ_DIR)/%.o: $(HL_SRC_DIR)/hl/%.cpp $(filter-out $(wildcard  $(HL1_OBJ_DI
 	$(DO_CC)
 
 $(HL1_OBJ_DIR)/%.o: $(HL_SRC_DIR)/dlls/wpn_shared/%.cpp $(filter-out $(wildcard  $(HL1_OBJ_DIR)),  $(HL1_OBJ_DIR))
-	$(DO_CC)
-
-$(HL1_OBJ_DIR)/%.o: $(HL_SRC_DIR)/VGUI/%.cpp $(filter-out $(wildcard  $(HL1_OBJ_DIR)),  $(HL1_OBJ_DIR))
 	$(DO_CC)
 
 $(PUBLIC_OBJ_DIR)/%.o : $(PUBLIC_SRC_DIR)/%.cpp $(filter-out $(wildcard  $(PUBLIC_OBJ_DIR)),  $(PUBLIC_OBJ_DIR))

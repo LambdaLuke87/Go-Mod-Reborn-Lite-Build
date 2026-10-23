@@ -2607,12 +2607,12 @@ static void DrawAdminSettingsWindow(int x, int y, int w, int h)
 // =====================================================================
 //  Information: Message of the Day (motd.txt, message "MOTD") and Map Info (maps/<map>.txt)
 //  In the sandbox they are a section of the Go-Mod menu (green circle).
-//  In the other game modes they are two windows alone (the old VGUI ones, done in ImGui):
+//  In the other game modes they are two windows alone:
 //  the MOTD opens by itself when it arrives, toggleMOTDMenu / toggleMapInfoMenu open them.
 // =====================================================================
 
-extern const char* GoModInfo_ServerName();	   // vgui_TeamFortressViewport.cpp
-extern void GoModInfo_ShowVGUIMenu(int iMenu); // vgui_TeamFortressViewport.cpp
+extern const char* GoModInfo_ServerName();	   // gomod_viewport.cpp
+extern void GoModInfo_ShowGameMenu(int iMenu); // gomod_viewport.cpp
 
 enum
 {
@@ -2624,7 +2624,7 @@ static std::string g_MOTD;
 static bool g_bMOTDComplete = true; // the last chunk arrived (next message = new MOTD)
 
 static int g_iInfoStandalone = -1; // page open alone (outside the sandbox), -1 = none
-static int g_iQueuedVGUIMenu = 0;  // VGUI menu that waits for the window to be closed
+static int g_iQueuedGameMenu = 0;  // game menu (server message "VGUIMenu") that waits for the window to be closed
 
 static std::string g_MapInfoLevel; // level of the loaded text
 static std::string g_MapInfoName;
@@ -2649,7 +2649,7 @@ int GoModInfo_MsgMOTD(const char* pszName, int iSize, void* pbuf)
 
 	// don't show the MOTD to HLTV spectators. In the sandbox it is only in the Go-Mod menu
 	// (the server sends GameMode before the MOTD, InitHUD of multiplay_gamerules.cpp).
-	// It opens now, so a VGUI menu that comes after it (team menu of CTF) waits for it.
+	// It opens now, so a game menu that comes after it (team menu of CTF) waits for it.
 	if (g_bMOTDComplete && 0 == gEngfuncs.IsSpectateOnly() && !UTIL_IsSandbox())
 		OpenStandaloneInfo(INFO_PAGE_MOTD);
 
@@ -2730,7 +2730,7 @@ static void DrawInfoPage(int page, float bottom)
 	ImGui::EndChild();
 }
 
-// size of the old VGUI MOTD window
+// size of the old MOTD window
 static void InfoWindowRect(float& x, float& y, float& w, float& h)
 {
 	w = (float)(int)XRES(424);
@@ -2816,7 +2816,7 @@ static void OpenStandaloneInfo(int page)
 	ImGuiMenu_SetOpen(true);
 }
 
-extern bool GoModInfo_VGUIMenuOpen(); // vgui_TeamFortressViewport.cpp
+extern bool GoModInfo_GameMenuOpen(); // gomod_viewport.cpp
 
 // commands toggleMOTDMenu (0) / toggleMapInfoMenu (1)
 void GoModInfo_Toggle(int page)
@@ -2833,8 +2833,8 @@ void GoModInfo_Toggle(int page)
 		return;
 	}
 
-	// not on top of a VGUI menu (team menu...)
-	if (GoModInfo_VGUIMenuOpen())
+	// not on top of a game menu (team menu...)
+	if (GoModInfo_GameMenuOpen())
 		return;
 
 	OpenStandaloneInfo(page);
@@ -2845,29 +2845,29 @@ bool GoModInfo_StandaloneOpen()
 	return g_bShowMenu && g_iInfoStandalone >= 0 && !UTIL_IsSandbox();
 }
 
-// a VGUI menu wants to open while the MOTD / Map Info is open: it waits (true = queued)
-bool GoModInfo_QueueVGUIMenu(int iMenu)
+// a game menu wants to open while the MOTD / Map Info is open: it waits (true = queued)
+bool GoModInfo_QueueGameMenu(int iMenu)
 {
 	if (!GoModInfo_StandaloneOpen())
 		return false;
 
-	g_iQueuedVGUIMenu = iMenu;
+	g_iQueuedGameMenu = iMenu;
 	return true;
 }
 
 // every frame (also with the menu closed)
 void GoModInfo_Frame()
 {
-	// closed: the queued VGUI menu (team menu of CTF...) can open now
+	// closed: the queued game menu (team menu of CTF...) can open now
 	if (!g_bShowMenu && g_iInfoStandalone >= 0)
 	{
 		g_iInfoStandalone = -1;
 
-		if (g_iQueuedVGUIMenu)
+		if (g_iQueuedGameMenu)
 		{
-			const int menu = g_iQueuedVGUIMenu;
-			g_iQueuedVGUIMenu = 0;
-			GoModInfo_ShowVGUIMenu(menu);
+			const int menu = g_iQueuedGameMenu;
+			g_iQueuedGameMenu = 0;
+			GoModInfo_ShowGameMenu(menu);
 		}
 	}
 }
