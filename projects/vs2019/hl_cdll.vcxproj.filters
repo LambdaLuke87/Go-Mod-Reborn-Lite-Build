@@ -336,9 +336,6 @@
     <ClCompile Include="..\..\dlls\ehandle.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\cl_dll\vgui_StatsMenuPanel.cpp">
-      <Filter>Source Files\cl_dll</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\cl_dll\hud_playerbrowse.cpp">
       <Filter>Source Files\cl_dll</Filter>
     </ClCompile>
@@ -415,6 +412,9 @@
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\imgui\imgui_hudpanels.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_commandmenu.cpp">
       <Filter>Source Files\cl_dll\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\cl_dll\physgun_beam.cpp">
@@ -574,9 +574,6 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\weapons\CGrappleTip.h">
       <Filter>Header Files\_hl\dlls\weapons</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\cl_dll\vgui_StatsMenuPanel.h">
-      <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dlls\weapons\CPenguin.h">
       <Filter>Header Files\_hl\dlls\weapons</Filter>
@@ -753,6 +750,9 @@
       <Filter>Header Files\cl_dll</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\imgui\imgui_internal.h">
+      <Filter>Header Files\cl_dll\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui\imgui_commandmenu.h">
       <Filter>Header Files\cl_dll\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\imgui\mmui.h">

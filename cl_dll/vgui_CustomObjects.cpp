@@ -102,9 +102,7 @@ CommandButton::CommandButton(const char* text, int x, int y, int wide, int tall,
 
 void CommandButton::Init()
 {
-	m_pSubMenu = NULL;
 	m_pSubLabel = NULL;
-	m_pParentMenu = NULL;
 	m_bNoMarginSpace = NULL;
 
 	// Set text color to orange
@@ -172,20 +170,6 @@ void CommandButton::setBoundKey(char boundKey)
 char CommandButton::getBoundKey()
 {
 	return m_cBoundKey;
-}
-
-void CommandButton::AddSubMenu(CCommandMenu* pNewMenu)
-{
-	m_pSubMenu = pNewMenu;
-
-	// Prevent this button from being pushed
-	setMouseClickEnabled(MOUSE_LEFT, false);
-}
-
-void CommandButton::UpdateSubMenus(int iAdjustment)
-{
-	if (m_pSubMenu)
-		m_pSubMenu->RecalculatePositions(iAdjustment);
 }
 
 void CommandButton::paint()
@@ -277,22 +261,6 @@ void CommandButton::paintBackground()
 //-----------------------------------------------------------------------------
 void CommandButton::cursorEntered()
 {
-	// unarm all the other buttons in this menu
-	CCommandMenu* containingMenu = getParentMenu();
-	if (containingMenu)
-	{
-		containingMenu->ClearButtonsOfArmedState();
-
-		// make all our higher buttons armed
-		CCommandMenu* pCParent = containingMenu->GetParentMenu();
-		if (pCParent)
-		{
-			CommandButton* pParentButton = pCParent->FindButtonWithSubmenu(containingMenu);
-
-			pParentButton->cursorEntered();
-		}
-	}
-
 	// arm ourselves
 	setArmed(true);
 }
@@ -302,32 +270,9 @@ void CommandButton::cursorEntered()
 //-----------------------------------------------------------------------------
 void CommandButton::cursorExited()
 {
-	// only clear ourselves if we have do not have a containing menu
-	// only stay armed if we have a sub menu
-	// the buttons only unarm themselves when another button is armed instead
-	if (!getParentMenu() || !GetSubMenu())
-	{
-		setArmed(false);
-	}
+	setArmed(false);
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Returns the command menu that the button is part of, if any
-// Output : CCommandMenu *
-//-----------------------------------------------------------------------------
-CCommandMenu* CommandButton::getParentMenu()
-{
-	return m_pParentMenu;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Sets the menu that contains this button
-// Input  : *pParentMenu -
-//-----------------------------------------------------------------------------
-void CommandButton::setParentMenu(CCommandMenu* pParentMenu)
-{
-	m_pParentMenu = pParentMenu;
-}
 
 
 //===========================================================
@@ -448,17 +393,6 @@ void CImageLabel::setImage(const char* pImageName)
 
 //===========================================================
 // Various overloaded paint functions for Custom VGUI objects
-void CCommandMenu::paintBackground()
-{
-	// Transparent black background
-
-	if (m_iSpectCmdMenu)
-		drawSetColor(0, 0, 0, 64);
-	else
-		drawSetColor(Scheme::sc_primary3);
-
-	drawFilledRect(0, 0, _size[0], _size[1]);
-}
 
 //=================================================================================
 // CUSTOM SCROLLPANEL

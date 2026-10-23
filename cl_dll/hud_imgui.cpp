@@ -35,6 +35,15 @@ extern void GoModCTF_Draw();
 extern void GoModCTF_Close();
 extern bool GoModCTF_SlotInput(int slot);
 extern bool GoModCTF_CanCancel();
+extern bool GoModCmdMenu_IsOpen();
+extern bool GoModCmdMenu_WantsCursor();
+extern void GoModCmdMenu_Hide();
+extern bool GoModCmdMenu_KeyInput(int key);
+extern void GoModCmdMenu_Draw();
+extern bool GoModStats_IsOpen();
+extern void GoModStats_Close();
+extern bool GoModStats_SlotInput(int slot);
+extern void GoModStats_Draw();
 extern bool GoModInfo_StandaloneOpen();
 
 // keys that ImGui needs to edit a number in a text field (color picker, ctrl+click on a slider).
@@ -59,7 +68,8 @@ static ImGuiKey TranslateEditKey(int keynum)
 // the mouse belongs to ImGui: Go-Mod menu open, or scoreboard in "mute" mode (right click)
 static bool ImGui_WantsCursor()
 {
-	return g_bShowMenu || GetClientVoiceMgr()->IsInSquelchMode() || GoModSpec_MenuOpen() || GoModCTF_IsOpen();
+	return g_bShowMenu || GetClientVoiceMgr()->IsInSquelchMode() || GoModSpec_MenuOpen() || GoModCTF_IsOpen() ||
+		   GoModCmdMenu_WantsCursor() || GoModStats_IsOpen();
 }
 
 static bool s_bCursorOwned = false;
@@ -110,6 +120,8 @@ void ImGuiMenu_SetOpen(bool open)
 
 		if (open)
 		{
+			GoModCmdMenu_Hide(); // the command menu doesn't stay behind the Go-Mod menu
+
 			// the engine draws the crosshair after the HUD, on top of the menu: hide it
 			static Rect nullrc;
 			SetCrosshair(0, nullrc, 0, 0, 0);
@@ -168,6 +180,42 @@ int GoModMenu_KeyEvent(int down, int keynum)
 {
 	if (!g_bShowMenu)
 	{
+		// CTF end of game stats: number keys change the view, ESC closes
+		if (GoModStats_IsOpen())
+		{
+			if (keynum >= '0' && keynum <= '9')
+			{
+				if (down)
+					GoModStats_SlotInput(keynum - '0');
+				return 0;
+			}
+
+			if (keynum == K_ESCAPE)
+			{
+				if (down)
+					GoModStats_Close();
+				return 0;
+			}
+		}
+
+		// command menu: number keys press its buttons, ESC closes it
+		if (GoModCmdMenu_IsOpen())
+		{
+			if (keynum >= '0' && keynum <= '9')
+			{
+				if (down)
+					GoModCmdMenu_KeyInput(keynum);
+				return 0;
+			}
+
+			if (keynum == K_ESCAPE)
+			{
+				if (down)
+					GoModCmdMenu_Hide();
+				return 0;
+			}
+		}
+
 		// CTF team / character menu: number keys choose, ESC closes (if allowed)
 		if (GoModCTF_IsOpen())
 		{
@@ -268,12 +316,14 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	const bool scoreboard = gHUD.m_Scoreboard.IsVisible();
 	const bool spectator = GoModSpec_IsVisible();
 	const bool ctfMenu = GoModCTF_IsOpen();
+	const bool commandMenu = GoModCmdMenu_IsOpen();
+	const bool stats = GoModStats_IsOpen();
 
 	// the mute mode ends with the scoreboard
 	if (!scoreboard && GetClientVoiceMgr()->IsInSquelchMode())
 		GetClientVoiceMgr()->StopSquelchMode();
 
-	if (!g_bShowMenu && !scoreboard && !spectator && !ctfMenu)
+	if (!g_bShowMenu && !scoreboard && !spectator && !ctfMenu && !commandMenu && !stats)
 		return; // nothing to draw: ImGui does not run.
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -315,10 +365,16 @@ void CHud::ImGuiMenu_Draw(float flTime)
 	if (scoreboard)
 		gHUD.m_Scoreboard.DrawImGui();
 
+	if (commandMenu)
+		GoModCmdMenu_Draw();
+
 	GoModImGuiStyle();
 
 	if (ctfMenu)
 		GoModCTF_Draw();
+
+	if (stats)
+		GoModStats_Draw();
 
 	if (g_bShowMenu)
 		GoModMenu_Draw();

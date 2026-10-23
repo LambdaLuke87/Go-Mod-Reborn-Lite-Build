@@ -16,8 +16,10 @@
 #include "pm_shared.h"
 #include "cl_entity.h"
 #include "Exports.h"
+#include "demo_api.h"
 
 #include "imgui.h"
+#include "imgui_commandmenu.h"
 
 #include <cstdio>
 #include <cstring>
@@ -44,9 +46,12 @@ extern int GoModAdmin_NumberOfTeams();
 extern const char* GoModAdmin_TeamName(int team);
 extern bool GoModAdmin_AllowSpectators();
 extern int GoModCTF_MenuTeamNumber();
-extern void GoModCTF_SetStatsPlayerImage(const char* image);
 extern char* sLocalisedClasses[][7];
 extern char* sCTFClassSelection[][7];
+extern const char* sLocalisedStatsTeams[]; // 4: both teams, Black Mesa, Opposing Force, individual
+extern const char* sCTFStatsSelection[];
+
+void GoModStats_SetPlayerImage(const char* image); // below
 
 #define CTF_MENU_TEAM 2  // MENU_TEAM
 #define CTF_MENU_CLASS 3 // MENU_CLASS
@@ -810,7 +815,7 @@ static void DrawCharacterMenu(float fontSize)
 		if (ImGui::IsItemHovered() && g_iCTFHover != i + 1)
 		{
 			g_iCTFHover = i + 1;
-			GoModCTF_SetStatsPlayerImage(sCTFClassSelection[team][i]);
+			GoModStats_SetPlayerImage(sCTFClassSelection[team][i]);
 		}
 	}
 
@@ -901,4 +906,513 @@ void GoModCTF_Draw()
 	}
 
 	ImGui::PopFont();
+}
+
+// =====================================================================
+//  Command menu (+commandmenu, commandmenu.txt), was CCommandMenu of VGUI.
+//  Same look as the spectator panel (transparent). Number keys / mouse, ESC closes.
+// =====================================================================
+
+static GMCommandMenu g_CommandMenu("commandmenu.txt");
+static bool g_bCmdMenuOpen = false;
+static float g_flCmdMenuOpenTime = 0.0f;
+
+bool GoModCmdMenu_IsOpen()
+{
+	return g_bCmdMenuOpen;
+}
+
+// the command menu doesn't have cursor if hud_capturemouse is turned off
+bool GoModCmdMenu_WantsCursor()
+{
+	return g_bCmdMenuOpen && gHUD.m_pCvarStealMouse && gHUD.m_pCvarStealMouse->value != 0.0f;
+}
+
+void GoModCmdMenu_Hide()
+{
+	if (!g_bCmdMenuOpen)
+		return;
+
+	g_bCmdMenuOpen = false;
+	g_CommandMenu.ResetChain();
+	ImGuiCursor_Update();
+}
+
+// +commandmenu
+void GoModCmdMenu_Show()
+{
+	// is the command menu open? close it
+	if (g_bCmdMenuOpen)
+	{
+		GoModCmdMenu_Hide();
+		return;
+	}
+
+	// not visible while in intermission / with another menu
+	if (gHUD.m_iIntermission || g_bShowMenu || GoModCTF_IsOpen())
+		return;
+
+	g_CommandMenu.ResetChain();
+	g_bCmdMenuOpen = true;
+	g_flCmdMenuOpenTime = gHUD.m_flTime;
+	ImGuiCursor_Update();
+
+	// command menu parameters ("+commandmenu 1 2": keys pressed right away;
+	// the last argument is the key that the engine adds to the +commands)
+	for (int i = 2; i < gEngfuncs.Cmd_Argc(); i++)
+	{
+		const char* param = gEngfuncs.Cmd_Argv(i - 1);
+		if (param && g_CommandMenu.KeyInput(param[0]))
+		{
+			GoModCmdMenu_Hide();
+			break;
+		}
+	}
+}
+
+// -commandmenu: if they've just tapped the command menu key, leave it open
+void GoModCmdMenu_Release()
+{
+	if (g_flCmdMenuOpenTime + 0.3f > gHUD.m_flTime)
+		return;
+
+	GoModCmdMenu_Hide();
+}
+
+// number key with the menu open (true = used)
+bool GoModCmdMenu_KeyInput(int key)
+{
+	if (!g_bCmdMenuOpen)
+		return false;
+
+	if (g_CommandMenu.KeyInput(key))
+		GoModCmdMenu_Hide();
+	return true;
+}
+
+void GoModCmdMenu_Reload()
+{
+	g_CommandMenu.Unload();
+}
+
+void GoModCmdMenu_Draw()
+{
+	if (!g_bCmdMenuOpen)
+		return;
+
+	if (g_CommandMenu.IsEmpty())
+	{
+		GoModCmdMenu_Hide();
+		return;
+	}
+
+	const float fontSize = (std::max)(13.0f, ScreenHeight * 0.02f);
+	ImGui::PushFont(nullptr, fontSize);
+
+	// same place as the VGUI one: left side, 4 buttons from the top
+	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)(int)(YRES(30) * 4)));
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings |
+							 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (!GoModCmdMenu_WantsCursor())
+		flags |= ImGuiWindowFlags_NoInputs;
+
+	// spectator panel look
+	ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 0, 0, 160));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255, 255, 255, 60));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255, 255, 255, 100));
+	ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 70));
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+
+	ImGui::Begin("##gomod_commandmenu", nullptr, flags);
+
+	if (g_CommandMenu.Draw((float)(int)XRES(160), (float)(int)YRES(20)))
+		GoModCmdMenu_Hide();
+
+	ImGui::End();
+
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor(5);
+	ImGui::PopFont();
+}
+
+// =====================================================================
+//  CTF end of game stats (was vgui_StatsMenuPanel.cpp)
+//  messages StatsInfo / StatsPlayer, texts stats/stats_<view>.ost (printf formats),
+//  pictures gfx/vgui/640_<name>.tga
+// =====================================================================
+
+#define STATS_VIEWS 4 // StatsTeamsCount
+
+struct team_stat_info_t
+{
+	byte bChunksRead;
+	char szMVP[32];
+	char szMostKills[32];
+	char szMostCTF[32];
+	char szMostOff[32];
+	char szMostDef[32];
+	char szMostSnipe[32];
+	char szMostBarnacle[32];
+	char szMostDeaths[32];
+	char szMostSuicides[32];
+	char szMostDamage[32];
+	char szMostAccel[32];
+	char szMostBackpack[32];
+	char szMostHealth[32];
+	char szMostShield[32];
+	char szMostJump[32];
+	int iMVPVal;
+	int iKillsVal;
+	int iCTFVal;
+	int iOffVal;
+	int iDefVal;
+	int iSnipeVal;
+	int iBarnacleVal;
+	int iDeathsVal;
+	int iSuicidesVal;
+	int iDamageVal;
+	int iAccelVal;
+	int iBackpackVal;
+	int iHealthVal;
+	int iShieldVal;
+	int iJumpVal;
+};
+
+static bool g_bStatsOpen = false;
+static int g_iStatsView = 0;
+static int g_iWinningTeam = 0;
+static team_stat_info_t g_TeamStatInfo[3];
+static char g_szStatsText[STATS_VIEWS][1024];
+static std::string g_StatsImage[STATS_VIEWS]; // picture of every view
+
+struct StatsPicture
+{
+	unsigned int tex = 0;
+	int w = 0, h = 0;
+};
+
+static std::unordered_map<std::string, StatsPicture> g_StatsPictures;
+
+static const StatsPicture& StatsGetPicture(const std::string& name)
+{
+	auto it = g_StatsPictures.find(name);
+	if (it != g_StatsPictures.end())
+		return it->second;
+
+	StatsPicture pic;
+	char path[256];
+	snprintf(path, sizeof(path), "gfx/vgui/%d_%s.tga", ScreenWidth < 640 ? 320 : 640, name.c_str());
+	pic.tex = GoModUI_LoadImage(path, &pic.w, &pic.h);
+	return g_StatsPictures[name] = pic;
+}
+
+static void StatsDefaults()
+{
+	for (int i = 0; i < STATS_VIEWS; i++)
+	{
+		strncpy(g_szStatsText[i], i == 3 ? "Spectator" : "No players on this team", sizeof(g_szStatsText[i]) - 1);
+		g_szStatsText[i][sizeof(g_szStatsText[i]) - 1] = '\0';
+		g_StatsImage[i] = sCTFStatsSelection[i == 3 ? 1 : i];
+	}
+}
+
+bool GoModStats_IsOpen()
+{
+	return g_bStatsOpen;
+}
+
+void GoModStats_Open()
+{
+	if (0 != gEngfuncs.pDemoAPI->IsPlayingback())
+		return;
+
+	if (g_StatsImage[0].empty())
+		StatsDefaults();
+
+	g_bStatsOpen = true;
+	g_iStatsView = 0;
+	gHUD.m_Scoreboard.SetForced(false);
+	ImGuiCursor_Update();
+}
+
+void GoModStats_Close()
+{
+	if (!g_bStatsOpen)
+		return;
+
+	g_bStatsOpen = false;
+	ImGuiCursor_Update();
+}
+
+void GoModStats_Reset()
+{
+	GoModStats_Close();
+	memset(g_TeamStatInfo, 0, sizeof(g_TeamStatInfo));
+	g_iWinningTeam = 0;
+	StatsDefaults();
+}
+
+// the character chosen in the CTF character menu (view "individual")
+void GoModStats_SetPlayerImage(const char* image)
+{
+	if (image && image[0])
+		g_StatsImage[3] = image;
+}
+
+// number keys: the views
+bool GoModStats_SlotInput(int slot)
+{
+	if (!g_bStatsOpen)
+		return false;
+
+	if (slot >= 1 && slot <= STATS_VIEWS)
+		g_iStatsView = slot - 1;
+	return true;
+}
+
+// seconds as minutes and seconds (like the original: value / 60, value % 60)
+#define STATS_MIN(v) ((v) / 60)
+#define STATS_SEC(v) ((v) - ((v) / 60) * 60)
+
+int GoModStats_MsgStatsInfo(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	const int teamNum = READ_BYTE();
+	g_iWinningTeam = READ_BYTE();
+	const int iNumPlayers = READ_BYTE();
+	const int chunkId = READ_BYTE();
+
+	if (teamNum < 0 || teamNum > 2)
+		return 1;
+
+	if (g_StatsImage[0].empty())
+		StatsDefaults();
+
+	if (0 == teamNum && g_iWinningTeam >= 0 && g_iWinningTeam < STATS_VIEWS)
+		g_StatsImage[0] = sCTFStatsSelection[g_iWinningTeam];
+
+	team_stat_info_t& info = g_TeamStatInfo[teamNum];
+
+	auto ReadName = [](char* dst)
+	{
+		strncpy(dst, READ_STRING(), 31);
+		dst[31] = '\0';
+	};
+
+	switch (chunkId)
+	{
+	case 0:
+		ReadName(info.szMVP);
+		info.iMVPVal = READ_SHORT();
+		ReadName(info.szMostKills);
+		info.iKillsVal = READ_SHORT();
+		ReadName(info.szMostCTF);
+		info.iCTFVal = READ_SHORT();
+		ReadName(info.szMostOff);
+		info.iOffVal = READ_SHORT();
+		ReadName(info.szMostDef);
+		info.iDefVal = READ_SHORT();
+		ReadName(info.szMostSnipe);
+		info.iSnipeVal = READ_SHORT();
+		ReadName(info.szMostBarnacle);
+		info.iBarnacleVal = READ_SHORT();
+		break;
+
+	case 1:
+		ReadName(info.szMostDeaths);
+		info.iDeathsVal = READ_SHORT();
+		ReadName(info.szMostSuicides);
+		info.iSuicidesVal = READ_SHORT();
+		ReadName(info.szMostDamage);
+		info.iDamageVal = READ_SHORT();
+		ReadName(info.szMostAccel);
+		info.iAccelVal = READ_SHORT();
+		ReadName(info.szMostBackpack);
+		info.iBackpackVal = READ_SHORT();
+		ReadName(info.szMostHealth);
+		info.iHealthVal = READ_SHORT();
+		ReadName(info.szMostShield);
+		info.iShieldVal = READ_SHORT();
+		ReadName(info.szMostJump);
+		info.iJumpVal = READ_SHORT();
+		break;
+	}
+
+	info.bChunksRead |= (1 << chunkId);
+
+	if ((info.bChunksRead & 3) != 0)
+	{
+		char path[64];
+		snprintf(path, sizeof(path), "stats/stats_%s.ost", sCTFStatsSelection[teamNum]);
+
+		if (char* format = (char*)gEngfuncs.COM_LoadFile(path, 5, nullptr))
+		{
+			if (iNumPlayers <= 0)
+			{
+				strncpy(g_szStatsText[teamNum], "No players on this team\n", sizeof(g_szStatsText[teamNum]) - 1);
+			}
+			else
+			{
+				snprintf(g_szStatsText[teamNum], sizeof(g_szStatsText[teamNum]), format,
+					info.szMVP, info.iMVPVal,
+					info.szMostKills, info.iKillsVal,
+					info.szMostCTF, info.iCTFVal,
+					info.szMostOff, info.iOffVal,
+					info.szMostDef, info.iDefVal,
+					info.szMostSnipe, info.iSnipeVal,
+					info.szMostBarnacle, info.iBarnacleVal,
+					info.szMostDeaths, info.iDeathsVal,
+					info.szMostSuicides, info.iSuicidesVal,
+					info.szMostDamage, info.iDamageVal,
+					info.szMostAccel, STATS_MIN(info.iAccelVal), STATS_SEC(info.iAccelVal),
+					info.szMostBackpack, STATS_MIN(info.iBackpackVal), STATS_SEC(info.iBackpackVal),
+					info.szMostHealth, STATS_MIN(info.iHealthVal), STATS_SEC(info.iHealthVal),
+					info.szMostShield, STATS_MIN(info.iShieldVal), STATS_SEC(info.iShieldVal),
+					info.szMostJump, STATS_MIN(info.iJumpVal), STATS_SEC(info.iJumpVal));
+			}
+
+			gEngfuncs.COM_FreeFile(format);
+		}
+	}
+
+	return 1;
+}
+
+int GoModStats_MsgStatsPlayer(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	const int playerIndex = READ_BYTE();
+	const int iMVPVal = READ_SHORT();
+	const int iKillsVal = READ_SHORT();
+	const int iCTFVal = READ_SHORT();
+	const int iOffVal = READ_SHORT();
+	const int iDefVal = READ_SHORT();
+	const int iSnipeVal = READ_SHORT();
+	const int iBarnacleVal = READ_SHORT();
+	const int iDeathsVal = READ_SHORT();
+	const int iSuicidesVal = READ_SHORT();
+	const int iDamageVal = READ_SHORT();
+	const int iAccelVal = READ_SHORT();
+	const int iBackpackVal = READ_SHORT();
+	const int iHealthVal = READ_SHORT();
+	const int iShieldTime = READ_SHORT();
+	const int iJumpVal = READ_SHORT();
+
+	if (playerIndex <= 0 || playerIndex >= MAX_PLAYERS_HUD)
+		return 1;
+
+	char path[64];
+	snprintf(path, sizeof(path), "stats/stats_%s.ost", sCTFStatsSelection[3]);
+
+	if (char* format = (char*)gEngfuncs.COM_LoadFile(path, 5, nullptr))
+	{
+		snprintf(g_szStatsText[3], sizeof(g_szStatsText[3]), format,
+			iMVPVal, iKillsVal, iCTFVal, iOffVal, iDefVal, iSnipeVal, iBarnacleVal,
+			iDeathsVal, iSuicidesVal, iDamageVal,
+			STATS_MIN(iAccelVal), STATS_SEC(iAccelVal),
+			STATS_MIN(iBackpackVal), STATS_SEC(iBackpackVal),
+			STATS_MIN(iHealthVal), STATS_SEC(iHealthVal),
+			STATS_MIN(iShieldTime), STATS_SEC(iShieldTime),
+			STATS_MIN(iJumpVal), STATS_SEC(iJumpVal));
+
+		gEngfuncs.COM_FreeFile(format);
+	}
+
+	return 1;
+}
+
+void GoModStats_Draw()
+{
+	if (!g_bStatsOpen)
+		return;
+
+	if (g_StatsImage[0].empty())
+		StatsDefaults();
+
+	const float fontSize = (std::max)(13.0f, ScreenHeight * 0.019f);
+	ImGui::PushFont(nullptr, fontSize);
+
+	const float w = (std::max)(ScreenWidth * 0.7f, (std::min)(720.0f, ScreenWidth - 20.0f));
+	const float h = (std::max)(ScreenHeight * 0.7f, (std::min)(440.0f, ScreenHeight - 20.0f));
+
+	ImGui::SetNextWindowPos(ImVec2(ScreenWidth * 0.5f, ScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(w, h), ImGuiCond_Always);
+
+	const std::string title = Localise("#CTFTitle_EndGameStats", "End Game Stats") + "###gomod_stats";
+	bool open = true;
+	ImGui::Begin(title.c_str(), &open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+
+	const float btnH = (float)(int)(fontSize * 1.9f);
+
+	// ---- views (1-4) + scoreboard / close ----
+	const float spacing = ImGui::GetStyle().ItemSpacing.x;
+	const float rightW = (float)(int)(fontSize * 8.0f);
+	const float viewW = (ImGui::GetContentRegionAvail().x - rightW * 2.0f - spacing * (STATS_VIEWS + 1)) / STATS_VIEWS;
+
+	for (int i = 0; i < STATS_VIEWS; i++)
+	{
+		if (i > 0)
+			ImGui::SameLine();
+
+		char label[128];
+		snprintf(label, sizeof(label), "%d  %s###statsview%d", i + 1, Localise(sLocalisedStatsTeams[i], sCTFStatsSelection[i]).c_str(), i);
+
+		const bool active = (g_iStatsView == i);
+		if (active)
+			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+		if (ImGui::Button(label, ImVec2(viewW, btnH)))
+			g_iStatsView = i;
+		if (active)
+			ImGui::PopStyleColor();
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button((Localise("#CTFMenu_ScoreBoard", "Scoreboard") + "###statsscore").c_str(), ImVec2(rightW, btnH)))
+	{
+		// was SwitchToScoreBoard: the scoreboard stays open, the mouse goes back to the game
+		GoModStats_Close();
+		gHUD.m_Scoreboard.SetForced(true);
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button((Localise("#CTFMenu_Cancel", "Close") + "###statsclose").c_str(), ImVec2(rightW, btnH)))
+		open = false;
+
+	ImGui::Separator();
+
+	// ---- picture + title + text ----
+	ImGui::BeginChild("##statsview", ImVec2(0, 0), ImGuiChildFlags_Borders);
+
+	char key[64];
+	snprintf(key, sizeof(key), "#CTFTitleStats_%s", sCTFStatsSelection[g_iStatsView]);
+
+	ImGui::PushFont(nullptr, fontSize * 1.4f);
+	ImGui::TextUnformatted(Localise(key, sCTFStatsSelection[g_iStatsView]).c_str());
+	ImGui::PopFont();
+	ImGui::Spacing();
+
+	const StatsPicture& pic = StatsGetPicture(g_StatsImage[g_iStatsView]);
+	if (pic.tex && pic.w > 0 && pic.h > 0)
+	{
+		const float picW = (std::min)((float)pic.w * 1.5f, ImGui::GetContentRegionAvail().x * 0.4f);
+		const float picH = picW * pic.h / pic.w;
+		ImGui::Image((ImTextureID)(intptr_t)pic.tex, ImVec2(picW, picH));
+		ImGui::SameLine();
+	}
+
+	ImGui::BeginChild("##statstext", ImVec2(0, 0), ImGuiChildFlags_None);
+	ImGui::PushTextWrapPos(0.0f);
+	ImGui::TextUnformatted(CleanText(g_szStatsText[g_iStatsView]).c_str());
+	ImGui::PopTextWrapPos();
+	ImGui::EndChild();
+
+	ImGui::EndChild();
+
+	ImGui::End();
+	ImGui::PopFont();
+
+	if (!open)
+		GoModStats_Close();
 }

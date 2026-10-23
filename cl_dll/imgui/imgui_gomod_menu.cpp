@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "gm_audio.h"
 #include "parsemsg.h"
+#include "imgui_commandmenu.h"
 
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
@@ -2556,542 +2557,49 @@ static void DrawUserSettingsWindow(int x, int y, int w, int h)
 }
 
 // =====================================================================
-//  Admin Settings: the command menu (commandmenu.txt, vgui_TeamFortressViewport.cpp)
-//  done again in ImGui, reading resource/adminmenu.txt. Same file format and same rules:
-//    "key" "text" "command"                 normal button
-//    "key" "text" { ... }                   submenu
-//    TOGGLE "key" "text" "cvar"             switches the cvar 0/1
-//    MAP "mapname" "key" "text" "command"   only on that map
-//    TEAM1..TEAM4 "key" "text" "command"    only for that team
-//    CUSTOM "key" "text" "!CHANGETEAM"      submenu with the teams
-//  The number keys press the buttons of the open menu, like the command menu.
+//  Admin Settings: the command menu done again in ImGui (imgui_commandmenu.cpp), reading
+//  resource/adminmenu.txt. The number keys press the buttons of the open menu.
 // =====================================================================
 
-extern int g_iTeamNumber;
-extern int GoModAdmin_NumberOfTeams();
-extern const char* GoModAdmin_TeamName(int team);
-extern bool GoModAdmin_AllowSpectators();
+static GMCommandMenu g_AdminMenu("resource/adminmenu.txt");
+static int g_iPendingDigit = 0; // number key pressed this frame ('0'-'9')
 
-static const char* ADMIN_MENU_FILE = "resource/adminmenu.txt";
-static const int ADMIN_MAX_MENUS = 80;	  // MAX_MENUS
-static const int ADMIN_BUTTON_TEXT = 32;  // MAX_BUTTON_SIZE
-static const int ADMIN_COMMAND_SIZE = 128; // cCommandLength
-
-enum AdminButtonType
+// "#Key" of resource/gomod_gui.txt for the other ImGui parts (nullptr if it isn't there)
+const char* GoModUI_KeyString(const char* key)
 {
-	ADMIN_NORMAL = 0,
-	ADMIN_TOGGLE,
-	ADMIN_MAP,
-	ADMIN_TEAMONLY,
-	ADMIN_TEAM,		  // a team of !CHANGETEAM (1-4, 5 = auto assign)
-	ADMIN_SPECTATE,	  // spectate button of !CHANGETEAM
-	ADMIN_CUSTOM_MENU, // the !CHANGETEAM button itself
-};
+	if (!key || key[0] != '#')
+		return nullptr;
 
-struct AdminButton
-{
-	int type = ADMIN_NORMAL;
-	char key = 0;
-	std::string text;
-	std::string command;
-	std::string map; // "maps/<name>.bsp"
-	int team = 0;
-	int submenu = -1;
-};
-
-struct AdminMenu
-{
-	int parent = -1;
-	std::vector<AdminButton> buttons;
-};
-
-static std::vector<AdminMenu> g_AdminMenus;
-static bool g_AdminLoaded = false;
-static std::vector<int> g_AdminChain; // open menus: root, submenu, sub-submenu...
-static int g_iPendingDigit = 0;		  // number key pressed this frame ('0'-'9')
-
-static void AdminLocalise(const char* token, std::string& out)
-{
-	char text[ADMIN_BUTTON_TEXT] = "";
-
-	// our keys first (resource/gomod_gui.txt), then the ones of the game (titles.txt)
-	if (token[0] == '#')
-	{
-		EnsureHintStringsLoaded();
-		auto it = g_KeyStrings.find(token + 1);
-		if (it != g_KeyStrings.end())
-		{
-			strncpy(text, it->second.c_str(), sizeof(text) - 1);
-			out = text;
-			return;
-		}
-	}
-
-	CHudTextMessage::LocaliseTextString(token, text, sizeof(text));
-	text[sizeof(text) - 1] = '\0';
-	out = text;
-}
-
-static int AdminNewMenu(int parent)
-{
-	AdminMenu menu;
-	menu.parent = parent;
-	g_AdminMenus.push_back(menu);
-	return (int)g_AdminMenus.size() - 1;
-}
-
-static void Admin_Load()
-{
-	g_AdminLoaded = true;
-	g_AdminMenus.clear();
-	g_AdminChain.clear();
-
-	const int root = AdminNewMenu(-1);
-
-	byte* buffer = gEngfuncs.COM_LoadFile((char*)ADMIN_MENU_FILE, 5, NULL);
-	if (!buffer)
-	{
-		gEngfuncs.Con_DPrintf("Unable to open %s\n", ADMIN_MENU_FILE);
-		return;
-	}
-
-	char token[1024];
-	const char* pfile = (const char*)buffer;
-	int current = root;
-	char szLastButtonText[32] = "file start";
-
-	pfile = gEngfuncs.COM_ParseFile(pfile, token);
-	while (strlen(token) > 0 && (int)g_AdminMenus.size() < ADMIN_MAX_MENUS)
-	{
-		// keep looping until we hit the end of this menu
-		while (token[0] != '}' && strlen(token) > 0)
-		{
-			char cBoundKey[32] = "";
-			char cCustom[32] = "";
-			char cCommand[ADMIN_COMMAND_SIZE] = "";
-			char szMap[256] = "";
-			std::string text;
-			bool iCustom = false;
-			int iTeamOnly = -1;
-			bool iToggle = false;
-			bool bGetExtraToken = true;
-			int button = -1; // index in the current menu (-1 = no button)
-
-			if (current < 0)
-			{
-				gEngfuncs.Con_Printf("Error in %s file after '%s'.\n", ADMIN_MENU_FILE, szLastButtonText);
-				g_AdminMenus.resize(1);
-				g_AdminMenus[0].buttons.clear();
-				gEngfuncs.COM_FreeFile(buffer);
-				return;
-			}
-
-			// token should already be the bound key, or the custom name
-			strncpy(cCustom, token, 32);
-			cCustom[31] = '\0';
-
-			if (0 == strcmp(cCustom, "CUSTOM"))
-			{
-				iCustom = true;
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			}
-			else if (0 == strcmp(cCustom, "MAP"))
-			{
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-				strncpy(szMap, token, sizeof(szMap));
-				szMap[sizeof(szMap) - 1] = '\0';
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			}
-			else if (0 == strncmp(cCustom, "TEAM", 4)) // TEAM1, TEAM2, TEAM3, TEAM4
-			{
-				iTeamOnly = atoi(cCustom + 4);
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			}
-			else if (0 == strncmp(cCustom, "TOGGLE", 6))
-			{
-				iToggle = true;
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			}
-
-			// button bound key
-			strncpy(cBoundKey, token, 32);
-			cBoundKey[31] = '\0';
-
-			// button text
-			pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			AdminLocalise(token, text);
-			strncpy(szLastButtonText, text.c_str(), sizeof(szLastButtonText) - 1);
-			szLastButtonText[sizeof(szLastButtonText) - 1] = '\0';
-
-			// button command
-			pfile = gEngfuncs.COM_ParseFile(pfile, token);
-			strncpy(cCommand, token, ADMIN_COMMAND_SIZE);
-			cCommand[ADMIN_COMMAND_SIZE - 1] = '\0';
-
-			AdminButton btn;
-			btn.key = cBoundKey[0];
-			btn.text = text;
-
-			if (iCustom)
-			{
-				// only !CHANGETEAM makes a button (!CHANGECLASS is for TFC classes)
-				if (0 == strcmp(cCommand, "!CHANGETEAM"))
-				{
-					btn.type = ADMIN_CUSTOM_MENU;
-					btn.submenu = AdminNewMenu(current);
-
-					AdminMenu& teams = g_AdminMenus[btn.submenu];
-					for (int i = 0; i < 4; i++)
-					{
-						AdminButton team;
-						team.type = ADMIN_TEAM;
-						team.team = i + 1;
-						team.command = "jointeam " + std::to_string(i + 1);
-						teams.buttons.push_back(team);
-					}
-
-					AdminButton autoAssign;
-					autoAssign.type = ADMIN_TEAM;
-					autoAssign.team = 5;
-					autoAssign.text = L("#Gomod_Admin_AutoAssign");
-					autoAssign.command = "jointeam 5";
-					teams.buttons.push_back(autoAssign);
-
-					AdminButton spectate;
-					spectate.type = ADMIN_SPECTATE;
-					spectate.text = L("#Gomod_Admin_Spectate");
-					spectate.command = "spectate";
-					teams.buttons.push_back(spectate);
-
-					g_AdminMenus[current].buttons.push_back(btn);
-					button = (int)g_AdminMenus[current].buttons.size() - 1;
-				}
-
-				// next token: is it a menu?
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-				if (token[0] == '{')
-					strcpy(cCommand, token);
-				else
-					bGetExtraToken = false;
-			}
-			else
-			{
-				if (szMap[0] != '\0')
-				{
-					btn.type = ADMIN_MAP;
-					btn.map = std::string("maps/") + szMap + ".bsp";
-				}
-				else if (iTeamOnly != -1)
-				{
-					btn.type = ADMIN_TEAMONLY;
-					btn.team = iTeamOnly;
-				}
-				else if (iToggle)
-				{
-					btn.type = ADMIN_TOGGLE;
-				}
-
-				if (cCommand[0] != '{')
-					btn.command = cCommand;
-
-				g_AdminMenus[current].buttons.push_back(btn);
-				button = (int)g_AdminMenus[current].buttons.size() - 1;
-			}
-
-			// submenu or button?
-			if (cCommand[0] == '{')
-			{
-				if ((int)g_AdminMenus.size() >= ADMIN_MAX_MENUS)
-				{
-					gEngfuncs.Con_Printf("Too many menus in %s past '%s'\n", ADMIN_MENU_FILE, szLastButtonText);
-				}
-				else if (button >= 0)
-				{
-					const int submenu = AdminNewMenu(current);
-					g_AdminMenus[current].buttons[button].submenu = submenu;
-					g_AdminMenus[current].buttons[button].command.clear();
-					current = submenu;
-				}
-			}
-
-			if (bGetExtraToken)
-				pfile = gEngfuncs.COM_ParseFile(pfile, token);
-		}
-
-		// move back up a menu
-		current = (current >= 0) ? g_AdminMenus[current].parent : -1;
-
-		pfile = gEngfuncs.COM_ParseFile(pfile, token);
-	}
-
-	gEngfuncs.COM_FreeFile(buffer);
-}
-
-// IsNotValid() of the buttons of the command menu, inverted
-static bool AdminButtonValid(const AdminButton& b)
-{
-	switch (b.type)
-	{
-	case ADMIN_MAP:
-	{
-		const char* level = gEngfuncs.pfnGetLevelName();
-		return level && 0 == strcmp(b.map.c_str(), level);
-	}
-
-	case ADMIN_TEAMONLY:
-		return g_iTeamNumber == b.team;
-
-	case ADMIN_TEAM:
-	{
-		const int teams = GoModAdmin_NumberOfTeams();
-		if (teams == 1)
-			return false;
-		if (b.team == 5)
-			return true;
-		return teams >= b.team && b.team != g_iTeamNumber;
-	}
-
-	case ADMIN_SPECTATE:
-		return GoModAdmin_AllowSpectators();
-
-	default:
-		return true;
-	}
-}
-
-static bool AdminMenuHasVisible(int menu, int depth = 0);
-
-// RecalculateVisibles(): a submenu button without visible buttons inside is not shown
-static bool AdminButtonVisible(const AdminButton& b, int depth)
-{
-	if (!AdminButtonValid(b))
-		return false;
-
-	if (b.submenu >= 0 && !AdminMenuHasVisible(b.submenu, depth + 1))
-		return false;
-
-	return true;
-}
-
-static bool AdminMenuHasVisible(int menu, int depth)
-{
-	if (menu < 0 || menu >= (int)g_AdminMenus.size() || depth > ADMIN_MAX_MENUS)
-		return false;
-
-	for (const AdminButton& b : g_AdminMenus[menu].buttons)
-	{
-		if (AdminButtonVisible(b, depth))
-			return true;
-	}
-	return false;
-}
-
-static std::string AdminButtonText(const AdminButton& b)
-{
-	std::string text = b.text;
-
-	if (b.type == ADMIN_TEAM && b.team >= 1 && b.team <= 4)
-	{
-		const char* name = GoModAdmin_TeamName(b.team);
-		text = (name && name[0]) ? name : ("Team " + std::to_string(b.team));
-	}
-
-	// RecalculateText(): the bound key before the text, or spaces
-	char buf[128];
-	if (b.key != 0)
-		snprintf(buf, sizeof(buf), "  %c  %s", b.key, text.c_str());
-	else
-		snprintf(buf, sizeof(buf), "     %s", text.c_str());
-
-	buf[ADMIN_BUTTON_TEXT - 1] = '\0';
-	return buf;
-}
-
-// the button was pressed: open its submenu or run it (and close the submenus, like the command menu)
-static void AdminPress(int depth, const AdminButton& b)
-{
-	if (b.submenu >= 0)
-	{
-		g_AdminChain.resize(depth + 1);
-		g_AdminChain.push_back(b.submenu);
-		return;
-	}
-
-	if (b.type == ADMIN_TOGGLE)
-	{
-		if (cvar_t* cvar = gEngfuncs.pfnGetCvarPointer(b.command.c_str()))
-			gEngfuncs.Cvar_SetValue(b.command.c_str(), cvar->value != 0 ? 0.0f : 1.0f);
-	}
-	else if (!b.command.empty())
-	{
-		gEngfuncs.pfnClientCmd(b.command.c_str());
-	}
-
-	GMAudio_PlayLocal("gomod/button_new.wav", 1.0f);
-
-	// HideCommandMenu()
-	g_AdminChain.clear();
-	g_AdminChain.push_back(0);
-}
-
-// CCommandMenu::KeyInput(): the buttons of the deepest open menu
-static void AdminKeyInput(int key)
-{
-	if (g_AdminChain.empty())
-		return;
-
-	const int depth = (int)g_AdminChain.size() - 1;
-	const int menu = g_AdminChain.back();
-
-	for (const AdminButton& b : g_AdminMenus[menu].buttons)
-	{
-		if (AdminButtonValid(b) && b.key == key)
-		{
-			AdminPress(depth, b);
-			return;
-		}
-	}
+	EnsureHintStringsLoaded();
+	auto it = g_KeyStrings.find(key + 1);
+	return it != g_KeyStrings.end() ? it->second.c_str() : nullptr;
 }
 
 static void DrawAdminSettingsWindow(int x, int y, int w, int h)
 {
-	if (!g_AdminLoaded)
-		Admin_Load();
-
-	if (g_AdminChain.empty())
-		g_AdminChain.push_back(0);
-
 	ImGui::SetNextWindowPos(ImVec2((float)x, (float)y), ImGuiCond_Appearing);
 	ImGui::SetNextWindowSize(ImVec2((float)w, (float)h), ImGuiCond_Appearing);
 
 	ImGui::Begin("Admin Settings", &g_bShowMenu, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
 
-	if (g_AdminMenus.empty() || g_AdminMenus[0].buttons.empty())
+	if (g_AdminMenu.IsEmpty())
 	{
 		ImGui::TextDisabled("%s", L("#Gomod_Admin_NoFile"));
 		ImGui::End();
 		return;
 	}
 
+	bool ran = false;
+
 	// number keys (not while typing in a text field)
 	if (g_iPendingDigit && !ImGui::GetIO().WantTextInput)
-		AdminKeyInput(g_iPendingDigit);
+		ran = g_AdminMenu.KeyInput(g_iPendingDigit);
 
 	// same size as the command menu buttons
-	const float btnW = (float)(int)XRES(160);
-	const float btnH = (float)(int)YRES(30);
-	const float stepY = btnH - 1.0f;
+	ran |= g_AdminMenu.Draw((float)(int)XRES(160), (float)(int)YRES(30));
 
-	const ImVec2 origin = ImGui::GetCursorPos();
-	float columnY = origin.y; // y of the button that opened the menu of this column
-
-	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-
-	int newChainDepth = -1; // the mouse went over a button: menus to keep open
-	const AdminButton* hoveredButton = nullptr;
-	const AdminButton* clickedButton = nullptr;
-	int clickedDepth = -1;
-
-	for (int depth = 0; depth < (int)g_AdminChain.size(); depth++)
-	{
-		const int menu = g_AdminChain[depth];
-		if (menu < 0 || menu >= (int)g_AdminMenus.size())
-			break;
-
-		const float columnX = origin.x + depth * (btnW + 2.0f);
-		const int openChild = (depth + 1 < (int)g_AdminChain.size()) ? g_AdminChain[depth + 1] : -1;
-
-		float rowY = columnY;
-		float nextColumnY = columnY;
-
-		ImGui::PushID(menu);
-
-		for (int i = 0; i < (int)g_AdminMenus[menu].buttons.size(); i++)
-		{
-			const AdminButton& b = g_AdminMenus[menu].buttons[i];
-			if (!AdminButtonVisible(b, 0))
-				continue;
-
-			const bool armed = (b.submenu >= 0 && b.submenu == openChild);
-			if (armed)
-			{
-				nextColumnY = rowY;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			}
-
-			ImGui::SetCursorPos(ImVec2(columnX, rowY));
-			ImGui::PushID(i);
-			const bool pressed = ImGui::Button(AdminButtonText(b).c_str(), ImVec2(btnW, btnH));
-			ImGui::PopID();
-
-			if (armed)
-				ImGui::PopStyleColor();
-
-			const ImVec2 mn = ImGui::GetItemRectMin();
-			const ImVec2 mx = ImGui::GetItemRectMax();
-			ImDrawList* dl = ImGui::GetWindowDrawList();
-			const ImU32 textCol = ImGui::GetColorU32(ImGuiCol_Text);
-			const float midY = (mn.y + mx.y) * 0.5f;
-
-			// submenu: arrow at the right
-			if (b.submenu >= 0)
-			{
-				const float s = btnH * 0.18f;
-				const float ax = mx.x - s * 2.5f;
-				dl->AddTriangleFilled(ImVec2(ax, midY - s), ImVec2(ax + s * 1.3f, midY), ImVec2(ax, midY + s), textCol);
-			}
-
-			// toggle: checked / unchecked after the text
-			if (b.type == ADMIN_TOGGLE)
-			{
-				cvar_t* cvar = gEngfuncs.pfnGetCvarPointer(b.command.c_str());
-				const bool on = cvar && cvar->value != 0;
-
-				const float textW = ImGui::CalcTextSize(AdminButtonText(b).c_str()).x;
-				const float s = ImGui::GetTextLineHeight() * 0.8f;
-				const float bx = mn.x + ImGui::GetStyle().FramePadding.x + textW + s * 0.6f;
-
-				dl->AddRect(ImVec2(bx, midY - s * 0.5f), ImVec2(bx + s, midY + s * 0.5f), textCol);
-				if (on)
-					dl->AddRectFilled(ImVec2(bx + 3, midY - s * 0.5f + 3), ImVec2(bx + s - 3, midY + s * 0.5f - 3), textCol);
-			}
-
-			// cursorEntered: open this submenu / close the deeper ones
-			if (ImGui::IsItemHovered() && newChainDepth < 0)
-			{
-				newChainDepth = depth;
-				hoveredButton = &b;
-			}
-
-			if (pressed)
-			{
-				clickedButton = &b;
-				clickedDepth = depth;
-			}
-
-			rowY += stepY;
-		}
-
-		ImGui::PopID();
-
-		// the submenu starts at the height of its button
-		columnY = nextColumnY;
-	}
-
-	ImGui::PopStyleVar(2);
-
-	// changes after drawing (the chain is being read above)
-	if (clickedButton)
-	{
-		AdminPress(clickedDepth, *clickedButton);
-	}
-	else if (hoveredButton)
-	{
-		g_AdminChain.resize(newChainDepth + 1);
-		if (hoveredButton->submenu >= 0)
-			g_AdminChain.push_back(hoveredButton->submenu);
-	}
+	if (ran)
+		GMAudio_PlayLocal("gomod/button_new.wav", 1.0f);
 
 	ImGui::End();
 }
@@ -3506,7 +3014,7 @@ void GoModMenu_Draw()
 	if (s_Opened.Check())
 	{
 		g_iSection = SECTION_MAIN;
-		g_AdminChain.clear();
+		g_AdminMenu.ResetChain();
 	}
 
 	const int leftW = (int)(ScreenWidth * 0.46f);
@@ -3563,9 +3071,7 @@ void GoModMenu_Reload()
 
 	g_PlayerModelsLoaded = false;
 
-	g_AdminLoaded = false;
-	g_AdminMenus.clear();
-	g_AdminChain.clear();
+	g_AdminMenu.Unload();
 
 	g_MapInfoLevel.clear(); // read the map text again
 }
@@ -3575,5 +3081,5 @@ void GoModMenu_Shutdown()
 	FreeAllTextures();
 	g_Tabs.clear();
 	g_ToolCats.clear();
-	g_AdminMenus.clear();
+	g_AdminMenu.Unload();
 }

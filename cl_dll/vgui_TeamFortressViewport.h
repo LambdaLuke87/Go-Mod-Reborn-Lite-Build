@@ -35,7 +35,6 @@
 using namespace vgui;
 
 class Cursor;
-class CCommandMenu;
 class CommandLabel;
 class CommandButton;
 class BuildButton;
@@ -44,7 +43,6 @@ class CMenuPanel;
 class DragNDropPanel;
 class CTransparentPanel;
 class TeamFortressViewport;
-class CStatsMenuPanel;
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -58,6 +56,7 @@ extern char *sLocalisedClasses[][7];
 extern const char* sLocalisedStatsTeams[StatsTeamsCount];
 extern const char* sCTFStatsSelection[StatsTeamsCount];
 extern void GoModSpec_Update(); // imgui_hudpanels.cpp
+extern void GoModCmdMenu_Hide(); // imgui_hudpanels.cpp
 extern int iTeamColors[5][3];
 extern int iNumberOfTeamColors;
 extern TeamFortressViewport *gViewPort;
@@ -165,9 +164,6 @@ private:
 	int		m_iPlayerClass;
 	bool	m_bFlat;
 
-	// Submenus under this button
-	CCommandMenu *m_pSubMenu;
-	CCommandMenu *m_pParentMenu;
 	CommandLabel *m_pSubLabel;
 
 	char m_sMainText[MAX_BUTTON_SIZE];
@@ -190,7 +186,6 @@ public:
 	void Init( void );
 
 	// Menu Handling
-	void AddSubMenu( CCommandMenu *pNewMenu );
 	void AddSubLabel( CommandLabel *pSubLabel )
 	{
 		m_pSubLabel = pSubLabel;
@@ -201,12 +196,7 @@ public:
 		return false;
 	}
 
-	void UpdateSubMenus( int iAdjustment );
 	int GetPlayerClass() { return m_iPlayerClass; };
-	CCommandMenu *GetSubMenu() { return m_pSubMenu; };
-	
-	CCommandMenu *getParentMenu( void );
-	void setParentMenu( CCommandMenu *pParentMenu );
 
 	// Overloaded vgui functions
 	virtual void paint();
@@ -358,64 +348,6 @@ public:
 		Button::paint();
 	}
 };
-//============================================================
-// Command Menus
-class CCommandMenu : public Panel
-{
-private:
-	CCommandMenu *m_pParentMenu;
-	int			  m_iXOffset;
-	int			  m_iYOffset;
-
-	// Buttons in this menu
-	CommandButton *m_aButtons[ MAX_BUTTONS ];
-	int			  m_iButtons;
-
-	// opens menu from top to bottom (false = default), or from bottom to top (true)?
-	bool			m_iDirection; 
-public:
-	CCommandMenu( CCommandMenu *pParentMenu, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
-	{
-		m_pParentMenu = pParentMenu;
-		m_iXOffset = x;
-		m_iYOffset = y;
-		m_iButtons = 0;
-		m_iDirection = false;
-	}
-
-
-	CCommandMenu( CCommandMenu *pParentMenu, bool direction, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
-	{
-		m_pParentMenu = pParentMenu;
-		m_iXOffset = x;
-		m_iYOffset = y;
-		m_iButtons = 0;
-		m_iDirection = direction;
-	}
-
-	float		m_flButtonSizeY;
-	bool		m_iSpectCmdMenu;
-	void		AddButton( CommandButton *pButton );
-	bool		RecalculateVisibles( int iNewYPos, bool bHideAll );
-	void		RecalculatePositions( int iYOffset );
-	void		MakeVisible( CCommandMenu *pChildMenu );
-
-	CCommandMenu *GetParentMenu() { return m_pParentMenu; };
-	int			GetXOffset() { return m_iXOffset; };
-	int			GetYOffset() { return m_iYOffset; };
-	bool		GetDirection() { return m_iDirection; };
-	int			GetNumButtons() { return m_iButtons; };
-	CommandButton *FindButtonWithSubmenu( CCommandMenu *pSubMenu );
-
-	void		ClearButtonsOfArmedState( void );
-
-	void		RemoveAllButtons(void);
-
-
-	bool		KeyInput( int keyNum );
-
-	virtual void paintBackground();
-};
 
 //==============================================================================
 // Command menu root button (drop down box style)
@@ -494,26 +426,9 @@ private:
 
 	bool		 m_iInitialized;
 
-	CCommandMenu *m_pCommandMenus[ MAX_MENUS ];
-	float		 m_flMenuOpenTime;
-	int			 m_iNumMenus;
-	int			 m_iCurrentTeamNumber;
-	int			 m_iCurrentPlayerClass;
-	int			 m_iUser1;
-	int			 m_iUser2;
-	int			 m_iUser3;
 
-	// VGUI Menus
-	void CreateStatsMenu();
-	
 	// Scheme handler
 	CSchemeManager m_SchemeManager;
-
-	//  Command Menu Team buttons
-	CommandButton *m_pTeamButtons[6];
-	CommandButton *m_pDisguiseButtons[5];
-	BuildButton   *m_pBuildButtons[3];
-	BuildButton   *m_pBuildActiveButtons[3];
 
 	bool		m_iAllowSpectators;
 
@@ -535,22 +450,11 @@ public:
 	TeamFortressViewport(int x,int y,int wide,int tall);
 	void Initialize( void );
 
-	int		CreateCommandMenu( const char * menuFile, bool direction, int yOffset, bool flatDesign, float flButtonSizeX, float flButtonSizeY, int xOffset );
-	CommandButton * CreateCustomButton( char *pButtonText, char * pButtonName, int  iYOffset );
-	CCommandMenu *	CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText, int iYOffset, int iXOffset = 0 );
-
 	void UpdateCursorState( void );
-	void UpdateCommandMenu(int menuIndex);
 	void UpdateOnPlayerInfo( void );
-	void UpdateHighlights( void );
 
 	bool KeyInput( bool down, int keynum, const char *pszCurrentBinding );
-	void InputPlayerSpecial( void );
 
-	void ShowCommandMenu(int menuIndex);
-	void InputSignalHideCommandMenu( void );
-	void HideCommandMenu( void );
-	void SetCurrentCommandMenu( CCommandMenu *pNewMenu );
 	void SetCurrentMenu( CMenuPanel *pMenu );
 
 
@@ -560,13 +464,7 @@ public:
 	void HideVGUIMenu( void );
 	void HideTopMenu( void );
 
-	void SaveStatsMenu();
-	CMenuPanel* ShowStatsMenu();
-	void SwitchToStatsMenu();
 	void SwitchToScoreBoard();
-	void HideScoreStatsWindow();
-
-	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu, int iYOffset, int iXOffset = 0 );
 
 	// Data Handlers
 	int GetValidClasses(int iTeam) { return m_iValidClasses[iTeam]; };
@@ -594,8 +492,6 @@ public:
 	bool MsgFunc_ResetFade( const char *pszName, int iSize, void *pbuf );	
 	bool MsgFunc_TeamFull( const char *pszName, int iSize, void *pbuf );
 	bool MsgFunc_SetMenuTeam( const char *pszName, int iSize, void *pbuf );
-	bool MsgFunc_StatsInfo(const char* pszName, int iSize, void* pbuf);
-	bool MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf);
 
 	// Input
 	bool SlotInput( int iSlot );
@@ -608,10 +504,7 @@ public:
 
 public:
 	// VGUI Menus
-	CCommandMenu* m_pCurrentCommandMenu;
 	CMenuPanel		*m_pCurrentMenu;
-	int						m_StandardMenu;	// indexs in m_pCommandMenus
-	CStatsMenuPanel* m_pStatsMenu;
 	int m_iCTFTeamNumber;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
@@ -647,7 +540,7 @@ public:
 		if (m_iCloseVGUIMenu)
 			gViewPort->HideTopMenu();
 		else
-			gViewPort->HideCommandMenu();
+			GoModCmdMenu_Hide(); // command menu (ImGui)
 	}
 };
 
@@ -698,40 +591,6 @@ public:
 	virtual void actionPerformed(Panel* panel);
 };
 
-class CMenuHandler_PopupSubMenuInput : public InputSignal
-{
-private:
-	CCommandMenu *m_pSubMenu;
-	Button		 *m_pButton;
-public:
-	CMenuHandler_PopupSubMenuInput( Button *pButton, CCommandMenu *pSubMenu )
-	{
-		m_pSubMenu = pSubMenu;
-		m_pButton = pButton;
-	}
-
-	virtual void cursorMoved(int x,int y,Panel* panel)
-	{
-		//gViewPort->SetCurrentCommandMenu( m_pSubMenu );
-	}
-
-	virtual void cursorEntered(Panel* panel) 
-	{
-		gViewPort->SetCurrentCommandMenu( m_pSubMenu );
-
-		if (m_pButton)
-			m_pButton->setArmed(true);
-	};
-	virtual void cursorExited(Panel* Panel) {};
-	virtual void mousePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
-	virtual void mouseReleased(MouseCode code,Panel* panel) {};
-	virtual void mouseWheeled(int delta,Panel* panel) {};
-	virtual void keyPressed(KeyCode code,Panel* panel) {};
-	virtual void keyTyped(KeyCode code,Panel* panel) {};
-	virtual void keyReleased(KeyCode code,Panel* panel) {};
-	virtual void keyFocusTicked(Panel* panel) {};
-};
 
 class CMenuHandler_LabelInput : public InputSignal
 {
@@ -780,7 +639,7 @@ public:
 		}
 		else 
 		{
-			gViewPort->HideCommandMenu();
+			GoModCmdMenu_Hide(); // command menu (ImGui)
 			gViewPort->ShowVGUIMenu( m_iState );
 		}
 	}
@@ -805,7 +664,7 @@ public:
 			m_cvar->value = 1.0f;
 
 		// hide the menu 
-		gViewPort->HideCommandMenu();
+		GoModCmdMenu_Hide(); // command menu (ImGui)
 
 		GoModSpec_Update(); // spectator panel (ImGui)
 	}
@@ -829,7 +688,7 @@ public:
 	virtual void actionPerformed(Panel* panel)
 	{
 		gHUD.m_Spectator.FindPlayer(m_szplayer);
-		gViewPort->HideCommandMenu();
+		GoModCmdMenu_Hide(); // command menu (ImGui)
 	}
 };
 

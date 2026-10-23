@@ -235,40 +235,36 @@ int __MsgFunc_GameMode(const char* pszName, int iSize, void* pbuf)
 	return static_cast<int>(gHUD.MsgFunc_GameMode(pszName, iSize, pbuf));
 }
 
-// TFFree Command Menu
+// Command menu (commandmenu.txt): ImGui (imgui_hudpanels.cpp)
+extern void GoModCmdMenu_Show();
+extern void GoModCmdMenu_Release();
+extern void GoModCmdMenu_Hide();
+extern bool GoModCmdMenu_IsOpen();
+
+// CTF end of game stats: ImGui (imgui_hudpanels.cpp)
+extern int GoModStats_MsgStatsInfo(const char* pszName, int iSize, void* pbuf);
+extern int GoModStats_MsgStatsPlayer(const char* pszName, int iSize, void* pbuf);
+
 void __CmdFunc_OpenCommandMenu()
 {
 	ImGuiMenu_SetOpen(false);
-
-	if (gViewPort)
-	{
-		gViewPort->ShowCommandMenu(gViewPort->m_StandardMenu);
-	}
+	GoModCmdMenu_Show();
 }
 
-// TFC "special" command
+// TFC "special" command: just send it down to the server
 void __CmdFunc_InputPlayerSpecial()
 {
-	if (gViewPort)
-	{
-		gViewPort->InputPlayerSpecial();
-	}
+	EngineClientCmd("_special");
 }
 
 void __CmdFunc_CloseCommandMenu()
 {
-	if (gViewPort)
-	{
-		gViewPort->InputSignalHideCommandMenu();
-	}
+	GoModCmdMenu_Release();
 }
 
 void __CmdFunc_ForceCloseCommandMenu()
 {
-	if (gViewPort)
-	{
-		gViewPort->HideCommandMenu();
-	}
+	GoModCmdMenu_Hide();
 }
 
 // MOTD / Map Info: ImGui (imgui_gomod_menu.cpp). In the sandbox they are in the Go-Mod menu (Information)
@@ -426,16 +422,12 @@ int __MsgFunc_SetMenuTeam(const char* pszName, int iSize, void* pbuf)
 
 int __MsgFunc_StatsInfo(const char* pszName, int iSize, void* pbuf)
 {
-	if (gViewPort)
-		return static_cast<int>(gViewPort->MsgFunc_StatsInfo(pszName, iSize, pbuf));
-	return 0;
+	return GoModStats_MsgStatsInfo(pszName, iSize, pbuf);
 }
 
 int __MsgFunc_StatsPlayer(const char* pszName, int iSize, void* pbuf)
 {
-	if (gViewPort)
-		return static_cast<int>(gViewPort->MsgFunc_StatsPlayer(pszName, iSize, pbuf));
-	return 0;
+	return GoModStats_MsgStatsPlayer(pszName, iSize, pbuf);
 }
 
 void __CmdFunc_HUDColor()
@@ -480,7 +472,7 @@ void __CmdFunc_ShowMenu()
 		return;
 
 	// avoid open in CommandMenu
-	if (gViewPort && gViewPort->m_pCurrentCommandMenu)
+	if (GoModCmdMenu_IsOpen())
 		return;
 
 	ImGuiMenu_SetOpen(!g_bShowMenu);

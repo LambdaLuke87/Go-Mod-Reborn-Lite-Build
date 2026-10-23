@@ -19,7 +19,8 @@
 #include "cl_util.h"
 
 #include "vgui_TeamFortressViewport.h"
-#include "vgui_StatsMenuPanel.h"
+
+extern void GoModStats_Close(); // imgui_hudpanels.cpp
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -123,12 +124,9 @@ bool CHud::Redraw(float flTime, bool intermission)
 		{
 			// Have to do this here so the scoreboard goes away
 			m_iIntermission = intermission;
-			gViewPort->HideCommandMenu();
+			GoModCmdMenu_Hide();
 			m_Scoreboard.SetForced(false);
-			if (gViewPort->m_pStatsMenu && gViewPort->m_pStatsMenu->isVisible())
-			{
-				gViewPort->m_pStatsMenu->setVisible(false);
-			}
+			GoModStats_Close();
 			GoModSpec_Update();
 		}
 		//Disabled in Opposing Force.
@@ -136,7 +134,7 @@ bool CHud::Redraw(float flTime, bool intermission)
 		else if (!m_iIntermission && intermission)
 		{
 			m_iIntermission = intermission;
-			gViewPort->HideCommandMenu();
+			GoModCmdMenu_Hide();
 			gViewPort->HideVGUIMenu();
 			m_Scoreboard.SetForced(true);
 			GoModSpec_Update();

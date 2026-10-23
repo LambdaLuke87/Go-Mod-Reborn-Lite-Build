@@ -155,6 +155,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_gomod_menu.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_hudpanels.cpp" />
+    <ClCompile Include="..\..\cl_dll\imgui\imgui_commandmenu.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\cl_dll\imgui\imgui_widgets.cpp" />
@@ -186,7 +187,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\cl_dll\vgui_CustomObjects.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_int.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_SchemeManager.cpp" />
-    <ClCompile Include="..\..\cl_dll\vgui_StatsMenuPanel.cpp" />
     <ClCompile Include="..\..\cl_dll\vgui_TeamFortressViewport.cpp" />
     <ClCompile Include="..\..\cl_dll\view.cpp" />
     <ClCompile Include="..\..\cl_dll\voice_status.cpp" />
@@ -256,6 +256,7 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\health.h" />
     <ClInclude Include="..\..\cl_dll\hud.h" />
     <ClInclude Include="..\..\cl_dll\hud_spectator.h" />
+    <ClInclude Include="..\..\cl_dll\imgui\imgui_commandmenu.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imconfig.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui.h" />
     <ClInclude Include="..\..\cl_dll\imgui\imgui_impl_opengl3.h" />
@@ -281,7 +282,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\cl_dll\tri.h" />
     <ClInclude Include="..\..\cl_dll\vgui_int.h" />
     <ClInclude Include="..\..\cl_dll\vgui_SchemeManager.h" />
-    <ClInclude Include="..\..\cl_dll\vgui_StatsMenuPanel.h" />
     <ClInclude Include="..\..\cl_dll\view.h" />
     <ClInclude Include="..\..\common\beamdef.h" />
     <ClInclude Include="..\..\common\cl_entity.h" />
